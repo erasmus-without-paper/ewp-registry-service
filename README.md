@@ -57,6 +57,11 @@ You will need to create an empty (`git init`) repository somewhere (e.g. in
 keep track of all the changes to the remote manifest files. In production
 environment, it will also be pushed onto a publicly-accessible GitHub fork.
 
+If you intend to set `app.repo.enable-pushing` to `true`, then your repository
+should have `master` and `origin/master` branches, and your `.ssh` directory
+should contain keys which should enable you to execute `git push` in a
+non-interactive way.
+
 
 ### Prepare the `application.properties` file
 

@@ -32,6 +32,14 @@ import org.eclipse.jgit.api.errors.TransportException;
  */
 public interface ManifestRepository extends DisposableBean {
 
+  /** Thrown when repository is misconfigured. */
+  @SuppressWarnings("serial")
+  public static class ConfigurationException extends Exception {
+    ConfigurationException(String message) {
+      super(message);
+    }
+  }
+
   /**
    * Acquire a write lock for the current thread.
    *
@@ -119,8 +127,9 @@ public interface ManifestRepository extends DisposableBean {
    *         push, or pushing has been disabled.
    * @throws TransportException When network error occurs during the process.
    * @throws GitAPIException When changes cannot be pushed for some other reason (serious).
+   * @throws ConfigurationException When pushing is enabled, but not configured properly.
    */
-  public boolean push() throws TransportException, GitAPIException;
+  public boolean push() throws TransportException, GitAPIException, ConfigurationException;
 
   /**
    * Store the new version of the catalogue.

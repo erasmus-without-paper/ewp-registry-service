@@ -41,8 +41,6 @@ import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.joox.Match;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 /**
@@ -56,8 +54,6 @@ import org.xml.sax.SAXException;
  */
 @Service
 public class ManifestRepositoryImpl implements ManifestRepository {
-
-  private static final Logger logger = LoggerFactory.getLogger(ManifestRepositoryImpl.class);
 
   private final ManifestRepositoryImplProperties repoProperties;
   private final Git git;
@@ -350,7 +346,7 @@ public class ManifestRepositoryImpl implements ManifestRepository {
   }
 
   @Override
-  public boolean push() throws TransportException, GitAPIException {
+  public boolean push() throws TransportException, GitAPIException, ConfigurationException {
     this.lock.writeLock().lock();
     try {
       if (this.repoProperties.getEnablePushing()) {
@@ -497,14 +493,14 @@ public class ManifestRepositoryImpl implements ManifestRepository {
     }
   }
 
-  private boolean unpushedCommitsExist() throws GitAPIException {
+  private boolean unpushedCommitsExist() throws GitAPIException, ConfigurationException {
     this.lock.writeLock().lock();
     try {
       ObjectId head = this.git.getRepository().resolve("master");
       ObjectId origin = this.git.getRepository().resolve("origin/master");
       if (head == null || origin == null) {
-        logger.error("You need to have 'master' and 'origin/master' branches in your repo.");
-        return false;
+        throw new ConfigurationException(
+            "You need to have 'master' and 'origin/master' branches in your repo.");
       }
       Iterable<RevCommit> commits = this.git.log().addRange(origin, head).call();
       return Iterables.size(commits) > 0;

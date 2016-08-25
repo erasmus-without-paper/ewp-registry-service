@@ -6,6 +6,7 @@ import eu.erasmuswithoutpaper.registry.common.Severity;
 import eu.erasmuswithoutpaper.registry.notifier.NotifierFlag;
 import eu.erasmuswithoutpaper.registry.notifier.NotifierService;
 import eu.erasmuswithoutpaper.registry.repository.ManifestRepository;
+import eu.erasmuswithoutpaper.registry.repository.ManifestRepository.ConfigurationException;
 import eu.erasmuswithoutpaper.registry.updater.RegistryUpdater;
 import eu.erasmuswithoutpaper.registry.updater.UptimeChecker;
 
@@ -96,8 +97,8 @@ public class ProductionScheduledTasks {
     try {
       this.repo.push();
       this.logPushingStatus.setStatus(Severity.OK);
-    } catch (GitAPIException e) {
-      logger.error("GitAPIException while pushing repository changes: " + e);
+    } catch (ConfigurationException | GitAPIException e) {
+      logger.error("Exception while pushing repository changes: " + e);
       this.logPushingStatus.setStatus(Severity.WARNING);
     } catch (RuntimeException e) {
       logger.error("RuntimeException while pushing repository changes", e);
