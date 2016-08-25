@@ -1,0 +1,6 @@
+<error-response xmlns="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd">
+    <developer-message>Service Unavailable (HTTP 503).
+
+If this error persists, please contact Registry Service maintainers.
+</developer-message>
+</error-response>

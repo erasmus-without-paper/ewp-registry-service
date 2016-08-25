@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xml="http://www.w3.org/XML/1998/namespace"
+    xmlns:ewp="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
+    elementFormDefault="qualified"
+
+    targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-api-registry/tree/stable-v1"
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-registry/tree/stable-v1"
+>
+
+    <xs:import
+        namespace="http://www.w3.org/XML/1998/namespace"
+        schemaLocation="http://www.w3.org/2001/03/xml.xsd"
+    />
+
+    <xs:import
+        schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-architecture/stable-v1/common-types.xsd"
+        namespace="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
+    />
+
+    <xs:annotation>
+        <xs:documentation>
+            This schema is a part of the Erasmus Without Paper project. Before you start
+            using it, make sure you have read the general rules described here:
+
+            http://developers.erasmuswithoutpaper.eu/
+        </xs:documentation>
+    </xs:annotation>
+
+    <xs:element name="catalogue">
+        <xs:annotation>
+            <xs:documentation>
+                The EWP Registry catalogue response.
+
+                Most of the data published here is copied from the hosts' manifests, but the
+                data is additionally verified (and portions of it may be modified, removed or
+                transformed). The format is somewhat similar to the format of the manifest
+                files, but different in places.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="host" minOccurs="1" maxOccurs="unbounded">
+                    <xs:annotation>
+                        <xs:documentation>
+                            This element describes a single EWP Host.
+                        </xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element ref="ewp:admin-email" minOccurs="0" maxOccurs="unbounded"/>
+                            <xs:element ref="ewp:admin-notes" minOccurs="0" maxOccurs="1"/>
+                            <xs:element ref="apis-implemented" minOccurs="0" maxOccurs="1"/>
+                            <xs:element name="institutions-covered" minOccurs="0" maxOccurs="1">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        A list of HEIs (Higher Education Institutions) covered by this host. The hosts
+                                        states that all of its implemented institution-related APIs will be able to
+                                        understand requests regarding all institutions listed here.
+
+                                        IMPORTANT: A single institution can be covered by multiple hosts. E.g. If you
+                                        are looking for a particular API implementation for a particular institution,
+                                        then you MUST use both of these selectors in your XPath query. Also, keep in
+                                        mind, that a single API may be served in multiple versions, as described here:
+                                        https://github.com/erasmus-without-paper/ewp-specs-architecture/issues/6.
+
+                                        Note, that this element is not the same element as the one used in the
+                                        Discovery Manifest API (it has the same name, but a different namespace and
+                                        contents).
+                                    </xs:documentation>
+                                </xs:annotation>
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="hei-id" type="xs:string" minOccurs="0" maxOccurs="unbounded">
+                                            <xs:annotation>
+                                                <xs:documentation>
+                                                    SCHAC identifier of the HEI. If you don't use SCHAC identifiers, you will
+                                                    probably need to use the attached mapping (see `institutions` element described
+                                                    below).
+                                                </xs:documentation>
+                                            </xs:annotation>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="client-credentials-in-use" minOccurs="0" maxOccurs="1">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        A list of client credentials used by this host to make requests to
+                                        other EWP hosts in the name of all of the covered institutions.
+
+                                        Note, that this element is not the same element as the one used in the
+                                        Discovery Manifest API (it has the same name, but a different namespace and
+                                        contents).
+                                    </xs:documentation>
+                                </xs:annotation>
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="certificate" minOccurs="0" maxOccurs="unbounded">
+                                            <xs:annotation>
+                                                <xs:documentation>
+                                                    Identifies a client certificate which has been allowed to make requests within
+                                                    the network (in the name of the institutions listed in the adjacent
+                                                    `institutions-covered` element).
+
+                                                    Note, that this element has no content. Clients MUST use the `sha-256`
+                                                    attribute to match certificates.
+                                                </xs:documentation>
+                                            </xs:annotation>
+                                            <xs:complexType>
+                                                <xs:attribute name="sha-256" use="required">
+                                                    <xs:annotation>
+                                                        <xs:documentation>
+                                                            Certificate's SHA-256 digest (in HEX).
+                                                        </xs:documentation>
+                                                    </xs:annotation>
+                                                    <xs:simpleType>
+                                                        <xs:restriction base="xs:string">
+                                                            <xs:pattern value="[0-9a-f]{64}"/>
+                                                        </xs:restriction>
+                                                    </xs:simpleType>
+                                                </xs:attribute>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="institutions" minOccurs="1" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>
+                            The list of institutions referenced in the `host` sections above.
+
+                            The list is using the Manifest's XML namespace, but the actual data MAY come
+                            from other sources too.
+                        </xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element ref="hei" minOccurs="0" maxOccurs="unbounded"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="apis-implemented">
+        <xs:annotation>
+            <xs:documentation>
+                This section describes all APIs implemented by a particular EWP host.
+
+                Please note, that each API can be implemented a multiple number of times.
+                Usually, you will have only a single entry for each of your APIs, but there are
+                some use cases when serving two or more different versions of the same API is
+                desirable. More background and discussion here:
+                https://github.com/erasmus-without-paper/ewp-specs-architecture/issues/6
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:any namespace="##other" minOccurs="0" maxOccurs="unbounded" processContents="lax">
+                    <xs:annotation>
+                        <xs:documentation>
+                            Manifest entries for each of the APIs are defined in separate schemas, within
+                            repositories describing these APIs (usually in a file named `manifest-entry.xsd`).
+
+                            We encourage you to include non-EWP-related APIs too, if you think that other
+                            partners in the EWP Network might make use of them! It is RECOMMENDED (but NOT
+                            strictly required) that all such API descriptions extend the `ApiEntry`
+                            complexType defined in common-types.xsd schema:
+
+                            https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:any>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="hei">
+        <xs:annotation>
+            <xs:documentation>
+                Briefly describes a single Higher Education Institution (HEI).
+
+                These elements are listed in the Registry Service's cataloge, in order to allow the
+                clients to identify all the HEIs by various types of identifiers.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="other-id" minOccurs="0" maxOccurs="unbounded">
+                    <xs:annotation>
+                        <xs:documentation>
+                            SCHAC identifier (provided in the `id` attribute described below) is the
+                            primary HEI identifier, but manifest authors are encouraged to provide all
+                            identifiers they can think of. (Otherwise, other EWP Hosts may not be able to
+                            recognize their HEIs.)
+
+                            Note that there can be multiple IDs given, even within a single type. This
+                            won't happen often, but you should be aware of this. It is safer for the
+                            Registry to include both conflicting values (as they were found in the manifest
+                            files), than pick one at random.
+                        </xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:simpleContent>
+                            <xs:extension base="xs:string">
+                                <xs:attribute name="type" use="required">
+                                    <xs:annotation>
+                                        <xs:documentation>
+                                            Identifier type. Manifest authors are advised to use the types provided in the
+                                            enumeration (case sensitive), but custom identifier types are also allowed.
+                                        </xs:documentation>
+                                    </xs:annotation>
+                                    <xs:simpleType>
+                                        <xs:union>
+                                            <xs:simpleType>
+                                                <xs:restriction base="xs:string">
+                                                    <xs:enumeration value="previous-schac">
+                                                        <xs:annotation>
+                                                            <xs:documentation>
+                                                                A previously used SCHAC identifier. Manifest authors MUST provide all SCHAC
+                                                                identifiers their HEI have used in the past.
+
+                                                                https://github.com/erasmus-without-paper/ewp-specs-api-discovery/issues/4
+                                                            </xs:documentation>
+                                                        </xs:annotation>
+                                                    </xs:enumeration>
+                                                    <xs:enumeration value="pic">
+                                                        <xs:annotation>
+                                                            <xs:documentation>
+                                                                PIC identifier.
+
+                                                                https://ec.europa.eu/research/participants/portal/desktop/en/organisations/register.html
+                                                            </xs:documentation>
+                                                        </xs:annotation>
+                                                    </xs:enumeration>
+                                                    <xs:enumeration value="erasmus">
+                                                        <xs:annotation>
+                                                            <xs:documentation>
+                                                                Erasmus institutional code.
+                                                            </xs:documentation>
+                                                        </xs:annotation>
+                                                    </xs:enumeration>
+                                                </xs:restriction>
+                                            </xs:simpleType>
+                                            <xs:simpleType>
+                                                <xs:restriction base="xs:string">
+                                                    <xs:pattern value=".*">
+                                                        <xs:annotation>
+                                                            <xs:documentation>
+                                                                Manifest authors can also have any number of custom identifier types.
+                                                            </xs:documentation>
+                                                        </xs:annotation>
+                                                    </xs:pattern>
+                                                </xs:restriction>
+                                            </xs:simpleType>
+                                        </xs:union>
+                                    </xs:simpleType>
+                                </xs:attribute>
+                            </xs:extension>
+                        </xs:simpleContent>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="name" type="ewp:StringWithOptionalLang" minOccurs="1" maxOccurs="unbounded">
+                    <xs:annotation>
+                        <xs:documentation>
+                            The name of the institution. Multiple values may be provided, and in multiple
+                            languages.
+
+                            Note that there can be multiple names given even *for the same language*. This
+                            won't happen often, but you should be aware of this. It is safer for the
+                            Registry to include both such conflicting values (as they were found in the
+                            manifest files), than pick one at random.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:sequence>
+            <xs:attribute name="id" type="xs:string" use="required">
+                <xs:annotation>
+                    <xs:documentation>
+                        SCHAC identifier of this HEI. As described in the SCHAC documentation for the
+                        "schacHomeOrganization" element (e.g. "uw.edu.pl").
+
+                        This attribute is REQUIRED. Manifest authors need to acquire a proper SCHAC
+                        identifier for all HEIs they intend to add to their manifest (acquiring them
+                        manually is usually quite simple).
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>

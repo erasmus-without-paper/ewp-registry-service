@@ -1,0 +1,22 @@
+<mf:manifest
+    xmlns:mf="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/tree/stable-v4"
+    xmlns:r="https://github.com/erasmus-without-paper/ewp-specs-api-registry/tree/stable-v1"
+>
+    <r:apis-implemented>
+        <discovery version="4.0.0" xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/blob/stable-v4/manifest-entry.xsd">
+            <url>https://schowek.usos.edu.pl/w.rygielski/ewp/uw.edu.pl/manifest2.xml</url>
+        </discovery>
+    </r:apis-implemented>
+    <mf:institutions-covered xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-registry/tree/stable-v1">
+        <hei id="uw.edu.pl">
+            <other-id type="pic">999572294</other-id>
+            <other-id type="pic">999572295</other-id>
+            <other-id type="erasmus">PL WARSZAW01 (conflict)</other-id>
+            <other-id type="other">some other ID</other-id>
+            <name xml:lang="en">University of Warsaw</name>
+            <name xml:lang="en">University of Warsaw 2</name>
+            <name xml:lang="pl">Uniwersytet Warszawski</name>
+            <name>Uniwersytet Warszawski</name>
+        </hei>
+    </mf:institutions-covered>
+</mf:manifest>

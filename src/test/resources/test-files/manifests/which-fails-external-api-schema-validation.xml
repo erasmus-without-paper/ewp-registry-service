@@ -1,0 +1,26 @@
+<manifest
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/tree/stable-v4"
+    xmlns:r="https://github.com/erasmus-without-paper/ewp-specs-api-registry/tree/stable-v1"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://www.topografix.com/GPX/1/1
+        http://www.topografix.com/GPX/1/1/gpx.xsd
+    "
+>
+    <r:apis-implemented>
+        <discovery version="4.0.0" xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/blob/stable-v4/manifest-entry.xsd">
+            <url>https://example.com/which-fails-external-api-schema-validation.xml</url>
+        </discovery>
+        <gpx
+            xmlns="http://www.topografix.com/GPX/1/1"
+            creator="creator"
+            version="1.1"
+        >
+            <metadata>
+                <!-- This manifest contains an API entry with a valid xmlns (and a valid schemaLocation),
+                but its API entry fails validation of this external schema. -->
+                <time>invalid</time>
+            </metadata>
+        </gpx>
+    </r:apis-implemented>
+</manifest>

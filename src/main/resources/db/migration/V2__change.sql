@@ -1,0 +1,1 @@
+alter table MANIFEST_STATUS add column last_successful_attempt datetime default null;

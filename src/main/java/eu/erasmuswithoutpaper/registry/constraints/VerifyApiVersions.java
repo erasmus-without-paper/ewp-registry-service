@@ -1,0 +1,75 @@
+package eu.erasmuswithoutpaper.registry.constraints;
+
+import static org.joox.JOOX.$;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import eu.erasmuswithoutpaper.registry.common.Severity;
+import eu.erasmuswithoutpaper.registry.common.Utils;
+import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
+
+import org.joox.Match;
+import org.w3c.dom.Document;
+
+/**
+ * Scan the manifest for all the API namespaces which seem to originate from the EWP project and
+ * compare the <code>stable-*</code> branches with the <code>version</code> attributes.
+ *
+ * <p>
+ * For example, if the API's namespace contains the <code>/stable-v4/</code> string, but its
+ * <code>version</code> attribute starts with <code>"3."</code>, then a warning will be reported.
+ * </p>
+ */
+public class VerifyApiVersions implements ManifestConstraint {
+
+  @Override
+  public List<FailedConstraintNotice> filter(Document doc) {
+    List<FailedConstraintNotice> notices = new ArrayList<>();
+    Match root = $(doc).namespaces(KnownNamespace.prefixMap());
+
+    for (Match match : root.xpath("r:apis-implemented/*").each()) {
+      String namespaceUri = match.namespaceURI();
+      if (!namespaceUri.startsWith("https://github.com/erasmus-without-paper/")) {
+        /*
+         * Most probably, this API is not related to EWP. And, as such, it does not necessarily
+         * follow EWP namespace-naming rules. We will ignore this API.
+         */
+        continue;
+      }
+      Matcher pm = Pattern.compile(".*/stable-v([0-9]+).*").matcher(namespaceUri);
+      String expectedVersionPrefix;
+      if (!pm.matches()) {
+        // No "stable-*" sequence found.
+        if (namespaceUri.contains("/master")) {
+          // Most probably a draft API.
+          expectedVersionPrefix = "0.";
+        } else {
+          // Non-standard. We will ignore this API.
+          continue;
+        }
+      } else {
+        expectedVersionPrefix = pm.group(1) + ".";
+      }
+      if (!match.attr("version").startsWith(expectedVersionPrefix)) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<p>According to EWP's <a href='https://github.com/erasmus-without-paper/");
+        sb.append("ewp-specs-management#git-branches-and-xml-namespaces'>namespace-naming ");
+        sb.append("rules</a>, the version of your API in the <code>");
+        sb.append(Utils.escapeHtml(namespaceUri));
+        sb.append("</code> namespace should start with <code>");
+        sb.append(Utils.escapeHtml(expectedVersionPrefix));
+        sb.append("</code>, but <code>");
+        sb.append(Utils.escapeHtml(match.attr("version")));
+        sb.append("</code> found instead.</p>");
+        sb.append("<p>Note, that this check is applied only for API namespaces beginning ");
+        sb.append("with <code>https://github.com/erasmus-without-paper/</code>.</p>");
+        notices.add(new FailedConstraintNotice(Severity.WARNING, sb.toString()));
+      }
+    }
+    return notices;
+  }
+
+}

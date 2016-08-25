@@ -1,0 +1,52 @@
+<mf:manifest
+    xmlns:mf="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/tree/stable-v4"
+    xmlns:r="https://github.com/erasmus-without-paper/ewp-specs-api-registry/tree/stable-v1"
+>
+    <r:apis-implemented>
+        <discovery version="4.0.0" xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/blob/stable-v4/manifest-entry.xsd">
+            <url>https://schowek.usos.edu.pl/w.rygielski/ewp/ladok.se/manifest.xml</url>
+        </discovery>
+        <echo version="1.0.0" xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-echo/blob/stable-v1/manifest-entry.xsd">
+            <url>https://ladok.se/ewp/echo</url>
+        </echo>
+        <ladok-api xmlns="https://ladok.se/api/">
+            <something/>
+        </ladok-api>
+    </r:apis-implemented>
+    <mf:institutions-covered xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-registry/tree/stable-v1">
+        <hei id="lu.se">
+            <name xml:lang="en">Lund University</name>
+        </hei>
+        <hei id="hv.se">
+            <other-id type="national-swedish-hei-number">123</other-id>
+            <name xml:lang="en">University West</name>
+        </hei>
+        <hei id="uw.edu.pl">
+            <other-id type="pic">999572294</other-id>
+            <other-id type="erasmus">PL WARSZAW01</other-id>
+            <name xml:lang="en">University of Warsaw</name>
+        </hei>
+    </mf:institutions-covered>
+    <mf:client-credentials-in-use>
+        <mf:certificate>
+            MIIDNDCCAl2gAwIBAgIJAOqbFebPSm2TMA0GCSqGSIb3DQEBCwUAMHIxCzAJBgNV
+            BAYTAlBMMRQwEgYDVQQIDAtNYXpvd2llY2tpZTERMA8GA1UEBwwIV2Fyc3phd2Ex
+            DDAKBgNVBAoMA0VXUDEsMCoGA1UEAwwjU2FtcGxlIFJTQSAxNTM2IENlcnRpZmlj
+            YXRlIGZvciBFV1AwIBcNMTYwNjA5MjA0NDQxWhgPMjI5MDAzMjUyMDQ0NDFaMHIx
+            CzAJBgNVBAYTAlBMMRQwEgYDVQQIDAtNYXpvd2llY2tpZTERMA8GA1UEBwwIV2Fy
+            c3phd2ExDDAKBgNVBAoMA0VXUDEsMCoGA1UEAwwjU2FtcGxlIFJTQSAxNTM2IENl
+            cnRpZmljYXRlIGZvciBFV1Awgd8wDQYJKoZIhvcNAQEBBQADgc0AMIHJAoHBAM1W
+            NjjX6aZAiL5huAEFfIxvLhKXaoOFmfuUUwNXW9lKKTgBw7B44BMcLHKiFny7yFhq
+            QgVnMW5UITdAraowxiZk6l/qYVALaoVwHwQPnE8TE/kQ3EHhzBXhr4RGtDAJWsE4
+            F+GK3parfCN6lxZIx1EeRc2Wi+TmEr7GxQduVEP0Qi2pT+8mKFhWxWMbTFIrWPW+
+            RVQCo1oKtpJevAKCi+GKMX81Wl1TBlNqCep/TcR8Q+7abbIt3EjSlC9WeSbhhQID
+            AQABo1AwTjAdBgNVHQ4EFgQUjownQ37xOEMzYvLe5V/NlASi/yUwHwYDVR0jBBgw
+            FoAUjownQ37xOEMzYvLe5V/NlASi/yUwDAYDVR0TBAUwAwEB/zANBgkqhkiG9w0B
+            AQsFAAOBwQBHV72G1H2ntBRxRWG/r2HcRf+Cjx0jh4WuX0It6pQXX6X6db05kWxh
+            XvjEExzkY0PE1GtHinw4FkYNDx61yUUrdO0LzEqWSd4QoWTyZIDcDkVqVW/Hm0yK
+            c4FIHzOvK/4Uq/HoTuQA4BXVwGxM0SLspUqGQRGBKC+GRJD0i4QgKEaORUtpXJMp
+            83IMuHIIGvdHLHL2S3dQmX0adnQvI2yv2XvDCaIvL6pHZntlU1KP5qqbykLtduLI
+            bjnV3cZbFuA=
+        </mf:certificate>
+    </mf:client-credentials-in-use>
+</mf:manifest>

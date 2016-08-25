@@ -1,0 +1,13 @@
+<xml xmlns:x="urn:x" other="other" xmlns="urn:something">
+    <x:elem attr="a"> <empty-elem attr='a' /> </x:elem>
+    <elem attr1="a" attr2='b' xmlns="urn:something">
+        <x:empty-elem attr1="a" attr2="b"/>
+
+
+    </elem>
+    <elem attr1="a" attr2='b' xmlns="urn:something-else">
+        <x:empty-elem attr1="a" attr2="b"/>
+        <not-so-empty> </not-so-empty>
+        <really-not-so-empty> x </really-not-so-empty>
+    </elem>
+</xml>

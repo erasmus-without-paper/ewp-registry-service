@@ -1,0 +1,6 @@
+<error-response xmlns="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd">
+    <developer-message>Internal Server Error (HTTP 500).
+
+If this error persists, please contact Registry Service maintainers.
+</developer-message>
+</error-response>

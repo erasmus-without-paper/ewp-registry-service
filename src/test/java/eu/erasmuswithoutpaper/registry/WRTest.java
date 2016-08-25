@@ -1,0 +1,52 @@
+package eu.erasmuswithoutpaper.registry;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import org.apache.commons.io.IOUtils;
+import org.junit.runner.RunWith;
+
+/**
+ * A common test class to extend. Should be used for all unit tests.
+ */
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringApplicationConfiguration(Application.class)
+@ActiveProfiles("test")
+public abstract class WRTest {
+
+  @Autowired
+  private ResourceLoader res;
+
+  /**
+   * Quick way of fetching files from resources.
+   *
+   * @param filename A path relative to "test-files" directory. The file must exist.
+   * @return The contents of the file.
+   */
+  protected byte[] getFile(String filename) {
+    try {
+      return IOUtils
+          .toByteArray(this.res.getResource("classpath:test-files/" + filename).getInputStream());
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  /**
+   * Same as {@link #getFile(String)}, but converts the file to String.
+   *
+   * @param filename as in {@link #getFile(String)}.
+   * @return Contents transformed to a string (with UTF-8 encoding).
+   */
+  protected String getFileAsString(String filename) {
+    byte[] bytes = this.getFile(filename);
+    return new String(bytes, StandardCharsets.UTF_8);
+  }
+
+}

@@ -1,0 +1,9 @@
+To: bob@example.com
+Subject: EWP Status Update
+
+All problems seem to be resolved now! We will notify you if they return.
+
+
+-- 
+EWP Registry Service
+https://localhost:8080/

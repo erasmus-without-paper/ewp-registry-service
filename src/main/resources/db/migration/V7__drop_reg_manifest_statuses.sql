@@ -1,0 +1,1 @@
+drop table REG_MANIFEST_STATUSES;

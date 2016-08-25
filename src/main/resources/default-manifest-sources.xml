@@ -1,0 +1,4 @@
+<manifest-sources>
+    <!-- This is the default content of the manifest-sources.xml file (used
+    when `app.manifest-sources.url` property doesn't get overriden. -->
+</manifest-sources>

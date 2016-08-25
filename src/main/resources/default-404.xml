@@ -1,0 +1,7 @@
+<error-response xmlns="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd">
+    <developer-message>Page not found (HTTP 404).
+
+Please consult Registry API specification:
+https://github.com/erasmus-without-paper/ewp-specs-api-registry
+</developer-message>
+</error-response>

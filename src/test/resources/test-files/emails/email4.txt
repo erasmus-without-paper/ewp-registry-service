@@ -1,0 +1,15 @@
+To: john@example.com
+Subject: EWP Status Update
+
+Severity status has changed, but problems still exist.
+
+Current severity status is "Warning". You will not receive further
+notifications unless this status changes.
+
+Visit your status page for details:
+https://localhost:8080/status?email=john%40example.com
+
+
+-- 
+EWP Registry Service
+https://localhost:8080/
