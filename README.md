@@ -57,10 +57,20 @@ You will need to create an empty (`git init`) repository somewhere (e.g. in
 keep track of all the changes to the remote manifest files. In production
 environment, it will also be pushed onto a publicly-accessible GitHub fork.
 
-If you intend to set `app.repo.enable-pushing` to `true`, then your repository
-should have `master` and `origin/master` branches, and your `.ssh` directory
-should contain keys which should enable you to execute `git push` in a
-non-interactive way.
+If you intend to set `app.repo.enable-pushing` to `true`, then you will need to
+perform some additional steps:
+
+ * Your `/etc/ssh/ssh_config` needs to have its `HashKnownHosts` settings set
+   to `no`. This is due to the fact that jsch/jgit does not accept a
+   `known_hosts` file in the hashed format.
+
+ * Your user's `.ssh` directory needs to contain keys which should enable you
+   to execute `git push` in a non-interactive way.
+
+ * Your repository needs to have the proper `origin` remote preconfigured, and
+   local `origin/master` branch must exist.
+
+ * The `master` branch needs to be checked out.
 
 
 ### Prepare the `application.properties` file
