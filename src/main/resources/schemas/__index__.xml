@@ -4,7 +4,7 @@
         uri="xml.xsd" />
     <uri
         name="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
-        uri="ewp-specs-architecture-v1.2.1/common-types.xsd" />
+        uri="ewp-specs-architecture-v1.2.3/common-types.xsd" />
     <uri
         name="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/blob/stable-v4/manifest-entry.xsd"
         uri="ewp-specs-api-discovery-v4.0.1/manifest-entry.xsd" />
@@ -13,10 +13,10 @@
         uri="ewp-specs-api-discovery-v4.0.1/manifest.xsd" />
     <uri
         name="https://github.com/erasmus-without-paper/ewp-specs-api-echo/blob/stable-v1/manifest-entry.xsd"
-        uri="ewp-specs-api-echo-v1.0.0/manifest-entry.xsd" />
+        uri="ewp-specs-api-echo-v1.0.1/manifest-entry.xsd" />
     <uri
         name="https://github.com/erasmus-without-paper/ewp-specs-api-echo/tree/stable-v1"
-        uri="ewp-specs-api-echo-v1.0.0/response.xsd" />
+        uri="ewp-specs-api-echo-v1.0.1/response.xsd" />
     <uri
         name="https://github.com/erasmus-without-paper/ewp-specs-api-registry/blob/stable-v1/manifest-entry.xsd"
         uri="ewp-specs-api-registry-v1.0.2/manifest-entry.xsd" />
