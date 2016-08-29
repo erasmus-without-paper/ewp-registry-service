@@ -15,14 +15,14 @@ public class KnownElement {
    * The root of the Discovery API v4 response.
    */
   public static final KnownElement RESPONSE_MANIFEST_V4 =
-      new KnownElement(KnownNamespace.RESPONSE_MANIFEST_V4, "manifest");
+      new KnownElement(KnownNamespace.RESPONSE_MANIFEST_V4, "manifest", "Discovery Manifest file");
 
 
   /**
    * The root of the Registry API v1 catalogue response.
    */
-  public static final KnownElement RESPONSE_REGISTRY_V1_CATALOGUE =
-      new KnownElement(KnownNamespace.RESPONSE_REGISTRY_V1, "catalogue");
+  public static final KnownElement RESPONSE_REGISTRY_V1_CATALOGUE = new KnownElement(
+      KnownNamespace.RESPONSE_REGISTRY_V1, "catalogue", "Registry Service <catalogue> response");
 
   /**
    * The root of the common &lt;error-response/&gt;, as defined in the
@@ -30,14 +30,25 @@ public class KnownElement {
    * document</a>.
    */
   public static final KnownElement COMMON_ERROR_RESPONSE =
-      new KnownElement(KnownNamespace.COMMON_TYPES_V1, "error-response");
+      new KnownElement(KnownNamespace.COMMON_TYPES_V1, "error-response", "Generic Error Response");
 
   private final KnownNamespace namespace;
   private final String elementName;
+  private final String humanReadableName;
 
-  private KnownElement(KnownNamespace namespace, String elementName) {
+  private KnownElement(KnownNamespace namespace, String elementName, String humanReadableName) {
     this.namespace = namespace;
     this.elementName = elementName;
+    this.humanReadableName = humanReadableName;
+  }
+
+  /**
+   * @return Plain-text, human-readable name for this element, e.g.
+   *         <code>"Discovery Manifest file"</code>, or
+   *         <code>"Registry &lt;catalogue&gt; response"</code>.
+   */
+  public String getHumanReadableName() {
+    return this.humanReadableName;
   }
 
   /**
