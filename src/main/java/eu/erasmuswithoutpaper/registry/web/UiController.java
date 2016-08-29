@@ -3,9 +3,14 @@ package eu.erasmuswithoutpaper.registry.web;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import eu.erasmuswithoutpaper.registry.Application;
 import eu.erasmuswithoutpaper.registry.common.Utils;
+import eu.erasmuswithoutpaper.registry.documentbuilder.BuildError;
+import eu.erasmuswithoutpaper.registry.documentbuilder.BuildParams;
+import eu.erasmuswithoutpaper.registry.documentbuilder.BuildResult;
+import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
 import eu.erasmuswithoutpaper.registry.notifier.NotifierFlag;
 import eu.erasmuswithoutpaper.registry.notifier.NotifierService;
 import eu.erasmuswithoutpaper.registry.sourceprovider.ManifestSource;
@@ -24,8 +29,15 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.google.common.collect.Lists;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import org.ocpsoft.prettytime.PrettyTime;
 
 /**
@@ -40,6 +52,7 @@ public class UiController {
   private final RegistryUpdater updater;
   private final NotifierService notifier;
   private final UptimeChecker uptimeChecker;
+  private final EwpDocBuilder docBuilder;
 
   /**
    * @param taskExecutor needed for running background tasks.
@@ -48,17 +61,20 @@ public class UiController {
    * @param updater needed to perform on-demand manifest updates.
    * @param notifier needed to retrieve issues watched by particular recipients.
    * @param uptimeChecker needed to display current uptime stats.
+   * @param docBuilder needed to support online document validation service.
    */
   @Autowired
   public UiController(TaskExecutor taskExecutor,
       ManifestUpdateStatusRepository manifestUpdateStatuses, ManifestSourceProvider sourceProvider,
-      RegistryUpdater updater, NotifierService notifier, UptimeChecker uptimeChecker) {
+      RegistryUpdater updater, NotifierService notifier, UptimeChecker uptimeChecker,
+      EwpDocBuilder docBuilder) {
     this.taskExecutor = taskExecutor;
     this.manifestStatusRepo = manifestUpdateStatuses;
     this.sourceProvider = sourceProvider;
     this.updater = updater;
     this.notifier = notifier;
     this.uptimeChecker = uptimeChecker;
+    this.docBuilder = docBuilder;
   }
 
   /**
@@ -296,6 +312,69 @@ public class UiController {
     }
     sb.append("</pre>");
     return new ResponseEntity<String>(sb.toString(), headers, HttpStatus.OK);
+  }
+
+  /**
+   * Validate a supplied XML document against all known EWP schemas.
+   *
+   * <p>
+   * This is not part of the API and can be removed later on.
+   * </p>
+   *
+   * @param xml The XML to be validated.
+   * @return An undocumented JSON object with the results of the validation (not guaranteed to stay
+   *         backward compatible).
+   */
+  @RequestMapping(path = "/validate", params = "xml", method = RequestMethod.POST)
+  public ResponseEntity<String> validateXml(@RequestParam String xml) {
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
+    headers.setCacheControl("max-age=0, must-revalidate");
+    headers.setExpires(0);
+    headers.setAccessControlAllowOrigin("http://developers.erasmuswithoutpaper.eu");
+
+    BuildParams params = new BuildParams(xml);
+    params.setPretty(true);
+
+    // root
+    BuildResult result1 = this.docBuilder.build(params);
+    JsonObject result2 = new JsonObject();
+
+    // isValid
+    result2.addProperty("isValid", result1.isValid());
+    JsonArray errors2 = new JsonArray();
+
+    // rootLocalName, rootNamespaceUri
+    result2.addProperty("rootLocalName", result1.getRootLocalName());
+    result2.addProperty("rootNamespaceUri", result1.getRootNamespaceUri());
+
+    // errors
+    result2.add("errors", errors2);
+    for (BuildError error1 : result1.getErrors()) {
+      JsonObject error2 = new JsonObject();
+      error2.addProperty("lineNumber", error1.getLineNumber());
+      error2.addProperty("message", error1.getMessage());
+      errors2.add(error2);
+    }
+
+    // prettyLines
+    List<String> prettyLines1 = result1.getPrettyLines().orElseGet(new Supplier<List<String>>() {
+      @Override
+      public List<String> get() {
+        return Lists.newArrayList();
+      }
+    });
+    JsonArray prettyLines2 = new JsonArray();
+    result2.add("prettyLines", prettyLines2);
+    for (String line : prettyLines1) {
+      prettyLines2.add(new JsonPrimitive(line));
+    }
+
+    // Format the result.
+    Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    String json = gson.toJson(result2);
+    return new ResponseEntity<String>(json, headers, HttpStatus.OK);
   }
 
   /**

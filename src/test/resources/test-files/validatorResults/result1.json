@@ -1,0 +1,32 @@
+{
+  "isValid": false,
+  "rootLocalName": "echo",
+  "rootNamespaceUri": "https://github.com/erasmus-without-paper/ewp-specs-api-echo/blob/stable-v1/manifest-entry.xsd",
+  "errors": [
+    {
+      "lineNumber": 4,
+      "message": "cvc-complex-type.3.2.2: Attribute \u0027someOtherAttribute\u0027 is not allowed to appear in element \u0027echo\u0027."
+    },
+    {
+      "lineNumber": 4,
+      "message": "cvc-complex-type.4: Attribute \u0027version\u0027 must appear on element \u0027echo\u0027."
+    },
+    {
+      "lineNumber": 5,
+      "message": "cvc-pattern-valid: Value \u0027http://example.com/\u0027 is not facet-valid with respect to pattern \u0027https://.+\u0027 for type \u0027HTTPS\u0027."
+    },
+    {
+      "lineNumber": 5,
+      "message": "cvc-type.3.1.3: The value \u0027http://example.com/\u0027 of element \u0027url\u0027 is not valid."
+    }
+  ],
+  "prettyLines": [
+    "\u003cecho",
+    "    xmlns\u003d\"https://github.com/erasmus-without-paper/ewp-specs-api-echo/blob/stable-v1/manifest-entry.xsd\"",
+    "    someOtherAttribute\u003d\"value\"",
+    "\u003e",
+    "    \u003curl\u003ehttp://example.com/\u003c/url\u003e",
+    "\u003c/echo\u003e",
+    ""
+  ]
+}
