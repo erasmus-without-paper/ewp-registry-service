@@ -13,27 +13,40 @@ pages instead:
  * [Registry API specification][registry-api].
 
 
-Running the Registry Service
-----------------------------
+Running from a Docker Image
+---------------------------
 
-### Build the jar
+### Pull the image
 
-First, build the application jar. In the root directory of the checked-out
-project, do this:
+Currently, we are pushing out latest builds to [this Docker Hub repository]
+[docker-repo].
 
 ```sh
-mvn package
+docker pull wrygiel/ewp-registry-service
 ```
 
-If you're having problems then you might try adding `-DskipTests` argument.
-Application jar should be stored to `target/ewp-registry-<version>.jar`.
+(You will need to repeat this step whenever you want to upgrade too.)
+
+
+### Prepare the data volume
+
+First, you will need to prepare a directory where you will keep the container's
+settings and data. Let's say it's `/var/ewp-registry-service`.
+
+```sh
+mkdir /var/ewp-registry-service
+```
 
 
 ### Prepare the `manifest-sources.xml` file
 
+```sh
+vi /var/ewp-registry-service/manifest-sources.xml
+```
+
 The application will load the list of manifest locations from this file. The
-file has no namespace nor schema, and its format **will change in the future**.
-Currently, we expect the file to look like this:
+file has no namespace nor schema, and its format and location **may change in
+the future**. Currently, we expect the file to look like this:
 
 ```xml
 <manifest-sources>
@@ -52,60 +65,66 @@ Currently, we expect the file to look like this:
 
 ### Prepare the Git repository
 
-You will need to create an empty (`git init`) repository somewhere (e.g. in
-`/var/ewp-registry-service/repo` directory). This repository will be used to
-keep track of all the changes to the remote manifest files. In production
-environment, it will also be pushed onto a publicly-accessible GitHub fork.
+It needs to be placed in `/root/repo` directory of the container. It's best if
+you prepare it via the container's shell (because its SSH client is configured
+to work along with the JGit library we use in the app itself):
 
-If you intend to set `app.repo.enable-pushing` to `true`, then you will need to
-perform some additional steps:
+```sh
+docker run --rm -it --entrypoint=bash -v /var/ewp-registry-service:/root \
+    wrygiel/ewp-registry-service
+```
 
- * Your `/etc/ssh/ssh_config` needs to have its `HashKnownHosts` settings set
-   to `no`. This is due to the fact that jsch/jgit does not accept a
-   `known_hosts` file in the hashed format.
+You will need to either create an empty Git repository (`git init repo`), or
+pull an existing *and trusted* one (`git clone URL repo`).
 
- * Your user's `.ssh` directory needs to contain keys which should enable you
-   to execute `git push` in a non-interactive way.
+This repository will be used to keep track of all the changes to the remote
+manifest files. In production environment, it will also be pushed onto a
+publicly-accessible GitHub fork.
+
+If you intend to set `app.repo.enable-pushing` to `true` (see
+`application.properties`), then you will need to perform some additional steps:
 
  * Your repository needs to have the proper `origin` remote preconfigured, and
    local `origin/master` branch must exist.
 
- * The `master` branch needs to be checked out.
+ * The `master` branch must exist and needs to be checked out.
+
+ * You should perform some test pulls as pushes in order to make sure that the
+   `/root/.ssh` directory contains all the keys and credentials needed to
+   execute `git push` in a **non-interactive way**.
 
 
 ### Prepare the `application.properties` file
 
-There are [many ways][spring-config] to pass parameters to the application, but
-putting them into the `application.properties` file seems the easiest. The file
-should reside in the same directory in which you will be executing your jar.
-
-Your `application.properties` file will look like this:
+Your `/var/ewp-registry-service/application.properties` file should look
+something like this:
 
 ```properties
-spring.profile.active=production (OR development)
+spring.profiles.active=production
+app.admin-emails=admin@example.com, another-admin@example.com
+spring.mail.host=123.124.125.126
+```
 
-app.repo.path=/var/ewp-registry-service/repo
-app.manifest-sources.url=file:///var/ewp-registry-service/manifest-sources.xml
-spring.datasource.url=jdbc:h2:/var/ewp-registry-service/db
+In development, you might want to override some more settings, e.g.
 
-app.admin-emails=email,email,email
-...
+```properties
+spring.profiles.active=development
+spring.datasource.url=jdbc:h2:mem:testdb
+app.admin-emails=developer@example.com
+app.root-url=http://localhost:8080
+app.repo.enable-pushing=false
+spring.mail.test-connection=false
+
+# if running outside of docker
+app.repo.path=/users/me/ewp-registry-service/var/repo
 ```
 
 **Things you should now:**
 
  * Brief descriptions (and default values) of all these properties can be found
-   in the `application.properties` file [here][props]. Note, that these default
-   values can get [overridden][spring-config] by *other* "less default" values,
-   based on the value of `spring.profiles.active` property - if you set it to
-   `development`, then default values of other properties will be loaded from
-   [application-development.properties][devel-props] instead of
-   [application.properties][props].
-
- * You might need to set more properties than the ones above, depending on your
-   environment. The opposite is also true, for example, it is not required to
-   set `spring.datasource.url` nor `app.admin-emails` if
-   `spring.profiles.active` is set to `development`.
+   in the `application.properties` file [here][props]. Depending on your
+   environment, you might need to set more properties than the ones mentioned
+   above.
 
  * Use the `development` profile if you want to make sure that the application
    won't send any email notifications to anyone.
@@ -113,11 +132,51 @@ app.admin-emails=email,email,email
 
 ### Run the application
 
+The container will be serving a HTTP service at port 8080.
+
+In production, you will need to wrap the service up in HTTPS, e.g. by
+forwarding it to nginx. You will also probably want to make use of docker's
+`--restart=always` argument.
+
+In development, you may start it directly:
+
+```sh
+docker run --rm -it -v /var/ewp-registry-service:/root -p 80:8080 \
+    wrygiel/ewp-registry-service
+```
+
+
+Running outside of docker
+-------------------------
+
+### Build the jar
+
+First, build the application jar. In the root directory of the checked-out
+project, do this:
+
+```sh
+mvn package
+```
+
+If you're having problems then you might try adding `-DskipTests` argument.
+Application jar should be stored to `target/ewp-registry-<version>.jar`.
+
+
+### Prepare the environment
+
+The `application.properties` file should be saved in the `.` directory. You
+will needed to fill it out in a similar way as it has been described above for
+Docker, but you will need to provide more data (as the defaults are set up for
+Docker runs).
+
+
+### Run the application
+
+Web server is embedded in the jar, so you run it like this:
+
 ```sh
 java -jar target/ewp-registry-<version>.jar
 ```
-
-The `application.properties` file should be saved in the `.` directory.
 
 
 Versioning strategy
@@ -150,3 +209,4 @@ our releases:
 [props]: https://github.com/erasmus-without-paper/ewp-registry-service/blob/master/src/main/resources/application.properties
 [devel-props]: https://github.com/erasmus-without-paper/ewp-registry-service/blob/master/src/main/resources/application-development.properties
 [spring-config]: http://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-external-config.html
+[docker-repo]: https://hub.docker.com/r/wrygiel/ewp-registry-service/

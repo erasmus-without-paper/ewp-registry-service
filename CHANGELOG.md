@@ -1,6 +1,15 @@
 Release notes
 =============
 
+1.2.0-SNAPSHOT
+--------------
+
+*Unreleased.*
+
+ * New deployment method (via Docker Hub).
+ * Due to the changed deployment method, default values of lots of properties
+   were changed. You will need to tweak your settings before this update.
+
 
 1.1.0
 -----

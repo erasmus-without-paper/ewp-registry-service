@@ -1,0 +1,10 @@
+#
+# For EWP Registry Service to work correctly, HashKnownHosts needs to be set to
+# "no". This is due to the fact that jsch/jgit does not accept a `known_hosts`
+# file in the hashed format.
+#
+Host *
+    SendEnv LANG LC_*
+    HashKnownHosts no
+    GSSAPIAuthentication yes
+    GSSAPIDelegateCredentials no
