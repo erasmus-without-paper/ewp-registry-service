@@ -1,10 +1,10 @@
 Release notes
 =============
 
-1.2.0-SNAPSHOT
---------------
+1.2.0
+-----
 
-*Unreleased.*
+*Released on 2016-09-08*
 
  * New deployment method (via Docker Hub).
  * Due to the changed deployment method, default values of lots of properties
