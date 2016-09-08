@@ -41,6 +41,8 @@ import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.joox.Match;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 /**
@@ -54,6 +56,8 @@ import org.xml.sax.SAXException;
  */
 @Service
 public class ManifestRepositoryImpl implements ManifestRepository {
+
+  private static final Logger logger = LoggerFactory.getLogger(ManifestRepositoryImpl.class);
 
   private final ManifestRepositoryImplProperties repoProperties;
   private final Git git;
@@ -114,6 +118,7 @@ public class ManifestRepositoryImpl implements ManifestRepository {
         PersonIdent committer = new PersonIdent(this.repoProperties.getCommitterName(),
             this.repoProperties.getCommitterEmail());
         this.git.commit().setMessage(message).setAuthor(committer).setCommitter(committer).call();
+        logger.info("New commit saved: " + message);
         return true;
       } else {
         return false;
@@ -355,6 +360,7 @@ public class ManifestRepositoryImpl implements ManifestRepository {
         }
         try {
           this.git.push().call();
+          logger.info("Successfully pushed to origin");
           return true;
         } catch (TransportException e) {
           throw e;
