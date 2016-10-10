@@ -34,7 +34,7 @@ public interface ManifestRepository extends DisposableBean {
 
   /** Thrown when repository is misconfigured. */
   @SuppressWarnings("serial")
-  public static class ConfigurationException extends Exception {
+  class ConfigurationException extends Exception {
     ConfigurationException(String message) {
       super(message);
     }
@@ -48,7 +48,7 @@ public interface ManifestRepository extends DisposableBean {
    * released. You MUST release the lock after you make your changes (use try..finally).
    * </p>
    */
-  public void acquireWriteLock();
+  void acquireWriteLock();
 
   /**
    * Take all the changes made since the previous revision, and commit them with the proper message.
@@ -62,7 +62,7 @@ public interface ManifestRepository extends DisposableBean {
    * @return <b>true</b> if something was indeed committed (changed), <b>false</b> if no changes
    *         since the previous revision were detected in the working copy.
    */
-  public boolean commit(String message);
+  boolean commit(String message);
 
   /**
    * Remove a manifest from the repository (both the original and the filtered versions).
@@ -75,7 +75,7 @@ public interface ManifestRepository extends DisposableBean {
    * @return <b>true</b> if the manifest has been deleted, <b>false</b> if it didn't exist in the
    *         first place.
    */
-  public boolean deleteManifest(String urlString);
+  boolean deleteManifest(String urlString);
 
   /**
    * Retrieve the list of all manifest URLs which are currently stored in the repository. The URLs
@@ -84,7 +84,7 @@ public interface ManifestRepository extends DisposableBean {
    *
    * @return A List of URL strings.
    */
-  public List<String> getAllFilteredManifestUrls();
+  List<String> getAllFilteredManifestUrls();
 
   /**
    * Retrieve the current catalogue contents from repository's working copy.
@@ -92,7 +92,7 @@ public interface ManifestRepository extends DisposableBean {
    * @return A string with the catalogue contents.
    * @throws CatalogueNotFound when no catalogue has been put in the repository yet.
    */
-  public String getCatalogue() throws CatalogueNotFound;
+  String getCatalogue() throws CatalogueNotFound;
 
   /**
    * Retrieve the <b>filtered</b> manifest contents from repository's working copy.
@@ -105,7 +105,7 @@ public interface ManifestRepository extends DisposableBean {
    * @return A string with the manifest contents, as stored in the repository.
    * @throws ManifestNotFound when no manifest for the given URL was found in the repository.
    */
-  public String getManifestFiltered(String urlString) throws ManifestNotFound;
+  String getManifestFiltered(String urlString) throws ManifestNotFound;
 
   /**
    * Retrieve the <b>original</b> manifest contents from repository's working copy.
@@ -118,7 +118,7 @@ public interface ManifestRepository extends DisposableBean {
    * @return A string with the manifest contents, as stored in the repository.
    * @throws ManifestNotFound when no manifest for the given URL was found in the repository.
    */
-  public byte[] getManifestOriginal(String urlString) throws ManifestNotFound;
+  byte[] getManifestOriginal(String urlString) throws ManifestNotFound;
 
   /**
    * Push all committed changes to the remote repository, for logging purposes.
@@ -129,7 +129,7 @@ public interface ManifestRepository extends DisposableBean {
    * @throws GitAPIException When changes cannot be pushed for some other reason (serious).
    * @throws ConfigurationException When pushing is enabled, but not configured properly.
    */
-  public boolean push() throws TransportException, GitAPIException, ConfigurationException;
+  boolean push() throws TransportException, GitAPIException, ConfigurationException;
 
   /**
    * Store the new version of the catalogue.
@@ -141,7 +141,7 @@ public interface ManifestRepository extends DisposableBean {
    * @param contents A string with the catalogue contents to be stored.
    * @return <b>true</b> if the new content differs from the previous one.
    */
-  public boolean putCatalogue(String contents);
+  boolean putCatalogue(String contents);
 
   /**
    * Store a new filtered version of the manifest.
@@ -155,7 +155,7 @@ public interface ManifestRepository extends DisposableBean {
    * @param filteredContents A string with the filtered contents of the manifest.
    * @return <b>true</b> if the new content differs from the previous one.
    */
-  public boolean putFilteredManifest(String urlString, String filteredContents);
+  boolean putFilteredManifest(String urlString, String filteredContents);
 
   /**
    * Store a new original version of the manifest.
@@ -169,10 +169,10 @@ public interface ManifestRepository extends DisposableBean {
    * @param originalContents A string with the original contents of the manifest.
    * @return <b>true</b> if the new content differs from the previous one.
    */
-  public boolean putOriginalManifest(String urlString, byte[] originalContents);
+  boolean putOriginalManifest(String urlString, byte[] originalContents);
 
   /**
    * Release the lock previously acquired with {@link #acquireWriteLock()}.
    */
-  public void releaseWriteLock();
+  void releaseWriteLock();
 }

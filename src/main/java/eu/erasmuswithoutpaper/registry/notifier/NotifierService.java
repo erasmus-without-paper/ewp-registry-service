@@ -194,7 +194,8 @@ public class NotifierService {
       if (prevStatus.equals(Severity.OK)) {
         // From OK to WARNING or ERROR.
         sb.append("Hello " + email + ",\n\n");
-        sb.append(this.instanceName + " has reported problems in regard to one (or more)\n");
+        sb.append(this.instanceName);
+        sb.append(" has reported problems in regard to one (or more)\n");
         sb.append("of the topics you've been assigned to.\n\n");
       } else {
         if (worstDeterminedStatus.isMoreSevereThan(prevStatus)) {
@@ -227,13 +228,16 @@ public class NotifierService {
         sb.append("notifications unless this status changes.\n\n");
         sb.append("Visit your status page for details:\n");
 
-        sb.append(Application.getRootUrl() + "/status?email=");
+        sb.append(Application.getRootUrl());
+        sb.append("/status?email=");
         sb.append(Utils.urlencode(email));
         sb.append("\n\n");
       }
       sb.append("\n-- \n");
-      sb.append(this.instanceName + "\n");
-      sb.append(Application.getRootUrl() + "/\n");
+      sb.append(this.instanceName);
+      sb.append('\n');
+      sb.append(Application.getRootUrl());
+      sb.append("/\n");
       String contents = sb.toString();
 
       logger.info("Sending \"" + worstDeterminedStatus.toString() + "\" notification to " + email);

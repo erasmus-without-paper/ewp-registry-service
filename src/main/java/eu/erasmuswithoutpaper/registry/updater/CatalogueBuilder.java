@@ -156,9 +156,6 @@ class CatalogueBuilder {
             // Find the set of all names declared for this language.
 
             String lang = name.get(0).getAttributeNS(XMLConstants.XML_NS_URI, "lang");
-            if (lang == null) {
-              lang = ""; // no xml:lang specified
-            }
             if (!langNameSets.containsKey(lang)) {
               langNameSets.put(lang, new TreeSet<>());
             }
@@ -205,7 +202,8 @@ class CatalogueBuilder {
 
     // For each of the institutions found in the manifests...
 
-    for (String heiId : heiLangNameSets.keySet()) {
+    for (Map.Entry<String, Map<String, Set<String>>> entry : heiLangNameSets.entrySet()) {
+      String heiId = entry.getKey();
 
       // Append a new <hei id='...'> element to <institutions>.
 
@@ -216,25 +214,26 @@ class CatalogueBuilder {
       // For each type of <other-id> used for this HEI (among all the manifests)...
 
       Map<String, Set<String>> idTypeSets = heiIdTypeSets.get(heiId);
-      for (String idType : idTypeSets.keySet()) {
+      for (Map.Entry<String, Set<String>> entry2 : idTypeSets.entrySet()) {
 
         // Create an <other-id> element for each unique ID used.
 
-        for (String id : idTypeSets.get(idType)) {
+        for (String id : entry2.getValue()) {
           Element otherId = this.newElem("other-id", id);
           hei.appendChild(otherId);
-          otherId.setAttribute("type", idType);
+          otherId.setAttribute("type", entry2.getKey());
         }
       }
 
       // For each language of <name> used for this HEI (among all the manifests)...
 
-      Map<String, Set<String>> langNameSets = heiLangNameSets.get(heiId);
-      for (String lang : langNameSets.keySet()) {
+      Map<String, Set<String>> langNameSets = entry.getValue();
+      for (Map.Entry<String, Set<String>> entry3 : langNameSets.entrySet()) {
+        String lang = entry3.getKey();
 
         // Create a <name> element for each unique name used.
 
-        for (String nameUsed : langNameSets.get(lang)) {
+        for (String nameUsed : entry3.getValue()) {
           Element name = this.newElem("name", nameUsed);
           hei.appendChild(name);
           if (lang.length() > 0) {

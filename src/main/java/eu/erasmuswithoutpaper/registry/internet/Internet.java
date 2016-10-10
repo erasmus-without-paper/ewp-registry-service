@@ -23,7 +23,7 @@ public interface Internet {
    *         <li>etc.</li>
    *         </ul>
    */
-  public byte[] getUrl(String url) throws IOException;
+  byte[] getUrl(String url) throws IOException;
 
   /**
    * Enqueue an email for sending from the Registry Service to the given recipients. This method
@@ -34,5 +34,5 @@ public interface Internet {
    * @param subject This will be put into the "Subject" header of the email.
    * @param contents The contents of the email. Plain-text.
    */
-  public void queueEmail(List<String> recipients, String subject, String contents);
+  void queueEmail(List<String> recipients, String subject, String contents);
 }

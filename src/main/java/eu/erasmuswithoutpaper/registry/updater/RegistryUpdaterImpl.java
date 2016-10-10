@@ -104,10 +104,12 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
      */
 
     Set<ManifestSource> sources = Sets.newLinkedHashSet(this.manifestSourceProvider.getAll());
-    for (Iterator<ManifestSource> iter = this.notifierFlags.keySet().iterator(); iter.hasNext();) {
-      ManifestSource source = iter.next();
+    for (Iterator<Map.Entry<ManifestSource, ManifestUpdateStatusNotifierFlag>> iter =
+        this.notifierFlags.entrySet().iterator(); iter.hasNext();) {
+      Map.Entry<ManifestSource, ManifestUpdateStatusNotifierFlag> entry = iter.next();
+      ManifestSource source = entry.getKey();
       if (!sources.contains(source)) {
-        this.notifier.removeWatchedFlag(this.notifierFlags.get(source));
+        this.notifier.removeWatchedFlag(entry.getValue());
         iter.remove();
       }
     }
@@ -326,7 +328,6 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
   private void updateTheCatalogue(boolean commit) {
     this.repo.acquireWriteLock();
     try {
-      List<ManifestSource> skippedSources = new ArrayList<>();
       List<Document> manifests = new ArrayList<>();
 
       // For each manifest source...
@@ -343,7 +344,6 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
            * This may happen after new manifest sources are added, but the system wasn't able to
            * fetch them yet.
            */
-          skippedSources.add(src);
           continue;
         }
 

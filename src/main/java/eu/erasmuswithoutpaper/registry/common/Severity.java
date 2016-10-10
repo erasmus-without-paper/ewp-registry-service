@@ -13,7 +13,7 @@ public class Severity {
    * See {@link Severity#isMoreSevereThan(Severity)}.
    */
   @SuppressWarnings("serial")
-  public class OneOfTheValuesIsUndetermined extends Exception {
+  public static class OneOfTheValuesIsUndetermined extends Exception {
   }
 
   /**

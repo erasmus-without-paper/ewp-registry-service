@@ -11,7 +11,7 @@ import org.w3c.dom.Document;
  */
 public class BuildResult {
 
-  private final boolean isValid;
+  private final boolean valid;
   private final Optional<Document> document;
   private final String rootNamespaceUri;
   private final String rootLocalName;
@@ -21,7 +21,7 @@ public class BuildResult {
 
   BuildResult(boolean isValid, Document document, String rootNamespaceUri, String rootLocalName,
       List<BuildError> buildErrors, String prettyXml, List<String> prettyLines) {
-    this.isValid = isValid;
+    this.valid = isValid;
     this.document = Optional.ofNullable(document);
     this.rootNamespaceUri = rootNamespaceUri;
     this.rootLocalName = rootLocalName;
@@ -49,8 +49,8 @@ public class BuildResult {
   }
 
   /**
-   * If pretty-printing was requested in {@link BuildParams#setPretty(boolean)}, then this parameter
-   * will contain the <b>list of lines</b> with the results of the pretty printing.
+   * If pretty-printing was requested in {@link BuildParams#setMakingPretty(boolean)}, then this
+   * parameter will contain the <b>list of lines</b> with the results of the pretty printing.
    *
    * <p>
    * The value will be returned <i>even if the document has failed parsing</i>. However, it will not
@@ -62,15 +62,15 @@ public class BuildResult {
    * </p>
    *
    * @return An {@link Optional} with the value. It will be present if
-   *         {@link BuildParams#setPretty(boolean)} was set to <b>true</b>.
+   *         {@link BuildParams#setMakingPretty(boolean)} was set to <b>true</b>.
    */
   public Optional<List<String>> getPrettyLines() {
     return this.prettyLines;
   }
 
   /**
-   * If pretty-printing was requested in {@link BuildParams#setPretty(boolean)}, then this parameter
-   * will contain the results of the pretty printing.
+   * If pretty-printing was requested in {@link BuildParams#setMakingPretty(boolean)}, then this
+   * parameter will contain the results of the pretty printing.
    *
    * <p>
    * The value will be returned <i>even if the document has failed parsing</i>. However, it will not
@@ -78,7 +78,7 @@ public class BuildResult {
    * </p>
    *
    * @return An {@link Optional} with the value. It will be present if
-   *         {@link BuildParams#setPretty(boolean)} was set to <b>true</b>.
+   *         {@link BuildParams#setMakingPretty(boolean)} was set to <b>true</b>.
    */
   public Optional<String> getPrettyXml() {
     return this.prettyXml;
@@ -121,6 +121,6 @@ public class BuildResult {
    * @return <b>true</b> if the document was parsed, validated, and all other conditions were met.
    */
   public boolean isValid() {
-    return this.isValid;
+    return this.valid;
   }
 }

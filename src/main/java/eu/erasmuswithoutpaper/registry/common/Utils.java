@@ -59,7 +59,7 @@ public class Utils {
    */
   public static String ordinal(int num) {
     int modulo = num % 100;
-    return String.valueOf(num) + ORDINAL_SUFFIXES[(modulo > 10 && modulo < 20) ? 0 : (modulo % 10)];
+    return num + ORDINAL_SUFFIXES[(modulo > 10 && modulo < 20) ? 0 : (modulo % 10)];
   }
 
   /**

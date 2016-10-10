@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +27,7 @@ import org.slf4j.LoggerFactory;
  */
 @Profile({ "production", "development" })
 @Component
+@SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
 public class ProductionScheduledTasks {
 
   private static final Logger logger = LoggerFactory.getLogger(ProductionConfiguration.class);

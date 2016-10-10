@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.xerces.util.XMLCatalogResolver;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -39,6 +40,7 @@ import org.xml.sax.SAXParseException;
  * Builds and validates EWP documents.
  */
 @Service
+@SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
 public class EwpDocBuilder {
 
   private final XmlFormatter xmlFormatter;
@@ -160,7 +162,7 @@ public class EwpDocBuilder {
     } catch (SAXException e) {
       String recovered = null;
       List<String> notSoPrettyLines = null;
-      if (input.getPretty()) {
+      if (input.isMakingPretty()) {
         recovered = new String(xml, StandardCharsets.UTF_8);
         notSoPrettyLines = Lists.newArrayList(Splitter.on("\n").split(recovered));
       }
@@ -175,7 +177,7 @@ public class EwpDocBuilder {
 
     String prettyXml = null;
     List<String> prettyLines = null;
-    if (input.getPretty()) {
+    if (input.isMakingPretty()) {
       prettyXml = this.xmlFormatter.format(doc);
       xml = prettyXml.getBytes(StandardCharsets.UTF_8);
       prettyLines = Lists.newArrayList(Splitter.on("\n").split(prettyXml));

@@ -51,7 +51,7 @@ public class EwpDocBuilderTest extends WRTest {
     sb.append("'>invalid</admin-email>");
 
     BuildParams params = new BuildParams(sb.toString());
-    params.setPretty(true);
+    params.setMakingPretty(true);
     BuildResult result = this.builder.build(params);
     assertThat(result.isValid()).isFalse();
     assertThat(result.getErrors()).hasSize(2);
@@ -86,7 +86,7 @@ public class EwpDocBuilderTest extends WRTest {
   @Test
   public void checkIfAcceptsKnownElements() {
     BuildParams params = new BuildParams(this.getFile("docbuilder/valid-hei.xml"));
-    params.setPretty(true);
+    params.setMakingPretty(true);
     BuildResult result = this.builder.build(params);
     assertThat(result.isValid()).isTrue();
     assertThat(result.getRootNamespaceUri())
@@ -104,7 +104,7 @@ public class EwpDocBuilderTest extends WRTest {
   @Test
   public void checkIfRejectsUnknownElements() {
     BuildParams params = new BuildParams(this.getFile("docbuilder/valid-gpx.xml"));
-    params.setPretty(true);
+    params.setMakingPretty(true);
     BuildResult result = this.builder.build(params);
     assertThat(result.getRootNamespaceUri()).isEqualTo("http://www.topografix.com/GPX/1/1");
     assertThat(result.getRootLocalName()).isEqualTo("gpx");
@@ -222,7 +222,7 @@ public class EwpDocBuilderTest extends WRTest {
   public void testPrettyResult() {
     byte[] input = this.getFile("docbuilder/invalid-manifest.xml");
     BuildParams params = new BuildParams(input);
-    params.setPretty(true);
+    params.setMakingPretty(true);
     BuildResult result = this.builder.build(params);
     assertThat(result.isValid()).isFalse();
     assertThat(result.getErrors()).hasSize(1);

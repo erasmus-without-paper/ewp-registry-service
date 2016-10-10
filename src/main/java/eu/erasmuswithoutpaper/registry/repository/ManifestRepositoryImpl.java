@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.RmCommand;
@@ -55,6 +56,7 @@ import org.xml.sax.SAXException;
  * </p>
  */
 @Service
+@SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
 public class ManifestRepositoryImpl implements ManifestRepository {
 
   private static final Logger logger = LoggerFactory.getLogger(ManifestRepositoryImpl.class);
@@ -72,6 +74,7 @@ public class ManifestRepositoryImpl implements ManifestRepository {
    *        instantiated.
    */
   @Autowired
+  @SuppressFBWarnings("BC_UNCONFIRMED_CAST_OF_RETURN_VALUE")
   public ManifestRepositoryImpl(ManifestRepositoryImplProperties repoProperties) {
     this.repoProperties = repoProperties;
 
@@ -157,6 +160,7 @@ public class ManifestRepositoryImpl implements ManifestRepository {
         }
 
         @Override
+        @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
         public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs)
             throws IOException {
           if (dir.getFileName().toString().startsWith(".git")) {
@@ -238,6 +242,7 @@ public class ManifestRepositoryImpl implements ManifestRepository {
         Files.walkFileTree(root, new SimpleFileVisitor<Path>() {
 
           @Override
+          @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
           public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs)
               throws IOException {
             if (dir.getFileName().toString().startsWith(".")) {
@@ -354,7 +359,7 @@ public class ManifestRepositoryImpl implements ManifestRepository {
   public boolean push() throws TransportException, GitAPIException, ConfigurationException {
     this.lock.writeLock().lock();
     try {
-      if (this.repoProperties.getEnablePushing()) {
+      if (this.repoProperties.isPushingEnabled()) {
         if (!this.unpushedCommitsExist()) {
           return false;
         }
@@ -517,6 +522,7 @@ public class ManifestRepositoryImpl implements ManifestRepository {
     }
   }
 
+  @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
   private boolean writeFile(Path path, byte[] contents) {
     this.lock.writeLock().lock();
     try {

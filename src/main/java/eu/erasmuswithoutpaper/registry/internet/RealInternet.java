@@ -25,6 +25,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +41,7 @@ import org.slf4j.LoggerFactory;
  */
 @Service
 @Profile({ "production", "development" })
+@SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
 public class RealInternet implements Internet {
 
   private static final Logger logger = LoggerFactory.getLogger(RealInternet.class);
@@ -168,7 +170,8 @@ public class RealInternet implements Internet {
    * @param notifier needed to register local error flags.
    */
   @Autowired
-  private void setNotifierServer(NotifierService notifier) {
+  @SuppressFBWarnings("UPM_UNCALLED_PRIVATE_METHOD")
+  private void setNotifierServer(NotifierService notifier) { // NOPMD
     notifier.addWatchedFlag(this.emailSendingStatus);
   }
 }

@@ -2,6 +2,8 @@ package eu.erasmuswithoutpaper.registry.documentbuilder;
 
 import java.nio.charset.StandardCharsets;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * A set of parameters for the {@link EwpDocBuilder#build(BuildParams)} method.
  */
@@ -17,6 +19,7 @@ public class BuildParams {
    *
    * @param xml the XML contents to be parsed.
    */
+  @SuppressFBWarnings("EI_EXPOSE_REP2")
   public BuildParams(byte[] xml) {
     this.xml = xml;
   }
@@ -49,19 +52,20 @@ public class BuildParams {
   }
 
   /**
-   * Get the value set by {@link #setPretty(boolean)}.
-   *
-   * @return see {@link #setPretty(boolean)}.
+   * @return XML contents to be parsed.
    */
-  public boolean getPretty() {
-    return this.pretty;
+  @SuppressFBWarnings("EI_EXPOSE_REP")
+  public byte[] getXml() {
+    return this.xml;
   }
 
   /**
-   * @return XML contents to be parsed.
+   * Get the value set by {@link #setMakingPretty(boolean)}.
+   *
+   * @return see {@link #setMakingPretty(boolean)}.
    */
-  public byte[] getXml() {
-    return this.xml;
+  public boolean isMakingPretty() {
+    return this.pretty;
   }
 
   /**
@@ -110,7 +114,7 @@ public class BuildParams {
    *
    * @param pretty The new value for this flag.
    */
-  public void setPretty(boolean pretty) {
+  public void setMakingPretty(boolean pretty) {
     this.pretty = pretty;
   }
 

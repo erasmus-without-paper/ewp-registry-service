@@ -11,14 +11,14 @@ public class ManifestRepositoryImplProperties {
   private final String path;
   private final String committerName;
   private final String committerEmail;
-  private final boolean enablePushing;
+  private final boolean pushingEnabled;
 
   /**
    * @param fileSystem value for {@link #getFileSystem()}.
    * @param path value for {@link #getPath()}.
    * @param committerName value for {@link #getCommitterName()}.
    * @param committerEmail value for {@link #getCommitterEmail()}.
-   * @param enablePushing value for {@link #getEnablePushing()}.
+   * @param enablePushing value for {@link #isPushingEnabled()}.
    */
   public ManifestRepositoryImplProperties(FileSystem fileSystem, String path, String committerName,
       String committerEmail, boolean enablePushing) {
@@ -26,7 +26,7 @@ public class ManifestRepositoryImplProperties {
     this.path = path;
     this.committerName = committerName;
     this.committerEmail = committerEmail;
-    this.enablePushing = enablePushing;
+    this.pushingEnabled = enablePushing;
   }
 
   /**
@@ -47,8 +47,8 @@ public class ManifestRepositoryImplProperties {
    * @return <b>true</b> to enable pushing. If <b>false</b> is given, then
    *         {@link ManifestRepository#push()} will do nothing.
    */
-  public boolean getEnablePushing() {
-    return this.enablePushing;
+  public boolean isPushingEnabled() {
+    return this.pushingEnabled;
   }
 
   /**

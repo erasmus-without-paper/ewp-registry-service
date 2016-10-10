@@ -38,12 +38,14 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.ocpsoft.prettytime.PrettyTime;
 
 /**
  * Handles UI requests.
  */
 @Controller
+@SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
 public class UiController {
 
   private final TaskExecutor taskExecutor;
@@ -90,71 +92,71 @@ public class UiController {
     StringBuilder sb = new StringBuilder();
     sb.append("EWP Registry Service\n");
     sb.append("====================\n");
-    sb.append("\n");
+    sb.append('\n');
     sb.append("Limited time deal - test our gorgeous \"text/plain skin\" for free!\n");
-    sb.append("\n");
+    sb.append('\n');
     String artifactVersion = this.getClass().getPackage().getImplementationVersion();
     sb.append("Version " + artifactVersion + ".\n");
     sb.append("Uptime ratios:\n");
     sb.append("- Last 24 hours: ");
     sb.append(this.uptimeChecker.getLast24HoursUptimeRatio());
-    sb.append("\n");
+    sb.append('\n');
     sb.append("- Last 7 days: ");
     sb.append(this.uptimeChecker.getLast7DaysUptimeRatio());
-    sb.append("\n");
+    sb.append('\n');
     sb.append("- Last 30 days: ");
     sb.append(this.uptimeChecker.getLast30DaysUptimeRatio());
-    sb.append("\n");
+    sb.append('\n');
     sb.append("- Last 365 days: ");
     sb.append(this.uptimeChecker.getLast365DaysUptimeRatio());
-    sb.append("\n");
+    sb.append('\n');
     sb.append("\n\n");
     sb.append("PRODUCTION and DEVELOPMENT Registry Service installations\n");
     sb.append("---------------------------------------------------------\n");
-    sb.append("\n");
+    sb.append('\n');
     sb.append("The EWP Network is still being designed. During this time, we will use two\n");
     sb.append("separate Registry Service installations:\n");
-    sb.append("\n");
+    sb.append('\n');
     sb.append("https://registry.erasmuswithoutpaper.eu/\n");
     sb.append("    - the official production-ready prototype; it will be mostly empty\n");
     sb.append("      until mid-2017,\n");
-    sb.append("\n");
+    sb.append('\n');
     sb.append("https://dev-registry.erasmuswithoutpaper.eu/\n");
     sb.append("    - for active development; it will contain URLs to individual developers'\n");
     sb.append("      workstations and it may contain alpha implementations of draft APIs.\n");
     sb.append("\n\n");
     sb.append("API URLs\n");
     sb.append("--------\n");
-    sb.append("\n");
+    sb.append('\n');
     String root = Application.getRootUrl();
     sb.append(root + "/catalogue-v1.xml\n");
     sb.append("    - the catalogue itself, as documented in the Registry API specs.\n");
-    sb.append("\n");
+    sb.append('\n');
     sb.append(root + "/manifest.xml\n");
     sb.append("    - a \"self-manifest\" of the Registry's EWP Host.\n");
-    sb.append("\n");
-    sb.append("\n");
+    sb.append('\n');
+    sb.append('\n');
     sb.append("Other notable URLs\n");
     sb.append("------------------\n");
-    sb.append("\n");
+    sb.append('\n');
     sb.append("Until we roll out a proper web interface, you can use these URLs for navigating\n");
     sb.append("the registry:\n");
-    sb.append("\n");
+    sb.append('\n');
     sb.append(root + "/\n");
     sb.append("    - this page, just an introduction.\n");
-    sb.append("\n");
+    sb.append('\n');
     sb.append(root + "/status\n");
     sb.append("    - a status summary of all manifest sources.\n");
-    sb.append("\n");
+    sb.append('\n');
     sb.append(root + "/status?url=<manifest-source-url>\n");
     sb.append("    - details on particular manifest status (not part of the API).\n");
-    sb.append("\n");
+    sb.append('\n');
     sb.append(root + "/status?email=<admin-email-address>\n");
     sb.append("    - details on issues assigned to a particular person.\n");
-    sb.append("\n");
+    sb.append('\n');
     sb.append(root + "/refresh\n");
     sb.append("    - reload all manifest sources (not part of the API).\n");
-    sb.append("\n");
+    sb.append('\n');
     return new ResponseEntity<String>(sb.toString(), headers, HttpStatus.OK);
   }
 
@@ -176,12 +178,12 @@ public class UiController {
     sb.append("<pre style='word-wrap: break-word; white-space: pre-wrap; max-width: 700px'>");
     sb.append("Manifest status report\n");
     sb.append("======================\n");
-    sb.append("\n");
-    sb.append("Requested for manifest URL:\n" + Utils.escapeHtml(url) + "\n");
-    sb.append("\n");
+    sb.append('\n');
+    sb.append("Requested for manifest URL:\n" + Utils.escapeHtml(url) + '\n');
+    sb.append('\n');
     sb.append("Status\n");
     sb.append("------\n");
-    sb.append("\n");
+    sb.append('\n');
     Optional<ManifestUpdateStatus> status =
         Optional.ofNullable(this.manifestStatusRepo.findOne(url));
     if (status.isPresent() && (!status.get().getLastAccessAttempt().isPresent())) {
@@ -194,18 +196,18 @@ public class UiController {
     } else if (source.isPresent() == false && status.isPresent() == true) {
       sb.append("Stale URL: This URL was once listed among Registry Service sources, but\n");
       sb.append("it is not anymore.\n");
-      sb.append("\n");
+      sb.append('\n');
       sb.append("Last access attempt: " + this.formatTime(status.get().getLastAccessAttempt().get())
-          + "\n");
+          + '\n');
     } else if (source.isPresent() == true && status.isPresent() == false) {
       sb.append("New URL: This URL is listed among the current Registry Service manifest\n");
       sb.append("sources, but it hasn't been accessed yet. Please refresh this page.\n");
     } else { // both are present
       sb.append("Last access attempt: " + this.formatTime(status.get().getLastAccessAttempt().get())
-          + "\n");
-      sb.append("Last access status: " + status.get().getLastAccessFlagStatus().toString() + "\n");
+          + '\n');
+      sb.append("Last access status: " + status.get().getLastAccessFlagStatus().toString() + '\n');
       if (status.get().getLastAccessNotices().size() > 0) {
-        sb.append("\n");
+        sb.append('\n');
         sb.append("Last access notices\n");
         sb.append("-------------------\n");
         sb.append("\n<ul>");
@@ -263,11 +265,11 @@ public class UiController {
     StringBuilder sb = new StringBuilder();
     sb.append("Currently defined manifest sources and their statuses\n");
     sb.append("=====================================================\n");
-    sb.append("\n");
+    sb.append('\n');
     for (ManifestSource source : this.sourceProvider.getAll()) {
       ManifestUpdateStatus status = this.manifestStatusRepo.findOne(source.getUrl());
       sb.append("[" + status.getLastAccessFlagStatus().toString() + "] ");
-      sb.append(source.getUrl() + "\n");
+      sb.append(source.getUrl() + '\n');
     }
     sb.append("\n(write us to add yours)\n");
 
@@ -292,12 +294,12 @@ public class UiController {
     sb.append("<pre style='word-wrap: break-word; white-space: pre-wrap'>");
     sb.append("Recipient status report\n");
     sb.append("=======================\n");
-    sb.append("\n");
-    sb.append("Requested for recipient email address:\n" + Utils.escapeHtml(email) + "\n");
-    sb.append("\n");
+    sb.append('\n');
+    sb.append("Requested for recipient email address:\n" + Utils.escapeHtml(email) + '\n');
+    sb.append('\n');
     sb.append("Issues being watched\n");
     sb.append("--------------------\n");
-    sb.append("\n");
+    sb.append('\n');
 
     List<NotifierFlag> flags = this.notifier.getFlagsWatchedBy(email);
     for (NotifierFlag flag : flags) {
@@ -308,7 +310,7 @@ public class UiController {
         sb.append(Utils.escapeHtml(flag.getDetailsUrl().get()));
         sb.append("'>details</a>");
       }
-      sb.append("\n");
+      sb.append('\n');
     }
     sb.append("</pre>");
     return new ResponseEntity<String>(sb.toString(), headers, HttpStatus.OK);
@@ -335,7 +337,7 @@ public class UiController {
     headers.setAccessControlAllowOrigin("http://developers.erasmuswithoutpaper.eu");
 
     BuildParams params = new BuildParams(xml);
-    params.setPretty(true);
+    params.setMakingPretty(true);
 
     // root
     BuildResult result1 = this.docBuilder.build(params);

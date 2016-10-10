@@ -25,7 +25,7 @@ public class KnownNamespace {
    * 'https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd'>
    * here</a>.
    */
-  public static KnownNamespace COMMON_TYPES_V1 = new KnownNamespace("ewp",
+  public static final KnownNamespace COMMON_TYPES_V1 = new KnownNamespace("ewp",
       "architecture/blob/stable-v1/common-types.xsd", "architecture/stable-v1/common-types.xsd");
 
   /**
@@ -33,7 +33,7 @@ public class KnownNamespace {
    * 'https://github.com/erasmus-without-paper/ewp-specs-api-discovery/blob/stable-v4/manifest.xsd'>
    * here</a>.
    */
-  public static KnownNamespace RESPONSE_MANIFEST_V4 = new KnownNamespace("mf",
+  public static final KnownNamespace RESPONSE_MANIFEST_V4 = new KnownNamespace("mf",
       "api-discovery/tree/stable-v4", "api-discovery/stable-v4/manifest.xsd");
 
   /**
@@ -41,7 +41,7 @@ public class KnownNamespace {
    * 'https://github.com/erasmus-without-paper/ewp-specs-api-registry/blob/stable-v1/catalogue.xsd'>
    * here</a>.
    */
-  public static KnownNamespace RESPONSE_REGISTRY_V1 = new KnownNamespace("r",
+  public static final KnownNamespace RESPONSE_REGISTRY_V1 = new KnownNamespace("r",
       "api-registry/tree/stable-v1", "api-registry/stable-v1/catalogue.xsd");
 
   /**
@@ -49,7 +49,7 @@ public class KnownNamespace {
    * 'https://github.com/erasmus-without-paper/ewp-specs-api-discovery/blob/stable-v4/manifest-entry.xsd'>
    * here</a>.
    */
-  public static KnownNamespace APIENTRY_DISCOVERY_V4 =
+  public static final KnownNamespace APIENTRY_DISCOVERY_V4 =
       new KnownNamespace("d4", "api-discovery/blob/stable-v4/manifest-entry.xsd",
           "api-discovery/stable-v4/manifest-entry.xsd");
 
@@ -58,7 +58,7 @@ public class KnownNamespace {
    * 'https://github.com/erasmus-without-paper/ewp-specs-api-echo/blob/stable-v1/manifest-entry.xsd'>
    * here</a>.
    */
-  public static KnownNamespace APIENTRY_ECHO = new KnownNamespace("e1",
+  public static final KnownNamespace APIENTRY_ECHO = new KnownNamespace("e1",
       "api-echo/blob/stable-v1/manifest-entry.xsd", "api-echo/stable-v1/manifest-entry.xsd");
 
   /**
@@ -66,7 +66,7 @@ public class KnownNamespace {
    * 'https://github.com/erasmus-without-paper/ewp-specs-api-registry/blob/stable-v1/manifest-entry.xsd'>
    * here</a>.
    */
-  public static KnownNamespace APIENTRY_REGISTRY =
+  public static final KnownNamespace APIENTRY_REGISTRY =
       new KnownNamespace("r1", "api-registry/blob/stable-v1/manifest-entry.xsd",
           "api-registry/stable-v1/manifest-entry.xsd");
 

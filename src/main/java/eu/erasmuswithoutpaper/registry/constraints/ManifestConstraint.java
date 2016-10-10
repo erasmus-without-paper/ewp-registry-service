@@ -34,5 +34,5 @@ public interface ManifestConstraint {
    *         (or, in case of not so serious violations, describe how the user should fix them
    *         himself).
    */
-  public List<FailedConstraintNotice> filter(Document document);
+  List<FailedConstraintNotice> filter(Document document);
 }

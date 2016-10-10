@@ -8,6 +8,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Component;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 
 /**
  * Our primary Spring application class.
@@ -29,6 +31,7 @@ public class Application {
    *
    * @return String or null.
    */
+  @SuppressFBWarnings("UPM_UNCALLED_PRIVATE_METHOD")
   public static String getRootUrl() {
     return rootUrl;
   }
@@ -44,7 +47,8 @@ public class Application {
   }
 
   @Autowired
-  private void setRootUrl(@Value("${app.root-url}") String newRootUrl) {
+  @SuppressFBWarnings({ "ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD", "UPM_UNCALLED_PRIVATE_METHOD" })
+  private void setRootUrl(@Value("${app.root-url}") String newRootUrl) { // NOPMD
     rootUrl = newRootUrl;
     if (rootUrl.endsWith("/")) {
       rootUrl = rootUrl.substring(0, rootUrl.length() - 1);

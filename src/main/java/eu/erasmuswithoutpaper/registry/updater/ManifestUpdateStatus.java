@@ -99,7 +99,7 @@ public class ManifestUpdateStatus {
    * @param lastAccessAttempt see {@link #getLastAccessAttempt()}.
    */
   public void setLastAccessAttempt(Date lastAccessAttempt) {
-    this.lastAccessAttempt = lastAccessAttempt;
+    this.lastAccessAttempt = new Date(lastAccessAttempt.getTime());
   }
 
   /**

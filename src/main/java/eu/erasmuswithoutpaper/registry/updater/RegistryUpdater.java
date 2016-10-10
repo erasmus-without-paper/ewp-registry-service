@@ -18,7 +18,7 @@ public interface RegistryUpdater {
    * See {@link #reloadManifestSource(ManifestSource)} for details on the process.
    * </p>
    */
-  public void reloadAllManifestSources();
+  void reloadAllManifestSources();
 
   /**
    * Reload a single {@link ManifestSource}. The following actions are applied:
@@ -38,5 +38,5 @@ public interface RegistryUpdater {
    * @param manifestSource {@link ManifestSource} to be reloaded. It SHOULD be one of the sources
    *        from the {@link ManifestSourceProvider#getAll()} list!
    */
-  public void reloadManifestSource(ManifestSource manifestSource);
+  void reloadManifestSource(ManifestSource manifestSource);
 }

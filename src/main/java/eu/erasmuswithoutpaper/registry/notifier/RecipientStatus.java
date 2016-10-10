@@ -16,7 +16,7 @@ import eu.erasmuswithoutpaper.registry.common.Severity;
 class RecipientStatus {
 
   @Id
-  private String email;
+  private String email; // NOPMD
 
   @Column(name = "currently_reported_flag_state")
   private int currentlyReportedFlagStatus;
