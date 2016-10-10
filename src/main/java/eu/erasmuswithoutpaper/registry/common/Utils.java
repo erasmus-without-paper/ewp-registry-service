@@ -5,6 +5,9 @@ import java.net.URLEncoder;
 import java.util.Optional;
 
 import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
 
@@ -49,6 +52,39 @@ public class Utils {
    */
   public static String escapeXml(String str) {
     return StringEscapeUtils.escapeXml(str);
+  }
+
+  /**
+   * Get a new, safely configured instance of {@link DocumentBuilder}.
+   *
+   * @return a {@link DocumentBuilder} instance.
+   */
+  public static DocumentBuilder newSecureDocumentBuilder() {
+    try {
+      DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+      dbf.setNamespaceAware(true);
+      dbf.setIgnoringComments(true);
+
+      /*
+       * XXE prevention. See here:
+       * https://www.owasp.org/index.php/XML_External_Entity_(XXE)_Prevention_Cheat_Sheet#Java
+       */
+      String feature = null;
+      feature = "http://apache.org/xml/features/disallow-doctype-decl";
+      dbf.setFeature(feature, true);
+      feature = "http://xml.org/sax/features/external-general-entities";
+      dbf.setFeature(feature, false);
+      feature = "http://xml.org/sax/features/external-parameter-entities";
+      dbf.setFeature(feature, false);
+      feature = "http://apache.org/xml/features/nonvalidating/load-external-dtd";
+      dbf.setFeature(feature, false);
+      dbf.setXIncludeAware(false);
+      dbf.setExpandEntityReferences(false);
+
+      return dbf.newDocumentBuilder();
+    } catch (ParserConfigurationException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   /**

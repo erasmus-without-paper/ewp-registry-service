@@ -17,8 +17,6 @@ import java.util.TreeSet;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import eu.erasmuswithoutpaper.registry.common.Utils;
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
@@ -44,11 +42,9 @@ class CatalogueBuilder {
 
   public CatalogueBuilder() {
     try {
-      DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-      factory.setNamespaceAware(true);
-      this.docbuilder = factory.newDocumentBuilder();
+      this.docbuilder = Utils.newSecureDocumentBuilder();
       this.x509factory = CertificateFactory.getInstance("X.509");
-    } catch (ParserConfigurationException | CertificateException e) {
+    } catch (CertificateException e) {
       throw new RuntimeException(e);
     }
   }

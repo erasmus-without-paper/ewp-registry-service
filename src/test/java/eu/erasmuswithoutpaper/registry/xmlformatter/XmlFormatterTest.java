@@ -7,10 +7,9 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import eu.erasmuswithoutpaper.registry.WRTest;
+import eu.erasmuswithoutpaper.registry.common.Utils;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -52,15 +51,7 @@ public class XmlFormatterTest extends WRTest {
    * Check if, for given input, the formatter gives an expected output.
    */
   private void chk(String input, String expectedOutput) {
-    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-    factory.setNamespaceAware(true);
-    factory.setIgnoringComments(true);
-    DocumentBuilder docbuilder;
-    try {
-      docbuilder = factory.newDocumentBuilder();
-    } catch (ParserConfigurationException e) {
-      throw new RuntimeException(e);
-    }
+    DocumentBuilder docbuilder = Utils.newSecureDocumentBuilder();
     Document doc;
     try {
       doc = docbuilder.parse(new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8)));

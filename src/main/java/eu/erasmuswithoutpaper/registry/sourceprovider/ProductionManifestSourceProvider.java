@@ -8,9 +8,8 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
+import eu.erasmuswithoutpaper.registry.common.Utils;
 import eu.erasmuswithoutpaper.registry.constraints.ManifestConstraint;
 import eu.erasmuswithoutpaper.registry.constraints.RestrictInstitutionsCovered;
 
@@ -75,13 +74,10 @@ public class ProductionManifestSourceProvider extends ManifestSourceProvider {
     logger.info("Loading manifest sources from " + resource);
     Match sources;
     try {
-      DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-      factory.setNamespaceAware(true);
-      factory.setIgnoringComments(true);
-      DocumentBuilder docBuilder = factory.newDocumentBuilder();
+      DocumentBuilder docBuilder = Utils.newSecureDocumentBuilder();
       Document doc = docBuilder.parse(resource.getInputStream());
       sources = $(doc).find("source");
-    } catch (ParserConfigurationException | SAXException | IOException e) {
+    } catch (SAXException | IOException e) {
       throw new RuntimeException(e);
     }
     for (Element source : sources) {

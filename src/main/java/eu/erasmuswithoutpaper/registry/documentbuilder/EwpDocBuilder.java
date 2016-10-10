@@ -10,13 +10,12 @@ import java.util.List;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
+import eu.erasmuswithoutpaper.registry.common.Utils;
 import eu.erasmuswithoutpaper.registry.xmlformatter.XmlFormatter;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -155,7 +154,7 @@ public class EwpDocBuilder {
     // We will need to load the document first. This is not required for validation, but it is
     // required for some validation result fields.
 
-    DocumentBuilder docBuilder = this.newDocumentBuilder();
+    DocumentBuilder docBuilder = Utils.newSecureDocumentBuilder();
     Document doc;
     try {
       doc = docBuilder.parse(new ByteArrayInputStream(xml));
@@ -224,16 +223,5 @@ public class EwpDocBuilder {
 
     return new BuildResult(isValid, doc, rootNamespaceUri, rootLocalName, buildErrors, prettyXml,
         prettyLines);
-  }
-
-  private DocumentBuilder newDocumentBuilder() {
-    try {
-      DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-      factory.setNamespaceAware(true);
-      factory.setIgnoringComments(true);
-      return factory.newDocumentBuilder();
-    } catch (ParserConfigurationException e) {
-      throw new RuntimeException(e);
-    }
   }
 }

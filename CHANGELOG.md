@@ -1,6 +1,14 @@
 Release notes
 =============
 
+1.2.1
+-----
+
+*Released on 2016-10-11*
+
+ * XXE prevention. Manifests are no longer allowed to include DOCTYPEs.
+
+
 1.2.0
 -----
 

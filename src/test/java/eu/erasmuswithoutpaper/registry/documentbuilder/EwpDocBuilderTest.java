@@ -65,6 +65,16 @@ public class EwpDocBuilderTest extends WRTest {
         .isEqualTo("cvc-type.3.1.3: The value 'invalid' of element 'admin-email' is not valid.");
   }
 
+  @Test
+  public void checkForXXE() {
+    BuildParams params = new BuildParams(this.getFile("manifests/xxe.xml"));
+    params.setExpectedKnownElement(KnownElement.RESPONSE_MANIFEST_V4);
+    BuildResult result = this.builder.build(params);
+    assertThat(result.isValid()).isFalse();
+    assertThat(result.getErrors()).hasSize(1);
+    assertThat(result.getErrors().get(0).getMessage()).contains("DOCTYPE is disallowed");
+  }
+
   /**
    * This is similar to {@link #checkIfRejectsUnknownElements()}, but from other perspective. If the
    * element is invalid (according to its schema), but this schema is unknown to the validator, then
