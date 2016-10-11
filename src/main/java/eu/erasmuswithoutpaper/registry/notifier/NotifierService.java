@@ -59,6 +59,25 @@ public class NotifierService {
   }
 
   /**
+   * Get all flags with a severity greater than {@link Severity#OK}.
+   *
+   * @return A list of flags.
+   */
+  public synchronized List<NotifierFlag> getAllErroredFlags() {
+    List<NotifierFlag> result = new ArrayList<>();
+    for (NotifierFlag flag : this.watchedFlags) {
+      try {
+        if (flag.getStatus().isMoreSevereThan(Severity.OK)) {
+          result.add(flag);
+        }
+      } catch (OneOfTheValuesIsUndetermined e) {
+        continue;
+      }
+    }
+    return result;
+  }
+
+  /**
    * Retrieve a list of all recipients associated with the watched flags.
    *
    * @return A unique list of email addresses.

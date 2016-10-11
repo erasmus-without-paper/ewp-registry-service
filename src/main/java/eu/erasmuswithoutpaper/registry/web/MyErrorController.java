@@ -2,10 +2,16 @@ package eu.erasmuswithoutpaper.registry.web;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import eu.erasmuswithoutpaper.registry.common.Severity;
+import eu.erasmuswithoutpaper.registry.notifier.NotifierFlag;
+import eu.erasmuswithoutpaper.registry.notifier.NotifierService;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.web.ErrorController;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpHeaders;
@@ -15,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.io.IOUtils;
 
 /**
@@ -24,13 +31,26 @@ import org.apache.commons.io.IOUtils;
 public class MyErrorController implements ErrorController {
 
   private final ResourceLoader resLoader;
+  private final NotifierFlag http500errorFlag;
 
   /**
    * @param resLoader needed to fetch the error XML template from the resources.
+   * @param notifier needed to send error notifications.
+   * @param adminEmails email address to notify on HTTP 500 errors.
    */
   @Autowired
-  public MyErrorController(ResourceLoader resLoader) {
+  @SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
+  public MyErrorController(ResourceLoader resLoader, NotifierService notifier,
+      @Value("${app.admin-emails}") List<String> adminEmails) {
     this.resLoader = resLoader;
+    this.http500errorFlag = new NotifierFlag(adminEmails) {
+      @Override
+      public String getName() {
+        return "Recently recorded runtime errors.";
+      }
+    };
+    this.http500errorFlag.setStatus(Severity.OK);
+    notifier.addWatchedFlag(this.http500errorFlag);
   }
 
   /**
@@ -41,6 +61,7 @@ public class MyErrorController implements ErrorController {
    */
   @RequestMapping("/error")
   public ResponseEntity<String> error(HttpServletRequest request) {
+    this.http500errorFlag.setStatus(Severity.WARNING);
     HttpHeaders headers = new HttpHeaders();
     String xml;
     try {

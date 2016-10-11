@@ -7,6 +7,7 @@ import eu.erasmuswithoutpaper.registry.documentbuilder.BuildParams;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildResult;
 import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownElement;
+import eu.erasmuswithoutpaper.registry.notifier.NotifierService;
 import eu.erasmuswithoutpaper.registry.repository.ManifestRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,9 @@ public class ApiControllerIntegrationTest extends WRIntegrationTest {
   @Autowired
   private SelfManifestProvider selfManifestProvider;
 
+  @Autowired
+  private NotifierService notifier;
+
   /**
    * Check if requests to non-existent files end with a proper HTTP 404 response.
    */
@@ -54,8 +58,16 @@ public class ApiControllerIntegrationTest extends WRIntegrationTest {
    */
   @Test
   public void respondsValid500() {
+    /*
+     * At the same time, we will check if the notifier picks it up. Before exception is called,
+     * there should be no errors.
+     */
+    assertThat(this.notifier.getAllErroredFlags()).hasSize(0);
     ResponseEntity<String> response =
         this.template.getForEntity(this.baseURL + "/throw-exception", String.class);
+    assertThat(this.notifier.getAllErroredFlags()).hasSize(1);
+    assertThat(this.notifier.getAllErroredFlags().get(0).getName())
+        .contains("Recently recorded runtime errors");
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
     BuildParams params = new BuildParams(response.getBody());
     params.setExpectedKnownElement(KnownElement.COMMON_ERROR_RESPONSE);
