@@ -6,6 +6,7 @@ Release notes
 
 *Released on 2016-10-11*
 
+ * Admins will now be notified when HTTP 500 errors are recorded. 
  * XXE prevention. Manifests are no longer allowed to include DOCTYPEs.
 
 
