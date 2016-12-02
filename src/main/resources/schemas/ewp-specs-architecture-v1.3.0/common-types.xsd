@@ -36,7 +36,19 @@
         </xs:annotation>
         <xs:simpleContent>
             <xs:extension base="xs:string">
-                <xs:attribute ref="xml:lang" use="optional" />
+                <xs:attribute ref="xml:lang" use="optional">
+                    <xs:annotation>
+                        <xs:documentation>
+                            A note for client developers: Keep in mind, that `xml:lang` is of the
+                            `xs:language` type. This means that it MAY contain values such as `en`, but
+                            also `en-US`, `ar-Cyrl-CO`, or `tlh-Kore-AQ-fonipa`. You will often want to
+                            parse only the first component.
+
+                            Discuss here:
+                            https://github.com/erasmus-without-paper/ewp-specs-architecture/issues/11
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
             </xs:extension>
         </xs:simpleContent>
     </xs:complexType>
@@ -69,7 +81,13 @@
         </xs:annotation>
         <xs:simpleContent>
             <xs:extension base="MultilineString">
-                <xs:attribute ref="xml:lang" use="optional" />
+                <xs:attribute ref="xml:lang" use="optional">
+                    <xs:annotation>
+                        <xs:documentation>
+                            Also see comments on xml:lang attribute in StringWithOptionalLang type.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
             </xs:extension>
         </xs:simpleContent>
     </xs:complexType>
@@ -102,13 +120,52 @@
     <xs:simpleType name="HTTPS">
         <xs:annotation>
             <xs:documentation>
-                Secure (HTTPS) URL.
+                Secure (HTTPS), absolute URL.
             </xs:documentation>
         </xs:annotation>
         <xs:restriction base="xs:anyURI">
             <xs:pattern value="https://.+" />
         </xs:restriction>
     </xs:simpleType>
+
+    <xs:simpleType name="HTTP">
+        <xs:annotation>
+            <xs:documentation>
+                An absolute URL. Might be either HTTP or HTTPS.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:anyURI">
+            <xs:pattern value="https?://.+"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="HTTPWithOptionalLang">
+        <xs:annotation>
+            <xs:documentation>
+                An absolute URL (might be either HTTP or HTTPS) with an optional xml:lang
+                attribute.
+
+                This type is used in places where a single website can be provided in multiple
+                language versions. However, as a general rule, if the website can correctly
+                auto-detect client browser's preferred language, then server implementers
+                SHOULD supply this element only once, and *without* the xml:lang attribute.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:simpleContent>
+            <xs:extension base="HTTP">
+                <xs:attribute ref="xml:lang" use="optional">
+                    <xs:annotation>
+                        <xs:documentation>
+                            If given, it contains the language code the client should expect the website
+                            content to be in.
+
+                            Also see comments on xml:lang attribute in StringWithOptionalLang type.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
 
     <xs:complexType name="ManifestApiEntryBase">
         <xs:annotation>
@@ -168,6 +225,19 @@
             </xs:simpleType>
         </xs:attribute>
     </xs:complexType>
+
+    <xs:simpleType name="CountryCode">
+        <xs:annotation>
+            <xs:documentation>
+                ISO 3166-1 alpha-2 country code. These codes always have exactly 2 *upper-case*
+                letters (this differentiates them from *language* ISO codes, which are
+                lower-case.)
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[A-Z][A-Z]"/>
+        </xs:restriction>
+    </xs:simpleType>
 
     <xs:element name="admin-email" type="Email">
         <xs:annotation>

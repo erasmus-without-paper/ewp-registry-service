@@ -192,7 +192,7 @@
         </xs:annotation>
         <xs:complexType>
             <xs:sequence>
-                <xs:element name="other-id" minOccurs="0" maxOccurs="unbounded">
+                <xs:element name="other-id" minOccurs="0" maxOccurs="unbounded" type="OtherHeiId">
                     <xs:annotation>
                         <xs:documentation>
                             SCHAC identifier (provided in the `id` attribute described below) is the
@@ -206,65 +206,6 @@
                             files), than pick one at random.
                         </xs:documentation>
                     </xs:annotation>
-                    <xs:complexType>
-                        <xs:simpleContent>
-                            <xs:extension base="xs:string">
-                                <xs:attribute name="type" use="required">
-                                    <xs:annotation>
-                                        <xs:documentation>
-                                            Identifier type. Manifest authors are advised to use the types provided in the
-                                            enumeration (case sensitive), but custom identifier types are also allowed.
-                                        </xs:documentation>
-                                    </xs:annotation>
-                                    <xs:simpleType>
-                                        <xs:union>
-                                            <xs:simpleType>
-                                                <xs:restriction base="xs:string">
-                                                    <xs:enumeration value="previous-schac">
-                                                        <xs:annotation>
-                                                            <xs:documentation>
-                                                                A previously used SCHAC identifier. Manifest authors MUST provide all SCHAC
-                                                                identifiers their HEI have used in the past.
-
-                                                                https://github.com/erasmus-without-paper/ewp-specs-api-discovery/issues/4
-                                                            </xs:documentation>
-                                                        </xs:annotation>
-                                                    </xs:enumeration>
-                                                    <xs:enumeration value="pic">
-                                                        <xs:annotation>
-                                                            <xs:documentation>
-                                                                PIC identifier.
-
-                                                                https://ec.europa.eu/research/participants/portal/desktop/en/organisations/register.html
-                                                            </xs:documentation>
-                                                        </xs:annotation>
-                                                    </xs:enumeration>
-                                                    <xs:enumeration value="erasmus">
-                                                        <xs:annotation>
-                                                            <xs:documentation>
-                                                                Erasmus institutional code.
-                                                            </xs:documentation>
-                                                        </xs:annotation>
-                                                    </xs:enumeration>
-                                                </xs:restriction>
-                                            </xs:simpleType>
-                                            <xs:simpleType>
-                                                <xs:restriction base="xs:string">
-                                                    <xs:pattern value=".*">
-                                                        <xs:annotation>
-                                                            <xs:documentation>
-                                                                Manifest authors can also have any number of custom identifier types.
-                                                            </xs:documentation>
-                                                        </xs:annotation>
-                                                    </xs:pattern>
-                                                </xs:restriction>
-                                            </xs:simpleType>
-                                        </xs:union>
-                                    </xs:simpleType>
-                                </xs:attribute>
-                            </xs:extension>
-                        </xs:simpleContent>
-                    </xs:complexType>
                 </xs:element>
                 <xs:element name="name" type="ewp:StringWithOptionalLang" minOccurs="1" maxOccurs="unbounded">
                     <xs:annotation>
@@ -294,5 +235,72 @@
             </xs:attribute>
         </xs:complexType>
     </xs:element>
+
+    <xs:complexType name="OtherHeiId">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="type" use="required">
+                    <xs:annotation>
+                        <xs:documentation>
+                            HEI identifier type. It is advised to use the types provided in the
+                            enumeration (case sensitive), but custom identifier types are also allowed.
+                        </xs:documentation>
+                    </xs:annotation>
+                    <xs:simpleType>
+                        <xs:union>
+                            <xs:simpleType>
+                                <xs:restriction base="xs:string">
+                                    <xs:enumeration value="previous-schac">
+                                        <xs:annotation>
+                                            <xs:documentation>
+                                                A previously used SCHAC identifier. Servers MUST provide all SCHAC
+                                                identifiers their HEI have used in the past.
+
+                                                https://github.com/erasmus-without-paper/ewp-specs-api-discovery/issues/4
+                                            </xs:documentation>
+                                        </xs:annotation>
+                                    </xs:enumeration>
+                                    <xs:enumeration value="pic">
+                                        <xs:annotation>
+                                            <xs:documentation>
+                                                PIC identifier.
+
+                                                https://ec.europa.eu/research/participants/portal/desktop/en/organisations/register.html
+                                            </xs:documentation>
+                                        </xs:annotation>
+                                    </xs:enumeration>
+                                    <xs:enumeration value="erasmus">
+                                        <xs:annotation>
+                                            <xs:documentation>
+                                                Erasmus institutional code.
+                                            </xs:documentation>
+                                        </xs:annotation>
+                                    </xs:enumeration>
+                                    <xs:enumeration value="euc">
+                                        <xs:annotation>
+                                            <xs:documentation>
+                                                Erasmus University Charter number.
+                                            </xs:documentation>
+                                        </xs:annotation>
+                                    </xs:enumeration>
+                                </xs:restriction>
+                            </xs:simpleType>
+                            <xs:simpleType>
+                                <xs:restriction base="xs:string">
+                                    <xs:pattern value=".*">
+                                        <xs:annotation>
+                                            <xs:documentation>
+                                                Any number of other custom identifier types.
+                                            </xs:documentation>
+                                        </xs:annotation>
+                                    </xs:pattern>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:union>
+                    </xs:simpleType>
+                </xs:attribute>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
 
 </xs:schema>

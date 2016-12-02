@@ -4,7 +4,7 @@
         uri="xml.xsd" />
     <uri
         name="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
-        uri="ewp-specs-architecture-v1.2.3/common-types.xsd" />
+        uri="ewp-specs-architecture-v1.3.0/common-types.xsd" />
     <uri
         name="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/blob/stable-v4/manifest-entry.xsd"
         uri="ewp-specs-api-discovery-v4.0.1/manifest-entry.xsd" />
@@ -19,8 +19,38 @@
         uri="ewp-specs-api-echo-v1.0.1/response.xsd" />
     <uri
         name="https://github.com/erasmus-without-paper/ewp-specs-api-registry/blob/stable-v1/manifest-entry.xsd"
-        uri="ewp-specs-api-registry-v1.0.2/manifest-entry.xsd" />
+        uri="ewp-specs-api-registry-v1.1.0/manifest-entry.xsd" />
     <uri
         name="https://github.com/erasmus-without-paper/ewp-specs-api-registry/tree/stable-v1"
-        uri="ewp-specs-api-registry-v1.0.2/catalogue.xsd" />
+        uri="ewp-specs-api-registry-v1.1.0/catalogue.xsd" />
+    <uri
+        name="https://github.com/erasmus-without-paper/ewp-specs-api-institutions/blob/master/manifest-entry.xsd"
+        uri="ewp-specs-api-institutions-v0.3.0/manifest-entry.xsd" />
+    <uri
+        name="https://github.com/erasmus-without-paper/ewp-specs-api-institutions/tree/master"
+        uri="ewp-specs-api-institutions-v0.3.0/response.xsd" />
+    <uri
+        name="https://github.com/erasmus-without-paper/ewp-specs-api-ounits/blob/master/manifest-entry.xsd"
+        uri="ewp-specs-api-ounits-v0.1.0/manifest-entry.xsd" />
+    <uri
+        name="https://github.com/erasmus-without-paper/ewp-specs-api-ounits/tree/master"
+        uri="ewp-specs-api-ounits-v0.1.0/response.xsd" />
+    <uri
+        name="https://github.com/erasmus-without-paper/ewp-specs-api-course-replication/blob/stable-v1/manifest-entry.xsd"
+        uri="ewp-specs-api-course-replication-v1.0.0-rc2/manifest-entry.xsd" />
+    <uri
+        name="https://github.com/erasmus-without-paper/ewp-specs-api-course-replication/tree/stable-v1"
+        uri="ewp-specs-api-course-replication-v1.0.0-rc2/response.xsd" />
+    <uri
+        name="https://github.com/erasmus-without-paper/ewp-specs-types-address/tree/master"
+        uri="ewp-specs-types-address-v0.1.0/schema.xsd" />
+    <uri
+        name="https://github.com/erasmus-without-paper/ewp-specs-types-phonenumber/tree/master"
+        uri="ewp-specs-types-phonenumber-v0.1.0/schema.xsd" />
+    <uri
+        name="https://github.com/erasmus-without-paper/ewp-specs-types-academic-term/tree/master"
+        uri="ewp-specs-types-academic-term-v0.1.0/schema.xsd" />
+    <uri
+        name="https://github.com/erasmus-without-paper/ewp-specs-types-contact/tree/master"
+        uri="ewp-specs-types-contact-v0.1.0/schema.xsd" />
 </catalog>

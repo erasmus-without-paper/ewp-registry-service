@@ -1,0 +1,11 @@
+<course-replication-response
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-course-replication/tree/stable-v1"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        https://github.com/erasmus-without-paper/ewp-specs-api-course-replication/tree/stable-v1
+        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-course-replication/stable-v1/response.xsd
+    "
+>
+    <los-id>MA100</los-id>
+    <los-id>STAVH</los-id>
+</course-replication-response>
