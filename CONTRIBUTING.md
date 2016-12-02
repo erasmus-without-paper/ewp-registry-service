@@ -1,5 +1,4 @@
-Notes on contributing
-=====================
+### Notes on contributing
 
 Just some basic guidelines on reporting issues:
 
