@@ -180,6 +180,30 @@ public class EwpDocBuilderTest extends WRTest {
   }
 
   /**
+   * Verify all examples from "latest-examples" directory against their own XSDs.
+   */
+  @Test
+  public void testAllLatestExamples() {
+    List<String> exampleNames = new ArrayList<>();
+    PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+    try {
+      for (Resource resource : resolver
+          .getResources("classpath:test-files/latest-examples/*.xml")) {
+        String path = resource.getURI().toString();
+        exampleNames.add(path.substring(path.lastIndexOf("/") + 1));
+      }
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+    for (String name : exampleNames) {
+      BuildParams params = new BuildParams(this.getFile("latest-examples/" + name));
+      BuildResult result = this.builder.build(params);
+      assertThat(result.getErrors()).as("check if %s is valid", name).isEmpty();
+      assertThat(result.isValid()).isTrue();
+    }
+  }
+
+  /**
    * Make sure it allows external (unknown) APIs entries.
    */
   @Test
