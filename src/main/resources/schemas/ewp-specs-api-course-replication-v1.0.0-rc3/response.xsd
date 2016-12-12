@@ -30,13 +30,10 @@
                 <xs:element name="los-id" minOccurs="0" maxOccurs="unbounded" type="xs:string">
                     <xs:annotation>
                         <xs:documentation>
-                            The course identifier. "LOS" stands for "learning opportunity specification",
-                            since courses are a subclasses of those. However this API will return courses
-                            only (it will never return study programmes, etc.). Course IDs MUST be unique
-                            within its institution.
-
-                            When the client receives the list of changed IDs, it can then query the Courses
-                            API to fetch the changes.
+                            The list of identifiers (results for the client's query). Each of those
+                            identifiers can be used to access a single course (or other type of learning
+                            opportunity) via the Courses API. ("LOS" stands for "learning opportunity
+                            specification", and courses are a subclass of those.)
                         </xs:documentation>
                     </xs:annotation>
                 </xs:element>

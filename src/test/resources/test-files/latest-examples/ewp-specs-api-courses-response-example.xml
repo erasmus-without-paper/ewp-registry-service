@@ -1,0 +1,75 @@
+<courses-response
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-courses/tree/master"
+    xmlns:trm="https://github.com/erasmus-without-paper/ewp-specs-types-academic-term/tree/master"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        https://github.com/erasmus-without-paper/ewp-specs-api-courses/tree/master
+        response.xsd
+    "
+>
+    <!-- WRTODO: Make schemaLocation absolute -->
+
+    <!--
+    IMPORTANT: Please see the response.xsd file for detailed requirements and
+    descriptions of all the elements. You MUST NOT base your implementation
+    solely on the example file.
+    -->
+    <learningOpportunitySpecification>
+        <los-id>MA100</los-id>
+        <title xml:lang="no">Grunnkurs i matematikk</title>
+        <title xml:lang="en">Introductory calculus</title>
+        <type>Course</type>
+        <subjectArea>12345</subjectArea>
+        <iscedCode>0541</iscedCode>
+        <url>http://example.com/</url>
+        <description xml:lang="no">En eller annen beskrivelse</description>
+        <description xml:lang="en">Some description</description>
+        <!-- <grading-scheme>ects</grading-scheme> -->
+        <!-- <eqf-level>1</eqf-level> -->
+        <specifies>
+            <learningOpportunityInstance>
+                <loi-id>2016/2017-MA100</loi-id>
+                <start>2016-07-01</start>
+                <end>2016-12-31</end>
+                <trm:academic-term>
+                    <trm:academic-year-id>2016/2017</trm:academic-year-id>
+                    <trm:display-name xml:lang="en-us">Fall 2016/2017</trm:display-name>
+                    <trm:display-name xml:lang="no">Høst 2016/2017</trm:display-name>
+                    <trm:start-date>2016-07-01</trm:start-date>
+                    <trm:end-date>2016-12-31</trm:end-date>
+                </trm:academic-term>
+                <resultDistribution>
+                    <category label="0-50" count="159" />
+                    <category label="50-100" count="40" />
+                    <description xml:lang="en">Simple example of distribution.</description>
+                </resultDistribution>
+                <credit>
+                    <scheme>ects</scheme>
+                    <level>Bachelor</level>
+                    <value>15</value>
+                </credit>
+                <credit>
+                    <scheme>no-vt</scheme>
+                    <value>5</value>
+                </credit>
+                <languageOfInstruction>en</languageOfInstruction>
+                <engagementHours>60</engagementHours>
+            </learningOpportunityInstance>
+            <learningOpportunityInstance>
+                <loi-id>2015/2016-MA100</loi-id>
+                <start>2015-07-01</start>
+                <end>2015-12-31</end>
+            </learningOpportunityInstance>
+        </specifies>
+        <contains>
+            <los-id>MA100-A</los-id>
+            <los-id>MA100-B</los-id>
+        </contains>
+    </learningOpportunitySpecification>
+    <learningOpportunitySpecification>
+        <los-id>STAVH</los-id>
+        <title xml:lang="no">Statsvitenskap hovedfag</title>
+        <title xml:lang="en">Political science, main subject</title>
+        <type>Degree Programme</type>
+    </learningOpportunitySpecification>
+</courses-response>
