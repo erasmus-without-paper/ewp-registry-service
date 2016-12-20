@@ -55,9 +55,20 @@
                     <xs:annotation>
                         <xs:documentation>
                             This represents a single organizational unit (this can be faculty, department,
-                            division, or even the whole "root" institution). Servers will produce one such
+                            division, or the whole "root" institution). Servers will produce one such
                             element for each of the `ounit_id` values passed in the Organizational Units
                             API call.
+
+                            Note that it is NOT required to expose units as a tree-like structure, and it
+                            is NOT required for a root unit to exist. Clients MUST be able to handle both
+                            cases (e.g. convert flat list of units into a "fake" tree). However, *if*
+                            servers choose to expose their units in a tree-like format, then the root unit
+                            MUST exist (this is how clients will detect which format is used), and it must
+                            have the ID as given in the `root-ounit-id` element in the Institutions API.
+
+                            It is not required to expose all units. Servers may choose which units are
+                            relevant for EWP data exchange (and, in fact, they often SHOULD limit what they
+                            expose, to avoid clutter in client user interfaces).
                         </xs:documentation>
                     </xs:annotation>
                     <xs:complexType>
@@ -127,6 +138,22 @@
                                 <xs:annotation>
                                     <xs:documentation>
                                         A website URL of this organizational unit.
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                            <xs:element name="mobility-factsheet-url" minOccurs="0" maxOccurs="unbounded" type="ewp:HTTPWithOptionalLang">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        This is similar to the `mobility-factsheet-url` element in the Institutions API,
+                                        but - if present - it should contain a version of mobility factsheet related to
+                                        this particular Organizational Unit only.
+
+                                        As was the case in the Institutions API, it SHOULD refer to either a PDF file,
+                                        or a HTML website, or both (via two separate factsheet-url elements). Other
+                                        formats are also permitted, but discouraged.
+
+                                        Elements SHOULD have an xml:lang attribute, and at least one URL should refer
+                                        to a factsheet written in English.
                                     </xs:documentation>
                                 </xs:annotation>
                             </xs:element>

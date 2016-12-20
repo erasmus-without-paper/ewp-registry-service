@@ -1,0 +1,160 @@
+<iias-get-response
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-iias/blob/master/endpoints/get-response.xsd"
+    xmlns:c="https://github.com/erasmus-without-paper/ewp-specs-types-contact/tree/master"
+    xmlns:xml="http://www.w3.org/XML/1998/namespace"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        https://github.com/erasmus-without-paper/ewp-specs-api-iias/blob/master/endpoints/get-response.xsd
+        get-response.xsd
+    "
+>
+    <!-- WRTODO: Make schemaLocation absolute -->
+
+    <!--
+    IMPORTANT: Please see the response.xsd file for detailed requirements and
+    descriptions of all the elements. You MUST NOT base your implementation
+    solely on the example file.
+    -->
+    <iia>
+        <!--
+        General reminder: All EWP IDs MAY contain characters which require proper
+        encoding based on context. E.g. the "&" character needs to be encoded as %26 in
+        the request URL ("/" and "+" characters would be encoded too), but in XML "&"
+        will be encoded as "&amp;". (This is part of the URI and XML specifications,
+        which every EWP developer should be familiar with.)
+        -->
+        <iia-id>983/E+/III14&amp;15</iia-id>
+        <signing-contact>
+            <c:contact-name>Sylwia Salomon</c:contact-name>
+            <c:email>email@example.com</c:email>
+            <!-- All other Abstract Contact fields are allowed too (including the role
+            description). -->
+        </signing-contact>
+        <c:contact>
+            <c:contact-name>Jadwiga Królikowska</c:contact-name>
+            <c:email>email@example.com</c:email>
+        </c:contact>
+        <partner-hei>
+            <hei-id>hibo.no</hei-id>
+            <!-- Optional remote iia-id goes here, if known. -->
+            <signing-contact>
+                <c:contact-name>Monica Brobakk</c:contact-name>
+                <c:email>email@example.com</c:email>
+            </signing-contact>
+            <!-- Optional other remote contacts go here, if known. -->
+        </partner-hei>
+        <in-effect>true</in-effect>
+        <start-date>2014-06-01</start-date>
+        <end-date>2021-09-30</end-date>
+        <cooperation-conditions>
+
+            <!-- Student mobility for studies. -->
+            <student-studies-mobility-spec>
+                <sending-hei-id>uw.edu.pl</sending-hei-id>
+                <sending-ounit-id>34010000</sending-ounit-id>
+                <!-- Optional sending-contact elements go here (if supported by the
+                server at this level). -->
+                <receiving-hei-id>hibo.no</receiving-hei-id>
+                <!-- Optional receiving-contact elements go here (if supported by the
+                server at this level). -->
+                <receiving-academic-year-id>2014/2015</receiving-academic-year-id>
+                <receiving-academic-year-id>2015/2016</receiving-academic-year-id>
+                <receiving-academic-year-id>2016/2017</receiving-academic-year-id>
+                <receiving-academic-year-id>2017/2018</receiving-academic-year-id>
+                <receiving-academic-year-id>2018/2019</receiving-academic-year-id>
+                <receiving-academic-year-id>2019/2020</receiving-academic-year-id>
+                <receiving-academic-year-id>2020/2021</receiving-academic-year-id>
+                <mobilities-per-year>2</mobilities-per-year>
+                <recommended-language-skill>
+                    <language>en</language>
+                    <cefr-level>B1</cefr-level>
+                </recommended-language-skill>
+                <recommended-language-skill>
+                    <language>no</language>
+                    <cefr-level>B1</cefr-level>
+                </recommended-language-skill>
+                <isced-code>0314</isced-code>
+                <avg-months>5</avg-months>
+                <!-- At least one eqf-level is required for "mobility for studies". -->
+                <eqf-level>7</eqf-level>
+                <eqf-level>8</eqf-level>
+            </student-studies-mobility-spec>
+
+            <!-- Student mobility for traineeships. -->
+            <student-traineeship-mobility-spec>
+                <sending-hei-id>uw.edu.pl</sending-hei-id>
+                <sending-ounit-id>34010000</sending-ounit-id>
+                <receiving-hei-id>hibo.no</receiving-hei-id>
+                <receiving-academic-year-id>2014/2015</receiving-academic-year-id>
+                <receiving-academic-year-id>2015/2016</receiving-academic-year-id>
+                <receiving-academic-year-id>2016/2017</receiving-academic-year-id>
+                <receiving-academic-year-id>2017/2018</receiving-academic-year-id>
+                <receiving-academic-year-id>2018/2019</receiving-academic-year-id>
+                <receiving-academic-year-id>2019/2020</receiving-academic-year-id>
+                <receiving-academic-year-id>2020/2021</receiving-academic-year-id>
+                <mobilities-per-year>10</mobilities-per-year>
+                <recommended-language-skill>
+                    <language>no</language>
+                    <cefr-level>B1</cefr-level>
+                </recommended-language-skill>
+                <isced-code>0314</isced-code>
+                <avg-months>10</avg-months>
+                <!-- No eqf-level for traineeships. -->
+            </student-traineeship-mobility-spec>
+
+            <!-- Staff mobility for teaching. -->
+            <staff-teacher-mobility-spec>
+                <sending-hei-id>uw.edu.pl</sending-hei-id>
+                <sending-ounit-id>34010000</sending-ounit-id>
+                <receiving-hei-id>hibo.no</receiving-hei-id>
+                <receiving-academic-year-id>2016/2017</receiving-academic-year-id>
+                <receiving-academic-year-id>2017/2018</receiving-academic-year-id>
+                <mobilities-per-year>2</mobilities-per-year>
+                <recommended-language-skill>
+                    <language>en</language>
+                    <cefr-level>C1</cefr-level>
+                </recommended-language-skill>
+                <isced-code>0314</isced-code>
+                <!-- Staff mobilities have days instead of months. -->
+                <avg-days>14</avg-days>
+            </staff-teacher-mobility-spec>
+            <staff-teacher-mobility-spec>
+                <!-- Every specification describes a unidirectional mobility. If students or
+                staff members are exchanged in both directions, two specifications are provided.
+                (The same is true for every other *-mobility-spec element.) -->
+                <sending-hei-id>hibo.no</sending-hei-id>
+                <receiving-hei-id>uw.edu.pl</receiving-hei-id>
+                <receiving-ounit-id>34010000</receiving-ounit-id>
+                <receiving-academic-year-id>2016/2017</receiving-academic-year-id>
+                <receiving-academic-year-id>2017/2018</receiving-academic-year-id>
+                <mobilities-per-year>2</mobilities-per-year>
+                <recommended-language-skill>
+                    <language>en</language>
+                    <cefr-level>C1</cefr-level>
+                </recommended-language-skill>
+                <isced-code>0314</isced-code>
+                <avg-days>14</avg-days>
+            </staff-teacher-mobility-spec>
+
+            <!-- Staff mobility for training. -->
+            <staff-training-mobility-spec>
+                <sending-hei-id>hibo.no</sending-hei-id>
+                <receiving-hei-id>uw.edu.pl</receiving-hei-id>
+                <receiving-ounit-id>34010000</receiving-ounit-id>
+                <receiving-academic-year-id>2016/2017</receiving-academic-year-id>
+                <receiving-academic-year-id>2017/2018</receiving-academic-year-id>
+                <mobilities-per-year>2</mobilities-per-year>
+                <recommended-language-skill>
+                    <language>en</language>
+                    <cefr-level>B2</cefr-level>
+                </recommended-language-skill>
+                <isced-code>0314</isced-code>
+                <avg-days>14</avg-days>
+            </staff-training-mobility-spec>
+        </cooperation-conditions>
+    </iia>
+
+    <!-- More than one IIA can be returned in one response. We have only one here,
+    to keep it simple. -->
+
+</iias-get-response>

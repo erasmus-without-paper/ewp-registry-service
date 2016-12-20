@@ -159,6 +159,9 @@
                                 <xs:annotation>
                                     <xs:documentation>
                                         The Erasmus subject area code of the course.
+
+                                        It is named "subjectArea" for consistency with older ELMO-based formats.
+                                        https://github.com/erasmus-without-paper/ewp-specs-api-courses/issues/6
                                     </xs:documentation>
                                 </xs:annotation>
                             </xs:element>
@@ -252,6 +255,50 @@
                                                                 terms.
                                                             </xs:documentation>
                                                         </xs:annotation>
+                                                    </xs:element>
+                                                    <xs:element name="gradingScheme" minOccurs="0" maxOccurs="1">
+                                                        <xs:annotation>
+                                                            <xs:documentation>
+                                                                An optional element describing the grading scheme used in this LOI.
+                                                                https://github.com/erasmus-without-paper/ewp-specs-api-courses/issues/5
+                                                            </xs:documentation>
+                                                        </xs:annotation>
+                                                        <xs:complexType>
+                                                            <xs:sequence>
+                                                                <xs:element name="label" minOccurs="1" maxOccurs="unbounded" type="ewp:StringWithOptionalLang">
+                                                                    <xs:annotation>
+                                                                        <xs:documentation>
+                                                                            A label which briefly summarizes the grading scheme used. It should contain a
+                                                                            short and descriptive string which describes the range of all possible grade
+                                                                            values. If possible, this label should provide a sufficient source by itself,
+                                                                            for the average reader, to enumerate all these values. E.g. "0-50", "A-F",
+                                                                            "passed / not passed", or "ECTS".
+
+                                                                            If this label is language-specific, then multiple labels with xml:lang
+                                                                            attribute may be provided (preferably English among them). If the label is
+                                                                            non-language-specific, servers are advised to skip the xml:lang attribute
+                                                                            altogether.
+
+                                                                            It is NOT a unique identifier, and it is NOT designed to be easily parsed by a
+                                                                            computer. It's simply supposed to be a human-readable label. See discussion
+                                                                            here: https://github.com/erasmus-without-paper/ewp-specs-api-courses/issues/5
+                                                                        </xs:documentation>
+                                                                    </xs:annotation>
+                                                                </xs:element>
+                                                                <xs:element name="description" minOccurs="0" maxOccurs="unbounded" type="ewp:MultilineStringWithOptionalLang">
+                                                                    <xs:annotation>
+                                                                        <xs:documentation>
+                                                                            Detailed description, to be displayed - for example - as a tooltip beside the
+                                                                            label.
+
+                                                                            If can be provided in multiple languages (preferably English among them), and
+                                                                            it may contain a full name of the grading system, and/or a full list of all
+                                                                            possible grade labels.
+                                                                        </xs:documentation>
+                                                                    </xs:annotation>
+                                                                </xs:element>
+                                                            </xs:sequence>
+                                                        </xs:complexType>
                                                     </xs:element>
                                                     <xs:element name="resultDistribution" minOccurs="0" maxOccurs="1">
                                                         <xs:annotation>
