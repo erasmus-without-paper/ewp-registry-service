@@ -23,7 +23,11 @@
 
     <xs:annotation>
         <xs:documentation>
-            This file contains definitions of common types used in other EWP schemas.
+            This file contains definitions of common types used in other EWP schemas. It
+            probably deserves its own separate repository, but we keep it in the Architecture
+            and Security repository, for backward-compatibility. (One disadvantage of this
+            is the necessity to increase the version of the whole document every time a new
+            type is added.)
         </xs:documentation>
     </xs:annotation>
 
@@ -91,6 +95,21 @@
             </xs:extension>
         </xs:simpleContent>
     </xs:complexType>
+
+    <xs:simpleType name="UUID">
+        <xs:annotation>
+            <xs:documentation>
+                Universally unique identifier (UUID), formatted in human-readable canonical
+                format (32 lowercase hexadecimal digits, displayed in five groups separated by
+                hyphens, in the form 8-4-4-4-12 for a total of 36 characters).
+
+                https://en.wikipedia.org/wiki/Universally_unique_identifier
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"/>
+        </xs:restriction>
+    </xs:simpleType>
 
     <xs:simpleType name="Email">
         <xs:annotation>
@@ -236,6 +255,65 @@
         </xs:annotation>
         <xs:restriction base="xs:string">
             <xs:pattern value="[A-Z][A-Z]"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="EqfLevel">
+        <xs:annotation>
+            <xs:documentation>
+                EQF Level. In EWP it is typically used to represent study levels (also known as
+                study cycles), i.e. Bachelor is 6, Master is 7, and Doctorate is 8.
+                Descriptions of all the levels can be found here:
+                https://en.wikipedia.org/wiki/European_Qualifications_Framework
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:byte">
+            <xs:minInclusive value="1"/>
+            <xs:maxInclusive value="8"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="CefrLevel">
+        <xs:annotation>
+            <xs:documentation>
+                CEFR level code. CEFR levels are used to represent a skill of a language.
+                https://en.wikipedia.org/wiki/Common_European_Framework_of_Reference_for_Languages
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[ABC][12]"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="Gender">
+        <xs:annotation>
+            <xs:documentation>
+                ISO/IEC 5218 code of human sex.
+
+                https://en.wikipedia.org/wiki/ISO/IEC_5218
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:integer">
+            <xs:enumeration value="0">
+                <xs:annotation>
+                    <xs:documentation>not known</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="1">
+                <xs:annotation>
+                    <xs:documentation>male</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="2">
+                <xs:annotation>
+                    <xs:documentation>female</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="9">
+                <xs:annotation>
+                    <xs:documentation>not applicable</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
         </xs:restriction>
     </xs:simpleType>
 

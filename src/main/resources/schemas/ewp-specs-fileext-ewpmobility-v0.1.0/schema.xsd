@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xml="http://www.w3.org/XML/1998/namespace"
+    xmlns:mobility="https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/master/endpoints/get-response.xsd"
+    elementFormDefault="qualified"
+
+    targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-fileext-ewpmobility/tree/master"
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-fileext-ewpmobility/tree/master"
+>
+    <!-- WRTODO: Replace all occurrences of 'master' (in all projects) with 'stable-v1' upon release. -->
+
+    <xs:import
+        schemaLocation="../ewp-specs-api-mobilities/endpoints/get-response.xsd"
+        namespace="https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/master/endpoints/get-response.xsd"
+    />
+
+    <xs:annotation>
+        <xs:documentation>
+            This schema is a part of the Erasmus Without Paper project. Before you start
+            using it, make sure you have read the general rules described here:
+
+            http://developers.erasmuswithoutpaper.eu/
+        </xs:documentation>
+    </xs:annotation>
+
+    <xs:element name="ewp-mobility-file">
+        <xs:annotation>
+            <xs:documentation>
+                This describes the format of the `.ewpmobility` Exchange File.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:group ref="mobility:SequenceOfMobilities">
+                    <xs:annotation>
+                        <xs:documentation>
+                            The file consists of a list of Outgoing Mobility objects (these objects are
+                            described in a separate XML Schema).
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:group>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>

@@ -1,0 +1,9 @@
+<mobilities-update-response
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/master/endpoints/update-response.xsd"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/master/endpoints/update-response.xsd
+        update-response.xsd
+    "
+/>
+<!-- WRTODO: Make schemaLocation absolute -->

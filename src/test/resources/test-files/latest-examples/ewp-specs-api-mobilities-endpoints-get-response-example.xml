@@ -1,0 +1,252 @@
+<mobilities-get-response
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/master/endpoints/get-response.xsd"
+    xmlns:a="https://github.com/erasmus-without-paper/ewp-specs-types-address/tree/master"
+    xmlns:p="https://github.com/erasmus-without-paper/ewp-specs-types-phonenumber/tree/master"
+    xmlns:xml="http://www.w3.org/XML/1998/namespace"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/master/endpoints/get-response.xsd
+        get-response.xsd
+    "
+>
+    <student-mobility-for-studies>
+        <mobility-id>c442c289-5541-4cae-9edb-8ad83e133613</mobility-id>
+        <sending-hei>
+            <hei-id>uio.no</hei-id>
+            <ounit-id>fsat.no</ounit-id>
+            <iia-id>ABC/2005/123</iia-id>
+        </sending-hei>
+        <receiving-hei>
+            <hei-id>uw.edu.pl</hei-id>
+            <iia-id>DEF62753/2005</iia-id>
+        </receiving-hei>
+        <student>
+            <given-names>Mister</given-names>
+            <family-name>Personson</family-name>
+            <birth-date>1985-05-05</birth-date>
+            <citizenship>NO</citizenship>
+            <gender>1</gender>
+            <email>personson@example.com</email>
+            <a:mailing-address>
+                <!-- See https://github.com/erasmus-without-paper/ewp-specs-types-address -->
+            </a:mailing-address>
+            <p:phone-number>
+                <p:e164>+4788888888</p:e164>
+            </p:phone-number>
+        </student>
+        <status>live</status>
+        <planned-arrival-date>2010-02-01</planned-arrival-date>
+        <planned-departure-date>2010-06-20</planned-departure-date>
+        <actual-arrival-date>2010-02-05</actual-arrival-date>
+        <actual-departure-date>2010-06-19</actual-departure-date>
+        <nominee-eqf-level>7</nominee-eqf-level>
+        <nominee-field-isced-code>1234</nominee-field-isced-code>
+        <nominee-language-skill>
+            <language>no</language>
+            <cefr-level>C2</cefr-level>
+        </nominee-language-skill>
+        <nominee-language-skill>
+            <language>en</language>
+            <cefr-level>B2</cefr-level>
+        </nominee-language-skill>
+        <nominee-language-skill>
+            <language>pl</language>
+            <cefr-level>A1</cefr-level>
+        </nominee-language-skill>
+        <component-studied>
+            <!-- Direct reference to the Courses API. -->
+            <los-id>C/KR502B</los-id>
+            <component-code>KR502B</component-code>
+            <title>Introductory calculus</title>
+            <loi-id>Z/52485892</loi-id>
+            <academic-term-display-name>Spring 2009/2010</academic-term-display-name>
+            <credit>
+                <scheme>ects</scheme>
+                <value>6</value>
+            </credit>
+        </component-studied>
+        <component-studied>
+            <!-- Or, generic component description typed in by hand. -->
+            <component-code>ABC 123</component-code>
+            <title>Some other course</title>
+            <academic-term-display-name>spring</academic-term-display-name>
+            <credit>
+                <scheme>ects</scheme>
+                <value>6</value>
+            </credit>
+        </component-studied>
+        <component-recognized>
+            <los-id>8f0d7dad2bb6d40148c3c7e0baf03efb8dd92fca</los-id>
+            <loi-id>212419af43263e2130bac0b5041d89e217bb6cbd</loi-id>
+        </component-recognized>
+        <timeline>
+            <!--
+            Receiving HEI accepts the nomination.
+            -->
+            <update-status>
+                <committer-hei-id>uw.edu.pl</committer-hei-id>
+                <commit-date>2009-10-25T13:00:00+02:00</commit-date>
+                <new-status>live</new-status>
+            </update-status>
+            <!--
+            Student fills in a draft version of the LA. He types in one  course
+            two times by mistake.
+            -->
+            <modify-components revision="1">
+                <committer-hei-id>uio.no</committer-hei-id>
+                <commit-date>2009-11-13T12:34:56+01:00</commit-date>
+                <changeset>
+                    <insert-component-studied>
+                        <index>0</index>
+                        <component-studied>
+                            <title>Introductory calculus</title>
+                            <academic-term-display-name>Spring</academic-term-display-name>
+                            <credit>
+                                <scheme>ects</scheme>
+                                <value>6</value>
+                            </credit>
+                        </component-studied>
+                    </insert-component-studied>
+                    <insert-component-studied>
+                        <!-- This will push the proper "Introductory calculus" to index 1. -->
+                        <index>0</index>
+                        <component-studied>
+                            <title>Introductory calculus duplicate</title>
+                        </component-studied>
+                    </insert-component-studied>
+                </changeset>
+            </modify-components>
+            <!--
+            Sending coordinator notices student's mistake and removes the duplicate.
+            -->
+            <modify-components revision="2">
+                <committer-hei-id>uio.no</committer-hei-id>
+                <commit-date>2009-11-13T13:00:33+01:00</commit-date>
+                <changeset>
+                    <remove-component-studied>
+                        <reason>
+                            <display-text>Removing a duplicated component (mistake?).</display-text>
+                        </reason>
+                        <index>0</index>
+                        <!-- Not the proper "Introductory calculus" is back on index 0. -->
+                    </remove-component-studied>
+                </changeset>
+            </modify-components>
+            <!--
+            Both student and the sending coordinator approve this revision (2).
+            -->
+            <approve-components>
+                <committer-hei-id>uio.no</committer-hei-id>
+                <commit-date>2009-11-13T13:02:13+01:00</commit-date>
+                <party>sending-hei</party>
+            </approve-components>
+            <approve-components>
+                <committer-hei-id>uio.no</committer-hei-id>
+                <commit-date>2009-11-13T13:03:13+01:00</commit-date>
+                <party>student</party>
+            </approve-components>
+            <!--
+            Receiving coordinator wants to add references to the course catalogue.
+            (The los-id and loi-id values.) He approves *revision 3*.
+            -->
+            <modify-components revision="3">
+                <committer-hei-id>uw.edu.pl</committer-hei-id>
+                <commit-date>2009-11-15T08:01:23+01:00</commit-date>
+                <changeset>
+                    <update-component-studied>
+                        <reason>
+                            <display-text>Added references to Course Catalogue.</display-text>
+                        </reason>
+                        <index>0</index>
+                        <component-studied>
+                            <los-id>C/KR502B</los-id>
+                            <component-code>KR502B</component-code>
+                            <title>Introductory calculus</title>
+                            <loi-id>Z/52485892</loi-id>
+                            <academic-term-display-name>Spring 2009/2010</academic-term-display-name>
+                            <credit>
+                                <scheme>ects</scheme>
+                                <value>6</value>
+                            </credit>
+                        </component-studied>
+                    </update-component-studied>
+                </changeset>
+            </modify-components>
+            <approve-components>
+                <committer-hei-id>uw.edu.pl</committer-hei-id>
+                <commit-date>2009-11-15T13:03:13+01:00</commit-date>
+                <party>receiving-hei</party>
+            </approve-components>
+            <!--
+            At this point, no revision is actually approved. The student and the
+            sending coordinator must approve revision 3 before we will have a
+            revision approved by all three parties.
+            -->
+            <approve-components>
+                <committer-hei-id>uio.no</committer-hei-id>
+                <commit-date>2009-11-15T14:02:13+01:00</commit-date>
+                <party>sending-hei</party>
+            </approve-components>
+            <approve-components>
+                <committer-hei-id>uio.no</committer-hei-id>
+                <commit-date>2009-11-16T08:03:13+01:00</commit-date>
+                <party>student</party>
+            </approve-components>
+            <!--
+            All parties have signed the revision 3 of the agreement. But other
+            draft revisions may come later (and they WILL appear in component-studied
+            outside of the timeline element).
+            -->
+            <modify-components revision="4">
+                <committer-hei-id>uio.no</committer-hei-id>
+                <commit-date>2009-12-02T08:03:13+01:00</commit-date>
+                <changeset>
+                    <insert-component-studied>
+                        <index>1</index>
+                        <component-studied>
+                            <component-code>ABC 123</component-code>
+                            <title>Some other course</title>
+                            <academic-term-display-name>spring</academic-term-display-name>
+                            <credit>
+                                <scheme>ects</scheme>
+                                <value>6</value>
+                            </credit>
+                        </component-studied>
+                    </insert-component-studied>
+                    <insert-component-recognized>
+                        <index>0</index>
+                        <component-recognized>
+                            <los-id>8f0d7dad2bb6d40148c3c7e0baf03efb8dd92fca</los-id>
+                            <loi-id>212419af43263e2130bac0b5041d89e217bb6cbd</loi-id>
+                        </component-recognized>
+                    </insert-component-recognized>
+                </changeset>
+            </modify-components>
+            <!--
+            At this point, revision 4 is served, but it is *revision 3* which is the
+            "last approved" one.
+            -->
+            <!--
+            Receiving HEI updates the arrival and departure dates.
+            -->
+            <update-arrival-departure-dates>
+                <committer-hei-id>uw.edu.pl</committer-hei-id>
+                <commit-date>2010-02-07T08:20:33+01:00</commit-date>
+                <new-actual-arrival-date>2010-02-05</new-actual-arrival-date>
+            </update-arrival-departure-dates>
+            <update-arrival-departure-dates>
+                <committer-hei-id>uw.edu.pl</committer-hei-id>
+                <commit-date>2010-06-19T18:20:33+02:00</commit-date>
+                <new-actual-departure-date>2010-06-19</new-actual-departure-date>
+            </update-arrival-departure-dates>
+            <!--
+            After ToR is ready, receiving HEI notifies the sending HEI about it.
+            -->
+            <request-recognition>
+                <committer-hei-id>uw.edu.pl</committer-hei-id>
+                <commit-date>2010-06-21T13:00:02+02:00</commit-date>
+                <party>receiving-hei</party>
+            </request-recognition>
+        </timeline>
+    </student-mobility-for-studies>
+</mobilities-get-response>

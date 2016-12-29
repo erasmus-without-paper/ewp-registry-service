@@ -38,6 +38,10 @@
                     <trm:start-date>2016-07-01</trm:start-date>
                     <trm:end-date>2016-12-31</trm:end-date>
                 </trm:academic-term>
+                <gradingScheme>
+                    <label>0-100</label>
+                    <description xml:lang="en">Optional description of the grading scheme.</description>
+                </gradingScheme>
                 <resultDistribution>
                     <category label="0-50" count="159" />
                     <category label="50-100" count="40" />

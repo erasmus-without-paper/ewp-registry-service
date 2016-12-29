@@ -101,7 +101,9 @@ public class EwpDocBuilder {
          * schemas which are not present in our schema catalog. The catalog needs to be updated.
          */
 
-        throw new RuntimeException("Missing schema in resources: " + namespaceUri);
+        throw new RuntimeException("Missing schema in registry's resources:\nnamespaceUri: "
+            + namespaceUri + "\ntype: " + type + "\npublicId: " + publicId + "\nsystemId: "
+            + systemId + "\nbaseUri: " + baseUri);
       }
     };
 
