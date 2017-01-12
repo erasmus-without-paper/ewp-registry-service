@@ -6,6 +6,7 @@
         https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-course-replication/stable-v1/response.xsd
     "
 >
-    <los-id>MA100</los-id>
-    <los-id>STAVH</los-id>
+    <los-id>CR/f6d14b1f-f330-4956-8819-e24feb12d519</los-id>
+    <los-id>CR/e5a443df-0398-48fa-9606-663e5ae981de</los-id>
+    <!-- And many more... -->
 </course-replication-response>

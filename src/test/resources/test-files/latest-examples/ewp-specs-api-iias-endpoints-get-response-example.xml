@@ -16,14 +16,8 @@
     solely on the example file.
     -->
     <iia>
-        <!--
-        General reminder: All EWP IDs MAY contain characters which require proper
-        encoding based on context. E.g. the "&" character needs to be encoded as %26 in
-        the request URL ("/" and "+" characters would be encoded too), but in XML "&"
-        will be encoded as "&amp;". (This is part of the URI and XML specifications,
-        which every EWP developer should be familiar with.)
-        -->
-        <iia-id>983/E+/III14&amp;15</iia-id>
+        <iia-id>0f7a5682-faf7-49a7-9cc7-ec486c49a281</iia-id>
+        <iia-code>983/E+/III14&amp;15</iia-code>
         <signing-contact>
             <c:contact-name>Sylwia Salomon</c:contact-name>
             <c:email>email@example.com</c:email>
@@ -36,7 +30,8 @@
         </c:contact>
         <partner-hei>
             <hei-id>hibo.no</hei-id>
-            <!-- Optional remote iia-id goes here, if known. -->
+            <iia-id>1954991</iia-id>
+            <iia-code>2014/E+/PL/4104B</iia-code>
             <signing-contact>
                 <c:contact-name>Monica Brobakk</c:contact-name>
                 <c:email>email@example.com</c:email>
@@ -51,7 +46,7 @@
             <!-- Student mobility for studies. -->
             <student-studies-mobility-spec>
                 <sending-hei-id>uw.edu.pl</sending-hei-id>
-                <sending-ounit-id>34010000</sending-ounit-id>
+                <sending-ounit-id>140</sending-ounit-id>
                 <!-- Optional sending-contact elements go here (if supported by the
                 server at this level). -->
                 <receiving-hei-id>hibo.no</receiving-hei-id>
@@ -73,7 +68,7 @@
                     <language>no</language>
                     <cefr-level>B1</cefr-level>
                 </recommended-language-skill>
-                <isced-code>0314</isced-code>
+                <isced-f-code>0314</isced-f-code>
                 <avg-months>5</avg-months>
                 <!-- At least one eqf-level is required for "mobility for studies". -->
                 <eqf-level>7</eqf-level>
@@ -83,7 +78,7 @@
             <!-- Student mobility for traineeships. -->
             <student-traineeship-mobility-spec>
                 <sending-hei-id>uw.edu.pl</sending-hei-id>
-                <sending-ounit-id>34010000</sending-ounit-id>
+                <sending-ounit-id>140</sending-ounit-id>
                 <receiving-hei-id>hibo.no</receiving-hei-id>
                 <receiving-academic-year-id>2014/2015</receiving-academic-year-id>
                 <receiving-academic-year-id>2015/2016</receiving-academic-year-id>
@@ -97,7 +92,7 @@
                     <language>no</language>
                     <cefr-level>B1</cefr-level>
                 </recommended-language-skill>
-                <isced-code>0314</isced-code>
+                <isced-f-code>0314</isced-f-code>
                 <avg-months>10</avg-months>
                 <!-- No eqf-level for traineeships. -->
             </student-traineeship-mobility-spec>
@@ -105,7 +100,7 @@
             <!-- Staff mobility for teaching. -->
             <staff-teacher-mobility-spec>
                 <sending-hei-id>uw.edu.pl</sending-hei-id>
-                <sending-ounit-id>34010000</sending-ounit-id>
+                <sending-ounit-id>140</sending-ounit-id>
                 <receiving-hei-id>hibo.no</receiving-hei-id>
                 <receiving-academic-year-id>2016/2017</receiving-academic-year-id>
                 <receiving-academic-year-id>2017/2018</receiving-academic-year-id>
@@ -114,7 +109,7 @@
                     <language>en</language>
                     <cefr-level>C1</cefr-level>
                 </recommended-language-skill>
-                <isced-code>0314</isced-code>
+                <isced-f-code>0314</isced-f-code>
                 <!-- Staff mobilities have days instead of months. -->
                 <avg-days>14</avg-days>
             </staff-teacher-mobility-spec>
@@ -124,7 +119,7 @@
                 (The same is true for every other *-mobility-spec element.) -->
                 <sending-hei-id>hibo.no</sending-hei-id>
                 <receiving-hei-id>uw.edu.pl</receiving-hei-id>
-                <receiving-ounit-id>34010000</receiving-ounit-id>
+                <receiving-ounit-id>140</receiving-ounit-id>
                 <receiving-academic-year-id>2016/2017</receiving-academic-year-id>
                 <receiving-academic-year-id>2017/2018</receiving-academic-year-id>
                 <mobilities-per-year>2</mobilities-per-year>
@@ -132,7 +127,7 @@
                     <language>en</language>
                     <cefr-level>C1</cefr-level>
                 </recommended-language-skill>
-                <isced-code>0314</isced-code>
+                <isced-f-code>0314</isced-f-code>
                 <avg-days>14</avg-days>
             </staff-teacher-mobility-spec>
 
@@ -140,7 +135,7 @@
             <staff-training-mobility-spec>
                 <sending-hei-id>hibo.no</sending-hei-id>
                 <receiving-hei-id>uw.edu.pl</receiving-hei-id>
-                <receiving-ounit-id>34010000</receiving-ounit-id>
+                <receiving-ounit-id>140</receiving-ounit-id>
                 <receiving-academic-year-id>2016/2017</receiving-academic-year-id>
                 <receiving-academic-year-id>2017/2018</receiving-academic-year-id>
                 <mobilities-per-year>2</mobilities-per-year>
@@ -148,7 +143,7 @@
                     <language>en</language>
                     <cefr-level>B2</cefr-level>
                 </recommended-language-skill>
-                <isced-code>0314</isced-code>
+                <isced-f-code>0314</isced-f-code>
                 <avg-days>14</avg-days>
             </staff-training-mobility-spec>
         </cooperation-conditions>

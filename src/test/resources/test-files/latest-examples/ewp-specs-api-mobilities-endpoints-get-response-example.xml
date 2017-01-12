@@ -13,12 +13,12 @@
         <mobility-id>c442c289-5541-4cae-9edb-8ad83e133613</mobility-id>
         <sending-hei>
             <hei-id>uio.no</hei-id>
-            <ounit-id>fsat.no</ounit-id>
-            <iia-id>ABC/2005/123</iia-id>
+            <ounit-id>140</ounit-id>
+            <iia-id>dd87538e-49e3-44ae-844e-55ad1b819ce9</iia-id>
         </sending-hei>
         <receiving-hei>
             <hei-id>uw.edu.pl</hei-id>
-            <iia-id>DEF62753/2005</iia-id>
+            <iia-id>549117543</iia-id> <!-- We recommend UUIDs though. -->
         </receiving-hei>
         <student>
             <given-names>Mister</given-names>
@@ -40,7 +40,7 @@
         <actual-arrival-date>2010-02-05</actual-arrival-date>
         <actual-departure-date>2010-06-19</actual-departure-date>
         <nominee-eqf-level>7</nominee-eqf-level>
-        <nominee-field-isced-code>1234</nominee-field-isced-code>
+        <nominee-isced-f-code>1234</nominee-isced-f-code>
         <nominee-language-skill>
             <language>no</language>
             <cefr-level>C2</cefr-level>
@@ -55,10 +55,10 @@
         </nominee-language-skill>
         <component-studied>
             <!-- Direct reference to the Courses API. -->
-            <los-id>C/KR502B</los-id>
-            <component-code>KR502B</component-code>
+            <los-id>CR/f9c7677f-e3e3-4106-a865-1d1e8867830e</los-id>
+            <los-code>KR502B</los-code>
             <title>Introductory calculus</title>
-            <loi-id>Z/52485892</loi-id>
+            <loi-id>CRI/fbe7f54e-af18-4e3e-bc74-c3d3392131b3</loi-id>
             <academic-term-display-name>Spring 2009/2010</academic-term-display-name>
             <credit>
                 <scheme>ects</scheme>
@@ -67,7 +67,7 @@
         </component-studied>
         <component-studied>
             <!-- Or, generic component description typed in by hand. -->
-            <component-code>ABC 123</component-code>
+            <los-code>ABC 123</los-code>
             <title>Some other course</title>
             <academic-term-display-name>spring</academic-term-display-name>
             <credit>
@@ -76,8 +76,8 @@
             </credit>
         </component-studied>
         <component-recognized>
-            <los-id>8f0d7dad2bb6d40148c3c7e0baf03efb8dd92fca</los-id>
-            <loi-id>212419af43263e2130bac0b5041d89e217bb6cbd</loi-id>
+            <los-id>CR/8f0d7dad-2bb6-d401-48c3-c7e0baf03efb</los-id>
+            <loi-id>CRI/212419af-4326-3e21-30ba-c0b5041d89e2</loi-id>
         </component-recognized>
         <timeline>
             <!--
@@ -159,10 +159,10 @@
                         </reason>
                         <index>0</index>
                         <component-studied>
-                            <los-id>C/KR502B</los-id>
-                            <component-code>KR502B</component-code>
+                            <los-id>CR/f9c7677f-e3e3-4106-a865-1d1e8867830e</los-id>
+                            <los-code>KR502B</los-code>
                             <title>Introductory calculus</title>
-                            <loi-id>Z/52485892</loi-id>
+                            <loi-id>CRI/fbe7f54e-af18-4e3e-bc74-c3d3392131b3</loi-id>
                             <academic-term-display-name>Spring 2009/2010</academic-term-display-name>
                             <credit>
                                 <scheme>ects</scheme>
@@ -204,7 +204,7 @@
                     <insert-component-studied>
                         <index>1</index>
                         <component-studied>
-                            <component-code>ABC 123</component-code>
+                            <los-code>ABC 123</los-code>
                             <title>Some other course</title>
                             <academic-term-display-name>spring</academic-term-display-name>
                             <credit>
@@ -216,8 +216,8 @@
                     <insert-component-recognized>
                         <index>0</index>
                         <component-recognized>
-                            <los-id>8f0d7dad2bb6d40148c3c7e0baf03efb8dd92fca</los-id>
-                            <loi-id>212419af43263e2130bac0b5041d89e217bb6cbd</loi-id>
+                            <los-id>CR/8f0d7dad-2bb6-d401-48c3-c7e0baf03efb</los-id>
+                            <loi-id>CRI/212419af-4326-3e21-30ba-c0b5041d89e2</loi-id>
                         </component-recognized>
                     </insert-component-recognized>
                 </changeset>

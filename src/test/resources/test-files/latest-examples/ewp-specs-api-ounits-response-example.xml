@@ -19,10 +19,10 @@
     solely on the example file.
     -->
     <ounit>
-        <ounit-id>10000000</ounit-id>
+        <ounit-id>73</ounit-id> <!-- We recommend UUIDs though. -->
         <name xml:lang="en">Faculty of Mathematics, Informatics, and Mechanics</name>
         <name xml:lang="pl">Wydział Matematyki, Informatyki i Mechaniki</name>
-        <parent-ounit-id>00000000</parent-ounit-id>
+        <parent-ounit-id>5</parent-ounit-id>
         <a:street-address>
             <a:addressLine>Banacha 2</a:addressLine>
             <a:locality>Warszawa</a:locality>

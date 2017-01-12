@@ -44,12 +44,19 @@
                                 </xs:documentation>
                             </xs:annotation>
                         </xs:element>
-                        <xs:element name="allows-anonymous-access" type="ewp:Empty">
+                        <xs:element name="allows-anonymous-access" type="xs:boolean">
                             <xs:annotation>
                                 <xs:documentation>
-                                    If this element is present, then this API is (currently) accessible to
-                                    anonymous clients. This means that you do not need to be an official member of
-                                    the EWP Network in order to use this API.
+                                    Boolean. If true, then this API is accessible to anonymous clients. This means
+                                    that clients do not need to be official members of the EWP Network in order to
+                                    make use of this API.
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="supports-modified-since" type="xs:boolean">
+                            <xs:annotation>
+                                <xs:documentation>
+                                    Boolean. True, if the server supports `modified_since` request parameter.
                                 </xs:documentation>
                             </xs:annotation>
                         </xs:element>

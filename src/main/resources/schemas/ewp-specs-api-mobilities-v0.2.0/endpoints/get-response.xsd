@@ -3,6 +3,7 @@
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
     xmlns:a="https://github.com/erasmus-without-paper/ewp-specs-types-address/tree/master"
     xmlns:p="https://github.com/erasmus-without-paper/ewp-specs-types-phonenumber/tree/master"
+    xmlns:course="https://github.com/erasmus-without-paper/ewp-specs-api-courses/tree/master"
     xmlns:xml="http://www.w3.org/XML/1998/namespace"
     xmlns:ewp="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
     elementFormDefault="qualified"
@@ -25,6 +26,11 @@
     <xs:import
         schemaLocation="../../ewp-specs-types-phonenumber/schema.xsd"
         namespace="https://github.com/erasmus-without-paper/ewp-specs-types-phonenumber/tree/master"
+    /> <!-- WRTODO: absolute paths! -->
+
+    <xs:import
+        schemaLocation="../../ewp-specs-api-courses/response.xsd"
+        namespace="https://github.com/erasmus-without-paper/ewp-specs-api-courses/tree/master"
     /> <!-- WRTODO: absolute paths! -->
 
     <xs:annotation>
@@ -313,7 +319,7 @@
                         </xs:documentation>
                     </xs:annotation>
                 </xs:element>
-                <xs:element name="nominee-field-isced-code" type="xs:string" minOccurs="0" maxOccurs="1">
+                <xs:element name="nominee-isced-f-code" type="xs:string" minOccurs="0" maxOccurs="1">
                     <xs:annotation>
                         <xs:documentation>
                             The student is sent to the mobility as part of one of his study programmes.
@@ -364,7 +370,7 @@
                 <xs:element ref="component-recognized" minOccurs="0" maxOccurs="unbounded">
                     <xs:annotation>
                         <xs:documentation>
-                            An optional list of components recognized (or planned to be recognized) at the
+                            An OPTIONAL list of components recognized (or planned to be recognized) at the
                             sending HEI.
 
                             This loosely corresponds to tables B or D on the EUC LA template (attached in
@@ -372,6 +378,10 @@
                             instead. This means that you should treat this content as a draft. If you want
                             to retrieve the *last accepted* version (or any of the other previously
                             accepted versions), you will need to go through the timeline entries.
+
+                            Note, that very few servers are planning to provide this feature at the initial
+                            stages of EWP adoption:
+                            https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/issues/11
                         </xs:documentation>
                     </xs:annotation>
                 </xs:element>
@@ -416,7 +426,7 @@
         </xs:annotation>
         <xs:complexType>
             <xs:sequence>
-                <xs:element name="los-id" type="xs:string" minOccurs="0" maxOccurs="1">
+                <xs:element name="los-id" type="course:LosID" minOccurs="0" maxOccurs="1">
                     <xs:annotation>
                         <xs:documentation>
                             The EWP's LOS ID of the component, exactly as exposed via the receiving HEI's
@@ -435,7 +445,7 @@
                         </xs:documentation>
                     </xs:annotation>
                 </xs:element>
-                <xs:element name="component-code" type="xs:string" minOccurs="0" maxOccurs="1">
+                <xs:element name="los-code" type="xs:string" minOccurs="0" maxOccurs="1">
                     <xs:annotation>
                         <xs:documentation>
                             This is the optional component code to be displayed to the end user. This field
@@ -445,7 +455,14 @@
                             a valid EWP's LOS ID used in the Courses API.
 
                             In case of many HEIs, it will be equal to the LOS ID provided above, but it's
-                            purpose is entirely different.
+                            purpose is entirely different. LOS IDs are surrogate identifiers (and, as such,
+                            should not be displayed to the user), while LOS codes are "human readable", but
+                            don't they are *not used* to identify entities in EWP network.
+
+                            Related links:
+                            https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/issues/9
+                            https://en.wikipedia.org/wiki/Surrogate_key
+                            https://en.wikipedia.org/wiki/Natural_key
                         </xs:documentation>
                     </xs:annotation>
                 </xs:element>
@@ -469,7 +486,7 @@
                         </xs:documentation>
                     </xs:annotation>
                 </xs:element>
-                <xs:element name="loi-id" type="xs:string" minOccurs="0" maxOccurs="1">
+                <xs:element name="loi-id" type="course:LoiID" minOccurs="0" maxOccurs="1">
                     <xs:annotation>
                         <xs:documentation>
                             The EWP's LOI ID of the component, exactly as exposed via the receiving HEI's
@@ -550,7 +567,7 @@
         </xs:annotation>
         <xs:complexType>
             <xs:sequence>
-                <xs:element name="los-id" type="xs:string" minOccurs="1" maxOccurs="1">
+                <xs:element name="los-id" type="course:LosID" minOccurs="1" maxOccurs="1">
                     <xs:annotation>
                         <xs:documentation>
                             The EWP's LOS ID of the component, exactly as exposed via the sending HEI's
@@ -560,7 +577,7 @@
                         </xs:documentation>
                     </xs:annotation>
                 </xs:element>
-                <xs:element name="loi-id" type="xs:string" minOccurs="1" maxOccurs="1">
+                <xs:element name="loi-id" type="course:LoiID" minOccurs="1" maxOccurs="1">
                     <xs:annotation>
                         <xs:documentation>
                             The EWP's LOI ID of the component, exactly as exposed via the sending HEI's

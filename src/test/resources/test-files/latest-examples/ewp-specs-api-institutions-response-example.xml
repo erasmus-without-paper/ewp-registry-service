@@ -82,7 +82,7 @@
         </c:contact>
 
         <!-- List of HEI's faculties (and other organizational subunits). -->
-        <ounit-id>fsat.no</ounit-id>
+        <ounit-id>fsat.no</ounit-id> <!-- We recommend UUIDs though. -->
         <ounit-id>matnat.uio.no</ounit-id>
         <ounit-id>hf.uio.no</ounit-id>
     </hei>

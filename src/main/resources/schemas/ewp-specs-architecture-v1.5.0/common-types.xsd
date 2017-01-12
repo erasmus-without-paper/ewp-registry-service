@@ -366,6 +366,31 @@
                         </xs:documentation>
                     </xs:annotation>
                 </xs:element>
+                <xs:element name="user-message" type="MultilineStringWithOptionalLang" minOccurs="0" maxOccurs="unbounded">
+                    <xs:annotation>
+                        <xs:documentation>
+                            A message for the client user.
+
+                            This message will usually be provided only in case of some very specific client
+                            errors (HTTP 4xx responses) - the ones that the client actually *expects* to
+                            happen sometimes. For example, if the specification explicitly states that some
+                            parameter values can be rejected by the server, but it doesn't state which ones
+                            (because it's up to the server implementers to decide).
+
+                            In such cases, the "wrong" values are usually provided by the end user. And
+                            this error message should contain the explanation why the server believes
+                            they're "wrong". For example:
+
+                            """University of Warsaw doesn't currently allow receiving institutions to
+                            propose changes to the content of the 'Recognition at the Sending Institution'
+                            table. Please contact the sending coordinator by email to propose this
+                            change."""
+
+                            User messages MAY be provided in multiple languages. English SHOULD be among
+                            them.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
             </xs:sequence>
         </xs:complexType>
     </xs:element>

@@ -15,7 +15,7 @@
     solely on the example file.
     -->
     <learningOpportunitySpecification>
-        <los-id>MA100</los-id>
+        <los-id>CR/f6d14b1f-f330-4956-8819-e24feb12d519</los-id>
         <title xml:lang="no">Grunnkurs i matematikk</title>
         <title xml:lang="en">Introductory calculus</title>
         <type>Course</type>
@@ -24,11 +24,9 @@
         <url>http://example.com/</url>
         <description xml:lang="no">En eller annen beskrivelse</description>
         <description xml:lang="en">Some description</description>
-        <!-- <grading-scheme>ects</grading-scheme> -->
-        <!-- <eqf-level>1</eqf-level> -->
         <specifies>
             <learningOpportunityInstance>
-                <loi-id>2016/2017-MA100</loi-id>
+                <loi-id>CRI/13466290</loi-id> <!-- we recommend UUIDs though -->
                 <start>2016-07-01</start>
                 <end>2016-12-31</end>
                 <trm:academic-term>
@@ -60,18 +58,18 @@
                 <engagementHours>60</engagementHours>
             </learningOpportunityInstance>
             <learningOpportunityInstance>
-                <loi-id>2015/2016-MA100</loi-id>
+                <loi-id>CRI/14061212</loi-id>
                 <start>2015-07-01</start>
                 <end>2015-12-31</end>
             </learningOpportunityInstance>
         </specifies>
         <contains>
-            <los-id>MA100-A</los-id>
-            <los-id>MA100-B</los-id>
+            <los-id>CLS/95153879-1ba9-43a0-a845-0a50b4d52f9b</los-id>
+            <los-id>CLS/06e518cc-a67c-4595-a7bb-367978d93e70</los-id>
         </contains>
     </learningOpportunitySpecification>
     <learningOpportunitySpecification>
-        <los-id>STAVH</los-id>
+        <los-id>DEP/a1a43018-558c-45ed-a187-3c966e7bac77</los-id>
         <title xml:lang="no">Statsvitenskap hovedfag</title>
         <title xml:lang="en">Political science, main subject</title>
         <type>Degree Programme</type>
