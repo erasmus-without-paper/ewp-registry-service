@@ -1,7 +1,7 @@
 FROM openjdk:8-jre
 
 MAINTAINER Wojciech Rygielski
-ENV REFRESHED_AT 2016-09-07
+ENV REFRESHED_AT 2017-01-12
 
 RUN \
     apt-get update && \
