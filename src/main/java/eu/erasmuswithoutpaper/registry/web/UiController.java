@@ -1,5 +1,8 @@
 package eu.erasmuswithoutpaper.registry.web;
 
+import java.security.cert.CertificateEncodingException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -11,6 +14,9 @@ import eu.erasmuswithoutpaper.registry.documentbuilder.BuildError;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildParams;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildResult;
 import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
+import eu.erasmuswithoutpaper.registry.echotester.EchoTestResult;
+import eu.erasmuswithoutpaper.registry.echotester.EchoTestResult.Status;
+import eu.erasmuswithoutpaper.registry.echotester.EchoTester;
 import eu.erasmuswithoutpaper.registry.notifier.NotifierFlag;
 import eu.erasmuswithoutpaper.registry.notifier.NotifierService;
 import eu.erasmuswithoutpaper.registry.sourceprovider.ManifestSource;
@@ -39,6 +45,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.ocpsoft.prettytime.PrettyTime;
 
 /**
@@ -55,6 +62,7 @@ public class UiController {
   private final NotifierService notifier;
   private final UptimeChecker uptimeChecker;
   private final EwpDocBuilder docBuilder;
+  private final EchoTester echoTester;
 
   /**
    * @param taskExecutor needed for running background tasks.
@@ -64,12 +72,13 @@ public class UiController {
    * @param notifier needed to retrieve issues watched by particular recipients.
    * @param uptimeChecker needed to display current uptime stats.
    * @param docBuilder needed to support online document validation service.
+   * @param echoTester needed to support online Echo API validation service.
    */
   @Autowired
   public UiController(TaskExecutor taskExecutor,
       ManifestUpdateStatusRepository manifestUpdateStatuses, ManifestSourceProvider sourceProvider,
       RegistryUpdater updater, NotifierService notifier, UptimeChecker uptimeChecker,
-      EwpDocBuilder docBuilder) {
+      EwpDocBuilder docBuilder, EchoTester echoTester) {
     this.taskExecutor = taskExecutor;
     this.manifestStatusRepo = manifestUpdateStatuses;
     this.sourceProvider = sourceProvider;
@@ -77,6 +86,7 @@ public class UiController {
     this.notifier = notifier;
     this.uptimeChecker = uptimeChecker;
     this.docBuilder = docBuilder;
+    this.echoTester = echoTester;
   }
 
   /**
@@ -317,10 +327,64 @@ public class UiController {
   }
 
   /**
+   * Run validation tests on the Echo API served at the given URL.
+   *
+   * <p>
+   * This is not part of the API and MAY be removed later on.
+   * </p>
+   *
+   * @param url The URL at which the Echo API is being served.
+   * @return An undocumented JSON object with the results of the validation (not guaranteed to stay
+   *         backward compatible).
+   */
+  @RequestMapping(path = "/validate-echo", params = "url", method = RequestMethod.POST)
+  public ResponseEntity<String> validateEcho(@RequestParam String url) {
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
+    headers.setCacheControl("max-age=0, must-revalidate");
+    headers.setExpires(0);
+
+    JsonObject responseObj = new JsonObject();
+    JsonObject certInfo = new JsonObject();
+    responseObj.add("certInfo", certInfo);
+    DateFormat isoDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+    certInfo.addProperty("servedSinceDate",
+        isoDateFormat.format(this.echoTester.getClientCertificateUsedSince()));
+    certInfo.addProperty("servedSinceAgeSeconds",
+        (new Date().getTime() - this.echoTester.getClientCertificateUsedSince().getTime()) / 1000);
+    try {
+      certInfo.addProperty("sha256Digest",
+          DigestUtils.sha256Hex(this.echoTester.getClientCertificateInUse().getEncoded()));
+    } catch (CertificateEncodingException e) {
+      throw new RuntimeException(e);
+    }
+
+    JsonArray testsArray = new JsonArray();
+    Status worstStatus = Status.SUCCESS;
+    for (EchoTestResult testResult : this.echoTester.runTests(url)) {
+      JsonObject testObj = new JsonObject();
+      testObj.addProperty("name", testResult.getName());
+      testObj.addProperty("status", testResult.getStatus().toString());
+      if (worstStatus.compareTo(testResult.getStatus()) < 0) {
+        worstStatus = testResult.getStatus();
+      }
+      testObj.addProperty("message", testResult.getMessage());
+      testsArray.add(testObj);
+    }
+    responseObj.addProperty("success", worstStatus.equals(Status.SUCCESS));
+    responseObj.addProperty("status", worstStatus.toString());
+    responseObj.add("tests", testsArray);
+    Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    String json = gson.toJson(responseObj);
+    return new ResponseEntity<String>(json, headers, HttpStatus.OK);
+  }
+
+  /**
    * Validate a supplied XML document against all known EWP schemas.
    *
    * <p>
-   * This is not part of the API and can be removed later on.
+   * This is not part of the API and MAY be removed later on.
    * </p>
    *
    * @param xml The XML to be validated.

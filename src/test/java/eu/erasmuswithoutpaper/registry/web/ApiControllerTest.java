@@ -78,8 +78,7 @@ public class ApiControllerTest extends WRTest {
      * [Test A] At first, the catalogue should be empty, because none of the URLs was reachable.
      */
 
-    assertThat(this.apiController.getCatalogue().getBody())
-        .isEqualTo(this.getFileAsString("demo1/A-out.xml"));
+    assertThat(this.getCatalogueBody()).isEqualTo(this.getFileAsString("demo1/A-out.xml"));
     assertThat(this.status(urlSelf)).contains("Last access status: OK");
     assertThat(this.status(urlPL)).contains("unable to fetch");
     assertThat(this.status(urlSE)).contains("unable to fetch");
@@ -90,14 +89,12 @@ public class ApiControllerTest extends WRTest {
 
     /* The calogue is not yet refreshed, because we didn't call refresh. */
 
-    assertThat(this.apiController.getCatalogue().getBody())
-        .isEqualTo(this.getFileAsString("demo1/A-out.xml"));
+    assertThat(this.getCatalogueBody()).isEqualTo(this.getFileAsString("demo1/A-out.xml"));
 
     /* Refresh it. */
 
     this.uiController.refresh();
-    assertThat(this.apiController.getCatalogue().getBody())
-        .isEqualTo(this.getFileAsString("demo1/B-out.xml"));
+    assertThat(this.getCatalogueBody()).isEqualTo(this.getFileAsString("demo1/B-out.xml"));
     assertThat(this.status(urlPL)).contains("Last access status: OK");
     assertThat(this.status(urlPL)).doesNotContain("unable to fetch");
 
@@ -105,29 +102,25 @@ public class ApiControllerTest extends WRTest {
 
     this.internet.putURL(urlPL, this.getFile("demo1/C-inPL.xml"));
     this.uiController.refresh();
-    assertThat(this.apiController.getCatalogue().getBody())
-        .isEqualTo(this.getFileAsString("demo1/C-out.xml"));
+    assertThat(this.getCatalogueBody()).isEqualTo(this.getFileAsString("demo1/C-out.xml"));
 
     /* [Test D] Put a similar manifest into the Swedish URL. We'll use two HEIs this time. */
 
     this.internet.putURL(urlSE, this.getFile("demo1/D-inSE.xml"));
     this.uiController.refresh();
-    assertThat(this.apiController.getCatalogue().getBody())
-        .isEqualTo(this.getFileAsString("demo1/D-out.xml"));
+    assertThat(this.getCatalogueBody()).isEqualTo(this.getFileAsString("demo1/D-out.xml"));
 
     /* [Test E] Add some API definitions - Echo API and some arbitrary API. */
 
     this.internet.putURL(urlSE, this.getFile("demo1/E-inSE.xml"));
     this.uiController.refresh();
-    assertThat(this.apiController.getCatalogue().getBody())
-        .isEqualTo(this.getFileAsString("demo1/E-out.xml"));
+    assertThat(this.getCatalogueBody()).isEqualTo(this.getFileAsString("demo1/E-out.xml"));
 
     /* [Test F] Try to use an invalid client certificate. */
 
     this.internet.putURL(urlSE, this.getFile("demo1/F-inSE.xml"));
     this.uiController.refresh();
-    assertThat(this.apiController.getCatalogue().getBody())
-        .isEqualTo(this.getFileAsString("demo1/E-out.xml"));
+    assertThat(this.getCatalogueBody()).isEqualTo(this.getFileAsString("demo1/E-out.xml"));
     assertThat(this.status(urlSE))
         .contains("minimum required length of the client certificate key is 1024 bits");
     assertThat(this.status(urlSE))
@@ -137,15 +130,13 @@ public class ApiControllerTest extends WRTest {
 
     this.internet.putURL(urlSE, this.getFile("demo1/G-inSE.xml"));
     this.uiController.refresh();
-    assertThat(this.apiController.getCatalogue().getBody())
-        .isEqualTo(this.getFileAsString("demo1/G-out.xml"));
+    assertThat(this.getCatalogueBody()).isEqualTo(this.getFileAsString("demo1/G-out.xml"));
 
     /* [Test H] Try to invade Poland. */
 
     this.internet.putURL(urlSE, this.getFile("demo1/H-inSE.xml"));
     this.uiController.refresh();
-    assertThat(this.apiController.getCatalogue().getBody())
-        .isEqualTo(this.getFileAsString("demo1/G-out.xml"));
+    assertThat(this.getCatalogueBody()).isEqualTo(this.getFileAsString("demo1/G-out.xml"));
     assertThat(this.status(urlSE)).contains(
         "Institution <code>uw.edu.pl</code> didn't match the <code>^.+\\.se$</code> filter pattern");
 
@@ -161,8 +152,7 @@ public class ApiControllerTest extends WRTest {
     this.internet.putURL(urlPL2, this.getFile("demo1/I-inPL2.xml"));
     this.uiController.refresh();
     assertThat(this.status(urlPL2)).contains("Last access status: OK");
-    assertThat(this.apiController.getCatalogue().getBody())
-        .isEqualTo(this.getFileAsString("demo1/I-out.xml"));
+    assertThat(this.getCatalogueBody()).isEqualTo(this.getFileAsString("demo1/I-out.xml"));
 
     /*
      * [Test J] Add the <hack-attempt> element to the manifest source. Expect the hack to be
@@ -172,8 +162,15 @@ public class ApiControllerTest extends WRTest {
     this.internet.putURL(urlPL2, this.getFile("demo1/J-inPL2.xml"));
     this.uiController.refresh();
     assertThat(this.status(urlPL2)).contains("Last access status: Warning");
-    assertThat(this.apiController.getCatalogue().getBody())
-        .isEqualTo(this.getFileAsString("demo1/J-out.xml"));
+    assertThat(this.getCatalogueBody()).isEqualTo(this.getFileAsString("demo1/J-out.xml"));
+  }
+
+  /**
+   * @return Catalogue body with client certificate's fingerprint replaced with zeroes.
+   */
+  private String getCatalogueBody() {
+    return this.apiController.getCatalogue().getBody().replaceAll("\"[0-9a-f]{64,64}\"",
+        "\"0000000000000000000000000000000000000000000000000000000000000000\"");
   }
 
   /**

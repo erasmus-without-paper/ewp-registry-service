@@ -32,6 +32,12 @@ public class KnownElement {
   public static final KnownElement COMMON_ERROR_RESPONSE =
       new KnownElement(KnownNamespace.COMMON_TYPES_V1, "error-response", "Generic Error Response");
 
+  /**
+   * The root of the Echo API v1 response.
+   */
+  public static final KnownElement RESPONSE_ECHO_V1 =
+      new KnownElement(KnownNamespace.RESPONSE_ECHO_V1, "response", "Echo API Response");
+
   private final KnownNamespace namespace;
   private final String elementName;
   private final String humanReadableName;

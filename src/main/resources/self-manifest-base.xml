@@ -30,4 +30,6 @@
             <catalogue-url>https://registry.erasmuswithoutpaper.eu/catalogue-v1.xml</catalogue-url>
         </registry>
     </r:apis-implemented>
+    <institutions-covered/>
+    <client-credentials-in-use/>
 </manifest>

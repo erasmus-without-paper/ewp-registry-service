@@ -51,7 +51,8 @@ public class SelfManifestProviderTest extends WRTest {
 
     List<ManifestConstraint> constraints = new ArrayList<>();
     constraints.add(new MinimumKeyLengthConstraint(2048));
-    constraints.add(new RestrictInstitutionsCovered("^$"));
+    constraints
+        .add(new RestrictInstitutionsCovered("^.*\\.developers\\.erasmuswithoutpaper\\.eu$"));
     constraints.add(new VerifyApiVersions());
     for (ManifestConstraint c : constraints) {
       List<FailedConstraintNotice> notices = c.filter(doc);

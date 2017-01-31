@@ -239,15 +239,15 @@ class CatalogueBuilder {
       }
     }
 
-    // Add xmlns:xxx attributes for each of the KnownNamespace prefixes.
+    // Add xmlns:xxx attributes for most of the KnownNamespace prefixes.
 
     List<String> chunks = new ArrayList<String>();
     for (KnownNamespace ns : KnownNamespace.values()) {
-      if (ns != KnownNamespace.RESPONSE_MANIFEST_V4 && ns != KnownNamespace.RESPONSE_REGISTRY_V1) {
+      if (ns.isToBeIncludedInCatalogueXmlns() && ns != KnownNamespace.RESPONSE_REGISTRY_V1) {
         catalogue.setAttributeNS(XMLConstants.XMLNS_ATTRIBUTE_NS_URI,
             "xmlns:" + ns.getPreferredPrefix(), ns.getNamespaceUri());
       }
-      if (ns != KnownNamespace.RESPONSE_MANIFEST_V4) {
+      if (ns.isToBeIncludedInCatalogueXmlns()) {
         chunks.add(ns.getNamespaceUri() + "\n        " + ns.getDefaultSchemaLocation());
       }
     }

@@ -4,12 +4,15 @@ import static org.joox.JOOX.$;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.security.cert.CertificateEncodingException;
 import java.util.List;
 
 import eu.erasmuswithoutpaper.registry.Application;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildParams;
 import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
+import eu.erasmuswithoutpaper.registry.echotester.EchoTester;
 import eu.erasmuswithoutpaper.registry.xmlformatter.XmlFormatter;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +21,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.joox.Match;
 import org.w3c.dom.Document;
@@ -40,6 +44,8 @@ public class SelfManifestProvider {
   private final EwpDocBuilder docBuilder;
   private final XmlFormatter formatter;
   private final List<String> adminEmails;
+  private final String echoTesterCertEncoded;
+  private final List<String> echoTesterHeiIDs;
 
   private volatile String cached = null;
 
@@ -49,14 +55,23 @@ public class SelfManifestProvider {
    * @param formatter Needed to format the end document as XML.
    * @param adminEmails A list of email addresses, separated by commas. These addresses will be
    *        included in the <code>ewp:admin-email</code> elements in the generated manifest file.
+   * @param echoTester Needed, because we need to publish its client certificate in our manifest.
    */
   @Autowired
   public SelfManifestProvider(ResourceLoader res, EwpDocBuilder docBuilder, XmlFormatter formatter,
-      @Value("${app.admin-emails}") List<String> adminEmails) {
+      @Value("${app.admin-emails}") List<String> adminEmails, EchoTester echoTester) {
     this.res = res;
     this.docBuilder = docBuilder;
     this.formatter = formatter;
     this.adminEmails = adminEmails;
+    try {
+      this.echoTesterCertEncoded =
+          new String(Base64.encodeBase64(echoTester.getClientCertificateInUse().getEncoded()),
+              StandardCharsets.US_ASCII);
+    } catch (CertificateEncodingException e) {
+      throw new RuntimeException(e);
+    }
+    this.echoTesterHeiIDs = echoTester.getCoveredHeiIDs();
   }
 
   /**
@@ -106,6 +121,30 @@ public class SelfManifestProvider {
         .text(Application.getRootUrl() + "/manifest.xml");
     root.xpath("r:apis-implemented/r1:registry/r1:catalogue-url")
         .text(Application.getRootUrl() + "/catalogue-v1.xml");
+
+    // Add covered HEIs.
+
+    Element heisCoveredElem = (Element) rootElem.getElementsByTagNameNS(
+        KnownNamespace.RESPONSE_MANIFEST_V4.getNamespaceUri(), "institutions-covered").item(0);
+    for (String heiId : this.echoTesterHeiIDs) {
+      Element heiElem =
+          doc.createElementNS(KnownNamespace.RESPONSE_REGISTRY_V1.getNamespaceUri(), "hei");
+      heiElem.setAttribute("id", heiId);
+      Element nameElem =
+          doc.createElementNS(KnownNamespace.RESPONSE_REGISTRY_V1.getNamespaceUri(), "name");
+      nameElem.setTextContent("Artificial HEI for testing Echo APIs");
+      heiElem.appendChild(nameElem);
+      heisCoveredElem.appendChild(heiElem);
+    }
+
+    // Add client certificates in use.
+
+    Element credentialsElem = (Element) rootElem.getElementsByTagNameNS(
+        KnownNamespace.RESPONSE_MANIFEST_V4.getNamespaceUri(), "client-credentials-in-use").item(0);
+    Element certElem =
+        doc.createElementNS(KnownNamespace.RESPONSE_MANIFEST_V4.getNamespaceUri(), "certificate");
+    certElem.setTextContent(this.echoTesterCertEncoded);
+    credentialsElem.appendChild(certElem);
 
     // Reformat.
 

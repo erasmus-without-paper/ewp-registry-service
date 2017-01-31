@@ -34,6 +34,13 @@
                 <r1:catalogue-url>https://localhost:8080/catalogue-v1.xml</r1:catalogue-url>
             </r1:registry>
         </apis-implemented>
+        <institutions-covered>
+            <hei-id>hei01.developers.erasmuswithoutpaper.eu</hei-id>
+            <hei-id>hei02.developers.erasmuswithoutpaper.eu</hei-id>
+        </institutions-covered>
+        <client-credentials-in-use>
+            <certificate sha-256="0000000000000000000000000000000000000000000000000000000000000000"/>
+        </client-credentials-in-use>
     </host>
     <host>
         <apis-implemented>
@@ -42,5 +49,12 @@
             </d4:discovery>
         </apis-implemented>
     </host>
-    <institutions/>
+    <institutions>
+        <hei id="hei01.developers.erasmuswithoutpaper.eu">
+            <name>Artificial HEI for testing Echo APIs</name>
+        </hei>
+        <hei id="hei02.developers.erasmuswithoutpaper.eu">
+            <name>Artificial HEI for testing Echo APIs</name>
+        </hei>
+    </institutions>
 </catalogue>

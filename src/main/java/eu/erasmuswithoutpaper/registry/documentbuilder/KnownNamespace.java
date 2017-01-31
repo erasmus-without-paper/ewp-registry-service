@@ -25,8 +25,9 @@ public class KnownNamespace {
    * 'https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd'>
    * here</a>.
    */
-  public static final KnownNamespace COMMON_TYPES_V1 = new KnownNamespace("ewp",
-      "architecture/blob/stable-v1/common-types.xsd", "architecture/stable-v1/common-types.xsd");
+  public static final KnownNamespace COMMON_TYPES_V1 =
+      new KnownNamespace("ewp", "architecture/blob/stable-v1/common-types.xsd",
+          "architecture/stable-v1/common-types.xsd", true);
 
   /**
    * As described <a href=
@@ -34,7 +35,7 @@ public class KnownNamespace {
    * here</a>.
    */
   public static final KnownNamespace RESPONSE_MANIFEST_V4 = new KnownNamespace("mf",
-      "api-discovery/tree/stable-v4", "api-discovery/stable-v4/manifest.xsd");
+      "api-discovery/tree/stable-v4", "api-discovery/stable-v4/manifest.xsd", false);
 
   /**
    * As described <a href=
@@ -42,7 +43,7 @@ public class KnownNamespace {
    * here</a>.
    */
   public static final KnownNamespace RESPONSE_REGISTRY_V1 = new KnownNamespace("r",
-      "api-registry/tree/stable-v1", "api-registry/stable-v1/catalogue.xsd");
+      "api-registry/tree/stable-v1", "api-registry/stable-v1/catalogue.xsd", true);
 
   /**
    * As described <a href=
@@ -51,7 +52,7 @@ public class KnownNamespace {
    */
   public static final KnownNamespace APIENTRY_DISCOVERY_V4 =
       new KnownNamespace("d4", "api-discovery/blob/stable-v4/manifest-entry.xsd",
-          "api-discovery/stable-v4/manifest-entry.xsd");
+          "api-discovery/stable-v4/manifest-entry.xsd", true);
 
   /**
    * As described <a href=
@@ -59,7 +60,7 @@ public class KnownNamespace {
    * here</a>.
    */
   public static final KnownNamespace APIENTRY_ECHO = new KnownNamespace("e1",
-      "api-echo/blob/stable-v1/manifest-entry.xsd", "api-echo/stable-v1/manifest-entry.xsd");
+      "api-echo/blob/stable-v1/manifest-entry.xsd", "api-echo/stable-v1/manifest-entry.xsd", true);
 
   /**
    * As described <a href=
@@ -68,8 +69,15 @@ public class KnownNamespace {
    */
   public static final KnownNamespace APIENTRY_REGISTRY =
       new KnownNamespace("r1", "api-registry/blob/stable-v1/manifest-entry.xsd",
-          "api-registry/stable-v1/manifest-entry.xsd");
+          "api-registry/stable-v1/manifest-entry.xsd", true);
 
+  /**
+   * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-echo/blob/stable-v1/manifest-entry.xsd'>
+   * here</a>.
+   */
+  public static final KnownNamespace RESPONSE_ECHO_V1 =
+      new KnownNamespace("e", "api-echo/tree/stable-v1", "api-echo/stable-v1/response.xsd", false);
 
   private static final String COMMON_URI_PREFIX =
       "https://github.com/erasmus-without-paper/ewp-specs-";
@@ -132,6 +140,7 @@ public class KnownNamespace {
   private final String uriEnding;
   private final String preferredPrefix;
   private final String schemaLocEnding;
+  private final boolean includeInCatalogueXmlns;
 
   /**
    * @param preferredPrefix see {@link #getPreferredPrefix()}.
@@ -140,10 +149,12 @@ public class KnownNamespace {
    * @param schemaLocEnding An extra string to be appended to {@link #COMMON_SCHEMA_LOCATION_PREFIX}
    *        , when building schema location URL.
    */
-  private KnownNamespace(String preferredPrefix, String uriEnding, String schemaLocEnding) {
+  private KnownNamespace(String preferredPrefix, String uriEnding, String schemaLocEnding,
+      boolean includeInCatalogueXmlns) {
     this.preferredPrefix = preferredPrefix;
     this.uriEnding = uriEnding;
     this.schemaLocEnding = schemaLocEnding;
+    this.includeInCatalogueXmlns = includeInCatalogueXmlns;
   }
 
   /**
@@ -167,5 +178,13 @@ public class KnownNamespace {
    */
   public String getPreferredPrefix() {
     return this.preferredPrefix;
+  }
+
+  /**
+   * @return True, if this namespace is supposed to be included in catalogue's root xmlns
+   *         declarations.
+   */
+  public boolean isToBeIncludedInCatalogueXmlns() {
+    return this.includeInCatalogueXmlns;
   }
 }
