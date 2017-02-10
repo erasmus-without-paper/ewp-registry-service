@@ -30,9 +30,14 @@
                     <url>http://www.uw.edu.pl</url>
                 </issuer>
                 <learningOpportunitySpecification>
+                    <identifier type="ewp-los-id">CR/19560ed8-5183-4842-9bb0-2b7e23f56522</identifier>
                     <title>The importance of &lt;b<![CDATA[r> in HTML]]></title>
                     <specifies>
                         <learningOpportunityInstance>
+                            <!--
+                            Requested field. https://github.com/emrex-eu/elmo-schemas/issues/10
+                            <identifier type="ewp-loi-id">CRI/4edc6717-c616-430a-96b6-b6cdefee8b0b</identifier>
+                            -->
                             <resultLabel>C</resultLabel>
                             <resultDistribution>
                                 <category count="3" label="F"/>
