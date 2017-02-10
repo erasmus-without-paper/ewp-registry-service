@@ -5,19 +5,25 @@ import static org.assertj.core.api.Assertions.fail;
 import static org.joox.JOOX.$;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.parsers.DocumentBuilder;
+
 import eu.erasmuswithoutpaper.registry.WRTest;
+import eu.erasmuswithoutpaper.registry.common.Utils;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
+import org.joox.Match;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 /**
@@ -180,6 +186,91 @@ public class EwpDocBuilderTest extends WRTest {
   }
 
   /**
+   * Check if all our schemas follow the same set of rules for formatting. Some of these rules were
+   * set to avoid accidental errors.
+   */
+  @Test
+  public void checkSchemasStyle() {
+    List<Resource> schemaResources = new ArrayList<>();
+    PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+    try {
+      for (Resource resource : resolver.getResources("classpath:schemas/**/*.xsd")) {
+        schemaResources.add(resource);
+      }
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+    for (Resource xsdres : schemaResources) {
+      try (InputStream input = xsdres.getInputStream()) {
+
+        /*
+         * First of, let's ignore all warnings in the EMREX ELMO files. These are not part of the
+         * EWP project, and we cannot force EMREX to fix those.
+         */
+
+        if (xsdres.getURI().toString().contains("references/emrex-elmo-")) {
+          continue;
+        }
+
+        DocumentBuilder docBuilder = Utils.newSecureDocumentBuilder();
+        Document doc = docBuilder.parse(input);
+        Match root = $(doc).namespace("xs", "http://www.w3.org/2001/XMLSchema");
+        for (Element element : root.xpath("//xs:element")) {
+          String type = element.getAttribute("type");
+          String minOccurs = element.getAttribute("minOccurs");
+          String maxOccurs = element.getAttribute("maxOccurs");
+          String parentName = $(element).parent().get(0).getLocalName();
+
+          try {
+
+            /* Verify if all elements with optional xml:lang attribute are repeatable. */
+
+            if (type.contains("WithOptionalLang") && (!maxOccurs.equals("unbounded"))) {
+              fail("This element should probably have maxOccurs=\"unbounded\".");
+            }
+
+            /*
+             * Verify if all elements has explicit minOccurs and maxOccurs values. These attributes
+             * have sensible defaults, but - based on experience - missing values often indicate
+             * that a designer didn't (yet) decide on proper values. That's why in EWP we want them
+             * declared explicitly.
+             */
+
+            if (parentName.equals("schema")) {
+              /*
+               * This element is a direct child of xs:schema, so it cannot have minOccurs nor
+               * maxOccurs attributes.
+               */
+            } else if (parentName.equals("choice")) {
+              if (minOccurs.isEmpty() && maxOccurs.isEmpty()) {
+                /* Correct. */
+              } else {
+                fail("We want all xs:choice children to NOT have minOccurs nor maxOccurs. "
+                    + "If you need them, then use xs:sequence.");
+              }
+            } else {
+              if (minOccurs.isEmpty() || maxOccurs.isEmpty()) {
+                fail("Elements should declare minOccurs and maxOccurs explicitly.");
+              } else {
+                /* Correct. */
+              }
+            }
+
+          } catch (AssertionError e) {
+            String message = "Bad style in " + xsdres.getURI().toString() + "\n" + "Element path: "
+                + this.getHumanReadableSchemaElementPath(element) + "\nCause: " + e.getMessage()
+                + "\n";
+            throw new AssertionError(message, e);
+          }
+        }
+
+      } catch (IOException | SAXException e) {
+        throw new RuntimeException(e);
+      }
+    }
+  }
+
+  /**
    * Verify all examples from "latest-examples" directory against their own XSDs.
    */
   @Test
@@ -270,5 +361,33 @@ public class EwpDocBuilderTest extends WRTest {
         .isEqualTo(this.getFileAsString("docbuilder/invalid-manifest-pretty.xml"));
     assertThat(result.getPrettyLines()).isPresent();
     assertThat(result.getPrettyLines().get().get(12 - 1)).contains("<rrrr:hei>");
+  }
+
+  /**
+   * @param element A DOM element, somewhere within an XML Schema document
+   * @return A human-readable path of this element (with most of the ancestry skipped to make it
+   *         shorter).
+   */
+  private String getHumanReadableSchemaElementPath(Element element) {
+    String path;
+    Node parent = element.getParentNode();
+    if ((parent == null) || (!(parent instanceof Element))) {
+      path = "";
+    } else {
+      path = this.getHumanReadableSchemaElementPath((Element) parent);
+    }
+    if (element.hasAttribute("name")) {
+      return path + "/" + element.getAttribute("name");
+    } else if (element.getTagName().equals("xs:schema")) {
+      return path;
+    } else if (element.getTagName().equals("xs:complexType")) {
+      return path;
+    } else if (element.getTagName().equals("xs:complexContent")) {
+      return path;
+    } else if (element.getTagName().equals("xs:sequence")) {
+      return path;
+    } else {
+      return path + "/" + element.getTagName();
+    }
   }
 }
