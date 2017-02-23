@@ -271,7 +271,8 @@ public class EwpDocBuilderTest extends WRTest {
   }
 
   /**
-   * Verify all examples from "latest-examples" directory against their own XSDs.
+   * Verify all examples from "latest-examples" and "obsolete-examples" directories against their
+   * XSDs.
    */
   @Test
   public void testAllLatestExamples() {
@@ -281,13 +282,18 @@ public class EwpDocBuilderTest extends WRTest {
       for (Resource resource : resolver
           .getResources("classpath:test-files/latest-examples/*.xml")) {
         String path = resource.getURI().toString();
-        exampleNames.add(path.substring(path.lastIndexOf("/") + 1));
+        exampleNames.add("latest-examples/" + path.substring(path.lastIndexOf("/") + 1));
+      }
+      for (Resource resource : resolver
+          .getResources("classpath:test-files/obsolete-examples/*.xml")) {
+        String path = resource.getURI().toString();
+        exampleNames.add("obsolete-examples/" + path.substring(path.lastIndexOf("/") + 1));
       }
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
     for (String name : exampleNames) {
-      BuildParams params = new BuildParams(this.getFile("latest-examples/" + name));
+      BuildParams params = new BuildParams(this.getFile(name));
       BuildResult result = this.builder.build(params);
       assertThat(result.getErrors()).as("check if %s is valid", name).isEmpty();
       assertThat(result.isValid()).isTrue();

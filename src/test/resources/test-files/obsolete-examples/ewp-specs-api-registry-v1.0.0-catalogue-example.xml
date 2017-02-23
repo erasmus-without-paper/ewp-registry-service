@@ -1,0 +1,70 @@
+<catalogue
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-registry/tree/stable-v1"
+    xmlns:d4="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/blob/stable-v4/manifest-entry.xsd"
+    xmlns:e1="https://github.com/erasmus-without-paper/ewp-specs-api-echo/blob/stable-v1/manifest-entry.xsd"
+    xmlns:ewp="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
+    xmlns:r1="https://github.com/erasmus-without-paper/ewp-specs-api-registry/blob/stable-v1/manifest-entry.xsd"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd
+        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-architecture/stable-v1/common-types.xsd
+
+        https://github.com/erasmus-without-paper/ewp-specs-api-discovery/blob/stable-v4/manifest-entry.xsd
+        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-discovery/stable-v4/manifest.xsd
+
+        https://github.com/erasmus-without-paper/ewp-specs-api-echo/blob/stable-v1/manifest-entry.xsd
+        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-echo/stable-v1/manifest-entry.xsd
+
+        https://github.com/erasmus-without-paper/ewp-specs-api-registry/blob/stable-v1/manifest-entry.xsd
+        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-registry/stable-v1/manifest-entry.xsd
+
+        https://github.com/erasmus-without-paper/ewp-specs-api-registry/tree/stable-v1
+        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-registry/stable-v1/catalogue.xsd
+    "
+>
+    <host>
+        <ewp:admin-email>registry-service-admin@example.com</ewp:admin-email>
+        <ewp:admin-email>registry-service-admin@example.com</ewp:admin-email>
+        <ewp:admin-notes>Registry's EWP Host</ewp:admin-notes>
+        <apis-implemented>
+            <d4:discovery version="4.0.0">
+                <d4:url>https://registry.erasmuswithoutpaper.eu/manifest.xml</d4:url>
+            </d4:discovery>
+            <r1:registry version="1.0.0">
+                <r1:catalogue-url>https://registry.erasmuswithoutpaper.eu/catalogue.xml</r1:catalogue-url>
+            </r1:registry>
+        </apis-implemented>
+        <client-credentials-in-use>
+            <certificate sha-256="f47643e26f10fd1e5ffe2c933f0a5e6ccf831d789cd80a12720392e90a8f7d42"/>
+            <certificate sha-256="0b9e993d1d4a4e1be879bc5be19c1c0b9073d7bfe1556e015c069c6df6231b7f"/>
+        </client-credentials-in-use>
+    </host>
+    <host>
+        <ewp:admin-email>admin-or-developer@example.com</ewp:admin-email>
+        <ewp:admin-notes>It's not a real manifest. Just an example.</ewp:admin-notes>
+        <apis-implemented>
+            <d4:discovery version="4.0.0">
+                <d4:url>https://example.com/manifest.xml</d4:url>
+            </d4:discovery>
+            <e1:echo version="1.0.0">
+                <ewp:admin-email>usually-a-developer@example.com</ewp:admin-email>
+                <ewp:admin-email>some-other-developer@example.com</ewp:admin-email>
+                <ewp:admin-notes>Some notes which might useful for client developers.</ewp:admin-notes>
+                <e1:url>https://example.com/ewp/echo</e1:url>
+            </e1:echo>
+        </apis-implemented>
+        <institutions-covered>
+            <hei-id>uw.edu.pl</hei-id>
+        </institutions-covered>
+        <client-credentials-in-use>
+            <certificate sha-256="19fdd48a85595958035a1a42da8065709a585f78cc01b4df428f68eab39b9dda"/>
+        </client-credentials-in-use>
+    </host>
+    <institutions>
+        <hei id="uw.edu.pl">
+            <other-id type="pic">999572294</other-id>
+            <other-id type="erasmus">PL WARSZAW01</other-id>
+            <name xml:lang="en">University of Warsaw</name>
+        </hei>
+    </institutions>
+</catalogue>
