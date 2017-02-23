@@ -47,6 +47,14 @@ public class KnownNamespace {
 
   /**
    * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-echo/blob/stable-v1/manifest-entry.xsd'>
+   * here</a>.
+   */
+  public static final KnownNamespace RESPONSE_ECHO_V1 =
+      new KnownNamespace("e", "api-echo/tree/stable-v1", "api-echo/stable-v1/response.xsd", false);
+
+  /**
+   * As described <a href=
    * 'https://github.com/erasmus-without-paper/ewp-specs-api-discovery/blob/stable-v4/manifest-entry.xsd'>
    * here</a>.
    */
@@ -73,11 +81,21 @@ public class KnownNamespace {
 
   /**
    * As described <a href=
-   * 'https://github.com/erasmus-without-paper/ewp-specs-api-echo/blob/stable-v1/manifest-entry.xsd'>
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-institutions/blob/stable-v1/manifest-entry.xsd'>
    * here</a>.
    */
-  public static final KnownNamespace RESPONSE_ECHO_V1 =
-      new KnownNamespace("e", "api-echo/tree/stable-v1", "api-echo/stable-v1/response.xsd", false);
+  public static final KnownNamespace APIENTRY_INSTITUTIONS =
+      new KnownNamespace("in1", "api-institutions/blob/stable-v1/manifest-entry.xsd",
+          "api-institutions/stable-v1/manifest-entry.xsd", true);
+
+  /**
+   * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-institutions/blob/stable-v1/manifest-entry.xsd'>
+   * here</a>.
+   */
+  public static final KnownNamespace APIENTRY_OUNITS =
+      new KnownNamespace("ou1", "api-ounits/blob/stable-v1/manifest-entry.xsd",
+          "api-ounits/stable-v1/manifest-entry.xsd", true);
 
   private static final String COMMON_URI_PREFIX =
       "https://github.com/erasmus-without-paper/ewp-specs-";

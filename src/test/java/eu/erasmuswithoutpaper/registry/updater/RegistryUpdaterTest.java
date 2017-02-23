@@ -100,8 +100,9 @@ public class RegistryUpdaterTest extends WRTest {
     assertThat(this.updateStatuses.findOne(urlA).getLastAccessFlagStatus()).isEqualTo(Severity.OK);
     assertThat(this.updateStatuses.findOne(urlB).getLastAccessFlagStatus()).isEqualTo(Severity.OK);
     try {
-      assertThat(this.repo.getCatalogue()).isEqualTo(
-          this.getFileAsString("latest-examples/ewp-specs-api-registry-catalogue-example.xml"));
+      assertThat(
+          this.getFileAsString("latest-examples/ewp-specs-api-registry-catalogue-example.xml"))
+              .isEqualTo(this.repo.getCatalogue());
     } catch (CatalogueNotFound e) {
       throw new RuntimeException(e);
     }

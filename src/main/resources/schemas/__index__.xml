@@ -19,10 +19,10 @@
         uri="ewp-specs-api-echo-v1.0.4/response.xsd" />
     <uri
         name="https://github.com/erasmus-without-paper/ewp-specs-api-registry/blob/stable-v1/manifest-entry.xsd"
-        uri="ewp-specs-api-registry-v1.1.0/manifest-entry.xsd" />
+        uri="ewp-specs-api-registry-v1.1.1/manifest-entry.xsd" />
     <uri
         name="https://github.com/erasmus-without-paper/ewp-specs-api-registry/tree/stable-v1"
-        uri="ewp-specs-api-registry-v1.1.0/catalogue.xsd" />
+        uri="ewp-specs-api-registry-v1.1.1/catalogue.xsd" />
     <uri
         name="https://github.com/erasmus-without-paper/ewp-specs-api-institutions/blob/stable-v1/manifest-entry.xsd"
         uri="ewp-specs-api-institutions-v1.0.0/manifest-entry.xsd" />
