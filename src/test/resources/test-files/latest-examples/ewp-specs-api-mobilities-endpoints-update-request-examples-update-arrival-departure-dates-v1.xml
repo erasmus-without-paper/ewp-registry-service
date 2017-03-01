@@ -1,0 +1,16 @@
+<mobilities-update-request
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/master/endpoints/update-request.xsd"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/master/endpoints/update-request.xsd
+        ../update-request.xsd
+    "
+>
+    <!-- WRTODO: absolute paths! -->
+
+    <sending-hei-id>uw.edu.pl</sending-hei-id>
+    <mobility-id>c442c289-5541-4cae-9edb-8ad83e133613</mobility-id>
+    <update-arrival-departure-dates-v1>
+        <replace-actual-arrival-date>2017-01-15</replace-actual-arrival-date>
+    </update-arrival-departure-dates-v1>
+</mobilities-update-request>

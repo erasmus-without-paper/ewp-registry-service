@@ -31,7 +31,7 @@
         </xs:annotation>
         <xs:complexType>
             <xs:sequence>
-                <xs:element name="mobility-id" type="ewp:UUID" minOccurs="0" maxOccurs="unbounded">
+                <xs:element name="mobility-id" type="ewp:AsciiPrintableIdentifier" minOccurs="0" maxOccurs="unbounded">
                     <xs:annotation>
                         <xs:documentation>
                             The list of mobility IDs (results for the client's query). Each of those

@@ -51,26 +51,47 @@
         </xs:annotation>
         <xs:complexType>
             <xs:sequence>
-                <xs:group ref="SequenceOfMobilities"/>
+                <xs:group ref="SequenceOfMobilities" minOccurs="1" maxOccurs="1"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
 
     <xs:group name="SequenceOfMobilities">
+        <xs:annotation>
+            <xs:documentation>
+                This is global, because it is used in external XSDs. It MUST stay this way, for
+                backward compatibility.
+            </xs:documentation>
+        </xs:annotation>
         <xs:sequence>
-            <xs:element ref="student-mobility-for-studies" minOccurs="0" maxOccurs="unbounded">
-                <xs:annotation>
-                    <xs:documentation>
-                        A list of matching Student Mobilities for Studies. Clients should use the
-                        `mobility-id` elements to match objects with their `mobility_id` request
-                        parameters.
+            <xs:choice>
+                <xs:group ref="SingleMobilityObject">
+                    <xs:annotation>
+                        <xs:documentation>
+                            A list of matching mobilities. (Clients should use the `mobility-id`
+                            subelements to match objects with their `mobility_id` request parameters.)
 
-                        Currently this is the only type of mobility exposed by this API. More types
-                        MAY come in the future.
-                    </xs:documentation>
-                </xs:annotation>
-            </xs:element>
+                            Currently there's only type of mobility exposed by this API. More types MAY
+                            come in the future.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:group>
+            </xs:choice>
         </xs:sequence>
+    </xs:group>
+
+    <xs:group name="SingleMobilityObject">
+        <xs:annotation>
+            <xs:documentation>
+                Represents a single mobility of any type.
+
+                This is global, because it is used in external XSDs. It MUST stay this way, for
+                backward compatibility.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:choice>
+            <xs:element ref="student-mobility-for-studies"/>
+        </xs:choice>
     </xs:group>
 
     <xs:element name="student-mobility-for-studies">
@@ -84,12 +105,10 @@
                 </xs:documentation>
             </xs:annotation>
             <xs:sequence>
-                <xs:element name="mobility-id" type="ewp:UUID" minOccurs="1" maxOccurs="1">
+                <xs:element name="mobility-id" type="ewp:AsciiPrintableIdentifier" minOccurs="1" maxOccurs="1">
                     <xs:annotation>
                         <xs:documentation>
-                            Unique identifier of the mobility.
-
-                            https://github.com/erasmus-without-paper/ewp-specs-api-mobilities#mobility_ids
+                            Identifier of the mobility (as assigned by the sending HEI).
                         </xs:documentation>
                     </xs:annotation>
                 </xs:element>
@@ -115,7 +134,7 @@
                             <xs:element name="ounit-id" type="ewp:AsciiPrintableIdentifier" minOccurs="0" maxOccurs="1">
                                 <xs:annotation>
                                     <xs:documentation>
-                                        Optional organizational onit ID. If given, then it refers to the unit within
+                                        Optional organizational unit ID. If given, then it refers to the unit within
                                         the sending HEI's organizational structure, which is responsible for this
                                         student.
 
@@ -128,7 +147,7 @@
                                 <xs:annotation>
                                     <xs:documentation>
                                         Optional ID of the Institutional Agreement based on which the student is being
-                                        sent.
+                                        nominated/sent.
 
                                         This ID should be provided by the server ONLY if it implements EWP's
                                         Interinstitutional Agreements API. Clients can fetch more information on this
@@ -195,21 +214,32 @@
                     <xs:annotation>
                         <xs:documentation>
                             The section describes the student who is being sent for this mobility.
+
+                            These fields MAY change in time (e.g. after the student changes his name or
+                            address).
                         </xs:documentation>
                     </xs:annotation>
                     <xs:complexType>
                         <xs:sequence>
-                            <xs:element name="given-names" type="xs:string" minOccurs="1" maxOccurs="1">
+                            <xs:element name="given-names" type="ewp:StringWithOptionalLang" minOccurs="1" maxOccurs="unbounded">
                                 <xs:annotation>
                                     <xs:documentation>
                                         The given names of the person.
+
+                                        It MAY be specified in multiple languages (and/or multiple alphabets), as it
+                                        has been explained in the `contact` element:
+                                        https://github.com/erasmus-without-paper/ewp-specs-types-contact
                                     </xs:documentation>
                                 </xs:annotation>
                             </xs:element>
-                            <xs:element name="family-name" type="xs:string" minOccurs="1" maxOccurs="1">
+                            <xs:element name="family-name" type="ewp:StringWithOptionalLang" minOccurs="1" maxOccurs="unbounded">
                                 <xs:annotation>
                                     <xs:documentation>
                                         The family name of the person.
+
+                                        It MAY be specified in multiple languages (and/or multiple alphabets), as it
+                                        has been explained in the `contact` element:
+                                        https://github.com/erasmus-without-paper/ewp-specs-types-contact
                                     </xs:documentation>
                                 </xs:annotation>
                             </xs:element>
@@ -260,21 +290,18 @@
                             <xs:element ref="p:phone-number" minOccurs="0" maxOccurs="unbounded">
                                 <xs:annotation>
                                     <xs:documentation>
-                                        A list of possibly phone numbers at which this person can be reached.
-                                        If possible, the "best" numbers should be listed first.
+                                        A list of phone numbers at which this person can possibly be reached.
+                                        The "best" numbers should be listed first.
                                     </xs:documentation>
                                 </xs:annotation>
                             </xs:element>
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>
-                <xs:element name="status" type="MobilityStatus" minOccurs="1" maxOccurs="1">
+                <xs:element name="status" type="_MobilityStatus" minOccurs="1" maxOccurs="1">
                     <xs:annotation>
                         <xs:documentation>
-                            The *current* status of the mobility.
-
-                            This status can be changed multiple times. History of these changes is recoreded
-                            in the `timeline` element. This element contains only the most recently set value.
+                            Current status of the mobility.
                         </xs:documentation>
                     </xs:annotation>
                 </xs:element>
@@ -282,7 +309,7 @@
                     <xs:annotation>
                         <xs:documentation>
                             Planned start date of the mobility (when the student is supposed to arrive).
-                            This date is provided by the sending HEI.
+                            This date is provided by the sending HEI before the mobility.
                         </xs:documentation>
                     </xs:annotation>
                 </xs:element>
@@ -290,7 +317,7 @@
                     <xs:annotation>
                         <xs:documentation>
                             Planned end date of the mobility (when the student is supposed to leave).
-                            This date is provided by the sending HEI.
+                            This date is provided by the sending HEI before the mobility.
                         </xs:documentation>
                     </xs:annotation>
                 </xs:element>
@@ -298,7 +325,8 @@
                     <xs:annotation>
                         <xs:documentation>
                             Actual start date of the mobility (when the student has actually arrived).
-                            This date is provided by the receiving HEI (e.g. via the `update` endpoint).
+                            This date is provided by the receiving HEI (either by direct contact between
+                            coordinators, or via the `update` endpoint).
                         </xs:documentation>
                     </xs:annotation>
                 </xs:element>
@@ -306,7 +334,8 @@
                     <xs:annotation>
                         <xs:documentation>
                             Actual end date of the mobility (when the student has actually left).
-                            This date is provided by the receiving HEI (e.g. via the `update` endpoint).
+                            This date is provided by the receiving HEI (either by direct contact between
+                            coordinators, or via the `update` endpoint).
                         </xs:documentation>
                     </xs:annotation>
                 </xs:element>
@@ -314,9 +343,10 @@
                     <!-- WRTODO: Is it okay that this is required? Perhaps it's a mistake? -->
                     <xs:annotation>
                         <xs:documentation>
-                            The student is sent to the mobility as part of one of his study programmes.
+                            The student is sent for the mobility as part of one of his study programmes.
                             This field contains the student's EQF level on this programme *at the time of
-                            the nomination*.
+                            the nomination* (and it SHOULD NOT change in time, as opposed to the fields
+                            present in the `student` element).
                         </xs:documentation>
                     </xs:annotation>
                 </xs:element>
@@ -333,7 +363,8 @@
                 <xs:element name="nominee-language-skill" minOccurs="0" maxOccurs="unbounded">
                     <xs:annotation>
                         <xs:documentation>
-                            List of the student's language skills *at the time of the nomination*.
+                            List of the student's language skills *at the time of the nomination* (they
+                            SHOULD NOT change in time).
                         </xs:documentation>
                     </xs:annotation>
                     <xs:complexType>
@@ -355,62 +386,136 @@
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>
-                <xs:element ref="component-studied" minOccurs="0" maxOccurs="unbounded">
+                <xs:element name="components-studied" minOccurs="1" maxOccurs="1">
                     <xs:annotation>
                         <xs:documentation>
-                            A list of components studied (or planned to be studied) at the receiving HEI.
+                            Different versions of the list of components studied (or planned to be studied)
+                            at the receiving HEI.
 
-                            This loosely corresponds to tables A or C on the EUC LA template (attached in
-                            this XSD's repository), but it contains a snapshot of the *latest version*
-                            instead. This means that you should treat this content as a draft. If you want
-                            to retrieve the *last accepted* version (or any of the other previously
-                            accepted versions), you will need to go through the timeline entries.
+                            We need different versions of this list because the EUC LA template (attached in
+                            this XSD's repository) requires it.
                         </xs:documentation>
                     </xs:annotation>
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:sequence minOccurs="0" maxOccurs="1">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        The "before mobility" and "latest approved" sections are optional. It is allowed
+                                        to have only the "latest draft" section (this indicates that no LA has yet been
+                                        approved).
+
+                                        However, if "before mobility" section exists, then we also require "latest
+                                        approved" section to exist. In many cases, `latest-approved-changes` will be
+                                        empty, and `latest-approved-snapshot` will contain the exact contents as the
+                                        `before-mobility-snapshot` does. It might seem redundant, but we require it for
+                                        completeness (to make sure all partners understand what "latest approved"
+                                        means).
+                                    </xs:documentation>
+                                </xs:annotation>
+                                <xs:element name="before-mobility-changes" minOccurs="1" maxOccurs="1" type="ListOfChangesTo_ComponentsStudied">
+                                    <xs:annotation>
+                                        <xs:documentation>
+                                            This element is not used when PDF LA is generated, but it is still required.
+                                            It allows server implementers to include a history of changes to the "before
+                                            mobility" section, before it has been approved. If the server doesn't keep such
+                                            history, then an appropriately formatted copy of the `before-mobility-snapshot`
+                                            is returned here.
+                                        </xs:documentation>
+                                    </xs:annotation>
+                                </xs:element>
+                                <xs:element name="before-mobility-snapshot" minOccurs="1" maxOccurs="1" type="SnapshotOf_ComponentsStudied">
+                                    <xs:annotation>
+                                        <xs:documentation>
+                                            The snapshot of courses *planned* to be studied when the first version of the LA
+                                            is signed.
+
+                                            Note: This element corresponds to "Table A" on the EUC LA template (attached
+                                            in this XSD's repository).
+                                        </xs:documentation>
+                                    </xs:annotation>
+                                </xs:element>
+                                <xs:element name="latest-approved-changes" minOccurs="1" maxOccurs="1" type="ListOfChangesTo_ComponentsStudied">
+                                    <xs:annotation>
+                                        <xs:documentation>
+                                            The list of changes made to the LA components after it has been first signed.
+                                            When LA is signed for the first time this element is empty, but it is often
+                                            filled later on.
+
+                                            Note: This element corresponds to "Table A2" on the EUC LA template (attached
+                                            in this XSD's repository).
+                                        </xs:documentation>
+                                    </xs:annotation>
+                                </xs:element>
+                                <xs:element name="latest-approved-snapshot" minOccurs="1" maxOccurs="1" type="SnapshotOf_ComponentsStudied">
+                                    <xs:annotation>
+                                        <xs:documentation>
+                                            The latest approved snapshot of courses studied (or planned to the studedied). When
+                                            LA is signed for the first time this element contains the same courses as the
+                                            `before-mobility-snapshot` does, but this may change later in time.
+
+                                            Note: This element corresponds to "Table C" on the EUC LA template (attached
+                                            in this XSD's repository).
+                                        </xs:documentation>
+                                    </xs:annotation>
+                                </xs:element>
+                            </xs:sequence>
+                            <xs:element name="latest-draft-changes" minOccurs="1" maxOccurs="1" type="ListOfChangesTo_ComponentsStudied">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        This element is not used when PDF LA is generated, but it is still required. It
+                                        allows server implementers to publish proposed changes to the LA, before they
+                                        are approved. If the server doesn't store such proposals (or if it doesn't want
+                                        to publish them), then this element will be empty.
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                            <xs:element name="latest-draft-snapshot" minOccurs="1" maxOccurs="1" type="SnapshotOf_ComponentsStudied">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        This element is not used when PDF LA is generated, but it is still required.
+                                        Similar to the `latest-draft-changes` element, but the proposed changes are
+                                        presented in a unified form. If the server doesn't store proposals (or if it
+                                        doesn't want to publish them), then this element will contain a copy of the
+                                        `latest-approved-snapshot` (or, if no `latest-approved-snapshot` exists, then
+                                        it will be empty).
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
                 </xs:element>
-                <xs:element ref="component-recognized" minOccurs="0" maxOccurs="unbounded">
+                <xs:element name="components-recognized" minOccurs="0" maxOccurs="1">
                     <xs:annotation>
                         <xs:documentation>
-                            An OPTIONAL list of components recognized (or planned to be recognized) at the
-                            sending HEI.
+                            Different versions of the list of components recognized (or planned to be
+                            recognized) at the sending HEI.
 
-                            This loosely corresponds to tables B or D on the EUC LA template (attached in
-                            this XSD's repository), but it contains a snapshot of the *latest version*
-                            instead. This means that you should treat this content as a draft. If you want
-                            to retrieve the *last accepted* version (or any of the other previously
-                            accepted versions), you will need to go through the timeline entries.
+                            We need different versions of this list because the EUC LA template (attached in
+                            this XSD's repository) requires it.
+
+                            PLEASE READ THE ANNOTATIONS ON THE `components-studied` ELEMENT. The
+                            `components-recognized` element has the same base format as the
+                            `components-studied` element does, and so, **we are not describing this format
+                            here again**. The only difference is that other types of entities are described
+                            by it - see tables "B", "B2" and "D" on the EUC LA template (attached in this
+                            XSD's repository).
 
                             Note, that very few servers are planning to provide this feature at the initial
                             stages of EWP adoption:
                             https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/issues/11
                         </xs:documentation>
                     </xs:annotation>
-                </xs:element>
-                <xs:element name="timeline" minOccurs="1" maxOccurs="1">
-                    <xs:annotation>
-                        <xs:documentation>
-                            Over the timespan of the mobility some attributes of it will be changed. New
-                            versions will be drafted, and some of them will be accepted and signed. It is
-                            important to note who (and when) had performed those changes, and which version
-                            of the document has been considered as accepted by all parties at any given
-                            moment in time. The `timeline` elements serves this purpose.
-
-                            Not all properties are being versioned. To simplify the implementation, it has
-                            has been decided that only the components sections will be versioned (the
-                            "Before the Mobility", "During the Mobility" and "After the Mobility" sections
-                            of the EUC LA template).
-                            https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/issues/5
-                        </xs:documentation>
-                    </xs:annotation>
                     <xs:complexType>
                         <xs:sequence>
-                            <xs:choice minOccurs="0" maxOccurs="unbounded">
-                                <xs:element ref="modify-components"/>
-                                <xs:element ref="approve-components"/>
-                                <xs:element ref="request-recognition"/>
-                                <xs:element ref="update-status"/>
-                                <xs:element ref="update-arrival-departure-dates"/>
-                            </xs:choice>
+                            <xs:sequence minOccurs="0" maxOccurs="1">
+                                <xs:element name="before-mobility-changes" minOccurs="1" maxOccurs="1" type="ListOfChangesTo_ComponentsRecognized"/>
+                                <xs:element name="before-mobility-snapshot" minOccurs="1" maxOccurs="1" type="SnapshotOf_ComponentsRecognized"/>
+                                <xs:element name="latest-approved-changes" minOccurs="1" maxOccurs="1" type="ListOfChangesTo_ComponentsRecognized"/>
+                                <xs:element name="latest-approved-snapshot" minOccurs="1" maxOccurs="1" type="SnapshotOf_ComponentsRecognized"/>
+                            </xs:sequence>
+                            <xs:element name="latest-draft-changes" minOccurs="1" maxOccurs="1" type="ListOfChangesTo_ComponentsRecognized"/>
+                            <xs:element name="latest-draft-snapshot" minOccurs="1" maxOccurs="1" type="SnapshotOf_ComponentsRecognized"/>
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>
@@ -591,452 +696,7 @@
         </xs:complexType>
     </xs:element>
 
-    <xs:complexType name="TimelineEntry" abstract="true">
-        <xs:annotation>
-            <xs:documentation>
-                A parent class for all timeline entries.
-            </xs:documentation>
-        </xs:annotation>
-        <xs:sequence>
-            <xs:element name="committer-hei-id" type="xs:string" minOccurs="1" maxOccurs="1">
-                <xs:annotation>
-                    <xs:documentation>
-                        SCHAC ID of the HEI from which the entry originated. Currently this will be
-                        either the sending HEI (when changes were made via the sending HEI's computer
-                        system), or the receiving HEI (likewise).
-                    </xs:documentation>
-                </xs:annotation>
-            </xs:element>
-            <xs:element name="commit-date" type="xs:dateTime" minOccurs="1" maxOccurs="1">
-                <xs:annotation>
-                    <xs:documentation>
-                        Indicates the time when the sending HEI has received and accepted the commit or
-                        tag (this timestamp is based on the sending HEI server's clock).
-                    </xs:documentation>
-                </xs:annotation>
-            </xs:element>
-        </xs:sequence>
-    </xs:complexType>
-
-    <xs:element name="modify-components">
-        <xs:annotation>
-            <xs:documentation>
-                This type of timeline entry describes an atomic set of changes which either
-                have been applied, or *are to be* applied, to the mobility's components.
-
-                When this element is present in the timeline, then it represents a successful
-                modification on the sending HEI's servers. When it is used in the `update`
-                endpoint, then it describes the changes which the remote caller (usually the
-                receiving HEI) wants to be applied in an atomic transaction.
-
-                When generating a PDF LA document, you will use the timeline entries to
-                generate the contents of *all* component tables (A, A2, B, B2, C, D) described
-                in the EUC LA template: *first accepted* revision goes to tables A and B, *last
-                accepted* revision goes to tables C and D, and all the changes in-between these
-                two go to tables A2 and B2. (Modifications present *before* the *first*
-                accepted version, and *after* the *last* accepted one, are not printed in the
-                LA.)
-            </xs:documentation>
-        </xs:annotation>
-        <xs:complexType>
-            <xs:complexContent>
-                <xs:extension base="TimelineEntry">
-                    <xs:sequence>
-                        <xs:element name="changeset" minOccurs="1" maxOccurs="1">
-                            <xs:annotation>
-                                <xs:documentation>
-                                    Describes an atomic set of changes applied in the given order.
-                                </xs:documentation>
-                            </xs:annotation>
-                            <xs:complexType>
-                                <xs:sequence>
-                                    <xs:choice minOccurs="1" maxOccurs="unbounded">
-                                        <xs:element ref="insert-component-studied"/>
-                                        <xs:element ref="update-component-studied"/>
-                                        <xs:element ref="remove-component-studied"/>
-                                        <xs:element ref="insert-component-recognized"/>
-                                        <xs:element ref="update-component-recognized"/>
-                                        <xs:element ref="remove-component-recognized"/>
-                                    </xs:choice>
-                                </xs:sequence>
-                            </xs:complexType>
-                        </xs:element>
-                    </xs:sequence>
-                    <xs:attribute name="revision" use="required" type="xs:positiveInteger">
-                        <xs:annotation>
-                            <xs:documentation>
-                                Commits are numbered sequentially. The revision of the first commit is always
-                                "1", and every subsequent commit is incremented by 1.
-
-                                This attribute is quite redundant, but we keep it here to make the XML more
-                                human-readable, and to remind every reader how revisions are referred to.
-                            </xs:documentation>
-                        </xs:annotation>
-                    </xs:attribute>
-                </xs:extension>
-            </xs:complexContent>
-        </xs:complexType>
-    </xs:element>
-
-    <xs:element name="approve-components">
-        <xs:annotation>
-            <xs:documentation>
-                This timeline entry represents the official approval of the current state of
-                the components lists (the ones modified with `modify-components` timeline
-                entries). If a single revision is approved by all three parties, then it
-                becomes the new "last approved revision".
-
-                Note, that there's no need for a `revision-being-approved` element to exist,
-                because only the LAST revision can be approved (or, to be precise, the one that
-                have been the last one, in the moment of the approval).
-            </xs:documentation>
-        </xs:annotation>
-        <xs:complexType>
-            <xs:complexContent>
-                <xs:extension base="TimelineEntry">
-                    <xs:sequence>
-                        <xs:element name="party" minOccurs="1" maxOccurs="1">
-                            <xs:simpleType>
-                                <xs:restriction base="xs:string">
-                                    <xs:enumeration value="student">
-                                        <xs:annotation>
-                                            <xs:documentation>
-                                                Indicates approval by the student himself.
-                                            </xs:documentation>
-                                        </xs:annotation>
-                                    </xs:enumeration>
-                                    <xs:enumeration value="sending-hei">
-                                        <xs:annotation>
-                                            <xs:documentation>
-                                                Indicates approval by the sending HEI.
-                                            </xs:documentation>
-                                        </xs:annotation>
-                                    </xs:enumeration>
-                                    <xs:enumeration value="receiving-hei">
-                                        <xs:annotation>
-                                            <xs:documentation>
-                                                Indicates approval by the receiving HEI.
-                                            </xs:documentation>
-                                        </xs:annotation>
-                                    </xs:enumeration>
-                                </xs:restriction>
-                            </xs:simpleType>
-                        </xs:element>
-                    </xs:sequence>
-                </xs:extension>
-            </xs:complexContent>
-        </xs:complexType>
-    </xs:element>
-
-    <xs:element name="request-recognition">
-        <xs:annotation>
-            <xs:documentation>
-                The timeline entry is typically added after the ToR document is first published
-                or significantly changed (see Transcript of Records API), and either the
-                receiving HEI or the student himself wants the sending HEI to re-evaluate its
-                contents.
-
-                After successful evaluation the status of the mobility will usually change to
-                "recognized", hence the name of this element.
-            </xs:documentation>
-        </xs:annotation>
-        <xs:complexType>
-            <xs:complexContent>
-                <xs:extension base="TimelineEntry">
-                    <xs:sequence>
-                        <xs:element name="party" minOccurs="1" maxOccurs="1">
-                            <xs:simpleType>
-                                <xs:restriction base="xs:string">
-                                    <xs:enumeration value="student">
-                                        <xs:annotation>
-                                            <xs:documentation>
-                                                Indicates a request by the student himself.
-                                            </xs:documentation>
-                                        </xs:annotation>
-                                    </xs:enumeration>
-                                    <xs:enumeration value="receiving-hei">
-                                        <xs:annotation>
-                                            <xs:documentation>
-                                                Indicates a request by the receiving HEI.
-                                            </xs:documentation>
-                                        </xs:annotation>
-                                    </xs:enumeration>
-                                </xs:restriction>
-                            </xs:simpleType>
-                        </xs:element>
-                    </xs:sequence>
-                </xs:extension>
-            </xs:complexContent>
-        </xs:complexType>
-    </xs:element>
-
-    <xs:element name="update-status">
-        <xs:complexType>
-            <xs:complexContent>
-                <xs:extension base="TimelineEntry">
-                    <xs:sequence>
-                        <xs:element name="new-status" type="MobilityStatus" minOccurs="1" maxOccurs="1">
-                            <xs:annotation>
-                                <xs:documentation>
-                                    The new status value.
-                                </xs:documentation>
-                            </xs:annotation>
-                        </xs:element>
-                    </xs:sequence>
-                </xs:extension>
-            </xs:complexContent>
-        </xs:complexType>
-    </xs:element>
-
-    <xs:element name="update-arrival-departure-dates">
-        <xs:complexType>
-            <xs:complexContent>
-                <xs:extension base="TimelineEntry">
-                    <xs:sequence>
-                        <xs:element name="new-actual-arrival-date" type="xs:date" minOccurs="0" maxOccurs="1"/>
-                        <xs:element name="new-actual-departure-date" type="xs:date" minOccurs="0" maxOccurs="1"/>
-                    </xs:sequence>
-                </xs:extension>
-            </xs:complexContent>
-        </xs:complexType>
-    </xs:element>
-
-    <xs:complexType name="ComponentListChange" abstract="true">
-        <xs:annotation>
-            <xs:documentation>
-                A common class for describing changes (subelements of `new-revision/changeset`)
-                which describe an update to a *list of components* (either studied or
-                recognized).
-            </xs:documentation>
-        </xs:annotation>
-        <xs:sequence>
-            <xs:element name="reason" minOccurs="0" maxOccurs="1">
-                <xs:annotation>
-                    <xs:documentation>
-                        An optional reason for the change.
-
-                        Implementers are advised to supply a number of suggested reasons for their
-                        users (so that they can pick one when making the change). You can start with
-                        those listed in the EUC LA PDF template. Users SHOULD be allowed to specify
-                        their own custom reason for the change too.
-
-                        Note, that we do not make use of the "reason numbers" suggested by the EUC LA
-                        PDF template. We also do not attempt to introduce any other identifiable IDs or
-                        codes at this time (but we may try to, in future versions of this schema).
-                    </xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element name="display-text" type="ewp:MultilineString" minOccurs="1" maxOccurs="1">
-                            <xs:annotation>
-                                <xs:documentation>
-                                    A human-readable description of the reason - preferrably in English.
-                                </xs:documentation>
-                            </xs:annotation>
-                        </xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-        </xs:sequence>
-    </xs:complexType>
-
-    <xs:complexType name="InsertComponentChange" abstract="true">
-        <xs:annotation>
-            <xs:documentation>
-                A common class for describing INSERTs to a *list of components* (either studied
-                or recognized).
-            </xs:documentation>
-        </xs:annotation>
-        <xs:complexContent>
-            <xs:extension base="ComponentListChange">
-                <xs:sequence>
-                     <xs:element name="index" type="xs:nonNegativeInteger" minOccurs="1" maxOccurs="1">
-                         <xs:annotation>
-                             <xs:documentation>
-                                 Zero-based index of the element before which to insert.
-                             </xs:documentation>
-                         </xs:annotation>
-                     </xs:element>
-                </xs:sequence>
-            </xs:extension>
-        </xs:complexContent>
-    </xs:complexType>
-
-    <xs:complexType name="UpdateComponentChange" abstract="true">
-        <xs:annotation>
-            <xs:documentation>
-                A common class for describing UPDATEs to a *list of components* (either studied
-                or recognized).
-            </xs:documentation>
-        </xs:annotation>
-        <xs:complexContent>
-            <xs:extension base="ComponentListChange">
-                <xs:sequence>
-                     <xs:element name="index" type="xs:nonNegativeInteger" minOccurs="1" maxOccurs="1">
-                         <xs:annotation>
-                             <xs:documentation>
-                                 Zero-based index of the element to be updated.
-                             </xs:documentation>
-                         </xs:annotation>
-                     </xs:element>
-                </xs:sequence>
-            </xs:extension>
-        </xs:complexContent>
-    </xs:complexType>
-
-    <xs:complexType name="RemoveComponentChange" abstract="true">
-        <xs:annotation>
-            <xs:documentation>
-                A common class for describing DELETEs from *list of components* (either studied
-                or recognized).
-            </xs:documentation>
-        </xs:annotation>
-        <xs:complexContent>
-            <xs:extension base="ComponentListChange">
-                <xs:sequence>
-                     <xs:element name="index" type="xs:nonNegativeInteger" minOccurs="1" maxOccurs="1">
-                         <xs:annotation>
-                             <xs:documentation>
-                                 Zero-based index of the element to be removed.
-                             </xs:documentation>
-                         </xs:annotation>
-                     </xs:element>
-                </xs:sequence>
-            </xs:extension>
-        </xs:complexContent>
-    </xs:complexType>
-
-    <xs:element name="insert-component-studied">
-        <xs:annotation>
-            <xs:documentation>
-                This represents the action of adding a new `component-studied` element.
-            </xs:documentation>
-        </xs:annotation>
-        <xs:complexType>
-            <xs:complexContent>
-                <xs:extension base="InsertComponentChange">
-                    <xs:sequence>
-                        <xs:element ref="component-studied" minOccurs="1" maxOccurs="1">
-                            <xs:annotation>
-                                <xs:documentation>
-                                    This describes the component to be inserted.
-                                </xs:documentation>
-                            </xs:annotation>
-                        </xs:element>
-                    </xs:sequence>
-                </xs:extension>
-            </xs:complexContent>
-        </xs:complexType>
-    </xs:element>
-
-    <xs:element name="update-component-studied">
-        <xs:annotation>
-            <xs:documentation>
-                This represents the action of updating one of the `component-studied` elements.
-
-                This action is roughly eqivalent to removing and inserting the component at
-                the same index.
-            </xs:documentation>
-        </xs:annotation>
-        <xs:complexType>
-            <xs:complexContent>
-                <xs:extension base="UpdateComponentChange">
-                    <xs:sequence>
-                        <xs:element ref="component-studied" minOccurs="1" maxOccurs="1">
-                            <xs:annotation>
-                                <xs:documentation>
-                                    The updated contents of the component.
-                                </xs:documentation>
-                            </xs:annotation>
-                        </xs:element>
-                    </xs:sequence>
-                </xs:extension>
-            </xs:complexContent>
-        </xs:complexType>
-    </xs:element>
-
-    <xs:element name="remove-component-studied">
-        <xs:annotation>
-            <xs:documentation>
-                This represents the action of removing one of the `component-studied` elements.
-            </xs:documentation>
-        </xs:annotation>
-        <xs:complexType>
-            <xs:complexContent>
-                <xs:extension base="RemoveComponentChange">
-                    <xs:sequence>
-                    </xs:sequence>
-                </xs:extension>
-            </xs:complexContent>
-        </xs:complexType>
-    </xs:element>
-
-    <xs:element name="insert-component-recognized">
-        <xs:annotation>
-            <xs:documentation>
-                This represents the action of adding a new `component-recognized` element.
-            </xs:documentation>
-        </xs:annotation>
-        <xs:complexType>
-            <xs:complexContent>
-                <xs:extension base="InsertComponentChange">
-                    <xs:sequence>
-                        <xs:element ref="component-recognized" minOccurs="1" maxOccurs="1">
-                            <xs:annotation>
-                                <xs:documentation>
-                                    This describes the component to be inserted.
-                                </xs:documentation>
-                            </xs:annotation>
-                        </xs:element>
-                    </xs:sequence>
-                </xs:extension>
-            </xs:complexContent>
-        </xs:complexType>
-    </xs:element>
-
-    <xs:element name="update-component-recognized">
-        <xs:annotation>
-            <xs:documentation>
-                This represents the action of updating one of the `component-recognized` elements.
-
-                This action is roughly eqivalent to removing and inserting the component at
-                the same index.
-            </xs:documentation>
-        </xs:annotation>
-        <xs:complexType>
-            <xs:complexContent>
-                <xs:extension base="UpdateComponentChange">
-                    <xs:sequence>
-                        <xs:element ref="component-recognized" minOccurs="1" maxOccurs="1">
-                            <xs:annotation>
-                                <xs:documentation>
-                                    The updated contents of the component.
-                                </xs:documentation>
-                            </xs:annotation>
-                        </xs:element>
-                    </xs:sequence>
-                </xs:extension>
-            </xs:complexContent>
-        </xs:complexType>
-    </xs:element>
-
-    <xs:element name="remove-component-recognized">
-        <xs:annotation>
-            <xs:documentation>
-                This represents the action of removing one of the `component-recognized` elements.
-            </xs:documentation>
-        </xs:annotation>
-        <xs:complexType>
-            <xs:complexContent>
-                <xs:extension base="RemoveComponentChange">
-                    <xs:sequence>
-                    </xs:sequence>
-                </xs:extension>
-            </xs:complexContent>
-        </xs:complexType>
-    </xs:element>
-
-    <xs:simpleType name="MobilityStatus">
+    <xs:simpleType name="_MobilityStatus">
         <xs:restriction base="xs:string">
             <xs:enumeration value="nomination">
                 <xs:annotation>
@@ -1081,6 +741,254 @@
                     <xs:documentation>
                         The nomination has been cancelled (either by the student, or by one of the
                         partner HEIs).
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="ListOfChangesTo_ComponentsStudied">
+        <xs:annotation>
+            <xs:documentation>
+                Describes a list of changes applied to the list of studied components. The
+                order of elements matters (see the `index` element).
+
+                This is global, because it is used in external XSDs. It MUST stay this way, for
+                backward compatibility.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="insert-component-studied">
+                <xs:annotation>
+                    <xs:documentation>
+                        This represents the action of adding a new `component-studied` element to the
+                        list of components (to be) studied.
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:complexContent>
+                        <xs:extension base="_SingleChangeToAList_INSERT">
+                            <xs:sequence>
+                                <xs:element ref="component-studied" minOccurs="1" maxOccurs="1">
+                                    <xs:annotation>
+                                        <xs:documentation>
+                                            This describes the component to be inserted.
+                                        </xs:documentation>
+                                    </xs:annotation>
+                                </xs:element>
+                            </xs:sequence>
+                        </xs:extension>
+                    </xs:complexContent>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="remove-component-studied">
+                <xs:annotation>
+                    <xs:documentation>
+                        This represents the action of removing one of the `component-studied` elements.
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:complexContent>
+                        <xs:extension base="_SingleChangeToAList_DELETE">
+                            <xs:sequence>
+                            </xs:sequence>
+                        </xs:extension>
+                    </xs:complexContent>
+                </xs:complexType>
+            </xs:element>
+        </xs:choice>
+    </xs:complexType>
+
+    <xs:complexType name="ListOfChangesTo_ComponentsRecognized">
+        <xs:annotation>
+            <xs:documentation>
+                Describes a list of changes applied to the list of components recognized. The
+                order of elements matters (see the `index` element).
+
+                This is global, because it is used in external XSDs. It MUST stay this way, for
+                backward compatibility.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="insert-component-recognized">
+                <xs:annotation>
+                    <xs:documentation>
+                        This represents the action of adding a new `component-recognized` element.
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:complexContent>
+                        <xs:extension base="_SingleChangeToAList_INSERT">
+                            <xs:sequence>
+                                <xs:element ref="component-recognized" minOccurs="1" maxOccurs="1">
+                                    <xs:annotation>
+                                        <xs:documentation>
+                                            This describes the component to be inserted.
+                                        </xs:documentation>
+                                    </xs:annotation>
+                                </xs:element>
+                            </xs:sequence>
+                        </xs:extension>
+                    </xs:complexContent>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="remove-component-recognized">
+                <xs:annotation>
+                    <xs:documentation>
+                        This represents the action of removing one of the `component-recognized` elements.
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:complexContent>
+                        <xs:extension base="_SingleChangeToAList_DELETE">
+                            <xs:sequence>
+                            </xs:sequence>
+                        </xs:extension>
+                    </xs:complexContent>
+                </xs:complexType>
+            </xs:element>
+        </xs:choice>
+    </xs:complexType>
+
+    <xs:complexType name="SnapshotOf_ComponentsStudied">
+        <xs:annotation>
+            <xs:documentation>
+                Describes a snapshot of the list of studied components.
+
+                This is global, because it is used in external XSDs. It MUST stay this way, for
+                backward compatibility.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element ref="component-studied" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="SnapshotOf_ComponentsRecognized">
+        <xs:annotation>
+            <xs:documentation>
+                Describes a snapshot of the list of components recognized.
+
+                This is global, because it is used in external XSDs. It MUST stay this way, for
+                backward compatibility.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element ref="component-recognized" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="_SingleChangeToAList" abstract="true">
+        <xs:annotation>
+            <xs:documentation>
+                An abstract parent class which represents a single change occuring on some list
+                of elements.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="reason" minOccurs="0" maxOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>
+                        An optional reason for the change.
+
+                        UI designers are advised to supply a number of suggested reasons for their
+                        users (so that they can pick one when making the change). You can start with
+                        those listed in the EUC LA PDF template. Users SHOULD be allowed to specify
+                        their own custom reason for the change too.
+
+                        Note, that we do not make use of the "reason numbers" suggested by the EUC LA
+                        PDF template. We also do not attempt to introduce any other identifiable IDs or
+                        codes at this time (but we may try to do so in future versions of this schema).
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="display-text" type="ewp:MultilineString" minOccurs="1" maxOccurs="1">
+                            <xs:annotation>
+                                <xs:documentation>
+                                    A human-readable description of the reason - preferrably in English. It will
+                                    often be printed in PDF LA document (e.g. in the "Reason for change" column of
+                                    A2 or B2 table - see attached EUC LA template).
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="_SingleChangeToAList_INSERT" abstract="true">
+        <xs:annotation>
+            <xs:documentation>
+                An abstract parent class which represents a single INSERT occurring on some list
+                of elements.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="_SingleChangeToAList">
+                <xs:sequence>
+                     <xs:element name="index" type="xs:nonNegativeInteger" minOccurs="1" maxOccurs="1">
+                         <xs:annotation>
+                             <xs:documentation>
+                                 Zero-based index of the element before which to insert.
+                             </xs:documentation>
+                         </xs:annotation>
+                     </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="_SingleChangeToAList_DELETE" abstract="true">
+        <xs:annotation>
+            <xs:documentation>
+                An abstract parent class which represents a single DELETE occurring on some list
+                of elements.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="_SingleChangeToAList">
+                <xs:sequence>
+                     <xs:element name="index" type="xs:nonNegativeInteger" minOccurs="1" maxOccurs="1">
+                         <xs:annotation>
+                             <xs:documentation>
+                                 Zero-based index of the element to be removed.
+                             </xs:documentation>
+                         </xs:annotation>
+                     </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:simpleType name="ApprovingParty">
+        <xs:annotation>
+            <xs:documentation>
+                There are three approving parties when it comes to Learning Agreements (and
+                possibly, other documents related to mobility). This type is an enumeration of
+                all these parties.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="student">
+                <xs:annotation>
+                    <xs:documentation>
+                        The student being sent for the mobility.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="sending-hei">
+                <xs:annotation>
+                    <xs:documentation>
+                        The sending HEI, usually represented by a "Sending Coordinator".
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="receiving-hei">
+                <xs:annotation>
+                    <xs:documentation>
+                        The receiving HEI, usually represented by a "Receiving Coordinator".
                     </xs:documentation>
                 </xs:annotation>
             </xs:enumeration>

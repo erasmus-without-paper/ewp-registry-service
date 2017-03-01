@@ -363,8 +363,8 @@
     <xs:element name="error-response">
         <xs:annotation>
             <xs:documentation>
-                A generic envelope for all kinds of errors. Servers should attempt to include
-                this element in all HTTP 4xx and HTTP 5xx responses.
+                A generic envelope for all kinds of errors. Servers SHOULD return this element
+                as the body of all their HTTP 4xx and HTTP 5xx responses.
             </xs:documentation>
         </xs:annotation>
         <xs:complexType>
@@ -411,6 +411,33 @@
                 </xs:element>
             </xs:sequence>
         </xs:complexType>
+    </xs:element>
+
+    <xs:element name="success-user-message" type="MultilineStringWithOptionalLang">
+        <xs:annotation>
+            <xs:documentation>
+                This element is sometimes added to regular HTTP 200 responses. This serves as
+                an equivalent of the `user-message` element introduced in the `error-response`
+                above, but this one is for HTTP 200 responses (not error responses).
+
+                If the server includes this element in the response, then it indicates that it
+                wants this message to be displayed for the human who had initiated the request.
+                If it's given, then clients SHOULD display this message for their end users (if
+                it is possible to display it).
+
+                In case of most APIs no such extra message is necessary, because HTTP 200 means
+                "success" in itself. However, in cases of some other APIs, the server is
+                allowed some more flexibility in how the request is being processed. This
+                element allows to developers to inform end users about irregularieties in this
+                process.
+
+                In places where we expect this element to appear, it will be referred to in a
+                proper `response.xsd` file, along with some additional explanations. Usually it
+                will be used along with minOccurs="0" and maxOccurs="unbounded" attributes, in
+                order to allow servers to provide the message in multiple languages. It is
+                RECOMMENDED for the server to provide it at least in English.
+            </xs:documentation>
+        </xs:annotation>
     </xs:element>
 
 </xs:schema>

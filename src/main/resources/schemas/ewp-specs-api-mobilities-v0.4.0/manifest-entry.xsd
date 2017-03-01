@@ -81,6 +81,26 @@
                                 </xs:documentation>
                             </xs:annotation>
                         </xs:element>
+                        <xs:element name="supported-update-types" minOccurs="1" maxOccurs="1">
+                            <xs:annotation>
+                                <xs:documentation>
+                                    In this section the server publishes which types of updates it supports.
+                                    Clients SHOULD take this information into account before sending their requests
+                                    (otherwise, they will get HTTP 400 errors).
+
+                                    The name of each element on this list corresponds to an update element of the
+                                    same name, as described in request.xsd. If the element is present, then the
+                                    server states that it supports the corresponding update type.
+                                </xs:documentation>
+                            </xs:annotation>
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element name="approve-components-studied-draft-v1" minOccurs="0" maxOccurs="1" type="ewp:Empty"/>
+                                    <xs:element name="update-arrival-departure-dates-v1" minOccurs="0" maxOccurs="1" type="ewp:Empty"/>
+                                    <xs:element name="update-components-studied-v1" minOccurs="0" maxOccurs="1" type="ewp:Empty"/>
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
                     </xs:sequence>
                 </xs:extension>
             </xs:complexContent>

@@ -29,6 +29,9 @@
         <planned-arrival-date>2010-02-01</planned-arrival-date>
         <planned-departure-date>2010-06-20</planned-departure-date>
         <nominee-eqf-level>7</nominee-eqf-level>
-        <timeline/>
+        <components-studied>
+            <latest-draft-changes></latest-draft-changes>
+            <latest-draft-snapshot></latest-draft-snapshot>
+        </components-studied>
     </student-mobility-for-studies>
 </root:ewp-mobility-file>

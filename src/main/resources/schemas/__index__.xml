@@ -4,7 +4,7 @@
         uri="xml.xsd" />
     <uri
         name="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
-        uri="ewp-specs-architecture-v1.6.0/common-types.xsd" />
+        uri="ewp-specs-architecture-v1.7.0/common-types.xsd" />
     <uri
         name="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/blob/stable-v4/manifest-entry.xsd"
         uri="ewp-specs-api-discovery-v4.0.2/manifest-entry.xsd" />
@@ -64,16 +64,19 @@
         uri="ewp-specs-api-iia-cnr-v0.1.2/response.xsd" />
     <uri
         name="https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/master/manifest-entry.xsd"
-        uri="ewp-specs-api-mobilities-v0.2.1/manifest-entry.xsd" />
+        uri="ewp-specs-api-mobilities-v0.4.0/manifest-entry.xsd" />
     <uri
         name="https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/master/endpoints/get-response.xsd"
-        uri="ewp-specs-api-mobilities-v0.2.1/endpoints/get-response.xsd" />
+        uri="ewp-specs-api-mobilities-v0.4.0/endpoints/get-response.xsd" />
     <uri
         name="https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/master/endpoints/index-response.xsd"
-        uri="ewp-specs-api-mobilities-v0.2.1/endpoints/index-response.xsd" />
+        uri="ewp-specs-api-mobilities-v0.4.0/endpoints/index-response.xsd" />
+    <uri
+        name="https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/master/endpoints/update-request.xsd"
+        uri="ewp-specs-api-mobilities-v0.4.0/endpoints/update-request.xsd" />
     <uri
         name="https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/master/endpoints/update-response.xsd"
-        uri="ewp-specs-api-mobilities-v0.2.1/endpoints/update-response.xsd" />
+        uri="ewp-specs-api-mobilities-v0.4.0/endpoints/update-response.xsd" />
     <uri
         name="https://github.com/erasmus-without-paper/ewp-specs-api-mobility-cnr/blob/master/manifest-entry.xsd"
         uri="ewp-specs-api-mobility-cnr-v0.1.1/manifest-entry.xsd" />
@@ -97,7 +100,7 @@
         uri="ewp-specs-api-tors-v0.1.2/references/emrex-elmo-v1.1.0/references/xmldsig-core-schema.xsd" />
     <uri
         name="https://github.com/erasmus-without-paper/ewp-specs-fileext-ewpmobility/tree/master"
-        uri="ewp-specs-fileext-ewpmobility-v0.1.1/schema.xsd" />
+        uri="ewp-specs-fileext-ewpmobility-v0.1.3/schema.xsd" />
     <uri
         name="https://github.com/erasmus-without-paper/ewp-specs-types-address/tree/stable-v1"
         uri="ewp-specs-types-address-v1.0.0/schema.xsd" />

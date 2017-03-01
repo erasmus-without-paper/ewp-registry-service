@@ -24,14 +24,26 @@
         </xs:documentation>
     </xs:annotation>
 
-    <xs:element name="mobilities-update-response" type="ewp:Empty">
+    <xs:element name="mobilities-update-response">
         <xs:annotation>
             <xs:documentation>
                 This describes the format of the response returned by the `update` endpoint of
                 EWP Outgoing Mobilities API.
-
-                Currently, the response is empty. It may change in the future.
             </xs:documentation>
         </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="ewp:success-user-message" minOccurs="0" maxOccurs="unbounded">
+                    <xs:annotation>
+                        <xs:documentation>
+                            There are lots of possible update types covered by this API, but this is what
+                            all of them have in common - for each of these requests, the server returns an
+                            optional message to be displayed for the user, who initiated this request.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
     </xs:element>
+
 </xs:schema>

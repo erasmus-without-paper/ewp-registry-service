@@ -32,7 +32,7 @@
         </xs:annotation>
         <xs:complexType>
             <xs:sequence>
-                <xs:group ref="mobility:SequenceOfMobilities">
+                <xs:group ref="mobility:SequenceOfMobilities" minOccurs="1" maxOccurs="1">
                     <xs:annotation>
                         <xs:documentation>
                             The file consists of a list of Outgoing Mobility objects (these objects are

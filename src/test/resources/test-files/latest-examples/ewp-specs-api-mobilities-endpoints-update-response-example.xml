@@ -1,9 +1,19 @@
 <mobilities-update-response
     xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/master/endpoints/update-response.xsd"
+    xmlns:ewp="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="
         https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/master/endpoints/update-response.xsd
         update-response.xsd
     "
-/>
-<!-- WRTODO: Make schemaLocation absolute -->
+>
+    <!-- WRTODO: Make schemaLocation absolute -->
+
+    <!--
+    In this example, the message is the response to a successful
+    `update-arrival-departure-dates-v1.xml` update request (in which only the
+    arrival date has been sent).
+    -->
+    <ewp:success-user-message>Thank you. Student's arrival date has been successfully stored on University of Warsaw's servers.</ewp:success-user-message>
+</mobilities-update-response>
+

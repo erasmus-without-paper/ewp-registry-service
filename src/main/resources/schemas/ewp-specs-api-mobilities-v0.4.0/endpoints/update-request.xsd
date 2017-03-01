@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xml="http://www.w3.org/XML/1998/namespace"
+    xmlns:ewp="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
+    xmlns:mobility="https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/master/endpoints/get-response.xsd"
+    elementFormDefault="qualified"
+
+    targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/master/endpoints/update-request.xsd"
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/master/endpoints/update-request.xsd"
+>
+    <!-- WRTODO: Replace all occurrences of 'master' (in all projects) with 'stable-v1' upon release. -->
+
+    <xs:import
+        schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-architecture/stable-v1/common-types.xsd"
+        namespace="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
+    />
+
+    <xs:import
+        schemaLocation="get-response.xsd"
+        namespace="https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/master/endpoints/get-response.xsd"
+    /> <!-- WRTODO: absolute paths! -->
+
+    <xs:annotation>
+        <xs:documentation>
+            This schema is a part of the Erasmus Without Paper project. Before you start
+            using it, make sure you have read the general rules described here:
+
+            http://developers.erasmuswithoutpaper.eu/
+        </xs:documentation>
+    </xs:annotation>
+
+    <xs:element name="mobilities-update-request">
+        <xs:annotation>
+            <xs:documentation>
+                This describes the format of the REQUEST to be submitted to the `update`
+                endpoint of EWP Outgoing Mobilities API.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="sending-hei-id" type="ewp:AsciiPrintableIdentifier" minOccurs="1" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>
+                            ID of the sending HEI of the mobility.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="mobility-id" type="ewp:AsciiPrintableIdentifier" minOccurs="1" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>
+                            ID of the mobility which this update request is about.
+
+                            The sending partner of this mobility MUST match the partner provided in
+                            `sending-hei-id`.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:choice minOccurs="1" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>
+                            One request contains exactly one update element. But there are many possible
+                            types of this update element.
+
+                            Servers publish the list of supported update in their manifest entry.
+                        </xs:documentation>
+                    </xs:annotation>
+                    <xs:element ref="approve-components-studied-draft-v1"/>
+                    <xs:element ref="update-arrival-departure-dates-v1"/>
+                    <xs:element ref="update-components-studied-v1"/>
+                </xs:choice>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="approve-components-studied-draft-v1">
+        <xs:annotation>
+            <xs:documentation>
+                This request is sent by the receiving HEI when it wants to approve the
+                `latest-draft-snapshot` version of components-studied. For many HEIs, this
+                approval has the same meaning as "signing" this section of the LA.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="approving-party" minOccurs="1" maxOccurs="1" type="mobility:ApprovingParty">
+                    <xs:annotation>
+                        <xs:documentation>
+                            The party which is approving. In almost all cases, this will be
+                            `receiving-hei`, but in some use cases it MAY also be `student` (if the
+                            student is allowed to use receiving HEI's UI to approve Learning
+                            Agreements).
+
+                            The server MUST verify this value (it MUST NOT assume that it always equals
+                            `receiving-hei`). If remote approval by this party is unsupported by this
+                            server, HTTP 400 response MUST be returned, with proper user-message (e.g.
+                            "University of Warsaw requires its students to approve their Learning
+                            Agreements via local USOSweb system. It is not allowed to approve them
+                            remotely.").
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="current-latest-draft-snapshot" minOccurs="1" maxOccurs="1" type="mobility:SnapshotOf_ComponentsStudied">
+                    <xs:annotation>
+                        <xs:documentation>
+                            The current state of the `latest-draft-snapshot`, which is also the state which
+                            is being approved. (It is not allowed to approve any other state, but you might
+                            be allowed to send suggestions via `update-components-studied-v1`.)
+
+                            This element is required here to prevent edit conflicts. The server MUST
+                            verify it, in similar way as it's described in `update-components-studied-v1`.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="update-arrival-departure-dates-v1">
+        <xs:annotation>
+            <xs:documentation>
+                This request is sent by the receiving HEI when it wants to add or update the
+                `actual-arrival-date` and/or `actual-departure-date` values on the mobility
+                object. The sending HEI *expects* the receiving HEI to provide these values at
+                some point.
+
+                If none of the replace-* elements are provided in the request, then the server
+                SHOULD respond with HTTP 400. If the dates are in an incorrect format, the
+                server MUST respond with HTTP 400.
+
+                If the dates have been saved (either directly, or for review), the server MUST
+                return HTTP 200.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="replace-actual-arrival-date" minOccurs="0" maxOccurs="1" type="xs:date">
+                    <xs:annotation>
+                        <xs:documentation>
+                            The new value for `actual-arrival-date`.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="replace-actual-departure-date" minOccurs="0" maxOccurs="1" type="xs:date">
+                    <xs:annotation>
+                        <xs:documentation>
+                            The new value for `actual-departure-date`.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="update-components-studied-v1">
+        <xs:annotation>
+            <xs:documentation>
+                This request is sent by the receiving HEI when it want to suggest changes in
+                the `components-studied` section of the mobility object.
+
+                The sending HEI, on whose servers the mobility object is stored, MAY allow for
+                the receiving HEI to change `components-studied` freely, but it also MAY keep
+                these changes "on the side", and require a human to review them (e.g. a Sending
+                Coordinator, or a student).
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="current-latest-draft-snapshot" minOccurs="1" maxOccurs="1" type="mobility:SnapshotOf_ComponentsStudied">
+                    <xs:annotation>
+                        <xs:documentation>
+                            The current state of the `latest-draft-snapshot`, which is the *base for the
+                            suggested changes*. It is required here to prevent edit conflicts:
+
+                            https://en.wikipedia.org/wiki/Edit_conflict
+
+                            The client - the receiving HEI - extracts this element from the response of the
+                            Outgoing Mobilities API's `get` endpoint served at the sending HEI.
+
+                            If the contents of `current-latest-draft-snapshot` don't match the current
+                            values as kept in the server's database, then the server MUST respond with
+                            HTTP 409 error response.
+                            https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.10
+
+                            * Error response SHOULD include the `user-message` element with a brief
+                              explanation (e.g. "Your copy of the Learning Agreement is not up-to-date. We
+                              are unable to process your suggestions because we lack a common base for
+                              comparison. Please refresh your copy from our servers and repeat your
+                              request.").
+
+                            * XML supplied by the client MAY use different XML namespace prefixes than the
+                              one the server uses in its Outgoing Mobilities API. These prefixes MUST NOT
+                              be taken into account when snapshots are being compared.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="suggested-changes" minOccurs="1" maxOccurs="1" type="mobility:ListOfChangesTo_ComponentsStudied">
+                    <xs:annotation>
+                        <xs:documentation>
+                            The list of suggested changes. Changes are formatted in the same format as in
+                            Outgoing Mobilities API.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="snapshot-with-changes-applied" minOccurs="1" maxOccurs="1" type="mobility:SnapshotOf_ComponentsStudied">
+                    <xs:annotation>
+                        <xs:documentation>
+                            This is the "target" snapshot which the requester is aiming for.
+
+                            It might seem redundant because it can be generated automatically from the
+                            other two. It is required however - to prove consistency. We want both parties
+                            to be sure that they generate changes and snapshots properly.
+
+                            If the server detects that the snapshot calculated by the client is different
+                            than a similar snapshot calculated by the server, then it MUST respond with an
+                            either HTTP 400 error. At this point, both parties should review their snapshot
+                            generation algorithms.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>

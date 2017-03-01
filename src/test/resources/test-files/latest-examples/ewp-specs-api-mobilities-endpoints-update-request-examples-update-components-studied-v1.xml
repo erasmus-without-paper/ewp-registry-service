@@ -1,0 +1,86 @@
+<req:mobilities-update-request
+    xmlns:req="https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/master/endpoints/update-request.xsd"
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/master/endpoints/get-response.xsd"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/master/endpoints/update-request.xsd
+        ../update-request.xsd
+    "
+>
+    <!-- WRTODO: absolute paths! -->
+
+    <req:sending-hei-id>uw.edu.pl</req:sending-hei-id>
+    <req:mobility-id>c442c289-5541-4cae-9edb-8ad83e133613</req:mobility-id>
+    <req:update-components-studied-v1>
+        <req:current-latest-draft-snapshot>
+            <component-studied>
+                <title>Introductory calculus</title>
+                <academic-term-display-name>Spring</academic-term-display-name>
+                <credit>
+                    <scheme>ects</scheme>
+                    <value>6</value>
+                </credit>
+            </component-studied>
+            <component-studied>
+                <los-id>CR/dd5fa0b7-f036-4915-9898-8d683ded5738</los-id>
+                <los-code>KR630</los-code>
+                <title>Elementary Set Theory</title>
+                <loi-id>CRI/76c42226-e89c-401f-ad1b-8ebffd909b50</loi-id>
+                <academic-term-display-name>Autumn 2010/2011</academic-term-display-name>
+                <credit>
+                    <scheme>ects</scheme>
+                    <value>6</value>
+                </credit>
+            </component-studied>
+        </req:current-latest-draft-snapshot>
+        <req:suggested-changes>
+            <remove-component-studied>
+                <reason>
+                    <display-text>This component is no longer conducted.</display-text>
+                </reason>
+                <index>0</index>
+            </remove-component-studied>
+            <insert-component-studied>
+                <reason>
+                    <display-text>Replacement for the removed component.</display-text>
+                </reason>
+                <index>1</index>
+                <component-studied>
+                    <los-id>CR/1f373519-5c93-4974-a998-221b692c42ff</los-id>
+                    <los-code>AA103</los-code>
+                    <title>Calculus I</title>
+                    <loi-id>CRI/a976153e-3183-48bf-a209-6b4c55fbf3da</loi-id>
+                    <academic-term-display-name>Autumn 2010/2011</academic-term-display-name>
+                    <credit>
+                        <scheme>ects</scheme>
+                        <value>6</value>
+                    </credit>
+                </component-studied>
+            </insert-component-studied>
+        </req:suggested-changes>
+        <req:snapshot-with-changes-applied>
+            <component-studied>
+                <los-id>CR/dd5fa0b7-f036-4915-9898-8d683ded5738</los-id>
+                <los-code>KR630</los-code>
+                <title>Elementary Set Theory</title>
+                <loi-id>CRI/76c42226-e89c-401f-ad1b-8ebffd909b50</loi-id>
+                <academic-term-display-name>Autumn 2010/2011</academic-term-display-name>
+                <credit>
+                    <scheme>ects</scheme>
+                    <value>6</value>
+                </credit>
+            </component-studied>
+                <component-studied>
+                    <los-id>CR/1f373519-5c93-4974-a998-221b692c42ff</los-id>
+                    <los-code>AA103</los-code>
+                    <title>Calculus I</title>
+                    <loi-id>CRI/a976153e-3183-48bf-a209-6b4c55fbf3da</loi-id>
+                    <academic-term-display-name>Autumn 2010/2011</academic-term-display-name>
+                    <credit>
+                        <scheme>ects</scheme>
+                        <value>6</value>
+                    </credit>
+                </component-studied>
+        </req:snapshot-with-changes-applied>
+    </req:update-components-studied-v1>
+</req:mobilities-update-request>
