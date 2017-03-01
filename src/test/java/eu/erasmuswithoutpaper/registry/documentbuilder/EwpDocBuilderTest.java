@@ -215,19 +215,14 @@ public class EwpDocBuilderTest extends WRTest {
         DocumentBuilder docBuilder = Utils.newSecureDocumentBuilder();
         Document doc = docBuilder.parse(input);
         Match root = $(doc).namespace("xs", "http://www.w3.org/2001/XMLSchema");
-        for (Element element : root.xpath("//xs:element")) {
+        for (Element element : root.xpath("//xs:element|//xs:group")) {
           String type = element.getAttribute("type");
+          String ref = element.getAttribute("ref");
           String minOccurs = element.getAttribute("minOccurs");
           String maxOccurs = element.getAttribute("maxOccurs");
           String parentName = $(element).parent().get(0).getLocalName();
 
           try {
-
-            /* Verify if all elements with optional xml:lang attribute are repeatable. */
-
-            if (type.contains("WithOptionalLang") && (!maxOccurs.equals("unbounded"))) {
-              fail("This element should probably have maxOccurs=\"unbounded\".");
-            }
 
             /*
              * Verify if all elements has explicit minOccurs and maxOccurs values. These attributes
@@ -253,6 +248,21 @@ public class EwpDocBuilderTest extends WRTest {
                 fail("Elements should declare minOccurs and maxOccurs explicitly.");
               } else {
                 /* Correct. */
+              }
+
+              /* Verify if all elements with optional xml:lang attribute are repeatable. */
+
+              if (type.contains("WithOptionalLang") && (!maxOccurs.equals("unbounded"))) {
+                fail("This element should probably have maxOccurs=\"unbounded\".");
+              }
+
+              if (ref.equals("ewp:success-user-message")) {
+                if (minOccurs.equals("0") && maxOccurs.equals("unbounded")) {
+                  /* Correct. */
+                } else {
+                  fail("This element should probably have minOccurs=\"0\" "
+                      + "and maxOccurs=\"unbounded\".");
+                }
               }
             }
 
@@ -392,6 +402,8 @@ public class EwpDocBuilderTest extends WRTest {
       return path;
     } else if (element.getTagName().equals("xs:sequence")) {
       return path;
+    } else if (element.hasAttribute("ref")) {
+      return path + "/" + element.getTagName() + "[ref=\"" + element.getAttribute("ref") + "\"]";
     } else {
       return path + "/" + element.getTagName();
     }
