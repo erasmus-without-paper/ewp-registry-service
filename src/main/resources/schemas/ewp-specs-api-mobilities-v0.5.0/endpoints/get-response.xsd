@@ -454,8 +454,12 @@
                                             LA is signed for the first time this element contains the same courses as the
                                             `before-mobility-snapshot` does, but this may change later in time.
 
-                                            Note: This element corresponds to "Table C" on the EUC LA template (attached
-                                            in this XSD's repository).
+                                            Note: If you want to compare this to the tables in the EUC LA PDF template
+                                            (attached in this XSD's repository), then this element describes what "Table A"
+                                            would look like if all changes from "Table A2" were applied to it. It often
+                                            *resambles* "Table C", but it's NOT its equivalent (EWP ToRs API serves an
+                                            equivalent of "Table C"). You can discuss it here:
+                                            https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/issues/17
                                         </xs:documentation>
                                     </xs:annotation>
                                 </xs:element>
@@ -498,8 +502,8 @@
                             `components-recognized` element has the same base format as the
                             `components-studied` element does, and so, **we are not describing this format
                             here again**. The only difference is that other types of entities are described
-                            by it - see tables "B", "B2" and "D" on the EUC LA template (attached in this
-                            XSD's repository).
+                            by it - in EUC LA template, these entities are described by tables "B" and
+                            "B2" (while `components-studied` describe tables "A" and "A2").
 
                             Note, that very few servers are planning to provide this feature at the initial
                             stages of EWP adoption:
@@ -855,13 +859,97 @@
             <xs:documentation>
                 Describes a snapshot of the list of studied components.
 
-                This is global, because it is used in external XSDs. It MUST stay this way, for
+                This is global, because it is used in other XSDs. It MUST stay this way, for
                 backward compatibility.
             </xs:documentation>
         </xs:annotation>
         <xs:sequence>
-            <xs:element ref="component-studied" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element ref="component-studied" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>
+                        An ordered list of components present in this snapshot.
+
+                        The order matters (search for `index` elements in this XSD to understand why).
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="approval" minOccurs="0" maxOccurs="3">
+                <xs:annotation>
+                    <xs:documentation>
+                        Indicates which of the three approving parties (student, and two coordinators)
+                        have already approved this snapshot.
+
+                        All approved snapshots (such as `before-mobility-snapshot` and
+                        `latest-approved-snapshot`) MUST contain three `approval` elements. On the
+                        other hand, the `latest-draft-snapshot` MUST be approved by zero, one or two
+                        parties, it MUST NOT be approved by all three parties (because it wouldn't be
+                        a draft anymore).
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="by-party" minOccurs="1" maxOccurs="1" type="ApprovingParty">
+                            <xs:annotation>
+                                <xs:documentation>
+                                    The approving party.
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="timestamp" minOccurs="0" maxOccurs="1" type="xs:dateTime">
+                            <xs:annotation>
+                                <xs:documentation>
+                                    The time when the snapshot has been approved by this party (if known).
+
+                                    Servers are NOT REQUIRED to store this information. For example, some HEIs
+                                    might get their student approvals on paper (instead of allowing the students to
+                                    approve them online). Such HEIs will put the "approved by the student" label on
+                                    the snapshot automatically, immediatelly after the snapshot gets approved by
+                                    the sending coordinator (aka `sending-hei` party). In such cases, the actual
+                                    date of student's approval is not stored in the system, but the HEI "vouches"
+                                    that such approval took place.
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="should-now-be-approved-by" minOccurs="0" maxOccurs="3" type="ApprovingParty">
+                <xs:annotation>
+                    <xs:documentation>
+                        An optional indicator that the server is now waiting for this snapshot to be
+                        approved by the parties provided here.
+
+                        There are numerous ways in which the sending HEIs might want the process of
+                        draft approval to proceed. This element allows these HEIs suggest the order of
+                        approvals they prefer. Some HEIs might even *reject* approvals unless a proper
+                        `should-now-be-approved-by` is in place. Please discuss here:
+                        https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/issues/16
+
+                        The presence of this element MAY trigger some special behavior in the client
+                        UIs. For example, the mobilities waiting for user's approval can be highlighted
+                        for this user when he's browsing through the list of mobilities. Or, perhaps,
+                        the user might even receive an email notification.
+
+                        This element MUST NOT refer to parties which have already approved this
+                        snapshot (so, in effect, it can only be used in the `latest-draft-snapshot`
+                        element). It also MUST NOT be used if the snapshot doesn't contain any changes
+                        (i.e. when `latest-draft-changes` is empty).
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
         </xs:sequence>
+        <xs:attribute name="in-effect-since" type="xs:dateTime" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    Indicates the date since which the snapshot is (or was) considered "in effect"
+                    by the sending HEI. In theory, this should match the latest of the three
+                    approval dates, but it doesn't have to. Servers are not required to provide
+                    this date, but it's RECOMMENDED to do so. It MAY be an approximate date. If
+                    these dates are provided, then their order MUST be consistent with the order of
+                    the snapshots on the list.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
     </xs:complexType>
 
     <xs:complexType name="SnapshotOf_ComponentsRecognized">
@@ -892,13 +980,8 @@
                         An optional reason for the change.
 
                         UI designers are advised to supply a number of suggested reasons for their
-                        users (so that they can pick one when making the change). You can start with
-                        those listed in the EUC LA PDF template. Users SHOULD be allowed to specify
-                        their own custom reason for the change too.
-
-                        Note, that we do not make use of the "reason numbers" suggested by the EUC LA
-                        PDF template. We also do not attempt to introduce any other identifiable IDs or
-                        codes at this time (but we may try to do so in future versions of this schema).
+                        users (so that they can pick one when making the change). Users SHOULD be
+                        allowed to specify their own custom reason for the change too.
                     </xs:documentation>
                 </xs:annotation>
                 <xs:complexType>
@@ -909,8 +992,117 @@
                                     A human-readable description of the reason - preferrably in English. It will
                                     often be printed in PDF LA document (e.g. in the "Reason for change" column of
                                     A2 or B2 table - see attached EUC LA template).
+
+                                    The value of this element can sometimes be inferred from `ewp-reason-code`, but
+                                    for forward-compatibility reasons, this element is required regardless of this
+                                    fact.
+
+                                    If the reason cannot be provided, server implementers MAY provide an empty
+                                    string here. This is NOT RECOMMENDED though. Users SHOULD give some reason for
+                                    each of their changes, and the server SHOULD store these reasons.
                                 </xs:documentation>
                             </xs:annotation>
+                        </xs:element>
+                        <xs:element name="ewp-reason-code" minOccurs="0" maxOccurs="1">
+                            <xs:annotation>
+                                <xs:documentation>
+                                    An optional reason code. It is RECOMMENDED to provide it, if the reason for
+                                    change matches one of the reasons provided in the enumeration below. If no
+                                    match can be found, then this element MUST NOT be provided.
+
+                                    Currently, the enumeration supports viable reasons for changing
+                                    `components-studied` list only. This element MUST NOT be provided for
+                                    changes in `components-recognized`.
+
+                                    Attached EUC LA template defines seven "Reasons for exceptional changes to
+                                    study programme abroad", and assigns them numbers from 1 to 7. EUC does say
+                                    whether this assignment is backward-compatible or not, so we must assume it
+                                    isn't. Therefore, we introduce an enumeration of our own, which is intended to
+                                    stay backward-compatible.
+
+                                    IMPORTANT: New values MAY be added to this enumeration in future releases of
+                                    this API, and such expansion is considered backward-compatible. Clients MUST be
+                                    aware of this fact - if you find an unknown value here, you MUST treat it the
+                                    same way as if no `ewp-reason-code` was given at all. Server MUST NOT expand
+                                    their set of used reason codes without consulting EWP Partners - new reason
+                                    codes MUST be added to the enumeration before they can be used.
+                                </xs:documentation>
+                            </xs:annotation>
+                            <xs:simpleType>
+                                <xs:restriction base="xs:string">
+                                    <xs:enumeration value="not-available">
+                                        <xs:annotation>
+                                            <xs:documentation>
+                                                Defined by EUC with the following description: Previously selected educational
+                                                component is not available at the Receiving Institution.
+
+                                                This reason MUST be used ONLY for "delete" changes.
+                                            </xs:documentation>
+                                        </xs:annotation>
+                                    </xs:enumeration>
+                                    <xs:enumeration value="language-mismatch">
+                                        <xs:annotation>
+                                            <xs:documentation>
+                                                Defined by EUC with the following description: Component is in a different
+                                                language than previously specified in the course catalogue.
+
+                                                This reason MUST be used ONLY for "delete" changes.
+                                            </xs:documentation>
+                                        </xs:annotation>
+                                    </xs:enumeration>
+                                    <xs:enumeration value="timetable-conflict">
+                                        <xs:annotation>
+                                            <xs:documentation>
+                                                Defined by EUC with the following description: Timetable conflict.
+
+                                                This reason MUST be used ONLY for "delete" changes.
+                                            </xs:documentation>
+                                        </xs:annotation>
+                                    </xs:enumeration>
+                                    <xs:enumeration value="substituting-deleted">
+                                        <xs:annotation>
+                                            <xs:documentation>
+                                                Defined by EUC with the following description: Substituting a deleted component.
+
+                                                This reason MUST be used ONLY for "insert" changes.
+                                            </xs:documentation>
+                                        </xs:annotation>
+                                    </xs:enumeration>
+                                    <xs:enumeration value="extending-mobility">
+                                        <xs:annotation>
+                                            <xs:documentation>
+                                                Defined by EUC with the following description: Extending the mobility period.
+
+                                                This reason MUST be used ONLY for "insert" changes.
+                                            </xs:documentation>
+                                        </xs:annotation>
+                                    </xs:enumeration>
+                                    <xs:enumeration value="properties-update">
+                                        <xs:annotation>
+                                            <xs:documentation>
+                                                This one is NOT defined by EUC, but it seemed reasonable to add it here. It can
+                                                be used with both "delete" and "insert" changes, and it indicates an update in
+                                                the component properties - like a change in the component's name (e.g. a
+                                                spelling error), or the number of awarded ECTS points. The exact reason for the
+                                                change SHOULD be specified in the `display-text` element.
+
+                                                This reason MUST NOT be provided if the component is *actually* being removed
+                                                or added. It is used *only* when an *existing* component is *updated* (which is
+                                                represented as two changes - a "delete" and an "insert" - preferably in this
+                                                order, next to each other).
+
+                                                It's worth noting that some servers MAY also choose to "rewrite history"
+                                                in case of unimportant mistakes, like obvious spelling errors in component name.
+                                                Such "rewrite" will cause a component to instantly change its name in all
+                                                snapshots (even those snapshots which have been approved a long time ago).
+
+                                                You can discuss this code here:
+                                                https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/issues/15#issuecomment-283988998
+                                            </xs:documentation>
+                                        </xs:annotation>
+                                    </xs:enumeration>
+                                </xs:restriction>
+                            </xs:simpleType>
                         </xs:element>
                     </xs:sequence>
                 </xs:complexType>

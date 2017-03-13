@@ -79,7 +79,7 @@
                     </component-studied>
                 </insert-component-studied>
             </before-mobility-changes>
-            <before-mobility-snapshot>
+            <before-mobility-snapshot in-effect-since="2009-11-14T08:18:19+02:00">
                 <component-studied>
                     <title>Introductory calculus</title>
                     <academic-term-display-name>Spring</academic-term-display-name>
@@ -88,6 +88,17 @@
                         <value>6</value>
                     </credit>
                 </component-studied>
+                <approval>
+                    <by-party>student</by-party>
+                </approval>
+                <approval>
+                    <by-party>sending-hei</by-party>
+                    <timestamp>2009-11-13T14:03:23+02:00</timestamp>
+                </approval>
+                <approval>
+                    <by-party>receiving-hei</by-party>
+                    <timestamp>2009-11-14T08:18:19+02:00</timestamp>
+                </approval>
             </before-mobility-snapshot>
             <!--
             This time, `changes` element describes the differences between
@@ -114,7 +125,7 @@
                     </component-studied>
                 </insert-component-studied>
             </latest-approved-changes>
-            <latest-approved-snapshot>
+            <latest-approved-snapshot in-effect-since="2010-03-03T12:54:00+02:00">
                 <component-studied>
                     <los-id>CR/f9c7677f-e3e3-4106-a865-1d1e8867830e</los-id>
                     <los-code>KR502B</los-code>
@@ -134,6 +145,17 @@
                         <value>6</value>
                     </credit>
                 </component-studied>
+                <approval>
+                    <by-party>student</by-party>
+                </approval>
+                <approval>
+                    <by-party>sending-hei</by-party>
+                    <timestamp>2010-03-03T10:11:58+02:00</timestamp>
+                </approval>
+                <approval>
+                    <by-party>receiving-hei</by-party>
+                    <timestamp>2010-03-03T12:54:00+02:00</timestamp>
+                </approval>
             </latest-approved-snapshot>
             <!--
             This API also allows exchanging unapproved draft versions of the LA components.
@@ -186,6 +208,11 @@
                         <value>6</value>
                     </credit>
                 </component-studied>
+                <approval>
+                    <by-party>student</by-party>
+                    <timestamp>2010-05-12T11:52:06+02:00</timestamp>
+                </approval>
+                <should-now-be-approved-by>sending-hei</should-now-be-approved-by>
             </latest-draft-snapshot>
         </components-studied>
         <!--

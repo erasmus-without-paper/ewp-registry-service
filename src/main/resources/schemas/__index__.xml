@@ -49,13 +49,13 @@
         uri="ewp-specs-api-course-replication-v1.0.0-rc5/response.xsd" />
     <uri
         name="https://github.com/erasmus-without-paper/ewp-specs-api-iias/blob/master/manifest-entry.xsd"
-        uri="ewp-specs-api-iias-v0.5.0/manifest-entry.xsd" />
+        uri="ewp-specs-api-iias-v0.6.0/manifest-entry.xsd" />
     <uri
         name="https://github.com/erasmus-without-paper/ewp-specs-api-iias/blob/master/endpoints/get-response.xsd"
-        uri="ewp-specs-api-iias-v0.5.0/endpoints/get-response.xsd" />
+        uri="ewp-specs-api-iias-v0.6.0/endpoints/get-response.xsd" />
     <uri
         name="https://github.com/erasmus-without-paper/ewp-specs-api-iias/blob/master/endpoints/index-response.xsd"
-        uri="ewp-specs-api-iias-v0.5.0/endpoints/index-response.xsd" />
+        uri="ewp-specs-api-iias-v0.6.0/endpoints/index-response.xsd" />
     <uri
         name="https://github.com/erasmus-without-paper/ewp-specs-api-iia-cnr/blob/master/manifest-entry.xsd"
         uri="ewp-specs-api-iia-cnr-v0.1.2/manifest-entry.xsd" />
@@ -64,19 +64,19 @@
         uri="ewp-specs-api-iia-cnr-v0.1.2/response.xsd" />
     <uri
         name="https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/master/manifest-entry.xsd"
-        uri="ewp-specs-api-mobilities-v0.4.0/manifest-entry.xsd" />
+        uri="ewp-specs-api-mobilities-v0.5.0/manifest-entry.xsd" />
     <uri
         name="https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/master/endpoints/get-response.xsd"
-        uri="ewp-specs-api-mobilities-v0.4.0/endpoints/get-response.xsd" />
+        uri="ewp-specs-api-mobilities-v0.5.0/endpoints/get-response.xsd" />
     <uri
         name="https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/master/endpoints/index-response.xsd"
-        uri="ewp-specs-api-mobilities-v0.4.0/endpoints/index-response.xsd" />
+        uri="ewp-specs-api-mobilities-v0.5.0/endpoints/index-response.xsd" />
     <uri
         name="https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/master/endpoints/update-request.xsd"
-        uri="ewp-specs-api-mobilities-v0.4.0/endpoints/update-request.xsd" />
+        uri="ewp-specs-api-mobilities-v0.5.0/endpoints/update-request.xsd" />
     <uri
         name="https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/master/endpoints/update-response.xsd"
-        uri="ewp-specs-api-mobilities-v0.4.0/endpoints/update-response.xsd" />
+        uri="ewp-specs-api-mobilities-v0.5.0/endpoints/update-response.xsd" />
     <uri
         name="https://github.com/erasmus-without-paper/ewp-specs-api-mobility-cnr/blob/master/manifest-entry.xsd"
         uri="ewp-specs-api-mobility-cnr-v0.1.1/manifest-entry.xsd" />
