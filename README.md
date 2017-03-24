@@ -18,8 +18,7 @@ Running from a Docker Image
 
 ### Pull the image
 
-Currently, we are pushing out latest builds to [this Docker Hub repository]
-[docker-repo].
+Currently, we are pushing out latest builds to [this Docker Hub repository][docker-repo].
 
 ```sh
 docker pull wrygiel/ewp-registry-service
