@@ -100,12 +100,17 @@
                                         <xs:element name="certificate" minOccurs="0" maxOccurs="unbounded">
                                             <xs:annotation>
                                                 <xs:documentation>
-                                                    Identifies a client certificate which has been allowed to make requests within
-                                                    the network (in the name of the institutions listed in the adjacent
-                                                    `institutions-covered` element).
+                                                    Identifies a client certificate with which the client has been allowed to make
+                                                    requests within the network using the TLS Client Certificate Authentication
+                                                    described here:
+                                                    https://github.com/erasmus-without-paper/ewp-specs-sec-cliauth-tlscert
 
-                                                    Note, that this element has no content. Clients MUST use the `sha-256`
-                                                    attribute to match certificates.
+                                                    The client which signs his communication with the private key matching this
+                                                    certificate is allowed to make requests in the name of the institutions listed
+                                                    in the adjacent `institutions-covered` element.
+
+                                                    Note, that the Registry does NOT serve the actual certificate. Servers MUST use
+                                                    the `sha-256` attribute to match certificates the client actually uses.
                                                 </xs:documentation>
                                             </xs:annotation>
                                             <xs:complexType>

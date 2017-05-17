@@ -113,12 +113,10 @@
                             <xs:element name="certificate" type="xs:base64Binary" minOccurs="0" maxOccurs="unbounded">
                                 <xs:annotation>
                                     <xs:documentation>
-                                        Base64-encoded X.509 certificate. This MAY be a self-signed certificate.
+                                        Base64-encoded X.509 certificate which you plan to be using for TLS Client
+                                        Certificate Authentication, as described here:
 
-                                        Having self-signed certificates installed in developers' browsers might make
-                                        development and debugging significantly easier (it will allow developers to
-                                        make EWP requests directly in their browsers). However, it is NOT RECOMMENDED
-                                        to use them in production environment.
+                                        https://github.com/erasmus-without-paper/ewp-specs-sec-cliauth-tlscert
 
                                         IMPORTANT SECURITY NOTE: If your private key is compromised, you MUST
                                         immediately remove all certificates based on this key from your manifest.
@@ -131,7 +129,5 @@
             </xs:sequence>
         </xs:complexType>
     </xs:element>
-
-
 
 </xs:schema>

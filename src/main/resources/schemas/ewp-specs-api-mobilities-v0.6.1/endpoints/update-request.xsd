@@ -42,17 +42,9 @@
                 <xs:element name="sending-hei-id" type="ewp:AsciiPrintableIdentifier" minOccurs="1" maxOccurs="1">
                     <xs:annotation>
                         <xs:documentation>
-                            ID of the sending HEI of the mobility.
-                        </xs:documentation>
-                    </xs:annotation>
-                </xs:element>
-                <xs:element name="mobility-id" type="ewp:AsciiPrintableIdentifier" minOccurs="1" maxOccurs="1">
-                    <xs:annotation>
-                        <xs:documentation>
-                            ID of the mobility which this update request is about.
+                            ID of the sending HEI of the mobility (or mobilities) being updated.
 
-                            The sending partner of this mobility MUST match the partner provided in
-                            `sending-hei-id`.
+                            All updated mobilities in a single request MUST come from a single sending HEI.
                         </xs:documentation>
                     </xs:annotation>
                 </xs:element>
@@ -68,6 +60,7 @@
                     <xs:element ref="approve-components-studied-draft-v1"/>
                     <xs:element ref="update-arrival-departure-dates-v1"/>
                     <xs:element ref="update-components-studied-v1"/>
+                    <xs:element ref="update-statuses-v1"/>
                 </xs:choice>
             </xs:sequence>
         </xs:complexType>
@@ -83,6 +76,16 @@
         </xs:annotation>
         <xs:complexType>
             <xs:sequence>
+                <xs:element name="mobility-id" type="ewp:AsciiPrintableIdentifier" minOccurs="1" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>
+                            ID of the mobility which this update request is about.
+
+                            The sending partner of this mobility MUST match the partner provided in
+                            `sending-hei-id`.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
                 <xs:element name="approving-party" minOccurs="1" maxOccurs="1" type="mobility:ApprovingParty">
                     <xs:annotation>
                         <xs:documentation>
@@ -134,6 +137,16 @@
         </xs:annotation>
         <xs:complexType>
             <xs:sequence>
+                <xs:element name="mobility-id" type="ewp:AsciiPrintableIdentifier" minOccurs="1" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>
+                            ID of the mobility which this update request is about.
+
+                            The sending partner of this mobility MUST match the partner provided in
+                            `sending-hei-id`.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
                 <xs:element name="replace-actual-arrival-date" minOccurs="0" maxOccurs="1" type="xs:date">
                     <xs:annotation>
                         <xs:documentation>
@@ -166,6 +179,16 @@
         </xs:annotation>
         <xs:complexType>
             <xs:sequence>
+                <xs:element name="mobility-id" type="ewp:AsciiPrintableIdentifier" minOccurs="1" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>
+                            ID of the mobility which this update request is about.
+
+                            The sending partner of this mobility MUST match the partner provided in
+                            `sending-hei-id`.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
                 <xs:element name="current-latest-draft-snapshot" minOccurs="1" maxOccurs="1" type="mobility:SnapshotOf_ComponentsStudied">
                     <xs:annotation>
                         <xs:documentation>
@@ -217,6 +240,85 @@
                             generation algorithms.
                         </xs:documentation>
                     </xs:annotation>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="update-statuses-v1">
+        <xs:annotation>
+            <xs:documentation>
+                This request is usually sent by the receiving HEI when it wants to accept or
+                reject a group of nominations proposed by the sending HEI. In other words, it
+                allows to suggest that the status of the mobility should be changed from
+                "nomination" to either "live" or "rejected".
+
+                Additionally, receiving HEI MAY also use this API to suggest changing the
+                status to other values (e.g. notify that the mobility is cancelled), but
+                servers are not required to support such changes (if a particular change is
+                not supported for some reason, then the server will describe the fact in its
+                HTTP 400 response message).
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="single-update" minOccurs="1" maxOccurs="unbounded">
+                    <xs:annotation>
+                        <xs:documentation>
+                            This update request may contain multiple "single updates". This is different
+                            than in most of the other update types, which support only a single mobility at
+                            a time.
+
+                            Servers MUST run this update in a transaction. If something is wrong with one
+                            of the "single updates", then none of the updates should be saved (and the
+                            error response should describe what went wrong).
+                        </xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="mobility-id" type="ewp:AsciiPrintableIdentifier" minOccurs="1" maxOccurs="1">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        ID of the mobility being updated.
+
+                                        The sending partner of this mobility MUST match the partner provided in
+                                        `sending-hei-id`.
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                            <xs:element name="new-status" type="mobility:MobilityStatus" minOccurs="1" maxOccurs="1">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        Suggested new status for this mobility.
+
+                                        If you want to accept the nomination, then you should send "live" here. If you
+                                        want to reject it, then send "rejected". You MAY also allow your users to send
+                                        other status values, but - if you choose to do so - then you SHOULD make your
+                                        users aware, that in many cases such transaction will fail (because most
+                                        partners will use this update-type only for accepting and rejecting
+                                        nominations).
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                            <xs:element name="comment" type="ewp:MultilineString" minOccurs="0" maxOccurs="1">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        An optional comment. It is RECOMMENDED for comments to be provided only when
+                                        necessary (i.e. when nominations are rejected). These comments MUST be visible
+                                        only to the IRO members, not the students.
+
+                                        Note, that this API allows for every mobility to have a different comment.
+                                        However, it is also okay for the clients to simply "batch copy" a single
+                                        comment to all mobilities being rejected.
+
+                                        It is left unspecified how servers should handle these comments - e.g. they may
+                                        store them along their mobilities, or they may forward them to specific
+                                        persons, etc.
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
                 </xs:element>
             </xs:sequence>
         </xs:complexType>

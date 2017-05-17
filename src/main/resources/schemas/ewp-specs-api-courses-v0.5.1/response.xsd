@@ -439,7 +439,7 @@
                                                     <xs:element name="languageOfInstruction" type="xs:language" minOccurs="0" maxOccurs="1">
                                                         <xs:annotation>
                                                             <xs:documentation>
-                                                                Recommended, especially for courses and/or classes. An ISO 639-1 code of the
+                                                                Recommended, especially for courses and/or classes. An BCP 47 code of the
                                                                 language which has been used as the primary language of teaching during the
                                                                 classes. E.g. "pl" if the course is instructed/conducted in Polish.
 

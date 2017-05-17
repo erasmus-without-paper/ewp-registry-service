@@ -75,6 +75,11 @@
 
                         It MAY be specified in multiple languages (and/or multiple alphabets). See
                         annotations on `contact-name` for more information.
+
+                        Note, that it is allowed (but NOT RECOMMENDED) for a person to have a family
+                        name in certain language/alphabet, but also be missing the given names in this
+                        language/alphabet. Clients will need to cope with all such possible
+                        combinations.
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
@@ -86,6 +91,19 @@
 
                         It MAY be specified in multiple languages (and/or multiple alphabets). See
                         annotations on `contact-name` for more information.
+
+                        Note, that it is allowed (but NOT RECOMMENDED) for a person to have a family
+                        name in certain language/alphabet, but also be missing the given names in this
+                        language/alphabet. Clients will need to cope with all such possible
+                        combinations.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="person-gender" minOccurs="0" maxOccurs="1" type="ewp:Gender">
+                <xs:annotation>
+                    <xs:documentation>
+                        If this contact is a person, then this element MAY contain the gender of this
+                        person.
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
@@ -107,6 +125,12 @@
                 <xs:annotation>
                     <xs:documentation>
                         A list of email addresses at which this contact can be reached.
+
+                        Servers SHOULD try to supply this list, even if it doesn't seem to be necessary
+                        in the particular context in which you are using the Abstract Contact data
+                        type. Some clients might need to uniquely identify this contact (not only a
+                        person, but also a broader contact entity), and currently email address seems
+                        to be the best (easiest) type of identifier for this.
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>

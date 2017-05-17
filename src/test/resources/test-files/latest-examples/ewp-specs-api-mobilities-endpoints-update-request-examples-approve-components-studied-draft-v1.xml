@@ -10,8 +10,8 @@
     <!-- WRTODO: absolute paths! -->
 
     <req:sending-hei-id>uw.edu.pl</req:sending-hei-id>
-    <req:mobility-id>c442c289-5541-4cae-9edb-8ad83e133613</req:mobility-id>
     <req:approve-components-studied-draft-v1>
+        <req:mobility-id>c442c289-5541-4cae-9edb-8ad83e133613</req:mobility-id>
         <req:approving-party>receiving-hei</req:approving-party>
         <req:current-latest-draft-snapshot>
             <component-studied>

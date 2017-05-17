@@ -169,6 +169,15 @@
                                     </xs:documentation>
                                 </xs:annotation>
                             </xs:element>
+                            <xs:element name="logo-url" minOccurs="0" maxOccurs="1" type="ewp:HTTPS">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        If given, this should be a HTTPS URL pointing to the unit's logo. Server
+                                        implementers MUST follow guidelines described in the `logo-url` element of the
+                                        Institutions API (regarding access, format and visibility).
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
                             <xs:element name="mobility-factsheet-url" minOccurs="0" maxOccurs="unbounded" type="ewp:HTTPWithOptionalLang">
                                 <xs:annotation>
                                     <xs:documentation>

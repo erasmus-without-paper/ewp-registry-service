@@ -51,7 +51,14 @@
         </xs:annotation>
         <xs:complexType>
             <xs:sequence>
-                <xs:group ref="SequenceOfMobilities" minOccurs="1" maxOccurs="1"/>
+                <xs:group ref="SequenceOfMobilities" minOccurs="1" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>
+                            Clients should use the `mobility-id` subelements to match objects with their
+                            `mobility_id` request parameters.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:group>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
@@ -64,19 +71,16 @@
             </xs:documentation>
         </xs:annotation>
         <xs:sequence>
-            <xs:choice>
-                <xs:group ref="SingleMobilityObject">
-                    <xs:annotation>
-                        <xs:documentation>
-                            A list of matching mobilities. (Clients should use the `mobility-id`
-                            subelements to match objects with their `mobility_id` request parameters.)
+            <xs:group ref="SingleMobilityObject" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>
+                        A list of matching mobilities.
 
-                            Currently there's only type of mobility exposed by this API. More types MAY
-                            come in the future.
-                        </xs:documentation>
-                    </xs:annotation>
-                </xs:group>
-            </xs:choice>
+                        Currently there's only type of mobility exposed by this API. More types MAY
+                        come in the future.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:group>
         </xs:sequence>
     </xs:group>
 
@@ -102,13 +106,23 @@
 
                     In the future, it may become a "subclass" of a more generic Mobility parent class
                     (and some of the fields might be moved to the parent).
+
+                    Immutable elements
+                    ------------------
+
+                    Every mobility has its unique sending-hei, receiving-hei and nominee, which
+                    MUST NOT change after the mobility is created. For example, if it turns out
+                    that a different student will be nominated for this mobility, then a new
+                    mobility-id MUST be created for such nomination. However, the properties of
+                    these mobility-related entities still MAY change. E.g. the student's name may
+                    get updated.
                 </xs:documentation>
             </xs:annotation>
             <xs:sequence>
                 <xs:element name="mobility-id" type="ewp:AsciiPrintableIdentifier" minOccurs="1" maxOccurs="1">
                     <xs:annotation>
                         <xs:documentation>
-                            Identifier of the mobility (as assigned by the sending HEI).
+                            Identifier of the mobility (as assigned by the sending HEI). Immutable.
                         </xs:documentation>
                     </xs:annotation>
                 </xs:element>
@@ -123,7 +137,7 @@
                             <xs:element name="hei-id" type="xs:string" minOccurs="1" maxOccurs="1">
                                 <xs:annotation>
                                     <xs:documentation>
-                                        SCHAC ID of the institution.
+                                        SCHAC ID of the institution. Immutable.
                                         https://github.com/erasmus-without-paper/ewp-specs-api-registry/#schac-identifiers
 
                                         Clients can fetch more information on this HEI from the Institutions API
@@ -172,7 +186,7 @@
                             <xs:element name="hei-id" type="xs:string" minOccurs="1" maxOccurs="1">
                                 <xs:annotation>
                                     <xs:documentation>
-                                        SCHAC ID of the institution.
+                                        SCHAC ID of the institution. Immutable.
                                         https://github.com/erasmus-without-paper/ewp-specs-api-registry/#schac-identifiers
 
                                         Clients can fetch more information on this HEI from the Institutions API
@@ -213,7 +227,7 @@
                 <xs:element name="student" minOccurs="1" maxOccurs="1">
                     <xs:annotation>
                         <xs:documentation>
-                            The section describes the student who is being sent for this mobility.
+                            The section describes the student who is being sent for this mobility. Immutable.
 
                             These fields MAY change in time (e.g. after the student changes his name or
                             address).
@@ -298,7 +312,7 @@
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>
-                <xs:element name="status" type="_MobilityStatus" minOccurs="1" maxOccurs="1">
+                <xs:element name="status" type="MobilityStatus" minOccurs="1" maxOccurs="1">
                     <xs:annotation>
                         <xs:documentation>
                             Current status of the mobility.
@@ -372,7 +386,7 @@
                             <xs:element name="language" type="xs:language" minOccurs="1" maxOccurs="1">
                                 <xs:annotation>
                                     <xs:documentation>
-                                        The code of the language.
+                                        The BCP 47 code of the language.
                                     </xs:documentation>
                                 </xs:annotation>
                             </xs:element>
@@ -700,7 +714,7 @@
         </xs:complexType>
     </xs:element>
 
-    <xs:simpleType name="_MobilityStatus">
+    <xs:simpleType name="MobilityStatus">
         <xs:restriction base="xs:string">
             <xs:enumeration value="nomination">
                 <xs:annotation>

@@ -1,0 +1,54 @@
+<ounits-response
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-ounits/tree/stable-v1"
+    xmlns:a="https://github.com/erasmus-without-paper/ewp-specs-types-address/tree/stable-v1"
+    xmlns:c="https://github.com/erasmus-without-paper/ewp-specs-types-contact/tree/stable-v1"
+    xmlns:p="https://github.com/erasmus-without-paper/ewp-specs-types-phonenumber/tree/stable-v1"
+    xmlns:ewp="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
+    xmlns:xml="http://www.w3.org/XML/1998/namespace"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        https://github.com/erasmus-without-paper/ewp-specs-api-ounits/tree/stable-v1
+        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-ounits/stable-v1/response.xsd
+    "
+>
+    <!--
+    IMPORTANT: Please see the response.xsd file for detailed requirements and
+    descriptions of all the elements. You MUST NOT base your implementation
+    solely on the example file.
+    -->
+    <ounit>
+        <ounit-id>73</ounit-id> <!-- We recommend UUIDs though. -->
+        <ounit-code>10000000</ounit-code>
+        <name xml:lang="en">Faculty of Mathematics, Informatics, and Mechanics</name>
+        <name xml:lang="pl">Wydział Matematyki, Informatyki i Mechaniki</name>
+        <parent-ounit-id>5</parent-ounit-id>
+        <a:street-address>
+            <a:addressLine>Banacha 2</a:addressLine>
+            <a:locality>Warszawa</a:locality>
+            <a:country>PL</a:country>
+        </a:street-address>
+        <a:mailing-address>
+            <a:addressLine>Banacha 2</a:addressLine>
+            <a:postalCode>02-097</a:postalCode>
+            <a:locality>Warszawa</a:locality>
+            <a:country>PL</a:country>
+        </a:mailing-address>
+        <website-url xml:lang="pl">http://www.mimuw.edu.pl/</website-url>
+        <website-url xml:lang="en">http://www.mimuw.edu.pl/?LANG=en</website-url>
+        <c:contact>
+            <c:contact-name>John Doe (Faculty's Mobility Coordinator)</c:contact-name>
+            <c:person-given-names>John</c:person-given-names>
+            <c:person-family-name>Doe</c:person-family-name>
+            <p:phone-number>
+                <p:e164>+4723456789</p:e164>
+            </p:phone-number>
+            <c:email>john@mimuw.edu.pl</c:email>
+            <a:street-address> <!-- As described before. --> </a:street-address>
+            <a:mailing-address> <!-- As described before. --> </a:mailing-address>
+            <c:role-description xml:lang="en">
+                John Doe is advising students who are interested in studying programmes
+                in Faculty of Mathematics, Informatics, and Mechanics...
+            </c:role-description>
+        </c:contact>
+    </ounit>
+</ounits-response>

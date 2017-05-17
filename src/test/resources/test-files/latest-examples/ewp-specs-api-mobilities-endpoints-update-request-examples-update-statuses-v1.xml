@@ -9,8 +9,15 @@
     <!-- WRTODO: absolute paths! -->
 
     <sending-hei-id>uw.edu.pl</sending-hei-id>
-    <update-arrival-departure-dates-v1>
-        <mobility-id>c442c289-5541-4cae-9edb-8ad83e133613</mobility-id>
-        <replace-actual-arrival-date>2017-01-15</replace-actual-arrival-date>
-    </update-arrival-departure-dates-v1>
+    <update-statuses-v1>
+        <single-update>
+            <mobility-id>c442c289-5541-4cae-9edb-8ad83e133613</mobility-id>
+            <new-status>live</new-status>
+        </single-update>
+        <single-update>
+            <mobility-id>fd7374e4-5d28-41d8-b121-901ae7cb7a13</mobility-id>
+            <new-status>rejected</new-status>
+            <comment>Some comment.</comment>
+        </single-update>
+    </update-statuses-v1>
 </mobilities-update-request>

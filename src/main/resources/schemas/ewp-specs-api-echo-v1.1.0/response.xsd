@@ -30,6 +30,10 @@
                         <xs:documentation>
                             The list of IDs of all HEIs covered by the requester's EWP Host(s) (taken from
                             the registry's `institutions-covered/hei-id` elements).
+
+                            This element is included in Echo API response in order to make sure you can
+                            properly identify the HEIs covered by the requester. Note, that there can be
+                            any number of them (0..*).
                         </xs:documentation>
                     </xs:annotation>
                 </xs:element>
