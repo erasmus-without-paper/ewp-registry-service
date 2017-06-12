@@ -97,6 +97,23 @@ public class KnownNamespace {
       new KnownNamespace("ou1", "api-ounits/blob/stable-v1/manifest-entry.xsd",
           "api-ounits/stable-v1/manifest-entry.xsd", true);
 
+  /**
+   * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-iias/blob/stable-v1/manifest-entry.xsd'>
+   * here</a>.
+   */
+  public static final KnownNamespace APIENTRY_IIAS = new KnownNamespace("ia1",
+      "api-iias/blob/stable-v1/manifest-entry.xsd", "api-iias/stable-v1/manifest-entry.xsd", true);
+
+  /**
+   * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-iia-cnr/blob/stable-v1/manifest-entry.xsd'>
+   * here</a>.
+   */
+  public static final KnownNamespace APIENTRY_IIA_CNR =
+      new KnownNamespace("iac1", "api-iia-cnr/blob/stable-v1/manifest-entry.xsd",
+          "api-iia-cnr/stable-v1/manifest-entry.xsd", true);
+
   private static final String COMMON_URI_PREFIX =
       "https://github.com/erasmus-without-paper/ewp-specs-";
   private static final String COMMON_SCHEMA_LOCATION_PREFIX =
