@@ -2,17 +2,17 @@
 <xs:schema
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
     xmlns:xml="http://www.w3.org/XML/1998/namespace"
-    xmlns:mobility="https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/master/endpoints/get-response.xsd"
+    xmlns:mobility="https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/stable-v1/endpoints/get-response.xsd"
     elementFormDefault="qualified"
 
-    targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-fileext-ewpmobility/tree/master"
-    xmlns="https://github.com/erasmus-without-paper/ewp-specs-fileext-ewpmobility/tree/master"
+    targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-fileext-ewpmobility/tree/stable-v1"
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-fileext-ewpmobility/tree/stable-v1"
 >
-    <!-- WRTODO: Replace all occurrences of 'master' (in all projects) with 'stable-v1' upon release. -->
+    <!-- WRTODO: Do not release until dependants are released: Outgoing Mobilities API -->
 
     <xs:import
         schemaLocation="../ewp-specs-api-mobilities/endpoints/get-response.xsd"
-        namespace="https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/master/endpoints/get-response.xsd"
+        namespace="https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/stable-v1/endpoints/get-response.xsd"
     />
 
     <xs:annotation>

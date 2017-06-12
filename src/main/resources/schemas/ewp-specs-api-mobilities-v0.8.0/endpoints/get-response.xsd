@@ -3,15 +3,15 @@
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
     xmlns:a="https://github.com/erasmus-without-paper/ewp-specs-types-address/tree/stable-v1"
     xmlns:p="https://github.com/erasmus-without-paper/ewp-specs-types-phonenumber/tree/stable-v1"
-    xmlns:course="https://github.com/erasmus-without-paper/ewp-specs-api-courses/tree/master"
+    xmlns:course="https://github.com/erasmus-without-paper/ewp-specs-api-courses/tree/stable-v1"
     xmlns:xml="http://www.w3.org/XML/1998/namespace"
     xmlns:ewp="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
     elementFormDefault="qualified"
 
-    targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/master/endpoints/get-response.xsd"
-    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/master/endpoints/get-response.xsd"
+    targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/stable-v1/endpoints/get-response.xsd"
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/stable-v1/endpoints/get-response.xsd"
 >
-    <!-- WRTODO: Replace all occurrences of 'master' (in all projects) with 'stable-v1' upon release. -->
+    <!-- WRTODO: Do not release until dependants are released: Courses API -->
 
     <xs:import
         schemaLocation="../../ewp-specs-architecture/common-types.xsd"
@@ -30,7 +30,7 @@
 
     <xs:import
         schemaLocation="../../ewp-specs-api-courses/response.xsd"
-        namespace="https://github.com/erasmus-without-paper/ewp-specs-api-courses/tree/master"
+        namespace="https://github.com/erasmus-without-paper/ewp-specs-api-courses/tree/stable-v1"
     /> <!-- WRTODO: absolute paths! -->
 
     <xs:annotation>
@@ -286,6 +286,80 @@
                                     </xs:documentation>
                                 </xs:annotation>
                             </xs:element>
+                            <xs:element name="photo-url" minOccurs="0" maxOccurs="unbounded">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        If given, then it contains the URLs at which the client may fetch the photo of
+                                        the student. Multiple URLs may be provided with multiple versions of the photo,
+                                        or various types of the photo.
+
+                                        * Whenever possible, the server SHOULD provide an up-to-date photo in a
+                                          standard EU passport photo aspect ratio (width x height = 35 x 45), eligable
+                                          to be used for a student card. Such photo SHOULD come first in this list.
+
+                                        * Other photos in many aspect ratios may follow. They may be variations of the
+                                          same photo (e.g. without cropping, or with a different cropping), or they may
+                                          be completely different photos.
+
+                                        * All URLs MUST be accessible to anonymous requesters as described here:
+                                          https://github.com/erasmus-without-paper/ewp-specs-sec-cliauth-none
+
+                                        * URLs MAY contain some kind of access tokens which may expire in time. Clients
+                                          MAY send the URL directly to their users' brosers, but they should be aware
+                                          that such URLs may expire at any moment. If the clients need to have a copy
+                                          of the photo, then they MUST copy the contents of the photo to their servers.
+                                    </xs:documentation>
+                                </xs:annotation>
+                                <xs:complexType>
+                                    <xs:simpleContent>
+                                        <xs:extension base="ewp:HTTPS">
+                                            <xs:attribute name="size-px" use="optional">
+                                                <xs:annotation>
+                                                    <xs:documentation>
+                                                        If given, then this attribute contains the exact dimensions (width and height)
+                                                        of the photo, in pixels. These are expressed by a single string of two values
+                                                        concatenated with "x" character, e.g. "350x450" means that the photo's width is
+                                                        350 pixels, and its height is 450 pixels.
+
+                                                        Clients may use this attribute to quickly browse through the list of URLs and
+                                                        pick one that suits their needs best (without actually fetching the images). It
+                                                        is RECOMMENDED (but not required) for the servers to supply it.
+                                                    </xs:documentation>
+                                                </xs:annotation>
+                                                <xs:simpleType>
+                                                    <xs:restriction base="xs:string">
+                                                        <xs:pattern value="[0-9]+x[0-9]+"/>
+                                                    </xs:restriction>
+                                                </xs:simpleType>
+                                            </xs:attribute>
+                                            <xs:attribute name="public" use="optional" type="xs:boolean" default="false">
+                                                <xs:annotation>
+                                                    <xs:documentation>
+                                                        By default, all photos MUST be treated as private personal data, and SHOULD
+                                                        NOT be viewed to other users.
+
+                                                        However, if this attribute is "true", then either it means that the **nominee
+                                                        himself** has granted for this photo to be viewed **publicly**. This means that
+                                                        the client MAY show this photo to all other students and staff members, and
+                                                        even to anonymous users of his system. However, this choice MAY change at any
+                                                        time, so - if the client rely on it - then it MUST revalidate if the photo is
+                                                        still public every now and then.
+                                                    </xs:documentation>
+                                                </xs:annotation>
+                                            </xs:attribute>
+                                            <xs:attribute name="date" use="optional" type="xs:date">
+                                                <xs:annotation>
+                                                    <xs:documentation>
+                                                        If given, then it indicates the time when the photo has been taken, or
+                                                        uploaded. This date can be used by the client to verify if the photo is "fresh
+                                                        enough", for example for the purposes of issuing student cards, etc.
+                                                    </xs:documentation>
+                                                </xs:annotation>
+                                            </xs:attribute>
+                                        </xs:extension>
+                                    </xs:simpleContent>
+                                </xs:complexType>
+                            </xs:element>
                             <xs:element ref="a:street-address" minOccurs="0" maxOccurs="1">
                                 <xs:annotation>
                                     <xs:documentation>
@@ -353,14 +427,26 @@
                         </xs:documentation>
                     </xs:annotation>
                 </xs:element>
-                <xs:element name="nominee-eqf-level" type="ewp:EqfLevel" minOccurs="1" maxOccurs="1">
-                    <!-- WRTODO: Is it okay that this is required? Perhaps it's a mistake? -->
+                <xs:element name="eqf-level-studied-at-nomination" type="ewp:EqfLevel" minOccurs="0" maxOccurs="1">
                     <xs:annotation>
                         <xs:documentation>
                             The student is sent for the mobility as part of one of his study programmes.
                             This field contains the student's EQF level on this programme *at the time of
                             the nomination* (and it SHOULD NOT change in time, as opposed to the fields
                             present in the `student` element).
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="eqf-level-studied-at-departure" type="ewp:EqfLevel" minOccurs="0" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>
+                            This is similar to the `eqf-level-studied-at-nomination` element, but this time
+                            we are interested in the EQF level the student **will have** when the mobility
+                            actually begins (according to many IROs this is more important than the one the
+                            students has at the time of the nomination).
+
+                            Server implementers are encouraged to supply both values. If it is not
+                            possible, then at least one SHOULD be supplied.
                         </xs:documentation>
                     </xs:annotation>
                 </xs:element>
@@ -407,7 +493,8 @@
                             at the receiving HEI.
 
                             We need different versions of this list because the EUC LA template (attached in
-                            this XSD's repository) requires it.
+                            this XSD's repository) requires it. As has been reported by WP2, the receiving
+                            HEI might also need all these versions.
                         </xs:documentation>
                     </xs:annotation>
                     <xs:complexType>
@@ -554,18 +641,46 @@
                     <xs:annotation>
                         <xs:documentation>
                             The EWP's LOS ID of the component, exactly as exposed via the receiving HEI's
-                            Courses API. Please note, that is NOT necessarilly the same as the "Component
-                            Code" present on the EUC template.
+                            Courses API. Please note, that it is USUALLY NOT the same as the "Component
+                            Code" present on the EUC template (compare with `los-code` element).
                             https://github.com/erasmus-without-paper/ewp-specs-api-courses#unique-identifiers
 
-                            Please note, that the sending HEI is NOT required to make use of the receiving
-                            HEI's Courses API when LA is being drafted. Also, the receiving HEI is NOT
-                            required to implement the Courses API anyway. It is however REQUIRED for the
-                            sending HEI to keep this field in its database (because the *receiving HEI*
-                            might want to fill it out).
+                            Notes for sending HEI implementers
+                            ----------------------------------
 
-                            If the field *is* given, then the values of *many other* fields SHOULD be
-                            derived from the matching values served by the Courses API.
+                            This field is optional, but you are still REQUIRED to have a place for it in
+                            your database.
+
+                            You do not need to fill it out. In fact, in most cases it will be very
+                            difficult or even impossible for you to fill it out, because quite probably
+                            neither you nor your student has access to the correct LOS ID nor LOI ID. This
+                            is due to the fact that, at the time of the nomination, many courses won't have
+                            a proper LOI created in the receiving HEI's system yet (and so, you won't see
+                            it via the receiving HEI's Courses API).
+
+                            However, the receiving HEI *has* that knowledge (or *will have*, eventually),
+                            and you SHOULD allow the receiving HEI to fill out this gap. (The receiving HEI
+                            can do this by calling the `update` endpoint with a proper update-request type,
+                            which you are RECOMMENDED to support.)
+
+                            Of course, you (or rather your coordinator, or your student) can also fill it
+                            out yourself, once a proper LOI becomes available in the receiving HEI's
+                            system. However, in order to allow your users to do that you will be required
+                            to replicate the entire course catalogue of the receiving HEI on your side, and
+                            this can be hard (see Course Replication API for details).
+
+                            You might wonder - if it's optional, and the receiving HEI is not even required
+                            to fill it out - why do we require sending HEIs to support it? We agree that
+                            all this might seem a bit vague, but the problem is that we (EWP designers) are
+                            actually not yet sure *who should* be responsible for filling out this field.
+                            We are however quite certain that both parties would benefit from having it
+                            filled out (e.g. when matching LA components to ToR courses).
+
+                            If the field *is* given (either by you, or by the receiving HEI), then the
+                            values of *many other* fields can be derived from (copied from) the matching
+                            values served by receiving HEI's Courses API. In other words, if you bind your
+                            components to specific LOI, then - most probably - you don't want to allow your
+                            users to directly edit this component's properties anymore.
                         </xs:documentation>
                     </xs:annotation>
                 </xs:element>
@@ -617,11 +732,7 @@
                             Courses API.
                             https://github.com/erasmus-without-paper/ewp-specs-api-courses#unique-identifiers
 
-                            Please note, that the sending HEI is NOT required to make use of the receiving
-                            HEI's Courses API when LA is being drafted. Also, the receiving HEI is NOT
-                            required to implement the Courses API anyway. It is however REQUIRED for the
-                            sending HEI to keep this field in its database (because the *receiving HEI*
-                            might want to fill it out).
+                            Also, please see "Notes for sending HEI implementers" in the `los-id` element!
                         </xs:documentation>
                     </xs:annotation>
                 </xs:element>

@@ -78,7 +78,7 @@ public class VerifyApiVersions implements ManifestConstraint {
         sb.append(joinedAlternatives);
         sb.append(", but <code>");
         sb.append(Utils.escapeHtml(match.attr("version")));
-        sb.append("</code> found instead.</p>");
+        sb.append("</code> was found instead.</p>");
         sb.append("<p>Note, that this check is applied only for API namespaces beginning ");
         sb.append("with <code>https://github.com/erasmus-without-paper/</code>.</p>");
         notices.add(new FailedConstraintNotice(Severity.WARNING, sb.toString()));

@@ -1,8 +1,8 @@
 <mobilities-update-request
-    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/master/endpoints/update-request.xsd"
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/stable-v1/endpoints/update-request.xsd"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="
-        https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/master/endpoints/update-request.xsd
+        https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/stable-v1/endpoints/update-request.xsd
         ../update-request.xsd
     "
 >

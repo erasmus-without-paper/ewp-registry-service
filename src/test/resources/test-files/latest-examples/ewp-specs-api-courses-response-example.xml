@@ -1,9 +1,9 @@
 <courses-response
-    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-courses/tree/master"
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-courses/tree/stable-v1"
     xmlns:trm="https://github.com/erasmus-without-paper/ewp-specs-types-academic-term/tree/stable-v1"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="
-        https://github.com/erasmus-without-paper/ewp-specs-api-courses/tree/master
+        https://github.com/erasmus-without-paper/ewp-specs-api-courses/tree/stable-v1
         response.xsd
     "
 >

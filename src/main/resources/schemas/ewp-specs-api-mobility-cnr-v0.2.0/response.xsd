@@ -5,10 +5,10 @@
     xmlns:ewp="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
     elementFormDefault="qualified"
 
-    targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-api-iia-cnr/tree/master"
-    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-iia-cnr/tree/master"
+    targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-api-mobility-cnr/tree/stable-v1"
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-mobility-cnr/tree/stable-v1"
 >
-    <!-- WRTODO: Replace all occurrences of 'master' (in all projects) with 'stable-v1' upon release. -->
+    <!-- WRTODO: Do not release until dependants are released: Outgoing Mobilities API -->
 
     <xs:import
         schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-architecture/stable-v1/common-types.xsd"
@@ -24,11 +24,11 @@
         </xs:documentation>
     </xs:annotation>
 
-    <xs:element name="iia-cnr-response" type="ewp:Empty">
+    <xs:element name="mobility-cnr-response" type="ewp:Empty">
         <xs:annotation>
             <xs:documentation>
-                This describes the format of the response returned by the EWP Interinstitutional
-                Agreement CNR API.
+                This describes the format of the response returned by the EWP Outgoing
+                Mobility CNR API.
 
                 Currently CNR responses are always empty.
             </xs:documentation>

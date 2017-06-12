@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xml="http://www.w3.org/XML/1998/namespace"
+    elementFormDefault="qualified"
+
+    targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-types-person-id/tree/stable-v1"
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-types-person-id/tree/stable-v1"
+>
+    <xs:annotation>
+        <xs:documentation>
+            This schema is a part of the Erasmus Without Paper project. Before you start
+            using it, make sure you have read the general rules described here:
+
+            http://developers.erasmuswithoutpaper.eu/
+        </xs:documentation>
+    </xs:annotation>
+
+    <xs:simpleType name="UPID">
+        <xs:annotation>
+            <xs:documentation>
+                Universal Person Identifier string, as defined here:
+                https://github.com/erasmus-without-paper/ewp-specs-types-person-id
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[A-Z][A-Z]-[^ ].*[^ ]"/>
+        </xs:restriction>
+    </xs:simpleType>
+</xs:schema>
