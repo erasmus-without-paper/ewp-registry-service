@@ -8,7 +8,6 @@
     targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-api-iia-cnr/tree/stable-v1"
     xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-iia-cnr/tree/stable-v1"
 >
-    <!-- WRTODO: Do not release until dependants are released: IIAs API -->
     <xs:import
         schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-architecture/stable-v1/common-types.xsd"
         namespace="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
