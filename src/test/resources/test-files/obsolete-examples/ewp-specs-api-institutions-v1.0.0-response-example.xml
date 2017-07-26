@@ -1,0 +1,93 @@
+<institutions-response
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-institutions/tree/stable-v1"
+    xmlns:a="https://github.com/erasmus-without-paper/ewp-specs-types-address/tree/stable-v1"
+    xmlns:c="https://github.com/erasmus-without-paper/ewp-specs-types-contact/tree/stable-v1"
+    xmlns:p="https://github.com/erasmus-without-paper/ewp-specs-types-phonenumber/tree/stable-v1"
+    xmlns:trm="https://github.com/erasmus-without-paper/ewp-specs-types-academic-term/tree/stable-v1"
+    xmlns:xml="http://www.w3.org/XML/1998/namespace"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        https://github.com/erasmus-without-paper/ewp-specs-api-institutions/tree/stable-v1
+        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-institutions/stable-v1/response.xsd
+    "
+>
+    <!--
+    IMPORTANT: Please see the response.xsd file for detailed requirements and
+    descriptions of all the elements. You MUST NOT base your implementation
+    solely on the example file.
+    -->
+    <hei>
+        <!-- Identifiers (same as in the Manifest). -->
+        <hei-id>uio.no</hei-id>
+        <other-id type="erasmus">N Oslo01</other-id>
+        <other-id type="euc">12345</other-id>
+        <other-id type="local">UIO</other-id>
+
+        <!-- Primary attributes (name, website, logo, etc.) -->
+        <name xml:lang="en">University of Oslo</name>
+        <name xml:lang="no">Universitetet i Oslo</name>
+        <a:street-address>
+            <a:addressLine>University of Oslo</a:addressLine>
+            <a:locality>Oslo</a:locality>
+            <a:country>NO</a:country>
+        </a:street-address>
+        <a:mailing-address>
+            <!--
+            Note: You will find more address-type examples here:
+            https://github.com/erasmus-without-paper/ewp-specs-types-address/
+            -->
+            <a:postOfficeBox>1072</a:postOfficeBox>
+            <a:postalCode>0316</a:postalCode>
+            <a:locality>Oslo</a:locality>
+            <a:country>NO</a:country>
+        </a:mailing-address>
+        <website-url xml:lang="no">http://www.uio.no/</website-url>
+        <website-url xml:lang="en">http://www.uio.no/english/</website-url>
+        <logo-url>https://titan.uio.no/sites/all/themes/titan/img/uiologo.svg</logo-url>
+
+        <!-- Mobility factsheet. -->
+        <mobility-factsheet-url xml:lang="en">http://www.uio.no/english/studies/new-student/</mobility-factsheet-url>
+        <mobility-factsheet-url xml:lang="en">http://example.com/factsheet.pdf</mobility-factsheet-url>
+
+        <!-- Contacts section. -->
+        <c:contact>
+            <!-- A minimal example. -->
+            <c:contact-name>IRO Office</c:contact-name>
+            <c:email>iro@uio.no</c:email>
+        </c:contact>
+        <c:contact>
+            <!-- More detailed example. -->
+            <c:contact-name xml:lang="en">Ivan Sidorov (visas and insurance)</c:contact-name>
+            <c:contact-name xml:lang="ru-Latn">Ivan Petrovich Sidorov (vizy i strakhovaniye)</c:contact-name>
+            <c:contact-name xml:lang="ru-Cyrl">Иван Петрович Сидоров (визы и страхование)</c:contact-name>
+            <c:person-given-names xml:lang="ru-Latn">Ivan Petrovich</c:person-given-names>
+            <c:person-given-names xml:lang="ru-Cyrl">Иван Петрович</c:person-given-names>
+            <c:person-family-name xml:lang="ru-Latn">Sidorov</c:person-family-name>
+            <c:person-family-name xml:lang="ru-Cyrl">Сидоров</c:person-family-name>
+            <p:phone-number>
+                <p:e164>+4723456789</p:e164>
+            </p:phone-number>
+            <p:phone-number>
+                <p:e164>+4722222222</p:e164>
+                <p:ext>3407</p:ext>
+            </p:phone-number>
+            <p:fax-number>
+                <p:other-format>(23) 456789</p:other-format> <!-- discouraged -->
+            </p:fax-number>
+            <c:email>ivan@uio.no</c:email>
+            <a:street-address> <!-- As described before. --> </a:street-address>
+            <a:mailing-address> <!-- As described before. --> </a:mailing-address>
+            <c:role-description xml:lang="en">
+                Ivan Sidorov is advising incoming students in regard to visas and insurance.
+
+                (This field may also contain other information, which is not present in the
+                model itself, e.g. calling hours.)
+            </c:role-description>
+        </c:contact>
+
+        <!-- List of HEI's faculties (and other organizational subunits). -->
+        <ounit-id>fsat.no</ounit-id> <!-- We recommend UUIDs though. -->
+        <ounit-id>matnat.uio.no</ounit-id>
+        <ounit-id>hf.uio.no</ounit-id>
+    </hei>
+</institutions-response>

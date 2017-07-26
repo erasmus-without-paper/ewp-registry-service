@@ -6,10 +6,9 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="
         https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/stable-v1/endpoints/get-response.xsd
-        get-response.xsd
+        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-mobilities/master/endpoints/get-response.xsd
     "
 >
-    <!-- WRTODO: absolute paths! -->
     <student-mobility-for-studies>
         <mobility-id>c442c289-5541-4cae-9edb-8ad83e133613</mobility-id>
         <sending-hei>

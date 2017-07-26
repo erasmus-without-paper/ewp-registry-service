@@ -154,6 +154,11 @@
                                 <xs:annotation>
                                     <xs:documentation>
                                         Primary website of the institution.
+
+                                        The xml:lang attribute, if given, SHOULD represent the language of this page.
+                                        Multiple URLs can be provided (with different xml:lang values). It is also
+                                        perfectly okay to provide a single URL which dynamically detects the viewer's
+                                        language preferences (in this case, no xml:lang attribute should be given).
                                     </xs:documentation>
                                 </xs:annotation>
                             </xs:element>
@@ -161,8 +166,12 @@
                                 <xs:annotation>
                                     <xs:documentation>
                                         If given, this should be a HTTPS URL pointing to the institution's logo.
-                                        It does not necessarily have to be hosted on the same domain as the API
-                                        itself.
+                                        It does not necessarily have to be hosted on the same domain as the API.
+
+                                        This URL MUST be publicly accessible to all requests made directly from
+                                        students' browsers (as opposed to being accessible for EWP requesters only). It
+                                        is RECOMMENDED that the server uses proper cache-busting techniques to ensure
+                                        efficient propagation of updated content.
 
                                         Preferably, this should be an SVG, PNG or JPEG file, in "squarish" (~1:1)
                                         dimensions ratio, and a resolution suitable for both display and printing, on
@@ -181,9 +190,12 @@
                                     <xs:documentation>
                                         This URL is the most important one for the incoming students (much more
                                         important than website-url above). Server developers SHOULD provide it (and
-                                        keep it updated). This URL MUST be publicly accessible to all requests made
-                                        directly from students' browsers (as opposed to being accessible for EWP
-                                        requesters only).
+                                        keep it updated).
+
+                                        This URL MUST be publicly accessible to all requests made directly from
+                                        students' browsers (as opposed to being accessible for EWP requesters only). It
+                                        is RECOMMENDED that the server uses proper cache-busting techniques to ensure
+                                        efficient propagation of updated content.
 
                                         It SHOULD refer to either a PDF file, or a HTML website, or both (via two
                                         separate factsheet-url elements). Other formats are also permitted, but

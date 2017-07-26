@@ -8,6 +8,8 @@
     targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/stable-v1/manifest-entry.xsd"
     xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/stable-v1/manifest-entry.xsd"
 >
+    <!-- WRTODO: Once released, fix all schemaLocations pointing to its master branch. -->
+
     <xs:import
         schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-architecture/stable-v1/common-types.xsd"
         namespace="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"

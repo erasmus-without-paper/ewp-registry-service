@@ -3,14 +3,22 @@
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
     xmlns:xml="http://www.w3.org/XML/1998/namespace"
     xmlns:ewp="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
+    xmlns:resp="https://github.com/erasmus-without-paper/ewp-specs-api-courses/tree/stable-v1"
     elementFormDefault="qualified"
 
-    targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-api-tors/blob/stable-v1/manifest-entry.xsd"
-    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-tors/blob/stable-v1/manifest-entry.xsd"
+    targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-api-courses/blob/stable-v1/manifest-entry.xsd"
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-courses/blob/stable-v1/manifest-entry.xsd"
 >
+    <!-- WRTODO: Once released, fix all schemaLocations pointing to its master branch. -->
+
     <xs:import
         schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-architecture/stable-v1/common-types.xsd"
         namespace="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
+    />
+
+    <xs:import
+        schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-courses/master/response.xsd"
+        namespace="https://github.com/erasmus-without-paper/ewp-specs-api-courses/tree/stable-v1"
     />
 
     <xs:annotation>
@@ -22,13 +30,13 @@
         </xs:documentation>
     </xs:annotation>
 
-    <xs:element name="tors">
+    <xs:element name="courses">
         <xs:annotation>
             <xs:documentation>
                 If this element is present in EWP Host's manifest file, then the host states
-                that it implements the Transcripts of Records API described here:
+                that it implements the Courses API described here:
 
-                https://github.com/erasmus-without-paper/ewp-specs-api-tors
+                https://github.com/erasmus-without-paper/ewp-specs-api-courses
             </xs:documentation>
         </xs:annotation>
         <xs:complexType>
@@ -38,14 +46,22 @@
                         <xs:element name="url" type="ewp:HTTPS" minOccurs="1" maxOccurs="1">
                             <xs:annotation>
                                 <xs:documentation>
-                                    An URL at which the Transcripts of Records API is being served.
+                                    An URL at which the Courses API is being served.
                                 </xs:documentation>
                             </xs:annotation>
                         </xs:element>
-                        <xs:element name="max-mobility-ids" type="xs:positiveInteger" minOccurs="1" maxOccurs="1">
+                        <xs:element name="max-los-ids" type="xs:positiveInteger" minOccurs="1" maxOccurs="1">
                             <xs:annotation>
                                 <xs:documentation>
-                                    The maximum number of `mobility_id` parameters the server is willing to accept
+                                    The maximum number of `los_id` parameters the server is willing to accept
+                                    in one request.
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="max-los-codes" type="xs:positiveInteger" minOccurs="1" maxOccurs="1">
+                            <xs:annotation>
+                                <xs:documentation>
+                                    The maximum number of `los_code` parameters the server is willing to accept
                                     in one request.
                                 </xs:documentation>
                             </xs:annotation>

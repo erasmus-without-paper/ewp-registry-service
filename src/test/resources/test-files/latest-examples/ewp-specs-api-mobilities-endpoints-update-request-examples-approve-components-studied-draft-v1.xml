@@ -4,11 +4,9 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="
         https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/stable-v1/endpoints/update-request.xsd
-        ../update-request.xsd
+        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-mobilities/master/endpoints/update-request.xsd
     "
 >
-    <!-- WRTODO: absolute paths! -->
-
     <req:sending-hei-id>uw.edu.pl</req:sending-hei-id>
     <req:approve-components-studied-draft-v1>
         <req:mobility-id>c442c289-5541-4cae-9edb-8ad83e133613</req:mobility-id>

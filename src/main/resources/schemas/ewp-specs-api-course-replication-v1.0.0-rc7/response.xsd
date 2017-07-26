@@ -11,9 +11,9 @@
     <!-- WRTODO: Do not release until dependants are released: Courses API -->
 
     <xs:import
-        schemaLocation="../ewp-specs-api-courses/response.xsd"
+        schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-courses/master/response.xsd"
         namespace="https://github.com/erasmus-without-paper/ewp-specs-api-courses/tree/stable-v1"
-    /> <!-- WRTODO: absolute paths! -->
+    />
 
     <xs:annotation>
         <xs:documentation>

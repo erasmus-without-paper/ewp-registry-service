@@ -38,10 +38,19 @@
             <xs:documentation>
                 EWP Discovery Manifest.
 
-                Manifest files are published by EWP Partners and help define relationships
-                between EWP Hosts, their developers, clients, HEIs and API Servers.
+                Defines a single EWP Host - a set of relationships between HEIs, APIs, server
+                administrators and client credentials. One EWP Host defines a single Cartesian
+                product of all these sets. (E.g. if a client certificate X and a HEI Y are
+                present in the same host, then it means that server which signs its requests
+                with X is allowed to request resources visible to HEI Y. Similar statement is
+                true for every other pair of sets.)
 
-                Manifest files are usually read by the EWP Registry Service only.
+                Most partners will need exactly one manifest. However, in some cases, you might
+                need to have more than one. For example, when you server covers two HEIs, but
+                one of your APIs is available for only one of these two HEIs, then it's
+                impossible to describe such relationship with a single Cartesian product. You
+                will need to use a sum of at least two Cartesian products (which is expressed
+                by two `host` entries).
             </xs:documentation>
         </xs:annotation>
         <xs:complexType>
@@ -54,7 +63,8 @@
                             server errors, etc.). Multiple addresses may be provided.
 
                             Please note, that additional `admin-email` elements can also be included inside
-                            specific APIs sections.
+                            specific APIs sections (this allows you to bind extra admins to specific APIs
+                            without the need of creating dedicated manifest files).
                         </xs:documentation>
                     </xs:annotation>
                 </xs:element>
@@ -74,15 +84,20 @@
                         <xs:documentation>
                             A list of HEIs (Higher Education Institutions) that are covered by this host.
 
-                            Enlisting an institution here indicates that the host wants to receive queries
-                            regarding this institution and will be able to understand them. If this list is
-                            empty then the host is likely to not receive any queries at all.
+                            In conjunction with `apis-implemented`, enlisting a HEI here indicates that the
+                            partner wants to receive specific HEI-related API queries regarding this HEI,
+                            and that it will be able to understand them.
+
+                            In conjunction with `client-credentials-in-use`, enlisting a HEI here indicates
+                            that these credentials can be used to request resources "in the name of" this
+                            HEI.
 
                             Be advised, that the Registry Service MAY ignore some (or all) of the items
-                            submitted here, for example if it finds that some institutions are already
-                            covered by a different EWP Host. If, for some reason, your items are not being
-                            imported, and you're not sure why, please contact the Registry Service
-                            maintainers.
+                            published here, for example if it believes that this HEI does not *want* to be
+                            covered by you. If, for some reason, your items are not being imported, and
+                            you're not sure why, please contact the Registry Service maintainers. You can
+                            also take a look at this thread:
+                            https://github.com/erasmus-without-paper/ewp-specs-api-discovery/issues/12
                         </xs:documentation>
                     </xs:annotation>
                     <xs:complexType>
@@ -113,13 +128,13 @@
                             <xs:element name="certificate" type="xs:base64Binary" minOccurs="0" maxOccurs="unbounded">
                                 <xs:annotation>
                                     <xs:documentation>
-                                        Base64-encoded X.509 certificate which you plan to be using for TLS Client
-                                        Certificate Authentication, as described here:
+                                        Base64-encoded X.509 certificate used by the partner for TLS Client
+                                        Authentication, as described here:
 
                                         https://github.com/erasmus-without-paper/ewp-specs-sec-cliauth-tlscert
 
-                                        IMPORTANT SECURITY NOTE: If your private key is compromised, you MUST
-                                        immediately remove all certificates based on this key from your manifest.
+                                        If your private key is compromised, you MUST immediately remove all
+                                        certificates based on this key from your manifest.
                                     </xs:documentation>
                                 </xs:annotation>
                             </xs:element>

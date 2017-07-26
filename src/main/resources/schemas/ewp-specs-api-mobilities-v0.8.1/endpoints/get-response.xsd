@@ -14,24 +14,24 @@
     <!-- WRTODO: Do not release until dependants are released: Courses API -->
 
     <xs:import
-        schemaLocation="../../ewp-specs-architecture/common-types.xsd"
+        schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-architecture/stable-v1/common-types.xsd"
         namespace="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
-    /> <!-- WRTODO: absolute paths! -->
+    />
 
     <xs:import
-        schemaLocation="../../ewp-specs-types-address/schema.xsd"
+        schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-types-address/stable-v1/schema.xsd"
         namespace="https://github.com/erasmus-without-paper/ewp-specs-types-address/tree/stable-v1"
-    /> <!-- WRTODO: absolute paths! -->
+    />
 
     <xs:import
-        schemaLocation="../../ewp-specs-types-phonenumber/schema.xsd"
+        schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-types-phonenumber/stable-v1/schema.xsd"
         namespace="https://github.com/erasmus-without-paper/ewp-specs-types-phonenumber/tree/stable-v1"
-    /> <!-- WRTODO: absolute paths! -->
+    />
 
     <xs:import
-        schemaLocation="../../ewp-specs-api-courses/response.xsd"
+        schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-courses/master/response.xsd"
         namespace="https://github.com/erasmus-without-paper/ewp-specs-api-courses/tree/stable-v1"
-    /> <!-- WRTODO: absolute paths! -->
+    />
 
     <xs:annotation>
         <xs:documentation>

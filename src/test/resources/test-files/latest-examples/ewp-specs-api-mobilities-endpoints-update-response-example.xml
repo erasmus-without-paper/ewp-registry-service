@@ -4,11 +4,9 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="
         https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/stable-v1/endpoints/update-response.xsd
-        update-response.xsd
+        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-mobilities/master/endpoints/update-response.xsd
     "
 >
-    <!-- WRTODO: Make schemaLocation absolute -->
-
     <!--
     In this example, the message is the response to a successful
     `update-arrival-departure-dates-v1.xml` update request (in which only the

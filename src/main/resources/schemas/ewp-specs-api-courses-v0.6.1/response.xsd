@@ -14,9 +14,9 @@
     />
 
     <xs:import
-        schemaLocation="../ewp-specs-types-academic-term/schema.xsd"
+        schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-types-academic-term/stable-v1/schema.xsd"
         namespace="https://github.com/erasmus-without-paper/ewp-specs-types-academic-term/tree/stable-v1"
-    /> <!-- WRTODO: absolute paths! -->
+    />
 
     <xs:import
         schemaLocation="http://www.w3.org/2001/03/xml.xsd"
@@ -71,10 +71,12 @@
                                 <xs:annotation>
                                     <xs:documentation>
                                         Since LOS IDs should be surrogate identifiers (and, as such, should not be
-                                        displayed to the user), we allow additional "human readable" unique codes (aka
-                                        "natural identifiers") to be provided here. These codes MAY be displayed to the
-                                        user along the LOS title, but they are *not used* to identify entities in EWP
-                                        network.
+                                        displayed to the user), it is RECOMMENDED for server developers to supply
+                                        additional "human readable" unique codes (aka "natural identifiers") for LOSes.
+
+                                        These codes MAY be displayed to the user along the LOS title, but they are *not
+                                        used* to identify entities in EWP network. Client developers MAY use `los-id`
+                                        values for this purpose, if no explicit `los-code` was given by the server.
 
                                         Related links:
                                         https://github.com/erasmus-without-paper/ewp-specs-architecture#ids

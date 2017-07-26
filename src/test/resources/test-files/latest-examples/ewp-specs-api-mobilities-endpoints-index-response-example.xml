@@ -3,11 +3,9 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="
         https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/stable-v1/endpoints/index-response.xsd
-        index-response.xsd
+        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-mobilities/master/endpoints/index-response.xsd
     "
 >
-    <!-- WRTODO: Make schemaLocation absolute -->
-
     <mobility-id>2a83d860-b9c9-4baf-81f4-5110d217d273</mobility-id>
     <mobility-id>85912bfc-91d7-4379-b828-3324aab7140b</mobility-id>
     <mobility-id>752c2e10-4d21-45d4-ba8e-0d3f6e5ff7ca</mobility-id>
