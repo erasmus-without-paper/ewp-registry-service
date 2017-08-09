@@ -6,7 +6,7 @@
         <discovery version="4.0.0" xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/blob/stable-v4/manifest-entry.xsd">
             <url>https://schowek.usos.edu.pl/w.rygielski/ewp/ladok.se/manifest.xml</url>
         </discovery>
-        <echo version="1.0.0" xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-echo/blob/stable-v1/manifest-entry.xsd">
+        <echo version="2.0.0" xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-echo/blob/stable-v2/manifest-entry.xsd">
             <url>https://ladok.se/ewp/echo</url>
         </echo>
         <ladok-api xmlns="https://ladok.se/api/">

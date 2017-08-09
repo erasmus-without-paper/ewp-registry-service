@@ -218,7 +218,7 @@ public class RegistryUpdaterTest extends WRTest {
         .isEqualTo("admin-or-developer@example.com"); // new email!
     assertThat(this.lastCatalogue.xpath("r:host/r:apis-implemented/*")).hasSize(2);
     assertThat(this.lastCatalogue.xpath("r:host/r:apis-implemented/d4:discovery")).hasSize(1);
-    assertThat(this.lastCatalogue.xpath("r:host/r:apis-implemented/e1:echo")).hasSize(1);
+    assertThat(this.lastCatalogue.xpath("r:host/r:apis-implemented/e2:echo")).hasSize(1);
     assertThat(this.lastEmails).hasSize(0);
 
     /*

@@ -2,7 +2,6 @@
     xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/tree/stable-v4"
     xmlns:mf="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/tree/stable-v4"
     xmlns:ewp="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
-    xmlns:sec="https://github.com/erasmus-without-paper/ewp-specs-sec-intro/tree/stable-v2"
     xmlns:r="https://github.com/erasmus-without-paper/ewp-specs-api-registry/tree/stable-v1"
     xmlns:xml="http://www.w3.org/XML/1998/namespace"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -16,23 +15,8 @@
         https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd
         https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-architecture/stable-v1/common-types.xsd
 
-        https://github.com/erasmus-without-paper/ewp-specs-api-echo/blob/stable-v2/manifest-entry.xsd
-        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-echo/stable-v2/manifest-entry.xsd
-
-        https://github.com/erasmus-without-paper/ewp-specs-sec-cliauth-none/tree/stable-v1
-        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-sec-cliauth-none/stable-v1/security-entries.xsd
-
-        https://github.com/erasmus-without-paper/ewp-specs-sec-cliauth-tlscert/tree/stable-v1
-        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-sec-cliauth-tlscert/stable-v1/security-entries.xsd
-
-        https://github.com/erasmus-without-paper/ewp-specs-sec-srvauth-tlscert/tree/stable-v1
-        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-sec-srvauth-tlscert/stable-v1/security-entries.xsd
-
-        https://github.com/erasmus-without-paper/ewp-specs-sec-reqencr-tls/tree/stable-v1
-        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-sec-reqencr-tls/stable-v1/security-entries.xsd
-
-        https://github.com/erasmus-without-paper/ewp-specs-sec-resencr-tls/tree/stable-v1
-        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-sec-resencr-tls/stable-v1/security-entries.xsd
+        https://github.com/erasmus-without-paper/ewp-specs-api-echo/blob/stable-v1/manifest-entry.xsd
+        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-echo/stable-v1/manifest-entry.xsd
     "
 >
     <!-- This example doesn't contain many comments, but its XML Schema does! -->
@@ -52,12 +36,10 @@
             <url>https://example.com/manifest.xml</url>
         </discovery>
 
-        <!-- Some other API, just for the purpose of example. Each API entry has a
-        different XML namespace and a different structure. These structures are often
-        quite similar to each other, but sometimes they're not. -->
+        <!-- Some other API. -->
         <echo
-            xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-echo/blob/stable-v2/manifest-entry.xsd"
-            version="2.0.0"
+            xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-echo/blob/stable-v1/manifest-entry.xsd"
+            version="1.0.0"
         >
             <!-- Note, that ewp:admin-email and ewp:admin-notes can be defined both on the
             global level, and on the API level. -->
@@ -65,22 +47,10 @@
             <ewp:admin-email>some-other-developer@example.com</ewp:admin-email>
             <ewp:admin-notes>Some notes which might be useful for client developers.</ewp:admin-notes>
 
-            <!-- Many APIs define the security requirements of their implementations with help
-            of elements like this one. See Echo API's manifest-entry.xsd file for details. -->
-            <http-security>
-                <sec:client-auth-methods>
-                    <tlscert
-                        xmlns="https://github.com/erasmus-without-paper/ewp-specs-sec-cliauth-tlscert/tree/stable-v1"
-                        allows-self-signed="true"
-                    />
-                </sec:client-auth-methods>
-                <sec:server-auth-methods>
-                    <tlscert xmlns="https://github.com/erasmus-without-paper/ewp-specs-sec-srvauth-tlscert/tree/stable-v1"/>
-                </sec:server-auth-methods>
-            </http-security>
-
-            <!-- The URL at which this Echo API is served. See Echo API's manifest-entry.xsd
-            file for details. -->
+            <!-- This element is defined by the Echo API (in its manifest-entry.xsd file).
+            Most APIs will require you to provide the `version` attribute and a single `url`
+            element only, but it's NOT a rule. Some APIs may require you to provide completely
+            other properties (which should be described in their manifest-entry.xsd file). -->
             <url>https://example.com/ewp/echo</url>
         </echo>
     </r:apis-implemented>
