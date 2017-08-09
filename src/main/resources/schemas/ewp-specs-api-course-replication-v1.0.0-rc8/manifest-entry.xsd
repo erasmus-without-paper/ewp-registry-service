@@ -3,6 +3,7 @@
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
     xmlns:xml="http://www.w3.org/XML/1998/namespace"
     xmlns:ewp="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
+    xmlns:sec="https://github.com/erasmus-without-paper/ewp-specs-sec-intro/tree/stable-v2"
     elementFormDefault="qualified"
 
     targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-api-course-replication/blob/stable-v1/manifest-entry.xsd"
@@ -13,6 +14,11 @@
     <xs:import
         schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-architecture/stable-v1/common-types.xsd"
         namespace="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
+    />
+
+    <xs:import
+        schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-sec-intro/stable-v2/schema.xsd"
+        namespace="https://github.com/erasmus-without-paper/ewp-specs-sec-intro/tree/stable-v2"
     />
 
     <xs:annotation>
@@ -37,6 +43,18 @@
             <xs:complexContent>
                 <xs:extension base="ewp:ManifestApiEntryBase">
                     <xs:sequence>
+                        <xs:element name="http-security" type="sec:HttpSecurityOptions" minOccurs="0" maxOccurs="1">
+                            <xs:annotation>
+                                <xs:documentation>
+                                    Describes which security policies the server supports for this API. If not
+                                    given, then the server states that it supports the default set of security
+                                    policies (as described in the annotations in sec:HttpSecurityOptions).
+
+                                    Clients SHOULD consult this element before accessing the endpoint given in the
+                                    `url` element (otherwise, their request might be rejected by the server).
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
                         <xs:element name="url" type="ewp:HTTPS" minOccurs="1" maxOccurs="1">
                             <xs:annotation>
                                 <xs:documentation>
@@ -46,7 +64,11 @@
                         </xs:element>
                         <xs:element name="allows-anonymous-access" type="xs:boolean" minOccurs="1" maxOccurs="1">
                             <xs:annotation>
+                                <!-- WRTODO: Remove this before releasing 1.0.0? -->
                                 <xs:documentation>
+                                    DEPRECATED. This element in planned to be removed before the final version of
+                                    this API is released. Please use `http-security` element instead.
+
                                     Boolean. If true, then this API is accessible to anonymous clients. This means
                                     that clients do not need to be official members of the EWP Network in order to
                                     make use of this API.
