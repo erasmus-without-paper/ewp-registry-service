@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xml="http://www.w3.org/XML/1998/namespace"
+    elementFormDefault="qualified"
+
+    targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-sec-intro/tree/stable-v2"
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-sec-intro/tree/stable-v2"
+>
+    <xs:annotation>
+        <xs:documentation>
+            This schema is a part of the Erasmus Without Paper project. Before you start
+            using it, make sure you have read the general rules described here:
+
+            http://developers.erasmuswithoutpaper.eu/
+        </xs:documentation>
+    </xs:annotation>
+
+    <xs:complexType name="HttpSecurityOptions">
+        <xs:annotation>
+            <xs:documentation>
+                Describes security policies supported by a single particular server HTTP
+                endpoint, or a set of HTTP endpoints (depending on context).
+
+                Whenever possible, API designers are RECOMMENDED to reuse this data type in
+                their `manifest-entry.xsd` files (if all APIs use the same data type for
+                describing their security options, then it makes client development easier).
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="client-auth-methods" minOccurs="0" maxOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>
+                        List of supported client authentication methods (methods, which the client is
+                        allowed to *use*, when connecting to this endpoint).
+
+                        If not given, then it defaults to:
+
+                        &lt;client-auth-methods&gt;
+                            &lt;tlscert
+                                xmlns="https://github.com/erasmus-without-paper/ewp-specs-sec-cliauth-tlscert/tree/stable-v1"
+                                allows-self-signed="true"
+                            /&gt;
+                        &lt;/client-auth-methods&gt;
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:any minOccurs="1" maxOccurs="unbounded" namespace="##other"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="server-auth-methods" minOccurs="0" maxOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>
+                        List of supported server authentication methods (methods, which the client is
+                        allowed to *request the server to use*, when connecting to this endpoint).
+
+                        If not given, then it defaults to:
+
+                        &lt;server-auth-methods&gt;
+                            &lt;tlscert xmlns="https://github.com/erasmus-without-paper/ewp-specs-sec-srvauth-tlscert/tree/stable-v1"/&gt;
+                        &lt;/server-auth-methods&gt;
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:any minOccurs="1" maxOccurs="unbounded" namespace="##other"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="request-encryption-methods" minOccurs="0" maxOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>
+                        List of supported request encryption methods (methods, which the client is
+                        allowed to *use*, when connecting to this endpoint).
+
+                        If not given, then it defaults to:
+
+                        &lt;request-encryption-methods&gt;
+                            &lt;tls xmlns="https://github.com/erasmus-without-paper/ewp-specs-sec-reqencr-tls/tree/stable-v1"/&gt;
+                        &lt;/request-encryption-methods&gt;
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:any minOccurs="1" maxOccurs="unbounded" namespace="##other"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="response-encryption-methods" minOccurs="0" maxOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>
+                        List of supported response encryption methods (methods, which the client is
+                        allowed to *request the server to use*, when connecting to this endpoint).
+
+                        If not given, then it defaults to:
+
+                        &lt;response-encryption-methods&gt;
+                            &lt;tls xmlns="https://github.com/erasmus-without-paper/ewp-specs-sec-resencr-tls/tree/stable-v1"/&gt;
+                        &lt;/response-encryption-methods&gt;
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:any minOccurs="1" maxOccurs="unbounded" namespace="##other"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+</xs:schema>
