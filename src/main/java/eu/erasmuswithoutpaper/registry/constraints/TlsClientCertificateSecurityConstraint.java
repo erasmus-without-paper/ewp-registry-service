@@ -68,7 +68,7 @@ public class TlsClientCertificateSecurityConstraint implements ManifestConstrain
         StringBuilder sb = new StringBuilder();
         sb.append("One of your TLS client certificates (").append(name).append(") ");
         sb.append("uses an insecure MD-based signature algorithm ");
-        sb.append("(").append(cert.getSigAlgName()).append("). ");
+        sb.append('(').append(cert.getSigAlgName()).append("). ");
         sb.append("It will not be imported.");
         notices.add(new FailedConstraintNotice(Severity.ERROR, sb.toString()));
         continue;
@@ -78,7 +78,7 @@ public class TlsClientCertificateSecurityConstraint implements ManifestConstrain
         StringBuilder sb = new StringBuilder();
         sb.append("One of your TLS client certificates (").append(name).append(") ");
         sb.append("uses a SHA-1-based signature algorithm ");
-        sb.append("(").append(cert.getSigAlgName()).append("). ");
+        sb.append('(').append(cert.getSigAlgName()).append("). ");
         sb.append("Consider upgrading to SHA-256.");
         notices.add(new FailedConstraintNotice(Severity.WARNING, sb.toString()));
         continue;

@@ -44,14 +44,6 @@ public class ManifestRepositoryImplProperties {
   }
 
   /**
-   * @return <b>true</b> to enable pushing. If <b>false</b> is given, then
-   *         {@link ManifestRepository#push()} will do nothing.
-   */
-  public boolean isPushingEnabled() {
-    return this.pushingEnabled;
-  }
-
-  /**
    * @return {@link FileSystem} implementation to be used for storage. Due to the limits of the
    *         underlying JGit library this needs to be a real file system.
    */
@@ -65,5 +57,13 @@ public class ManifestRepositoryImplProperties {
    */
   public String getPath() {
     return this.path;
+  }
+
+  /**
+   * @return <b>true</b> to enable pushing. If <b>false</b> is given, then
+   *         {@link ManifestRepository#push()} will do nothing.
+   */
+  public boolean isPushingEnabled() {
+    return this.pushingEnabled;
   }
 }

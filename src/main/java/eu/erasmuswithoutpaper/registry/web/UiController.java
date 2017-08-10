@@ -352,7 +352,8 @@ public class UiController {
     certInfo.addProperty("servedSinceDate",
         isoDateFormat.format(this.echoTester.getTlsClientCertificateUsedSince()));
     certInfo.addProperty("servedSinceAgeSeconds",
-        (new Date().getTime() - this.echoTester.getTlsClientCertificateUsedSince().getTime()) / 1000);
+        (new Date().getTime() - this.echoTester.getTlsClientCertificateUsedSince().getTime())
+            / 1000);
     try {
       certInfo.addProperty("sha256Digest",
           DigestUtils.sha256Hex(this.echoTester.getTlsClientCertificateInUse().getEncoded()));
