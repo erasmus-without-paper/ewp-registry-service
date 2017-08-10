@@ -140,7 +140,7 @@
         <dependency>
             <groupId>org.jooq</groupId>
             <artifactId>joox</artifactId>
-            <version>1.4.0</version>
+            <version>1.5.0</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -149,7 +149,7 @@
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk16</artifactId>
-            <version>1.45</version>
+            <version>1.46</version>
         </dependency>
     </dependencies>
 
@@ -233,7 +233,7 @@
             <plugin>
                 <groupId>com.spotify</groupId>
                 <artifactId>docker-maven-plugin</artifactId>
-                <version>0.4.12</version>
+                <version>1.0.0</version>
                 <configuration>
                     <imageName>wrygiel/ewp-registry-service</imageName>
                     <dockerDirectory>docker</dockerDirectory>
@@ -272,7 +272,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-pmd-plugin</artifactId>
-                <version>3.6</version>
+                <version>3.8</version>
                 <configuration>
                     <rulesets>
                         <ruleset>codestyle/pmd-ruleset.xml</ruleset>
