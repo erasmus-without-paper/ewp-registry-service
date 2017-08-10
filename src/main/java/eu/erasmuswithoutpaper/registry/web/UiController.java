@@ -350,12 +350,12 @@ public class UiController {
     responseObj.add("certInfo", certInfo);
     DateFormat isoDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
     certInfo.addProperty("servedSinceDate",
-        isoDateFormat.format(this.echoTester.getClientCertificateUsedSince()));
+        isoDateFormat.format(this.echoTester.getTlsClientCertificateUsedSince()));
     certInfo.addProperty("servedSinceAgeSeconds",
-        (new Date().getTime() - this.echoTester.getClientCertificateUsedSince().getTime()) / 1000);
+        (new Date().getTime() - this.echoTester.getTlsClientCertificateUsedSince().getTime()) / 1000);
     try {
       certInfo.addProperty("sha256Digest",
-          DigestUtils.sha256Hex(this.echoTester.getClientCertificateInUse().getEncoded()));
+          DigestUtils.sha256Hex(this.echoTester.getTlsClientCertificateInUse().getEncoded()));
     } catch (CertificateEncodingException e) {
       throw new RuntimeException(e);
     }

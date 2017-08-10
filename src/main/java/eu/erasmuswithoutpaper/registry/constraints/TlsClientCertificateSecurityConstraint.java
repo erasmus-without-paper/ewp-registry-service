@@ -19,9 +19,9 @@ import org.joox.Match;
 import org.w3c.dom.Document;
 
 /**
- * This constraint prevents the Manifest from introducing insecure client certificates.
+ * This constraint prevents the Manifest from introducing insecure TLS client certificates.
  */
-public class MinimumKeyLengthConstraint implements ManifestConstraint {
+public class TlsClientCertificateSecurityConstraint implements ManifestConstraint {
 
   private final int minKeyLength;
 
@@ -29,7 +29,7 @@ public class MinimumKeyLengthConstraint implements ManifestConstraint {
    * @param minKeyLength The minimum required bit length of the certificate's public key. All
    *        certificates weaker than this will be removed from the manifest.
    */
-  public MinimumKeyLengthConstraint(int minKeyLength) {
+  public TlsClientCertificateSecurityConstraint(int minKeyLength) {
     this.minKeyLength = minKeyLength;
   }
 
@@ -67,8 +67,8 @@ public class MinimumKeyLengthConstraint implements ManifestConstraint {
       if (publicKey.getModulus().bitLength() < this.minKeyLength) {
         certElem.remove();
         StringBuilder sb = new StringBuilder();
-        sb.append("The minimum required length of the client certificate key is ");
-        sb.append(this.minKeyLength).append(" bits. One of your client certificates (");
+        sb.append("The minimum required length of TLS client certificate key is ");
+        sb.append(this.minKeyLength).append(" bits. One of your TLS client certificates (");
         sb.append(name).append(") ").append("uses ");
         sb.append(publicKey.getModulus().bitLength()).append(" bits only. It will not ");
         sb.append("be imported.");

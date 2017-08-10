@@ -55,7 +55,7 @@ public class SelfManifestProvider {
    * @param formatter Needed to format the end document as XML.
    * @param adminEmails A list of email addresses, separated by commas. These addresses will be
    *        included in the <code>ewp:admin-email</code> elements in the generated manifest file.
-   * @param echoTester Needed, because we need to publish its client certificate in our manifest.
+   * @param echoTester Needed, because we need to publish its client credentials in our manifest.
    */
   @Autowired
   public SelfManifestProvider(ResourceLoader res, EwpDocBuilder docBuilder, XmlFormatter formatter,
@@ -66,7 +66,7 @@ public class SelfManifestProvider {
     this.adminEmails = adminEmails;
     try {
       this.echoTesterCertEncoded =
-          new String(Base64.encodeBase64(echoTester.getClientCertificateInUse().getEncoded()),
+          new String(Base64.encodeBase64(echoTester.getTlsClientCertificateInUse().getEncoded()),
               StandardCharsets.US_ASCII);
     } catch (CertificateEncodingException e) {
       throw new RuntimeException(e);
@@ -137,7 +137,7 @@ public class SelfManifestProvider {
       heisCoveredElem.appendChild(heiElem);
     }
 
-    // Add client certificates in use.
+    // Add TLS client certificates in use.
 
     Element credentialsElem = (Element) rootElem.getElementsByTagNameNS(
         KnownNamespace.RESPONSE_MANIFEST_V4.getNamespaceUri(), "client-credentials-in-use").item(0);

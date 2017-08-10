@@ -116,15 +116,15 @@ public class ApiControllerTest extends WRTest {
     this.uiController.refresh();
     assertThat(this.getCatalogueBody()).isEqualTo(this.getFileAsString("demo1/E-out.xml"));
 
-    /* [Test F] Try to use an invalid client certificate. */
+    /* [Test F] Try to use an invalid TLS client certificate. */
 
     this.internet.putURL(urlSE, this.getFile("demo1/F-inSE.xml"));
     this.uiController.refresh();
     assertThat(this.getCatalogueBody()).isEqualTo(this.getFileAsString("demo1/E-out.xml"));
     assertThat(this.status(urlSE))
-        .contains("minimum required length of the client certificate key is 1024 bits");
+        .contains("minimum required length of TLS client certificate key is 1024 bits");
     assertThat(this.status(urlSE))
-        .contains("One of your client certificates (1st of 1) uses 512 bits only");
+        .contains("One of your TLS client certificates (1st of 1) uses 512 bits only");
 
     /* [Test G] Replace certificate with a valid one. */
 
@@ -166,7 +166,7 @@ public class ApiControllerTest extends WRTest {
   }
 
   /**
-   * @return Catalogue body with client certificate's fingerprint replaced with zeroes.
+   * @return Catalogue body with TLS client certificates' fingerprints replaced with zeroes.
    */
   private String getCatalogueBody() {
     return this.apiController.getCatalogue().getBody().replaceAll("\"[0-9a-f]{64,64}\"",

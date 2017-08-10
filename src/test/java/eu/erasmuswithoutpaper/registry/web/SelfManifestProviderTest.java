@@ -8,7 +8,7 @@ import java.util.List;
 import eu.erasmuswithoutpaper.registry.WRTest;
 import eu.erasmuswithoutpaper.registry.constraints.FailedConstraintNotice;
 import eu.erasmuswithoutpaper.registry.constraints.ManifestConstraint;
-import eu.erasmuswithoutpaper.registry.constraints.MinimumKeyLengthConstraint;
+import eu.erasmuswithoutpaper.registry.constraints.TlsClientCertificateSecurityConstraint;
 import eu.erasmuswithoutpaper.registry.constraints.RestrictInstitutionsCovered;
 import eu.erasmuswithoutpaper.registry.constraints.VerifyApiVersions;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildParams;
@@ -50,7 +50,7 @@ public class SelfManifestProviderTest extends WRTest {
     Document doc = result.getDocument().get();
 
     List<ManifestConstraint> constraints = new ArrayList<>();
-    constraints.add(new MinimumKeyLengthConstraint(2048));
+    constraints.add(new TlsClientCertificateSecurityConstraint(2048));
     constraints
         .add(new RestrictInstitutionsCovered("^.*\\.developers\\.erasmuswithoutpaper\\.eu$"));
     constraints.add(new VerifyApiVersions());

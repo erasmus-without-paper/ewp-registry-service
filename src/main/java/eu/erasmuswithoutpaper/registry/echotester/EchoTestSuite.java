@@ -150,7 +150,7 @@ class EchoTestSuite {
         StringBuilder sb = new StringBuilder();
         sb.append("HTTP 200 expected, but HTTP " + conn.getResponseCode() + " received.");
         if (conn.getResponseCode() == 403) {
-          sb.append(" Make sure you validate client certificates against a fresh "
+          sb.append(" Make sure you validate TLS client certificates against a fresh "
               + "Registry catalogue version.");
         }
         throw new Failure(sb.toString());
@@ -217,7 +217,7 @@ class EchoTestSuite {
       @Override
       public String getName() {
         if (expectSuccess) {
-          return "Running a regular " + method + " request, with a valid (known) "
+          return "Running a regular " + method + " request, with a valid (known) TLS "
               + "client certificate, and without any additional parameters. Expecting to "
               + "receive a valid HTTP 200 Echo API response with proper hei-ids, and "
               + "without any echo values.";
@@ -259,16 +259,16 @@ class EchoTestSuite {
 
         @Override
         public String getName() {
-          return "Check if our certificate has been served long enough.";
+          return "Check if our TLS client certificate has been served long enough.";
         }
 
         @Override
         protected void innerRun() throws Failure {
           if (new Date().getTime()
-              - EchoTestSuite.this.echoTester.getClientCertificateUsedSince().getTime() < 10 * 60
+              - EchoTestSuite.this.echoTester.getTlsClientCertificateUsedSince().getTime() < 10 * 60
                   * 1000) {
             throw new Failure(
-                "Our certificate is quite fresh. This means that many Echo APIs will "
+                "Our TLS client certificate is quite fresh. This means that many Echo APIs will "
                     + "(correctly) return HTTP 403 responses in places where we expect HTTP 200. "
                     + "This notice will disappear once the certificate is 10 minutes old.",
                 Status.NOTICE);
@@ -301,8 +301,8 @@ class EchoTestSuite {
       /////////////////////////////////////////
 
       this.client0 = new SimpleEwpClient(null, null);
-      this.client1 = new SimpleEwpClient(this.echoTester.getClientCertificateInUse(),
-          this.echoTester.getKeyPairInUse().getPrivate());
+      this.client1 = new SimpleEwpClient(this.echoTester.getTlsClientCertificateInUse(),
+          this.echoTester.getTlsKeyPairInUse().getPrivate());
       KeyPair otherKeyPair = this.echoTester.generateKeyPair();
       X509Certificate otherCert = this.echoTester.generateCertificate(otherKeyPair);
       this.client2 = new SimpleEwpClient(otherCert, otherKeyPair.getPrivate());
@@ -313,7 +313,7 @@ class EchoTestSuite {
 
         @Override
         public String getName() {
-          return "Accessing your Echo API without any client certificate. "
+          return "Accessing your Echo API without any TLS client certificate. "
               + "Expecting to receive a valid HTTP 403 error response.";
         }
 
@@ -331,7 +331,7 @@ class EchoTestSuite {
 
         @Override
         public String getName() {
-          return "Accessing your Echo API with an unknown client certificate "
+          return "Accessing your Echo API with an unknown TLS client certificate "
               + "(a random one, that has never been published in the Registry). "
               + "Expecting to receive a valid HTTP 403 error response.";
         }

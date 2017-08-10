@@ -35,10 +35,10 @@ public class EchoTester {
 
   private static final Logger logger = LoggerFactory.getLogger(EchoTester.class);
 
-  private final X509Certificate myCertificate;
-  private final KeyPair myKeyPair;
+  private final X509Certificate myTlsCertificate;
+  private final KeyPair myTlsKeyPair;
   private final List<String> coveredHeiIDs;
-  private final Date myCertificateDate;
+  private final Date myTlsCertificateDate;
   private final EwpDocBuilder docBuilder;
 
   /**
@@ -55,9 +55,9 @@ public class EchoTester {
 
     /* Generate the client certificate to be used. */
 
-    this.myKeyPair = this.generateKeyPair();
-    this.myCertificate = this.generateCertificate(this.myKeyPair);
-    this.myCertificateDate = new Date();
+    this.myTlsKeyPair = this.generateKeyPair();
+    this.myTlsCertificate = this.generateCertificate(this.myTlsKeyPair);
+    this.myTlsCertificateDate = new Date();
 
     /* Generate the IDs of the covered HEIs. */
 
@@ -72,35 +72,36 @@ public class EchoTester {
   }
 
   /**
-   * The {@link EchoTester} instance needs to publish its client certificate in the Registry,
-   * (because it needs all the Echo APIs to be aware of it).
+   * The TLS client certificate published for the {@link EchoTester} needs to cover a specific set
+   * of virtual HEIs (so that the tester can expect Echo APIs to think that the request comes from
+   * these HEIs).
    *
-   * @return An {@link X509Certificate} to be published in the Registry.
-   */
-  public X509Certificate getClientCertificateInUse() {
-    return this.myCertificate;
-  }
-
-  /**
-   * Since it takes some time to propagate information about new client certificates, this date may
-   * be useful. If it's quite fresh, then it's an indicator that the client certificate might not
-   * yet be recognized by all the EWP Hosts.
-   *
-   * @return The date indicating since when the current client certificate was used.
-   */
-  public Date getClientCertificateUsedSince() {
-    return new Date(this.myCertificateDate.getTime());
-  }
-
-  /**
-   * The certificate published for the {@link EchoTester} needs to cover a specific set of virtual
-   * HEIs (so that the tester can expect Echo APIs to think that the request comes from these HEIs).
-   *
-   * @return IDs of the HEIs which are to be associated with the certificate returned in
-   *         {@link #getClientCertificateInUse()}.
+   * @return IDs of the HEIs which are to be associated with the TLS client certificate returned in
+   *         {@link #getTlsClientCertificateInUse()}.
    */
   public List<String> getCoveredHeiIDs() {
     return Collections.unmodifiableList(this.coveredHeiIDs);
+  }
+
+  /**
+   * The {@link EchoTester} instance needs to publish its TLS Client Certificate in the Registry in
+   * order to be able to test TLS Client Certificate Authentication.
+   *
+   * @return An {@link X509Certificate} to be published in the Registry.
+   */
+  public X509Certificate getTlsClientCertificateInUse() {
+    return this.myTlsCertificate;
+  }
+
+  /**
+   * Since it takes some time to propagate information about new TLS Client Certificates, this date
+   * may be useful. If it's quite fresh, then it's an indicator that the TLS client certificate
+   * might not yet be recognized by all the EWP Hosts.
+   *
+   * @return The date indicating since when the current TLS client certificate is used.
+   */
+  public Date getTlsClientCertificateUsedSince() {
+    return new Date(this.myTlsCertificateDate.getTime());
   }
 
   /**
@@ -145,7 +146,7 @@ public class EchoTester {
     return generator.generateKeyPair();
   }
 
-  KeyPair getKeyPairInUse() {
-    return this.myKeyPair;
+  KeyPair getTlsKeyPairInUse() {
+    return this.myTlsKeyPair;
   }
 }

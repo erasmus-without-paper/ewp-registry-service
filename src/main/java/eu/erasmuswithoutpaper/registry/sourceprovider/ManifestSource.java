@@ -7,8 +7,8 @@ import java.util.List;
 
 import eu.erasmuswithoutpaper.registry.constraints.ForbidRegistryImplementations;
 import eu.erasmuswithoutpaper.registry.constraints.ManifestConstraint;
-import eu.erasmuswithoutpaper.registry.constraints.MinimumKeyLengthConstraint;
 import eu.erasmuswithoutpaper.registry.constraints.RemoveEmbeddedCatalogues;
+import eu.erasmuswithoutpaper.registry.constraints.TlsClientCertificateSecurityConstraint;
 import eu.erasmuswithoutpaper.registry.constraints.VerifyApiVersions;
 import eu.erasmuswithoutpaper.registry.constraints.VerifyDiscoveryApiEntry;
 
@@ -34,7 +34,7 @@ public class ManifestSource {
   public static ManifestSource newRegularSource(String url,
       List<ManifestConstraint> extraConstraints) {
     List<ManifestConstraint> all = new ArrayList<>(extraConstraints.size() + 4);
-    all.add(new MinimumKeyLengthConstraint(1024));
+    all.add(new TlsClientCertificateSecurityConstraint(1024));
     all.add(new VerifyDiscoveryApiEntry(url));
     all.add(new ForbidRegistryImplementations());
     all.add(new VerifyApiVersions());

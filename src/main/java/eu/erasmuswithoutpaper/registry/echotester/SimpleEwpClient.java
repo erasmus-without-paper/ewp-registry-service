@@ -31,7 +31,7 @@ public class SimpleEwpClient {
       KeyStore keystore = KeyStore.getInstance("JKS");
       keystore.load(null);
 
-      /* Import our certificate and key into the keystore. */
+      /* Import our TLS client certificate (and key) into the keystore. */
 
       String keyPassword = "irrelevant";
       keystore.setCertificateEntry("cert", cert);
@@ -58,11 +58,11 @@ public class SimpleEwpClient {
   private final SSLSocketFactory mySocketFactory;
 
   /**
-   * Create a new client for the given client certificate.
+   * Create a new client for the given TLS client certificate.
    *
-   * @param cert The client certificate to be used. If null, then no client certificate will be used
-   *        when making new connections.
-   * @param key The private key used to generate the client certificate. If null, then no client
+   * @param cert The TLS client certificate to be used. If null, then no client certificate will be
+   *        used when making new connections.
+   * @param key The private key used to generate the certificate. If null, then no TLS client
    *        certificate will be used when making new connections.
    */
   public SimpleEwpClient(X509Certificate cert, PrivateKey key) {
@@ -74,7 +74,7 @@ public class SimpleEwpClient {
   }
 
   /**
-   * Create a new {@link HttpsURLConnection} instance. This connection will be using the client
+   * Create a new {@link HttpsURLConnection} instance. This connection will be using the TLS client
    * certificate which has been passed to the {@link SimpleEwpClient} in the constructor.
    *
    * @param url The URL to be opened.
