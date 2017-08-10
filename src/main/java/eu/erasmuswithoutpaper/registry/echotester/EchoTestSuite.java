@@ -4,7 +4,6 @@ import static org.joox.JOOX.$;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
@@ -14,8 +13,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import javax.net.ssl.HttpsURLConnection;
-
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildError;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildParams;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildResult;
@@ -24,8 +21,10 @@ import eu.erasmuswithoutpaper.registry.documentbuilder.KnownElement;
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
 import eu.erasmuswithoutpaper.registry.echotester.EchoTest.Failure;
 import eu.erasmuswithoutpaper.registry.echotester.EchoTestResult.Status;
+import eu.erasmuswithoutpaper.registry.internet.Internet;
+import eu.erasmuswithoutpaper.registry.internet.Internet.Request;
+import eu.erasmuswithoutpaper.registry.internet.Internet.Response;
 
-import org.apache.commons.io.IOUtils;
 import org.joox.Match;
 
 class EchoTestSuite {
@@ -68,17 +67,14 @@ class EchoTestSuite {
   private final String urlStr;
   private final List<EchoTestResult> tests;
   private final EwpDocBuilder docBuilder;
+  private final Internet internet;
 
-  private URL url;
-  private SimpleEwpClient client0;
-  private SimpleEwpClient client1;
-  private SimpleEwpClient client2;
-
-  EchoTestSuite(EchoTester echoTester, EwpDocBuilder docBuilder, String urlStr) {
+  EchoTestSuite(EchoTester echoTester, EwpDocBuilder docBuilder, Internet internet, String urlStr) {
     this.echoTester = echoTester;
     this.urlStr = urlStr;
     this.tests = new ArrayList<>();
     this.docBuilder = docBuilder;
+    this.internet = internet;
   }
 
   /**
@@ -98,26 +94,26 @@ class EchoTestSuite {
   }
 
   /**
-   * Take the HTTPS connection and make sure that it contains an error response.
+   * Make the request and make sure that the response contains an error.
    *
-   * @param conn The connection instance (might be already connected, or not).
+   * @param request The request to be made.
    * @param status Expected HTTP response status.
    * @throws Failure If HTTP status differs from expected, or if the response body doesn't contain a
    *         proper error response.
    */
-  private void assertError(HttpsURLConnection conn, int status) throws Failure {
+  private void assertError(Request request, int status) throws Failure {
     try {
-      conn.connect();
-      if (conn.getResponseCode() != status) {
-        int gotFirstDigit = conn.getResponseCode() / 100;
+      Response response = this.internet.makeRequest(request);
+      if (response.getStatus() != status) {
+        int gotFirstDigit = response.getStatus() / 100;
         int expectedFirstDigit = status / 100;
         Status failureStatus =
             (gotFirstDigit == expectedFirstDigit) ? Status.WARNING : Status.FAILURE;
         throw new Failure(
-            "HTTP " + status + " expected, but HTTP " + conn.getResponseCode() + " received.",
+            "HTTP " + status + " expected, but HTTP " + response.getStatus() + " received.",
             failureStatus);
       }
-      BuildParams params = new BuildParams(IOUtils.toByteArray(conn.getErrorStream()));
+      BuildParams params = new BuildParams(response.getBody());
       params.setExpectedKnownElement(KnownElement.COMMON_ERROR_RESPONSE);
       BuildResult result = this.docBuilder.build(params);
       if (!result.isValid()) {
@@ -129,33 +125,31 @@ class EchoTestSuite {
       }
     } catch (IOException e) {
       throw new RuntimeException(e);
-    } finally {
-      conn.disconnect();
     }
   }
 
   /**
-   * Take the HTTPS connection and make sure that it contains a valid HTTP 200 Echo API response.
+   * Make the request and make sure that the response contains a valid HTTP 200 Echo API response.
    *
-   * @param conn The connection instance (might be already connected, or not).
+   * @param request The request to be made.
    * @param heiIdsExpected The expected contents of the hei-id list.
    * @param echoValuesExpected The expected contents of the echo list.
    * @throws Failure If some expectations are not met.
    */
-  private void assertHttp200(HttpsURLConnection conn, List<String> heiIdsExpected,
+  private void assertHttp200(Request request, List<String> heiIdsExpected,
       List<String> echoValuesExpected) throws Failure {
     try {
-      conn.connect();
-      if (conn.getResponseCode() != 200) {
+      Response response = this.internet.makeRequest(request);
+      if (response.getStatus() != 200) {
         StringBuilder sb = new StringBuilder();
-        sb.append("HTTP 200 expected, but HTTP " + conn.getResponseCode() + " received.");
-        if (conn.getResponseCode() == 403) {
+        sb.append("HTTP 200 expected, but HTTP " + response.getStatus() + " received.");
+        if (response.getStatus() == 403) {
           sb.append(" Make sure you validate TLS client certificates against a fresh "
               + "Registry catalogue version.");
         }
         throw new Failure(sb.toString());
       }
-      BuildParams params = new BuildParams(IOUtils.toByteArray(conn.getInputStream()));
+      BuildParams params = new BuildParams(response.getBody());
       params.setExpectedKnownElement(KnownElement.RESPONSE_ECHO_V1);
       BuildResult result = this.docBuilder.build(params);
       if (!result.isValid()) {
@@ -196,8 +190,6 @@ class EchoTestSuite {
       }
     } catch (IOException e) {
       throw new RuntimeException(e);
-    } finally {
-      conn.disconnect();
     }
   }
 
@@ -229,20 +221,17 @@ class EchoTestSuite {
 
       @Override
       protected void innerRun() throws Failure {
-        HttpsURLConnection conn = EchoTestSuite.this.client1.newConnection(EchoTestSuite.this.url);
-        try {
-          conn.setRequestMethod(method);
-          if (method.equals("POST")) {
-            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-          }
-        } catch (ProtocolException e) {
-          throw new RuntimeException(e);
+        Internet.Request request = new Internet.Request(method, EchoTestSuite.this.urlStr);
+        if (method.equals("POST")) {
+          request.addHeader("Content-Type: application/x-www-form-urlencoded");
         }
+        request.setClientCertificate(EchoTestSuite.this.echoTester.getTlsClientCertificateInUse(),
+            EchoTestSuite.this.echoTester.getTlsKeyPairInUse());
         if (expectSuccess) {
-          EchoTestSuite.this.assertHttp200(conn, EchoTestSuite.this.echoTester.getCoveredHeiIDs(),
-              Collections.<String>emptyList());
+          EchoTestSuite.this.assertHttp200(request,
+              EchoTestSuite.this.echoTester.getCoveredHeiIDs(), Collections.<String>emptyList());
         } else {
-          EchoTestSuite.this.assertError(conn, 405);
+          EchoTestSuite.this.assertError(request, 405);
         }
       }
     };
@@ -253,6 +242,10 @@ class EchoTestSuite {
   }
 
   void run() {
+
+    X509Certificate myCert = this.echoTester.getTlsClientCertificateInUse();
+    KeyPair myKeyPair = this.echoTester.getTlsKeyPairInUse();
+
     try {
 
       this.addAndRun(false, new EchoTest() {
@@ -291,21 +284,12 @@ class EchoTestSuite {
             throw new Failure("It needs to be HTTPS.");
           }
           try {
-            EchoTestSuite.this.url = new URL(EchoTestSuite.this.urlStr);
+            new URL(EchoTestSuite.this.urlStr);
           } catch (MalformedURLException e) {
             throw new Failure("Exception while parsing URL format: " + e);
           }
         }
       });
-
-      /////////////////////////////////////////
-
-      this.client0 = new SimpleEwpClient(null, null);
-      this.client1 = new SimpleEwpClient(this.echoTester.getTlsClientCertificateInUse(),
-          this.echoTester.getTlsKeyPairInUse().getPrivate());
-      KeyPair otherKeyPair = this.echoTester.generateKeyPair();
-      X509Certificate otherCert = this.echoTester.generateCertificate(otherKeyPair);
-      this.client2 = new SimpleEwpClient(otherCert, otherKeyPair.getPrivate());
 
       /////////////////////////////////////////
 
@@ -319,9 +303,8 @@ class EchoTestSuite {
 
         @Override
         protected void innerRun() throws Failure {
-          HttpsURLConnection conn =
-              EchoTestSuite.this.client0.newConnection(EchoTestSuite.this.url);
-          EchoTestSuite.this.assertError(conn, 403);
+          Request request = new Request("GET", EchoTestSuite.this.urlStr);
+          EchoTestSuite.this.assertError(request, 403);
         }
       });
 
@@ -338,9 +321,12 @@ class EchoTestSuite {
 
         @Override
         protected void innerRun() throws Failure {
-          HttpsURLConnection conn =
-              EchoTestSuite.this.client2.newConnection(EchoTestSuite.this.url);
-          EchoTestSuite.this.assertError(conn, 403);
+          KeyPair otherKeyPair = EchoTestSuite.this.echoTester.generateKeyPair();
+          X509Certificate otherCert =
+              EchoTestSuite.this.echoTester.generateCertificate(otherKeyPair);
+          Request request = new Request("GET", EchoTestSuite.this.urlStr);
+          request.setClientCertificate(otherCert, otherKeyPair);
+          EchoTestSuite.this.assertError(request, 403);
         }
       });
 
@@ -372,25 +358,14 @@ class EchoTestSuite {
 
         @Override
         protected void innerRun() throws Failure {
-          URL url2;
-          try {
-            url2 = new URL(EchoTestSuite.this.urlStr + "?echo=a&echo=b&echo=a");
-          } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-          }
-          HttpsURLConnection conn = EchoTestSuite.this.client1.newConnection(url2);
-          try {
-            conn.setRequestMethod("GET");
-          } catch (ProtocolException e) {
-            throw new RuntimeException(e);
-          }
+          Request request = new Request("GET", EchoTestSuite.this.urlStr + "?echo=a&echo=b&echo=a");
+          request.setClientCertificate(myCert, myKeyPair);
           ArrayList<String> expectedEchoValues = new ArrayList<>();
           expectedEchoValues.add("a");
           expectedEchoValues.add("b");
           expectedEchoValues.add("a");
-          EchoTestSuite.this.assertHttp200(conn, EchoTestSuite.this.echoTester.getCoveredHeiIDs(),
-              expectedEchoValues);
-
+          EchoTestSuite.this.assertHttp200(request,
+              EchoTestSuite.this.echoTester.getCoveredHeiIDs(), expectedEchoValues);
         }
       });
 
@@ -406,23 +381,16 @@ class EchoTestSuite {
 
         @Override
         protected void innerRun() throws Failure {
-          HttpsURLConnection conn =
-              EchoTestSuite.this.client1.newConnection(EchoTestSuite.this.url);
-          try {
-            conn.setRequestMethod("POST");
-            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-            conn.setDoOutput(true);
-            conn.connect();
-            conn.getOutputStream().write("echo=a&echo=b&echo=a".getBytes(StandardCharsets.UTF_8));
-          } catch (IOException e) {
-            throw new RuntimeException(e);
-          }
+          Request request = new Request("POST", EchoTestSuite.this.urlStr);
+          request.addHeader("Content-Type: application/x-www-form-urlencoded");
+          request.setBody("echo=a&echo=b&echo=a".getBytes(StandardCharsets.UTF_8));
+          request.setClientCertificate(myCert, myKeyPair);
           ArrayList<String> expectedEchoValues = new ArrayList<>();
           expectedEchoValues.add("a");
           expectedEchoValues.add("b");
           expectedEchoValues.add("a");
-          EchoTestSuite.this.assertHttp200(conn, EchoTestSuite.this.echoTester.getCoveredHeiIDs(),
-              expectedEchoValues);
+          EchoTestSuite.this.assertHttp200(request,
+              EchoTestSuite.this.echoTester.getCoveredHeiIDs(), expectedEchoValues);
         }
       });
 

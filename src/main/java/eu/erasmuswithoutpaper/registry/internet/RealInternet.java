@@ -8,9 +8,11 @@ import java.net.URLConnection;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import javax.net.ssl.HttpsURLConnection;
 
 import eu.erasmuswithoutpaper.registry.common.Severity;
 import eu.erasmuswithoutpaper.registry.notifier.NotifierFlag;
@@ -103,6 +105,56 @@ public class RealInternet implements Internet {
         is.close();
       }
     }
+  }
+
+  @Override
+  public Response makeRequest(Request request) throws IOException {
+
+    /* Prepare and make the request. */
+
+    SimpleEwpClient client;
+    if (request.getClientCertificate().isPresent()) {
+      // If certificate is present, then key-pair is also present.
+      client = new SimpleEwpClient(request.getClientCertificate().get(),
+          request.getKeyPair().get().getPrivate());
+    } else {
+      client = new SimpleEwpClient(null, null);
+    }
+    URL url = new URL(request.getUrl());
+    HttpsURLConnection conn = client.newConnection(url);
+    conn.setRequestMethod(request.getMethod());
+    if (request.getHeaders().isPresent()) {
+      for (String header : request.getHeaders().get()) {
+        String[] splitted = header.split(": ?", 2);
+        conn.setRequestProperty(splitted[0], splitted[1]);
+      }
+    }
+    if (request.getBody().isPresent()) {
+      conn.setDoOutput(true);
+    }
+    conn.connect();
+    if (request.getBody().isPresent()) {
+      conn.getOutputStream().write(request.getBody().get());
+    }
+
+    /* Retrieve all variables needed for the response. */
+
+    // Status
+    final int status = conn.getResponseCode();
+
+    // Headers
+    final Map<String, List<String>> headers = conn.getHeaderFields();
+
+    // Body
+    InputStream bodyStream = conn.getErrorStream();
+    if (bodyStream == null) {
+      bodyStream = conn.getInputStream();
+    }
+    final byte[] body = IOUtils.toByteArray(bodyStream);
+
+    conn.disconnect();
+
+    return new Response(status, body, headers);
   }
 
   @Override

@@ -1,4 +1,4 @@
-package eu.erasmuswithoutpaper.registry.echotester;
+package eu.erasmuswithoutpaper.registry.internet;
 
 import java.io.IOException;
 import java.net.URL;
@@ -22,7 +22,7 @@ import javax.net.ssl.SSLSocketFactory;
 /**
  * A simple helper for making new client connections to EWP Network endpoints.
  */
-public class SimpleEwpClient {
+class SimpleEwpClient {
 
   private static SSLSocketFactory prepareSocketFactory(X509Certificate cert, PrivateKey key) {
     try {
@@ -65,7 +65,7 @@ public class SimpleEwpClient {
    * @param key The private key used to generate the certificate. If null, then no TLS client
    *        certificate will be used when making new connections.
    */
-  public SimpleEwpClient(X509Certificate cert, PrivateKey key) {
+  SimpleEwpClient(X509Certificate cert, PrivateKey key) {
     if ((cert != null && key != null)) {
       this.mySocketFactory = prepareSocketFactory(cert, key);
     } else {
@@ -81,7 +81,7 @@ public class SimpleEwpClient {
    * @return An {@link HttpsURLConnection} instance (not connected) with proper
    *         {@link SSLSocketFactory} already preconfigured.
    */
-  public HttpsURLConnection newConnection(URL url) {
+  HttpsURLConnection newConnection(URL url) {
     URLConnection aconn;
     try {
       aconn = url.openConnection();

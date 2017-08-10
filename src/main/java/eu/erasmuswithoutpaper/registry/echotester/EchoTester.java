@@ -17,6 +17,7 @@ import java.util.List;
 
 import eu.erasmuswithoutpaper.registry.Application;
 import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
+import eu.erasmuswithoutpaper.registry.internet.Internet;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,14 +41,18 @@ public class EchoTester {
   private final List<String> coveredHeiIDs;
   private final Date myTlsCertificateDate;
   private final EwpDocBuilder docBuilder;
+  private final Internet internet;
 
   /**
    * @param docBuilder Needed for validating Echo API responses against the schemas.
+   * @param internet Needed to make Echo API requests across the network.
    */
   @Autowired
-  public EchoTester(EwpDocBuilder docBuilder) {
+  public EchoTester(EwpDocBuilder docBuilder, Internet internet) {
 
     this.docBuilder = docBuilder;
+    this.internet = internet;
+
     if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
       logger.debug("Registering BouncyCastle security provider");
       Security.addProvider(new BouncyCastleProvider());
@@ -111,7 +116,7 @@ public class EchoTester {
    * @return A list of test results.
    */
   public List<EchoTestResult> runTests(String urlStr) {
-    EchoTestSuite suite = new EchoTestSuite(this, this.docBuilder, urlStr);
+    EchoTestSuite suite = new EchoTestSuite(this, this.docBuilder, this.internet, urlStr);
     suite.run();
     return suite.getResults();
   }

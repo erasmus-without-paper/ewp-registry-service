@@ -51,6 +51,11 @@ public class FakeInternet implements Internet {
     }
   }
 
+  @Override
+  public Response makeRequest(Request request) throws IOException {
+    throw new RuntimeException("WRTODO");
+  }
+
   /**
    * Fetch the list of emails sent, and clear the list.
    *
