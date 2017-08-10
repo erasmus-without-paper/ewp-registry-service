@@ -1,5 +1,10 @@
 package eu.erasmuswithoutpaper.registry.echotester;
 
+import java.util.Optional;
+
+import eu.erasmuswithoutpaper.registry.internet.Internet;
+import eu.erasmuswithoutpaper.registry.internet.Internet.Response;
+
 import org.apache.commons.lang.exception.ExceptionUtils;
 
 /**
@@ -11,19 +16,20 @@ abstract class EchoTest implements EchoTestResult {
   static class Failure extends Exception {
 
     private final Status status;
+    private transient Internet.Response serverResponse = null;
 
-    Failure() {
-      this("Failure");
-    }
-
-    Failure(String message) {
-      super(message);
-      this.status = Status.FAILURE;
-    }
-
-    Failure(String message, Status status) {
+    Failure(String message, Status status, Internet.Response serverResponse) {
       super(message);
       this.status = status;
+      this.serverResponse = serverResponse;
+    }
+
+    void attachServerResponse(Internet.Response response) {
+      this.serverResponse = response;
+    }
+
+    Optional<Internet.Response> getAttachedServerResponse() {
+      return Optional.ofNullable(this.serverResponse);
     }
 
     Status getStatus() {
@@ -33,6 +39,7 @@ abstract class EchoTest implements EchoTestResult {
 
   private Status status = Status.PENDING;
   private String message = null;
+  private Internet.Response serverResponse = null;
 
   @Override
   public String getMessage() {
@@ -44,6 +51,11 @@ abstract class EchoTest implements EchoTestResult {
   }
 
   @Override
+  public Optional<Response> getServerResponse() {
+    return Optional.ofNullable(this.serverResponse);
+  }
+
+  @Override
   public Status getStatus() {
     return this.status;
   }
@@ -52,13 +64,18 @@ abstract class EchoTest implements EchoTestResult {
    * If it returns normally, and no other status is set during execution, then the status will be
    * set to SUCCESS.
    *
+   * @return Optional server response object.
    * @throws Failure When a test fails, and its status is NOT supposed to be set to SUCCESS. The
    *         instance contains the both the error message and status to be used instead.
    */
-  protected abstract void innerRun() throws Failure;
+  protected abstract Optional<Internet.Response> innerRun() throws Failure;
 
   protected void setMessage(String message) {
     this.message = message;
+  }
+
+  protected void setServerResponse(Internet.Response response) {
+    this.serverResponse = response;
   }
 
   protected void setStatus(Status status) {
@@ -73,9 +90,12 @@ abstract class EchoTest implements EchoTestResult {
    */
   final Status run() {
     try {
-      this.innerRun();
+      Optional<Response> response = this.innerRun();
       if (this.getStatus().equals(Status.PENDING)) {
         this.setStatus(Status.SUCCESS);
+      }
+      if (response.isPresent()) {
+        this.setServerResponse(response.get());
       }
     } catch (RuntimeException e) {
       this.setStatus(Status.ERROR);
@@ -83,6 +103,9 @@ abstract class EchoTest implements EchoTestResult {
     } catch (Failure e) {
       this.setStatus(e.getStatus());
       this.setMessage(e.getMessage());
+      if (e.getAttachedServerResponse().isPresent()) {
+        this.setServerResponse(e.getAttachedServerResponse().get());
+      }
     }
     return this.getStatus();
   }

@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildError;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildParams;
@@ -48,6 +49,11 @@ class EchoTestSuite {
     @Override
     public String getName() {
       return "Other error occurred. Please contact the developers.";
+    }
+
+    @Override
+    public Optional<Response> getServerResponse() {
+      return Optional.empty();
     }
 
     @Override
@@ -101,7 +107,7 @@ class EchoTestSuite {
    * @throws Failure If HTTP status differs from expected, or if the response body doesn't contain a
    *         proper error response.
    */
-  private void assertError(Request request, int status) throws Failure {
+  private Response assertError(Request request, int status) throws Failure {
     try {
       Response response = this.internet.makeRequest(request);
       if (response.getStatus() != status) {
@@ -111,7 +117,7 @@ class EchoTestSuite {
             (gotFirstDigit == expectedFirstDigit) ? Status.WARNING : Status.FAILURE;
         throw new Failure(
             "HTTP " + status + " expected, but HTTP " + response.getStatus() + " received.",
-            failureStatus);
+            failureStatus, response);
       }
       BuildParams params = new BuildParams(response.getBody());
       params.setExpectedKnownElement(KnownElement.COMMON_ERROR_RESPONSE);
@@ -121,8 +127,9 @@ class EchoTestSuite {
             "HTTP response status was okay, but the content has failed Schema validation. "
                 + "It is recommended to return a proper <error-response> in case of errors. "
                 + this.formatDocBuildErrors(result.getErrors()),
-            Status.WARNING);
+            Status.WARNING, response);
       }
+      return response;
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
@@ -136,7 +143,7 @@ class EchoTestSuite {
    * @param echoValuesExpected The expected contents of the echo list.
    * @throws Failure If some expectations are not met.
    */
-  private void assertHttp200(Request request, List<String> heiIdsExpected,
+  private Response assertHttp200(Request request, List<String> heiIdsExpected,
       List<String> echoValuesExpected) throws Failure {
     try {
       Response response = this.internet.makeRequest(request);
@@ -147,7 +154,7 @@ class EchoTestSuite {
           sb.append(" Make sure you validate TLS client certificates against a fresh "
               + "Registry catalogue version.");
         }
-        throw new Failure(sb.toString());
+        throw new Failure(sb.toString(), Status.FAILURE, response); // WRTODO: add body to failure?
       }
       BuildParams params = new BuildParams(response.getBody());
       params.setExpectedKnownElement(KnownElement.RESPONSE_ECHO_V1);
@@ -155,7 +162,8 @@ class EchoTestSuite {
       if (!result.isValid()) {
         throw new Failure(
             "HTTP response status was okay, but the content has failed Schema validation. "
-                + this.formatDocBuildErrors(result.getErrors()));
+                + this.formatDocBuildErrors(result.getErrors()),
+            Status.FAILURE, response);
       }
       Match root = $(result.getDocument().get()).namespaces(KnownNamespace.prefixMap());
       List<String> heiIdsGot = new ArrayList<>();
@@ -168,7 +176,8 @@ class EchoTestSuite {
               "The response has proper HTTP status and it passed the schema validation. However, "
                   + "the set of returned hei-ids doesn't match what we expect. It contains <hei-id>"
                   + heiIdGot + "</hei-id>, but it shouldn't. It should contain the following: "
-                  + heiIdsExpected);
+                  + heiIdsExpected,
+              Status.FAILURE, response);
         }
       }
       for (String heiIdExpected : heiIdsExpected) {
@@ -176,7 +185,8 @@ class EchoTestSuite {
           throw new Failure(
               "The response has proper HTTP status and it passed the schema validation. However, "
                   + "the set of returned hei-ids doesn't match what we expect. "
-                  + "It should contain the following: " + heiIdsExpected);
+                  + "It should contain the following: " + heiIdsExpected,
+              Status.FAILURE, response);
         }
       }
       List<String> echoValuesGot = root.xpath("er1:echo").texts();
@@ -186,8 +196,10 @@ class EchoTestSuite {
                 + "However, there's something wrong with the echo values produced. "
                 + "We expected the response to contain the following echo values: "
                 + echoValuesExpected + ", but the following values were found instead: "
-                + echoValuesGot);
+                + echoValuesGot,
+            Status.FAILURE, response);
       }
+      return response;
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
@@ -220,7 +232,7 @@ class EchoTestSuite {
       }
 
       @Override
-      protected void innerRun() throws Failure {
+      protected Optional<Response> innerRun() throws Failure {
         Internet.Request request = new Internet.Request(method, EchoTestSuite.this.urlStr);
         if (method.equals("POST")) {
           request.addHeader("Content-Type: application/x-www-form-urlencoded");
@@ -228,10 +240,10 @@ class EchoTestSuite {
         request.setClientCertificate(EchoTestSuite.this.echoTester.getTlsClientCertificateInUse(),
             EchoTestSuite.this.echoTester.getTlsKeyPairInUse());
         if (expectSuccess) {
-          EchoTestSuite.this.assertHttp200(request,
-              EchoTestSuite.this.echoTester.getCoveredHeiIDs(), Collections.<String>emptyList());
+          return Optional.of(EchoTestSuite.this.assertHttp200(request,
+              EchoTestSuite.this.echoTester.getCoveredHeiIDs(), Collections.<String>emptyList()));
         } else {
-          EchoTestSuite.this.assertError(request, 405);
+          return Optional.of(EchoTestSuite.this.assertError(request, 405));
         }
       }
     };
@@ -256,7 +268,7 @@ class EchoTestSuite {
         }
 
         @Override
-        protected void innerRun() throws Failure {
+        protected Optional<Response> innerRun() throws Failure {
           if (new Date().getTime()
               - EchoTestSuite.this.echoTester.getTlsClientCertificateUsedSince().getTime() < 10 * 60
                   * 1000) {
@@ -264,8 +276,9 @@ class EchoTestSuite {
                 "Our TLS client certificate is quite fresh. This means that many Echo APIs will "
                     + "(correctly) return HTTP 403 responses in places where we expect HTTP 200. "
                     + "This notice will disappear once the certificate is 10 minutes old.",
-                Status.NOTICE);
+                Status.NOTICE, null);
           }
+          return Optional.empty();
         }
       });
 
@@ -279,15 +292,16 @@ class EchoTestSuite {
         }
 
         @Override
-        protected void innerRun() throws Failure {
+        protected Optional<Response> innerRun() throws Failure {
           if (!EchoTestSuite.this.urlStr.startsWith("https://")) {
-            throw new Failure("It needs to be HTTPS.");
+            throw new Failure("It needs to be HTTPS.", Status.FAILURE, null);
           }
           try {
             new URL(EchoTestSuite.this.urlStr);
           } catch (MalformedURLException e) {
-            throw new Failure("Exception while parsing URL format: " + e);
+            throw new Failure("Exception while parsing URL format: " + e, Status.FAILURE, null);
           }
+          return Optional.empty();
         }
       });
 
@@ -302,9 +316,9 @@ class EchoTestSuite {
         }
 
         @Override
-        protected void innerRun() throws Failure {
+        protected Optional<Response> innerRun() throws Failure {
           Request request = new Request("GET", EchoTestSuite.this.urlStr);
-          EchoTestSuite.this.assertError(request, 403);
+          return Optional.of(EchoTestSuite.this.assertError(request, 403));
         }
       });
 
@@ -320,13 +334,13 @@ class EchoTestSuite {
         }
 
         @Override
-        protected void innerRun() throws Failure {
+        protected Optional<Response> innerRun() throws Failure {
           KeyPair otherKeyPair = EchoTestSuite.this.echoTester.generateKeyPair();
           X509Certificate otherCert =
               EchoTestSuite.this.echoTester.generateCertificate(otherKeyPair);
           Request request = new Request("GET", EchoTestSuite.this.urlStr);
           request.setClientCertificate(otherCert, otherKeyPair);
-          EchoTestSuite.this.assertError(request, 403);
+          return Optional.of(EchoTestSuite.this.assertError(request, 403));
         }
       });
 
@@ -357,15 +371,15 @@ class EchoTestSuite {
         }
 
         @Override
-        protected void innerRun() throws Failure {
+        protected Optional<Response> innerRun() throws Failure {
           Request request = new Request("GET", EchoTestSuite.this.urlStr + "?echo=a&echo=b&echo=a");
           request.setClientCertificate(myCert, myKeyPair);
           ArrayList<String> expectedEchoValues = new ArrayList<>();
           expectedEchoValues.add("a");
           expectedEchoValues.add("b");
           expectedEchoValues.add("a");
-          EchoTestSuite.this.assertHttp200(request,
-              EchoTestSuite.this.echoTester.getCoveredHeiIDs(), expectedEchoValues);
+          return Optional.of(EchoTestSuite.this.assertHttp200(request,
+              EchoTestSuite.this.echoTester.getCoveredHeiIDs(), expectedEchoValues));
         }
       });
 
@@ -380,7 +394,7 @@ class EchoTestSuite {
         }
 
         @Override
-        protected void innerRun() throws Failure {
+        protected Optional<Response> innerRun() throws Failure {
           Request request = new Request("POST", EchoTestSuite.this.urlStr);
           request.addHeader("Content-Type: application/x-www-form-urlencoded");
           request.setBody("echo=a&echo=b&echo=a".getBytes(StandardCharsets.UTF_8));
@@ -389,8 +403,8 @@ class EchoTestSuite {
           expectedEchoValues.add("a");
           expectedEchoValues.add("b");
           expectedEchoValues.add("a");
-          EchoTestSuite.this.assertHttp200(request,
-              EchoTestSuite.this.echoTester.getCoveredHeiIDs(), expectedEchoValues);
+          return Optional.of(EchoTestSuite.this.assertHttp200(request,
+              EchoTestSuite.this.echoTester.getCoveredHeiIDs(), expectedEchoValues));
         }
       });
 

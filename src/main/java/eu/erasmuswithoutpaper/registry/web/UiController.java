@@ -1,5 +1,7 @@
 package eu.erasmuswithoutpaper.registry.web;
 
+import static org.joox.JOOX.$;
+
 import java.security.cert.CertificateEncodingException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -14,9 +16,11 @@ import eu.erasmuswithoutpaper.registry.documentbuilder.BuildError;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildParams;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildResult;
 import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
+import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
 import eu.erasmuswithoutpaper.registry.echotester.EchoTestResult;
 import eu.erasmuswithoutpaper.registry.echotester.EchoTestResult.Status;
 import eu.erasmuswithoutpaper.registry.echotester.EchoTester;
+import eu.erasmuswithoutpaper.registry.internet.Internet.Response;
 import eu.erasmuswithoutpaper.registry.notifier.NotifierFlag;
 import eu.erasmuswithoutpaper.registry.notifier.NotifierService;
 import eu.erasmuswithoutpaper.registry.sourceprovider.ManifestSource;
@@ -42,10 +46,13 @@ import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.xerces.impl.dv.util.Base64;
+import org.joox.Match;
 import org.ocpsoft.prettytime.PrettyTime;
 
 /**
@@ -371,12 +378,13 @@ public class UiController {
         worstStatus = testResult.getStatus();
       }
       testObj.addProperty("message", testResult.getMessage());
+      testObj.add("serverResponse", this.formatServerResponseObject(testResult));
       testsArray.add(testObj);
     }
     responseObj.addProperty("success", worstStatus.equals(Status.SUCCESS));
     responseObj.addProperty("status", worstStatus.toString());
     responseObj.add("tests", testsArray);
-    Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    Gson gson = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
     String json = gson.toJson(responseObj);
     return new ResponseEntity<String>(json, headers, HttpStatus.OK);
   }
@@ -442,6 +450,27 @@ public class UiController {
     Gson gson = new GsonBuilder().setPrettyPrinting().create();
     String json = gson.toJson(result2);
     return new ResponseEntity<String>(json, headers, HttpStatus.OK);
+  }
+
+  private JsonObject formatServerResponseObject(EchoTestResult testResult) {
+    if (!testResult.getServerResponse().isPresent()) {
+      return null;
+    }
+    Response response = testResult.getServerResponse().get();
+    JsonObject result = new JsonObject();
+    result.addProperty("rawBodyBase64", Base64.encode(response.getBody()));
+    BuildParams params = new BuildParams(response.getBody());
+    params.setMakingPretty(true);
+    BuildResult buildResult = this.docBuilder.build(params);
+    result.addProperty("prettyXml", buildResult.getPrettyXml().orElse(null));
+    if (buildResult.getDocument().isPresent()) {
+      Match root = $(buildResult.getDocument().get()).namespaces(KnownNamespace.prefixMap());
+      result.addProperty("developerMessage",
+          root.xpath("/ewp:error-response/ewp:developer-message").text());
+    } else {
+      result.add("developerMessage", JsonNull.INSTANCE);
+    }
+    return result;
   }
 
   /**

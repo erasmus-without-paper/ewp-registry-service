@@ -1,5 +1,9 @@
 package eu.erasmuswithoutpaper.registry.echotester;
 
+import java.util.Optional;
+
+import eu.erasmuswithoutpaper.registry.internet.Internet;
+
 /**
  * A single Echo API test along with its result.
  */
@@ -21,6 +25,11 @@ public interface EchoTestResult {
    * @return The name (label) of this test.
    */
   String getName();
+
+  /**
+   * @return Optional response, as returned by server.
+   */
+  Optional<Internet.Response> getServerResponse();
 
   /**
    * @return The status of this test.
