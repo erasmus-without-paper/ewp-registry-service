@@ -165,7 +165,7 @@ class EchoTestSuite {
       }
       Match root = $(result.getDocument().get()).namespaces(KnownNamespace.prefixMap());
       List<String> heiIdsGot = new ArrayList<>();
-      for (Match entry : root.xpath("e:hei-id").each()) {
+      for (Match entry : root.xpath("er1:hei-id").each()) {
         heiIdsGot.add(entry.text());
       }
       for (String heiIdGot : heiIdsGot) {
@@ -185,7 +185,7 @@ class EchoTestSuite {
                   + "It should contain the following: " + heiIdsExpected);
         }
       }
-      List<String> echoValuesGot = root.xpath("e:echo").texts();
+      List<String> echoValuesGot = root.xpath("er1:echo").texts();
       if (!echoValuesGot.equals(echoValuesExpected)) {
         throw new Failure(
             "The response has proper HTTP status and it passed the schema validation. "
