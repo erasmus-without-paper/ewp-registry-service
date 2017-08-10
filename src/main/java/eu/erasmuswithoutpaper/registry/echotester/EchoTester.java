@@ -126,7 +126,7 @@ public class EchoTester {
         new X509Principal("CN=Dynamically Generated Certificate for testing Echo APIs, "
             + "OU=None, O=None L=None, C=None"));
     cert.setPublicKey(keyPair.getPublic());
-    cert.setSignatureAlgorithm("MD5WithRSAEncryption");
+    cert.setSignatureAlgorithm("SHA256WithRSAEncryption");
     try {
       return cert.generate(keyPair.getPrivate(), "BC");
     } catch (CertificateEncodingException | InvalidKeyException | IllegalStateException
