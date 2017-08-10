@@ -116,15 +116,21 @@ public class ApiControllerTest extends WRTest {
     this.uiController.refresh();
     assertThat(this.getCatalogueBody()).isEqualTo(this.getFileAsString("demo1/E-out.xml"));
 
-    /* [Test F] Try to use an invalid TLS client certificate. */
+    /* [Test F] Try to use suspicious TLS client certificates (2 invalid, 1 obsolete). */
 
     this.internet.putURL(urlSE, this.getFile("demo1/F-inSE.xml"));
     this.uiController.refresh();
-    assertThat(this.getCatalogueBody()).isEqualTo(this.getFileAsString("demo1/E-out.xml"));
+    assertThat(this.getCatalogueBody()).isEqualTo(this.getFileAsString("demo1/F-out.xml"));
     assertThat(this.status(urlSE))
         .contains("minimum required length of TLS client certificate key is 1024 bits");
     assertThat(this.status(urlSE))
-        .contains("One of your TLS client certificates (1st of 1) uses 512 bits only");
+        .contains("One of your TLS client certificates (1st of 3) uses 512 bits only");
+    assertThat(this.status(urlSE))
+        .contains("One of your TLS client certificates (2nd of 3) uses an insecure "
+            + "MD-based signature algorithm (MD5withRSA)");
+    assertThat(this.status(urlSE))
+        .contains("One of your TLS client certificates (3rd of 3) uses a SHA-1-based "
+            + "signature algorithm (SHA1withRSA). Consider upgrading to SHA-256.");
 
     /* [Test G] Replace certificate with a valid one. */
 

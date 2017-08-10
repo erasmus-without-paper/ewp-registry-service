@@ -1,0 +1,116 @@
+<catalogue
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-registry/tree/stable-v1"
+    xmlns:d4="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/blob/stable-v4/manifest-entry.xsd"
+    xmlns:e2="https://github.com/erasmus-without-paper/ewp-specs-api-echo/blob/stable-v2/manifest-entry.xsd"
+    xmlns:ewp="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
+    xmlns:ia2="https://github.com/erasmus-without-paper/ewp-specs-api-iias/blob/stable-v2/manifest-entry.xsd"
+    xmlns:iac2="https://github.com/erasmus-without-paper/ewp-specs-api-iia-cnr/blob/stable-v2/manifest-entry.xsd"
+    xmlns:in2="https://github.com/erasmus-without-paper/ewp-specs-api-institutions/blob/stable-v2/manifest-entry.xsd"
+    xmlns:ou2="https://github.com/erasmus-without-paper/ewp-specs-api-ounits/blob/stable-v2/manifest-entry.xsd"
+    xmlns:r1="https://github.com/erasmus-without-paper/ewp-specs-api-registry/blob/stable-v1/manifest-entry.xsd"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd
+        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-architecture/stable-v1/common-types.xsd
+
+        https://github.com/erasmus-without-paper/ewp-specs-api-registry/tree/stable-v1
+        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-registry/stable-v1/catalogue.xsd
+
+        https://github.com/erasmus-without-paper/ewp-specs-api-discovery/blob/stable-v4/manifest-entry.xsd
+        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-discovery/stable-v4/manifest-entry.xsd
+
+        https://github.com/erasmus-without-paper/ewp-specs-api-echo/blob/stable-v2/manifest-entry.xsd
+        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-echo/stable-v2/manifest-entry.xsd
+
+        https://github.com/erasmus-without-paper/ewp-specs-api-registry/blob/stable-v1/manifest-entry.xsd
+        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-registry/stable-v1/manifest-entry.xsd
+
+        https://github.com/erasmus-without-paper/ewp-specs-api-institutions/blob/stable-v2/manifest-entry.xsd
+        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-institutions/stable-v2/manifest-entry.xsd
+
+        https://github.com/erasmus-without-paper/ewp-specs-api-ounits/blob/stable-v2/manifest-entry.xsd
+        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-ounits/stable-v2/manifest-entry.xsd
+
+        https://github.com/erasmus-without-paper/ewp-specs-api-iias/blob/stable-v2/manifest-entry.xsd
+        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-iias/stable-v2/manifest-entry.xsd
+
+        https://github.com/erasmus-without-paper/ewp-specs-api-iia-cnr/blob/stable-v2/manifest-entry.xsd
+        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-iia-cnr/stable-v2/manifest-entry.xsd
+    "
+>
+    <host>
+        <ewp:admin-email>first-registry-admin@example.com</ewp:admin-email>
+        <ewp:admin-email>second-registry-admin@example.com</ewp:admin-email>
+        <ewp:admin-notes>This host handles the EWP Registry Service.</ewp:admin-notes>
+        <apis-implemented>
+            <d4:discovery version="4.0.0">
+                <d4:url>https://localhost:8080/manifest.xml</d4:url>
+            </d4:discovery>
+            <r1:registry version="1.0.0">
+                <r1:catalogue-url>https://localhost:8080/catalogue-v1.xml</r1:catalogue-url>
+            </r1:registry>
+        </apis-implemented>
+        <institutions-covered>
+            <hei-id>hei01.developers.erasmuswithoutpaper.eu</hei-id>
+            <hei-id>hei02.developers.erasmuswithoutpaper.eu</hei-id>
+        </institutions-covered>
+        <client-credentials-in-use>
+            <certificate sha-256="0000000000000000000000000000000000000000000000000000000000000000"/>
+        </client-credentials-in-use>
+    </host>
+    <host>
+        <apis-implemented>
+            <d4:discovery version="4.0.0">
+                <d4:url>https://schowek.usos.edu.pl/w.rygielski/ewp/uw.edu.pl/manifest.xml</d4:url>
+            </d4:discovery>
+        </apis-implemented>
+        <institutions-covered>
+            <hei-id>uw.edu.pl</hei-id>
+        </institutions-covered>
+    </host>
+    <host>
+        <apis-implemented>
+            <d4:discovery version="4.0.0">
+                <d4:url>https://schowek.usos.edu.pl/w.rygielski/ewp/ladok.se/manifest.xml</d4:url>
+            </d4:discovery>
+            <e2:echo version="2.0.0">
+                <e2:url>https://ladok.se/ewp/echo</e2:url>
+            </e2:echo>
+            <ladok-api
+                xmlns="https://ladok.se/api/"
+                xmlns:ladok="https://ladok.se/api/"
+                attr="x"
+                ladok:nsattr="An unconventional attribute attached to a namespace"
+            >
+                <something/>
+            </ladok-api>
+        </apis-implemented>
+        <institutions-covered>
+            <hei-id>lu.se</hei-id>
+            <hei-id>hv.se</hei-id>
+        </institutions-covered>
+        <client-credentials-in-use>
+            <certificate sha-256="0000000000000000000000000000000000000000000000000000000000000000"/>
+        </client-credentials-in-use>
+    </host>
+    <institutions>
+        <hei id="hei01.developers.erasmuswithoutpaper.eu">
+            <name>Artificial HEI for testing Echo APIs</name>
+        </hei>
+        <hei id="hei02.developers.erasmuswithoutpaper.eu">
+            <name>Artificial HEI for testing Echo APIs</name>
+        </hei>
+        <hei id="hv.se">
+            <other-id type="national-swedish-hei-number">123</other-id>
+            <name xml:lang="en">University West</name>
+        </hei>
+        <hei id="lu.se">
+            <name xml:lang="en">Lund University</name>
+        </hei>
+        <hei id="uw.edu.pl">
+            <other-id type="erasmus">PL WARSZAW01</other-id>
+            <other-id type="pic">999572294</other-id>
+            <name xml:lang="en">University of Warsaw</name>
+        </hei>
+    </institutions>
+</catalogue>
