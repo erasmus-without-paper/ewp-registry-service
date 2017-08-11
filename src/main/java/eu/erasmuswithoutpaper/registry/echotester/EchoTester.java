@@ -1,15 +1,13 @@
 package eu.erasmuswithoutpaper.registry.echotester;
 
 import java.math.BigInteger;
-import java.security.InvalidKeyException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.security.Security;
-import java.security.SignatureException;
-import java.security.cert.CertificateEncodingException;
+import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.security.interfaces.RSAPrivateKey;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -22,9 +20,20 @@ import eu.erasmuswithoutpaper.registry.internet.Internet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import org.bouncycastle.jce.X509Principal;
+import org.bouncycastle.asn1.x500.X500Name;
+import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
+import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
+import org.bouncycastle.cert.X509CertificateHolder;
+import org.bouncycastle.cert.X509v3CertificateBuilder;
+import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
+import org.bouncycastle.crypto.params.RSAKeyParameters;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.x509.X509V3CertificateGenerator;
+import org.bouncycastle.operator.ContentSigner;
+import org.bouncycastle.operator.DefaultDigestAlgorithmIdentifierFinder;
+import org.bouncycastle.operator.DefaultSignatureAlgorithmIdentifierFinder;
+import org.bouncycastle.operator.OperatorCreationException;
+import org.bouncycastle.operator.bc.BcContentSignerBuilder;
+import org.bouncycastle.operator.bc.BcRSAContentSignerBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -122,20 +131,29 @@ public class EchoTester {
   }
 
   X509Certificate generateCertificate(KeyPair keyPair) {
-    X509V3CertificateGenerator cert = new X509V3CertificateGenerator();
-    cert.setSerialNumber(BigInteger.valueOf(12345));
-    cert.setIssuerDN(new X509Principal("CN=EchoTester, OU=None, O=None L=None, C=None"));
-    cert.setNotBefore(new Date(System.currentTimeMillis() - 1000L * 60 * 60 * 24 * 30));
-    cert.setNotAfter(new Date(System.currentTimeMillis() + (1000L * 60 * 60 * 24 * 365 * 10)));
-    cert.setSubjectDN(
-        new X509Principal("CN=Dynamically Generated Certificate for testing Echo APIs, "
-            + "OU=None, O=None L=None, C=None"));
-    cert.setPublicKey(keyPair.getPublic());
-    cert.setSignatureAlgorithm("SHA256WithRSAEncryption");
     try {
-      return cert.generate(keyPair.getPrivate(), "BC");
-    } catch (CertificateEncodingException | InvalidKeyException | IllegalStateException
-        | NoSuchProviderException | NoSuchAlgorithmException | SignatureException e) {
+      X500Name issuer = new X500Name("CN=EchoTester, OU=None, O=None L=None, C=None");
+      BigInteger serial = BigInteger.valueOf(12345);
+      Date notBefore = new Date(System.currentTimeMillis() - 1000L * 60 * 60 * 24 * 30);
+      Date notAfter = new Date(System.currentTimeMillis() + (1000L * 60 * 60 * 24 * 365 * 10));
+      X500Name subject = new X500Name("CN=Dynamically Generated Certificate for testing Echo APIs, "
+          + "OU=None, O=None L=None, C=None");
+      SubjectPublicKeyInfo publicKeyInfo =
+          SubjectPublicKeyInfo.getInstance(keyPair.getPublic().getEncoded());
+      X509v3CertificateBuilder certBuilder =
+          new X509v3CertificateBuilder(issuer, serial, notBefore, notAfter, subject, publicKeyInfo);
+      AlgorithmIdentifier sigAlgId =
+          new DefaultSignatureAlgorithmIdentifierFinder().find("SHA256withRSA");
+      AlgorithmIdentifier digAlgId = new DefaultDigestAlgorithmIdentifierFinder().find(sigAlgId);
+      BcContentSignerBuilder sigGen = new BcRSAContentSignerBuilder(sigAlgId, digAlgId);
+      RSAPrivateKey rsaPrivateKey = (RSAPrivateKey) keyPair.getPrivate();
+      RSAKeyParameters keyParams = new RSAKeyParameters(true, rsaPrivateKey.getModulus(),
+          rsaPrivateKey.getPrivateExponent());
+      ContentSigner contentSigner = sigGen.build(keyParams);
+      X509CertificateHolder certificateHolder = certBuilder.build(contentSigner);
+      JcaX509CertificateConverter certConverter = new JcaX509CertificateConverter();
+      return certConverter.getCertificate(certificateHolder);
+    } catch (OperatorCreationException | CertificateException e) {
       throw new RuntimeException(e);
     }
   }
