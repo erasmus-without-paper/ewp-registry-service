@@ -11,10 +11,9 @@ import eu.erasmuswithoutpaper.registry.notifier.NotifierService;
 import eu.erasmuswithoutpaper.registry.repository.ManifestRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.TestRestTemplate;
+import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -25,7 +24,7 @@ import org.junit.Test;
  */
 public class ApiControllerIntegrationTest extends WRIntegrationTest {
 
-  private RestTemplate template;
+  private TestRestTemplate template;
 
   @Autowired
   private EwpDocBuilder docBuilder;
