@@ -1,0 +1,18 @@
+<manifest
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/tree/stable-v4"
+    xmlns:r="https://github.com/erasmus-without-paper/ewp-specs-api-registry/tree/stable-v1"
+>
+    <r:apis-implemented>
+        <discovery version="4.0.0" xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/blob/stable-v4/manifest-entry.xsd">
+            <url>https://example.com/manifest.xml</url>
+        </discovery>
+    </r:apis-implemented>
+    <client-credentials-in-use>
+        <rsa-public-key>
+            MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCTc7XY/HCcS97QXKG9h1FwnChY
+            hzLDbzeJ1XyB70HvylTvg9zbzfOSKxCNX+8Zjnpw4m+3cbHqo6RKTLtuWzdEbjOh
+            IjNLSEUuMEGUstb5IGURU30L/fNirmEzTlz0JF8MsNntcowR39GbQ2W6gy0+x/4j
+            b5pw2swE4vKAMT7GRQIDAQAB
+        </rsa-public-key>
+    </client-credentials-in-use>
+</manifest>

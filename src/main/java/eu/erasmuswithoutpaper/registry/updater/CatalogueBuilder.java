@@ -3,10 +3,15 @@ package eu.erasmuswithoutpaper.registry.updater;
 import static org.joox.JOOX.$;
 
 import java.io.ByteArrayInputStream;
+import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.security.interfaces.RSAPublicKey;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.X509EncodedKeySpec;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -164,15 +169,15 @@ class CatalogueBuilder {
         }
       }
 
-      // It there are any certificates...
+      // Create <client-credentials-in-use> in <host>.
+
+      Element credentials = this.newElem("client-credentials-in-use");
+      host.appendChild(credentials);
+
+      // If there are any client certificates...
 
       List<String> certStrs = manifest.xpath("mf:client-credentials-in-use/mf:certificate").texts();
       if (certStrs.size() > 0) {
-
-        // Create <client-credentials-in-use> in <host>.
-
-        Element credentials = this.newElem("client-credentials-in-use");
-        host.appendChild(credentials);
 
         // For each certificate, calculate its sha-256 fingerprint, create element, and append it.
 
@@ -188,6 +193,28 @@ class CatalogueBuilder {
           }
           credentials.appendChild(certNode);
         }
+      }
+
+      // If there are any client public keys...
+
+      List<String> keyStrs =
+          manifest.xpath("mf:client-credentials-in-use/mf:rsa-public-key").texts();
+      if (keyStrs.size() > 0) {
+
+        // For each key, calculate its sha-256 fingerprint, create element, and append it.
+
+        for (String keyStr : keyStrs) {
+          RSAPublicKey key = this.parseValidRsaPublicKey(keyStr);
+          Element keyNode = this.newElem("rsa-public-key");
+          keyNode.setAttribute("sha-256", DigestUtils.sha256Hex(key.getEncoded()));
+          credentials.appendChild(keyNode);
+        }
+      }
+
+      // If credentials are still empty, then remove their empty container.
+
+      if (credentials.getChildNodes().getLength() == 0) {
+        host.removeChild(credentials);
       }
     }
 
@@ -291,6 +318,21 @@ class CatalogueBuilder {
       return (X509Certificate) this.x509factory
           .generateCertificate(new ByteArrayInputStream(decoded));
     } catch (CertificateException e) {
+      // This method assumes that input is already checked and valid.
+      throw new RuntimeException(e);
+    }
+  }
+
+  private synchronized RSAPublicKey parseValidRsaPublicKey(String keyStr) {
+
+    keyStr = keyStr.replaceAll("\\s+", "");
+    byte[] decoded = Base64.getDecoder().decode(keyStr);
+
+    try {
+      return (RSAPublicKey) KeyFactory.getInstance("RSA")
+          .generatePublic(new X509EncodedKeySpec(decoded));
+    } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+      // This method assumes that input is already checked and valid.
       throw new RuntimeException(e);
     }
   }

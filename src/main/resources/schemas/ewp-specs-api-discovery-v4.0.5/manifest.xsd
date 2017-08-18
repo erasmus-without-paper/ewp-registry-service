@@ -138,6 +138,19 @@
                                     </xs:documentation>
                                 </xs:annotation>
                             </xs:element>
+                            <xs:element name="rsa-public-key" type="xs:base64Binary" minOccurs="0" maxOccurs="unbounded">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        Base64-encoded RSA public key used by the partner for HTTP Signature
+                                        Client Authentication, as described here:
+
+                                        https://github.com/erasmus-without-paper/ewp-specs-sec-cliauth-httpsig
+
+                                        If your private key is compromised, you MUST immediately remove all
+                                        public keys related to this key from your manifest.
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>

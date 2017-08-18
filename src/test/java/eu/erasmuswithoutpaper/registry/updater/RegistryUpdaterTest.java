@@ -119,6 +119,59 @@ public class RegistryUpdaterTest extends WRTest {
   }
 
   /**
+   * Test if the Registry is properly importing `rsa-public-key` elements, introduced in Discovery
+   * API v4.1.0.
+   */
+  @Test
+  public void testPublicClientKeys() {
+
+    /* Test if a valid keys are imported. */
+
+    this.assertManifestStatuses(null, null, null);
+    this.internet.putURL(url1, this.getFile("rsa-public-key-tests/manifest1.xml"));
+    ManifestSource ms1 = ManifestSource.newRegularSource(url1, Arrays.asList());
+    this.sourceProvider.addSource(ms1);
+    this.timePasses();
+    this.assertManifestStatuses("OK", null, null);
+    assertThat(this.lastCatalogue.xpath("/r:catalogue/r:host").size()).isEqualTo(1);
+    assertThat(this.lastCatalogue
+        .xpath("/r:catalogue/r:host/r:client-credentials-in-use/r:rsa-public-key").size())
+            .isEqualTo(1);
+    Match keyElem = $(this.lastCatalogue
+        .xpath("/r:catalogue/r:host/r:client-credentials-in-use/r:rsa-public-key").get(0));
+    assertThat(keyElem.attr("sha-256"))
+        .isEqualTo("5531f9a02c44a894d0b706961259fec740ad4ae8a3555871f1a5cd9801285bd4");
+
+    /* Make sure that too-short keys are NOT imported. */
+
+    this.internet.putURL(url1, this.getFile("rsa-public-key-tests/manifest2.xml"));
+    this.timePasses();
+    this.assertManifestStatuses("Error", null, null);
+    this.assertNoticesMatch(url1, "(?s).*minimum required length of client keys is 2048 bits.*");
+    assertThat(this.lastCatalogue
+        .xpath("/r:catalogue/r:host/r:client-credentials-in-use/r:rsa-public-key").size())
+            .isEqualTo(0);
+
+    /*
+     * Make sure that invalid keys (e.g. invalid encoding) don't break anything. This manifest
+     * contains two keys - one invalid and one valid. The valid one should still be imported.
+     */
+
+    this.internet.putURL(url1, this.getFile("rsa-public-key-tests/manifest3.xml"));
+    this.timePasses();
+    this.assertManifestStatuses("Error", null, null);
+    this.assertNoticesMatch(url1,
+        "(?s).*Invalid client public key \\(1st of 2\\).*premature EOF.*");
+    assertThat(this.lastCatalogue
+        .xpath("/r:catalogue/r:host/r:client-credentials-in-use/r:rsa-public-key").size())
+            .isEqualTo(1);
+    keyElem = $(this.lastCatalogue
+        .xpath("/r:catalogue/r:host/r:client-credentials-in-use/r:rsa-public-key").get(0));
+    assertThat(keyElem.attr("sha-256"))
+        .isEqualTo("5531f9a02c44a894d0b706961259fec740ad4ae8a3555871f1a5cd9801285bd4");
+  }
+
+  /**
    * Run a complex scenario, involving multiple source and manifest changes. Verify if our
    * {@link RegistryUpdater} and {@link NotifierService} handle everything as expected.
    */
