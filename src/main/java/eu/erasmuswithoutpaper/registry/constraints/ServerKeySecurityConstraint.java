@@ -3,23 +3,23 @@ package eu.erasmuswithoutpaper.registry.constraints;
 /**
  * This constraint prevents the Manifest from introducing insecure or invalid RSA keys.
  */
-public class ClientKeySecurityConstraint extends AbstractRsaKeySecurityConstraint {
+public class ServerKeySecurityConstraint extends AbstractRsaKeySecurityConstraint {
 
   /**
    * @param minKeyLength The minimum required bit length of the client public key. All keys weaker
    *        than this will be removed from the manifest.
    */
-  public ClientKeySecurityConstraint(int minKeyLength) {
+  public ServerKeySecurityConstraint(int minKeyLength) {
     super(minKeyLength);
   }
 
   @Override
   protected String getKeyName() {
-    return "client public key";
+    return "server public key";
   }
 
   @Override
   protected String getXPath() {
-    return "mf:client-credentials-in-use/mf:rsa-public-key";
+    return "mf:server-credentials-in-use/mf:rsa-public-key";
   }
 }

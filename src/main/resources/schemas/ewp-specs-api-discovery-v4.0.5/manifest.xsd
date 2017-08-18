@@ -154,6 +154,45 @@
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>
+                <xs:element name="server-credentials-in-use" minOccurs="0" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>
+                            The list of server credentials used by this host to authenticate its servers
+                            when communicating to other EWP hosts. Note, that only *some* methods of server
+                            authentication make use of these credentials.
+
+                            As opposed to client authentication, the keys used in server authentication are
+                            bound to specific endpoints (URLs), **not HEIs**. (Remember, that some services
+                            in EWP are not necessarily bound to any HEI, or are bound to multiple HEIs.)
+                            This means that - if you create multiple manifests - then each of your
+                            endpoints MAY use a different key for signing its responses. However, in most
+                            cases, you will want to use only a single key for all your APIs and endpoints.
+
+                            Be advised, that the Registry Service MAY ignore some (or all) of the
+                            credentials submitted here, for example if it finds they do not meet proper
+                            security standards. If, for some reason, your credentials are not being
+                            imported, and you're not sure why, please contact the Registry Service
+                            administrators.
+                        </xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="rsa-public-key" type="xs:base64Binary" minOccurs="0" maxOccurs="unbounded">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        Base64-encoded RSA public key used by the partner for HTTP Signature
+                                        Server Authentication, as described here:
+
+                                        https://github.com/erasmus-without-paper/ewp-specs-sec-cliauth-httpsig
+
+                                        If your private key is compromised, you MUST immediately remove all
+                                        public keys related to this key from your manifest.
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
             </xs:sequence>
         </xs:complexType>
     </xs:element>

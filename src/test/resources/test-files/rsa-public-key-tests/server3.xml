@@ -1,0 +1,26 @@
+<manifest
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/tree/stable-v4"
+    xmlns:r="https://github.com/erasmus-without-paper/ewp-specs-api-registry/tree/stable-v1"
+>
+    <r:apis-implemented>
+        <discovery version="4.0.0" xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/blob/stable-v4/manifest-entry.xsd">
+            <url>https://example.com/manifest.xml</url>
+        </discovery>
+    </r:apis-implemented>
+    <server-credentials-in-use>
+        <!-- This one contains an invalid key. -->
+        <rsa-public-key>
+            Tm90IHJlYWxseSBhIGtleS4=
+        </rsa-public-key>
+        <!-- This one is valid. -->
+        <rsa-public-key>
+            MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAkQojIPtX+BYGGC2f1zXr
+            U3ijq5oApW6YA+mSiB3p5pEQRUuvIHKbSKRXQaW/5hORYpWU1GzU2Wq99vykjX9b
+            8GQlM+0xbFP0cILIhjz23R0Q53mKcf2xAzQt2b3f56QOnjUaKbXsuB+ejTLAtQ4D
+            yKYSodCzUFkuUZUw+TK7G9ySMbcVHqrG8qDCw3/7CXkN0Wf9HpSnYP5fwd426fay
+            u6RXGeX5vUuX5BJkjsxoL8Smn7TB31LSFn3LbQLzG4UuxGaGgHWZCMSC35dX2d3z
+            4zcpZxgyN8LNWXCf4g95b20Ljsbnvk1dIUTJtRJJ29zbWXcgXgVl69UKQx8NxXIx
+            6wIDAQAB
+        </rsa-public-key>
+    </server-credentials-in-use>
+</manifest>

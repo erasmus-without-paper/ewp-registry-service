@@ -5,10 +5,11 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
+import eu.erasmuswithoutpaper.registry.constraints.ClientKeySecurityConstraint;
 import eu.erasmuswithoutpaper.registry.constraints.ForbidRegistryImplementations;
 import eu.erasmuswithoutpaper.registry.constraints.ManifestConstraint;
 import eu.erasmuswithoutpaper.registry.constraints.RemoveEmbeddedCatalogues;
-import eu.erasmuswithoutpaper.registry.constraints.ClientKeySecurityConstraint;
+import eu.erasmuswithoutpaper.registry.constraints.ServerKeySecurityConstraint;
 import eu.erasmuswithoutpaper.registry.constraints.TlsClientCertificateSecurityConstraint;
 import eu.erasmuswithoutpaper.registry.constraints.VerifyApiVersions;
 import eu.erasmuswithoutpaper.registry.constraints.VerifyDiscoveryApiEntry;
@@ -37,6 +38,7 @@ public class ManifestSource {
     List<ManifestConstraint> all = new ArrayList<>(extraConstraints.size() + 4);
     all.add(new TlsClientCertificateSecurityConstraint(1024));
     all.add(new ClientKeySecurityConstraint(2048));
+    all.add(new ServerKeySecurityConstraint(2048));
     all.add(new VerifyDiscoveryApiEntry(url));
     all.add(new ForbidRegistryImplementations());
     all.add(new VerifyApiVersions());

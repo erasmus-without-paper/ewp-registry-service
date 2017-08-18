@@ -171,8 +171,8 @@ class CatalogueBuilder {
 
       // Create <client-credentials-in-use> in <host>.
 
-      Element credentials = this.newElem("client-credentials-in-use");
-      host.appendChild(credentials);
+      Element cliCreds = this.newElem("client-credentials-in-use");
+      host.appendChild(cliCreds);
 
       // If there are any client certificates...
 
@@ -191,7 +191,7 @@ class CatalogueBuilder {
           } catch (DOMException e) {
             throw new RuntimeException(e);
           }
-          credentials.appendChild(certNode);
+          cliCreds.appendChild(certNode);
         }
       }
 
@@ -207,14 +207,40 @@ class CatalogueBuilder {
           RSAPublicKey key = this.parseValidRsaPublicKey(keyStr);
           Element keyNode = this.newElem("rsa-public-key");
           keyNode.setAttribute("sha-256", DigestUtils.sha256Hex(key.getEncoded()));
-          credentials.appendChild(keyNode);
+          cliCreds.appendChild(keyNode);
         }
       }
 
       // If credentials are still empty, then remove their empty container.
 
-      if (credentials.getChildNodes().getLength() == 0) {
-        host.removeChild(credentials);
+      if (cliCreds.getChildNodes().getLength() == 0) {
+        host.removeChild(cliCreds);
+      }
+
+      // Create <server-credentials-in-use> in <host>.
+
+      Element srvCreds = this.newElem("server-credentials-in-use");
+      host.appendChild(srvCreds);
+
+      // If there are any server public keys...
+
+      keyStrs = manifest.xpath("mf:server-credentials-in-use/mf:rsa-public-key").texts();
+      if (keyStrs.size() > 0) {
+
+        // For each key, calculate its sha-256 fingerprint, create element, and append it.
+
+        for (String keyStr : keyStrs) {
+          RSAPublicKey key = this.parseValidRsaPublicKey(keyStr);
+          Element keyNode = this.newElem("rsa-public-key");
+          keyNode.setAttribute("sha-256", DigestUtils.sha256Hex(key.getEncoded()));
+          srvCreds.appendChild(keyNode);
+        }
+      }
+
+      // If credentials are still empty, then remove their empty container.
+
+      if (srvCreds.getChildNodes().getLength() == 0) {
+        host.removeChild(srvCreds);
       }
     }
 
