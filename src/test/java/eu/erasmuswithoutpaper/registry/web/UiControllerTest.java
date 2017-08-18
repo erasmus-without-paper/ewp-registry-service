@@ -31,7 +31,7 @@ public class UiControllerTest extends WRTest {
   public void testXmlValidator() {
     StringBuilder sb = new StringBuilder();
     sb.append("<echo\n\nxmlns='");
-    sb.append(KnownNamespace.APIENTRY_ECHO_V1.getNamespaceUri());
+    sb.append(KnownNamespace.APIENTRY_ECHO_V2.getNamespaceUri());
     sb.append("' someOtherAttribute='value'>\n<url>http://example.com/</url>\n</echo>");
 
     ResponseEntity<String> result = this.uiController.validateXml(sb.toString());

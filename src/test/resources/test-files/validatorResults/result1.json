@@ -1,7 +1,7 @@
 {
   "isValid": false,
   "rootLocalName": "echo",
-  "rootNamespaceUri": "https://github.com/erasmus-without-paper/ewp-specs-api-echo/blob/stable-v1/manifest-entry.xsd",
+  "rootNamespaceUri": "https://github.com/erasmus-without-paper/ewp-specs-api-echo/blob/stable-v2/manifest-entry.xsd",
   "errors": [
     {
       "lineNumber": 4,
@@ -22,7 +22,7 @@
   ],
   "prettyLines": [
     "\u003cecho",
-    "    xmlns\u003d\"https://github.com/erasmus-without-paper/ewp-specs-api-echo/blob/stable-v1/manifest-entry.xsd\"",
+    "    xmlns\u003d\"https://github.com/erasmus-without-paper/ewp-specs-api-echo/blob/stable-v2/manifest-entry.xsd\"",
     "    someOtherAttribute\u003d\"value\"",
     "\u003e",
     "    \u003curl\u003ehttp://example.com/\u003c/url\u003e",

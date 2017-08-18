@@ -39,8 +39,8 @@ public class SpecIntegrityTest extends WRTest {
   /**
    * Test the XPath examples copied from the Registry API specs:
    *
-   * https://github.com/erasmus-without-paper/ewp-specs-api-registry/tree/v1.0.1#examples-of-
-   * catalogue-data-extraction
+   * https://github.com/erasmus-without-paper/ewp-specs-api-registry#examples-of-catalogue-data-
+   * extraction
    */
   @Test
   public void testRegistryXPathExamples() {
@@ -63,18 +63,46 @@ public class SpecIntegrityTest extends WRTest {
 
     String f1 = "1111111111111111111111111111111111111111111111111111111111111111";
     String f3 = "3333333333333333333333333333333333333333333333333333333333333333";
-    elems = this.root.xpath("//r:certificate[@sha-256=\"" + f1 + "\"]").get();
-    assertThat(elems).hasSize(1);
-    elems = this.root
-        .xpath("//r:certificate[@sha-256=\"" + f1 + "\"]/../../r:institutions-covered/r:hei-id")
+    elems = this.root.xpath("//r:client-credentials-in-use/r:certificate[@sha-256=\"" + f1 + "\"]")
         .get();
+    assertThat(elems).hasSize(1);
+    elems = this.root.xpath("//r:client-credentials-in-use/r:certificate[@sha-256=\"" + f1
+        + "\"]/../../r:institutions-covered/r:hei-id").get();
     assertThat(elems).hasSize(2);
     assertThat(elems.get(0).getTextContent()).isEqualTo("example1.com");
     assertThat(elems.get(1).getTextContent()).isEqualTo("example2.com");
-    elems = this.root
-        .xpath("//r:certificate[@sha-256=\"" + f3 + "\"]/../../r:institutions-covered/r:hei-id")
-        .get();
+    elems = this.root.xpath("//r:client-credentials-in-use/r:certificate[@sha-256=\"" + f3
+        + "\"]/../../r:institutions-covered/r:hei-id").get();
     assertThat(elems).hasSize(1);
     assertThat(elems.get(0).getTextContent()).isEqualTo("example2.com");
+
+    // Question 3: I have received a request signed with HTTP Signature with
+    // a public key `X`. Data of which HEIs is this client privileged to access?
+
+    elems = this.root.xpath("//r:client-credentials-in-use/r:rsa-public-key[@sha-256=\"" + f1
+        + "\"]/../../r:institutions-covered/r:hei-id").get();
+    assertThat(elems).hasSize(2);
+    assertThat(elems.get(0).getTextContent()).isEqualTo("example1.com");
+    assertThat(elems.get(1).getTextContent()).isEqualTo("example2.com");
+    elems = this.root.xpath("//r:client-credentials-in-use/r:rsa-public-key[@sha-256=\"" + f3
+        + "\"]/../../r:institutions-covered/r:hei-id").get();
+    assertThat(elems).hasSize(1);
+    assertThat(elems.get(0).getTextContent()).isEqualTo("example2.com");
+
+    // Question 4: I want to authenticate the server via HTTP signature. I have
+    // already found the API entry `X`, extracted the endpoint's URL `Y` from
+    // it, and have received the server's response which has been signed with
+    // public key `Z`. How can I verify if `Z` is the correct key with which
+    // `Y`'s responses should have been signed with?
+
+    elems = this.root.xpath("//e1:echo[@version=\"1.1.0\"]").get();
+    assertThat(elems).hasSize(1);
+    Match x = $(elems.get(0)).namespaces(KnownNamespace.prefixMap());
+    elems = x.xpath("./../../r:server-credentials-in-use/r:rsa-public-key[@sha-256=\"" + f1 + "\"]")
+        .get();
+    assertThat(elems).hasSize(1);
+    elems = x.xpath("./../../r:server-credentials-in-use/r:rsa-public-key[@sha-256=\"" + f3 + "\"]")
+        .get();
+    assertThat(elems).hasSize(0);
   }
 }

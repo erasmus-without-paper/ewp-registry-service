@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xml="http://www.w3.org/XML/1998/namespace"
+    xmlns:ewp="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
+    elementFormDefault="qualified"
+
+    targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-sec-cliauth-httpsig/tree/stable-v1"
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-sec-cliauth-httpsig/tree/stable-v1"
+>
+    <xs:import
+        schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-architecture/stable-v1/common-types.xsd"
+        namespace="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
+    />
+
+    <xs:annotation>
+        <xs:documentation>
+            This schema is a part of the Erasmus Without Paper project. Before you start
+            using it, make sure you have read the general rules described here:
+
+            http://developers.erasmuswithoutpaper.eu/
+        </xs:documentation>
+    </xs:annotation>
+
+    <xs:element name="httpsig">
+        <xs:annotation>
+            <xs:documentation>
+                This element uniquely identifies the HTTP Signature Client Authentication method, as
+                described here:
+
+                https://github.com/erasmus-without-paper/ewp-specs-sec-cliauth-httpsig
+
+                It can be used in various contexts, whenever someone needs to identify this
+                particular method of *client authentication*. In particular, it is often seen
+                together with `HttpSecurityOptions` data type described here:
+
+                https://github.com/erasmus-without-paper/ewp-specs-sec-intro/blob/stable-v2/schema.md
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <!-- Empty. -->
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>
