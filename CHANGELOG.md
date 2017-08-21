@@ -1,6 +1,29 @@
 Release notes
 =============
 
+1.3.0
+-----
+
+*Released on 2017-08-21*
+
+ * The Registry now rejects client certificates which use unsafe signature
+   methods (such as MD5 of SHA-1).
+
+ * The Registry now supports
+   [Version 2](https://github.com/erasmus-without-paper/ewp-specs-sec-intro/tree/stable-v2)
+   of the *Authentication and Security* document. In particular, it reads the
+   RSA keys from the manifest files, verifies them, and moves their
+   fingerprints to the catalogue response. Currently, keys are required to be
+   at least 2048 bits in length.
+
+Note, that this changelog describes only the changes relevant from the
+perspective of the Registry API client implementers, and users which view the
+public Registry Service site. Most changes made to the Registry Service touch
+the *unofficial* services - such as the document validator, or Echo API
+validator - but these changes are currently not mentioned in this changelog, to
+avoid clutter.
+
+
 1.2.1
 -----
 
