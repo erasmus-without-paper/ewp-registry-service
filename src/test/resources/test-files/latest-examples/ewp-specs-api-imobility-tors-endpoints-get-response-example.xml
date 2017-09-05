@@ -1,14 +1,14 @@
-<tors-response
-    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-tors/tree/stable-v1"
+<imobility-tors-get-response
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-imobility-tors/blob/stable-v1/endpoints/get-response.xsd"
     xmlns:xml="http://www.w3.org/XML/1998/namespace"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="
-        https://github.com/erasmus-without-paper/ewp-specs-api-tors/tree/stable-v1
-        response.xsd
+        https://github.com/erasmus-without-paper/ewp-specs-api-imobility-tors/blob/stable-v1/endpoints/get-response.xsd
+        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-imobility-tors/master/endpoints/get-response.xsd
     "
 >
     <tor>
-        <mobility-id>b1ab0888-a5ce-45e8-8c51-e3c6f677b58f</mobility-id>
+        <omobility-id>b1ab0888-a5ce-45e8-8c51-e3c6f677b58f</omobility-id>
         <elmo xmlns="https://github.com/emrex-eu/elmo-schemas/tree/v1">
             <generatedDate>2015-10-31T12:00:00+02:00</generatedDate>
             <learner>
@@ -93,4 +93,4 @@
             </Signature>
         </elmo>
     </tor>
-</tors-response>
+</imobility-tors-get-response>

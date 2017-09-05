@@ -8,8 +8,8 @@
     xmlns:ewp="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
     elementFormDefault="qualified"
 
-    targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/stable-v1/endpoints/get-response.xsd"
-    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/stable-v1/endpoints/get-response.xsd"
+    targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/blob/stable-v1/endpoints/get-response.xsd"
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/blob/stable-v1/endpoints/get-response.xsd"
 >
     <!-- WRTODO: Do not release until dependants are released: Courses API -->
 
@@ -42,7 +42,7 @@
         </xs:documentation>
     </xs:annotation>
 
-    <xs:element name="mobilities-get-response">
+    <xs:element name="omobilities-get-response">
         <xs:annotation>
             <xs:documentation>
                 This describes the format of the response returned by the EWP Outgoing
@@ -54,8 +54,8 @@
                 <xs:group ref="SequenceOfMobilities" minOccurs="1" maxOccurs="1">
                     <xs:annotation>
                         <xs:documentation>
-                            Clients should use the `mobility-id` subelements to match objects with their
-                            `mobility_id` request parameters.
+                            Clients should use the `omobility-id` subelements to match objects with their
+                            `omobility_id` request parameters.
                         </xs:documentation>
                     </xs:annotation>
                 </xs:group>
@@ -113,13 +113,13 @@
                     Every mobility has its unique sending-hei, receiving-hei and nominee, which
                     MUST NOT change after the mobility is created. For example, if it turns out
                     that a different student will be nominated for this mobility, then a new
-                    mobility-id MUST be created for such nomination. However, the properties of
+                    omobility-id MUST be created for such nomination. However, the properties of
                     these mobility-related entities still MAY change. E.g. the student's name may
                     get updated.
                 </xs:documentation>
             </xs:annotation>
             <xs:sequence>
-                <xs:element name="mobility-id" type="ewp:AsciiPrintableIdentifier" minOccurs="1" maxOccurs="1">
+                <xs:element name="omobility-id" type="ewp:AsciiPrintableIdentifier" minOccurs="1" maxOccurs="1">
                     <xs:annotation>
                         <xs:documentation>
                             Identifier of the mobility (as assigned by the sending HEI). Immutable.
@@ -560,7 +560,7 @@
                                             would look like if all changes from "Table A2" were applied to it. It often
                                             *resambles* "Table C", but it's NOT its equivalent (EWP ToRs API serves an
                                             equivalent of "Table C"). You can discuss it here:
-                                            https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/issues/17
+                                            https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/issues/17
                                         </xs:documentation>
                                     </xs:annotation>
                                 </xs:element>
@@ -608,7 +608,7 @@
 
                             Note, that very few servers are planning to provide this feature at the initial
                             stages of EWP adoption:
-                            https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/issues/11
+                            https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/issues/11
                         </xs:documentation>
                     </xs:annotation>
                     <xs:complexType>
@@ -699,7 +699,7 @@
                             don't they are *not used* to identify entities in EWP network.
 
                             Related links:
-                            https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/issues/9
+                            https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/issues/9
                             https://en.wikipedia.org/wiki/Surrogate_key
                             https://en.wikipedia.org/wiki/Natural_key
                         </xs:documentation>
@@ -1048,7 +1048,7 @@
                         draft approval to proceed. This element allows these HEIs suggest the order of
                         approvals they prefer. Some HEIs might even *reject* approvals unless a proper
                         `should-now-be-approved-by` is in place. Please discuss here:
-                        https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/issues/16
+                        https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/issues/16
 
                         The presence of this element MAY trigger some special behavior in the client
                         UIs. For example, the mobilities waiting for user's approval can be highlighted
@@ -1222,7 +1222,7 @@
                                                 snapshots (even those snapshots which have been approved a long time ago).
 
                                                 You can discuss this code here:
-                                                https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/issues/15#issuecomment-283988998
+                                                https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/issues/15#issuecomment-283988998
                                             </xs:documentation>
                                         </xs:annotation>
                                     </xs:enumeration>

@@ -1,16 +1,16 @@
-<mobilities-get-response
-    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/stable-v1/endpoints/get-response.xsd"
+<omobilities-get-response
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/blob/stable-v1/endpoints/get-response.xsd"
     xmlns:a="https://github.com/erasmus-without-paper/ewp-specs-types-address/tree/stable-v1"
     xmlns:p="https://github.com/erasmus-without-paper/ewp-specs-types-phonenumber/tree/stable-v1"
     xmlns:xml="http://www.w3.org/XML/1998/namespace"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="
-        https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/stable-v1/endpoints/get-response.xsd
-        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-mobilities/master/endpoints/get-response.xsd
+        https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/blob/stable-v1/endpoints/get-response.xsd
+        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-omobilities/master/endpoints/get-response.xsd
     "
 >
     <student-mobility-for-studies>
-        <mobility-id>c442c289-5541-4cae-9edb-8ad83e133613</mobility-id>
+        <omobility-id>c442c289-5541-4cae-9edb-8ad83e133613</omobility-id>
         <sending-hei>
             <hei-id>uio.no</hei-id>
             <ounit-id>140</ounit-id>
@@ -255,4 +255,4 @@
             </latest-draft-snapshot>
         </components-recognized>
     </student-mobility-for-studies>
-</mobilities-get-response>
+</omobilities-get-response>

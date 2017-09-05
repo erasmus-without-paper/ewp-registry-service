@@ -5,8 +5,8 @@
     xmlns:ewp="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
     elementFormDefault="qualified"
 
-    targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/stable-v1/endpoints/update-response.xsd"
-    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/stable-v1/endpoints/update-response.xsd"
+    targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/blob/stable-v1/endpoints/update-response.xsd"
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/blob/stable-v1/endpoints/update-response.xsd"
 >
     <xs:import
         schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-architecture/stable-v1/common-types.xsd"
@@ -22,7 +22,7 @@
         </xs:documentation>
     </xs:annotation>
 
-    <xs:element name="mobilities-update-response">
+    <xs:element name="omobilities-update-response">
         <xs:annotation>
             <xs:documentation>
                 This describes the format of the response returned by the `update` endpoint of

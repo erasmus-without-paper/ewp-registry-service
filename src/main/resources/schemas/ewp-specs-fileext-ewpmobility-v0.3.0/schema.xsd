@@ -2,17 +2,18 @@
 <xs:schema
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
     xmlns:xml="http://www.w3.org/XML/1998/namespace"
-    xmlns:mobility="https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/stable-v1/endpoints/get-response.xsd"
+    xmlns:mobility="https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/blob/stable-v1/endpoints/get-response.xsd"
     elementFormDefault="qualified"
 
     targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-fileext-ewpmobility/tree/stable-v1"
     xmlns="https://github.com/erasmus-without-paper/ewp-specs-fileext-ewpmobility/tree/stable-v1"
 >
     <!-- WRTODO: Do not release until dependants are released: Outgoing Mobilities API -->
+    <!-- WRTODO: Once released, fix all schemaLocations pointing to its master branch. -->
 
     <xs:import
-        schemaLocation="../ewp-specs-api-mobilities/endpoints/get-response.xsd"
-        namespace="https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/stable-v1/endpoints/get-response.xsd"
+        schemaLocation="../ewp-specs-api-omobilities/endpoints/get-response.xsd"
+        namespace="https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/blob/stable-v1/endpoints/get-response.xsd"
     />
 
     <xs:annotation>

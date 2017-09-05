@@ -6,8 +6,8 @@
     xmlns:sec="https://github.com/erasmus-without-paper/ewp-specs-sec-intro/tree/stable-v2"
     elementFormDefault="qualified"
 
-    targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-api-mobility-cnr/blob/stable-v1/manifest-entry.xsd"
-    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-mobility-cnr/blob/stable-v1/manifest-entry.xsd"
+    targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-api-omobility-cnr/blob/stable-v1/manifest-entry.xsd"
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-omobility-cnr/blob/stable-v1/manifest-entry.xsd"
 >
     <!-- WRTODO: Once released, fix all schemaLocations pointing to its master branch. -->
 
@@ -30,13 +30,13 @@
         </xs:documentation>
     </xs:annotation>
 
-    <xs:element name="mobility-cnr">
+    <xs:element name="omobility-cnr">
         <xs:annotation>
             <xs:documentation>
                 If this element is present in EWP Host's manifest file, then the host states
                 that it implements the Outgoing Mobility CNR API described here:
 
-                https://github.com/erasmus-without-paper/ewp-specs-api-mobility-cnr
+                https://github.com/erasmus-without-paper/ewp-specs-api-omobility-cnr
             </xs:documentation>
         </xs:annotation>
         <xs:complexType>
@@ -62,10 +62,10 @@
                                 </xs:documentation>
                             </xs:annotation>
                         </xs:element>
-                        <xs:element name="max-mobility-ids" type="xs:positiveInteger" minOccurs="1" maxOccurs="1">
+                        <xs:element name="max-omobility-ids" type="xs:positiveInteger" minOccurs="1" maxOccurs="1">
                             <xs:annotation>
                                 <xs:documentation>
-                                    The maximum number of `mobility_id` parameters the server is willing to accept
+                                    The maximum number of `omobility_id` parameters the server is willing to accept
                                     in one request.
                                 </xs:documentation>
                             </xs:annotation>

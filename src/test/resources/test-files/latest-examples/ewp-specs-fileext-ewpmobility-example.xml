@@ -1,5 +1,5 @@
 <root:ewp-mobility-file
-    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/stable-v1/endpoints/get-response.xsd"
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/blob/stable-v1/endpoints/get-response.xsd"
     xmlns:root="https://github.com/erasmus-without-paper/ewp-specs-fileext-ewpmobility/tree/stable-v1"
     xmlns:a="https://github.com/erasmus-without-paper/ewp-specs-types-address/tree/stable-v1"
     xmlns:xml="http://www.w3.org/XML/1998/namespace"
@@ -14,7 +14,7 @@
         This is a very simplified mobility. For a better example, see Outgoing
         Mobilities API.
         -->
-        <mobility-id>c442c289-5541-4cae-9edb-8ad83e133613</mobility-id>
+        <omobility-id>c442c289-5541-4cae-9edb-8ad83e133613</omobility-id>
         <sending-hei>
             <hei-id>uio.no</hei-id>
         </sending-hei>

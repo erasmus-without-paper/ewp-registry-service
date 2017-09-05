@@ -3,11 +3,11 @@
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
     xmlns:xml="http://www.w3.org/XML/1998/namespace"
     xmlns:ewp="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
-    xmlns:mobility="https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/stable-v1/endpoints/get-response.xsd"
+    xmlns:omobility="https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/blob/stable-v1/endpoints/get-response.xsd"
     elementFormDefault="qualified"
 
-    targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/stable-v1/endpoints/update-request.xsd"
-    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/stable-v1/endpoints/update-request.xsd"
+    targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/blob/stable-v1/endpoints/update-request.xsd"
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/blob/stable-v1/endpoints/update-request.xsd"
 >
     <xs:import
         schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-architecture/stable-v1/common-types.xsd"
@@ -15,8 +15,8 @@
     />
 
     <xs:import
-        schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-mobilities/master/endpoints/get-response.xsd"
-        namespace="https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/stable-v1/endpoints/get-response.xsd"
+        schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-omobilities/master/endpoints/get-response.xsd"
+        namespace="https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/blob/stable-v1/endpoints/get-response.xsd"
     />
 
     <xs:annotation>
@@ -28,7 +28,7 @@
         </xs:documentation>
     </xs:annotation>
 
-    <xs:element name="mobilities-update-request">
+    <xs:element name="omobilities-update-request">
         <xs:annotation>
             <xs:documentation>
                 This describes the format of the REQUEST to be submitted to the `update`
@@ -78,7 +78,7 @@
         </xs:annotation>
         <xs:complexType>
             <xs:sequence>
-                <xs:element name="mobility-id" type="ewp:AsciiPrintableIdentifier" minOccurs="1" maxOccurs="1">
+                <xs:element name="omobility-id" type="ewp:AsciiPrintableIdentifier" minOccurs="1" maxOccurs="1">
                     <xs:annotation>
                         <xs:documentation>
                             ID of the mobility which this update request is about.
@@ -88,7 +88,7 @@
                         </xs:documentation>
                     </xs:annotation>
                 </xs:element>
-                <xs:element name="approving-party" minOccurs="1" maxOccurs="1" type="mobility:ApprovingParty">
+                <xs:element name="approving-party" minOccurs="1" maxOccurs="1" type="omobility:ApprovingParty">
                     <xs:annotation>
                         <xs:documentation>
                             The party which is approving. In almost all cases, this will be
@@ -105,7 +105,7 @@
                         </xs:documentation>
                     </xs:annotation>
                 </xs:element>
-                <xs:element name="current-latest-draft-snapshot" minOccurs="1" maxOccurs="1" type="mobility:SnapshotOf_ComponentsStudied">
+                <xs:element name="current-latest-draft-snapshot" minOccurs="1" maxOccurs="1" type="omobility:SnapshotOf_ComponentsStudied">
                     <xs:annotation>
                         <xs:documentation>
                             The current state of the `latest-draft-snapshot`, which is also the state which
@@ -139,7 +139,7 @@
         </xs:annotation>
         <xs:complexType>
             <xs:sequence>
-                <xs:element name="mobility-id" type="ewp:AsciiPrintableIdentifier" minOccurs="1" maxOccurs="1">
+                <xs:element name="omobility-id" type="ewp:AsciiPrintableIdentifier" minOccurs="1" maxOccurs="1">
                     <xs:annotation>
                         <xs:documentation>
                             ID of the mobility which this update request is about.
@@ -181,7 +181,7 @@
         </xs:annotation>
         <xs:complexType>
             <xs:sequence>
-                <xs:element name="mobility-id" type="ewp:AsciiPrintableIdentifier" minOccurs="1" maxOccurs="1">
+                <xs:element name="omobility-id" type="ewp:AsciiPrintableIdentifier" minOccurs="1" maxOccurs="1">
                     <xs:annotation>
                         <xs:documentation>
                             ID of the mobility which this update request is about.
@@ -191,7 +191,7 @@
                         </xs:documentation>
                     </xs:annotation>
                 </xs:element>
-                <xs:element name="current-latest-draft-snapshot" minOccurs="1" maxOccurs="1" type="mobility:SnapshotOf_ComponentsStudied">
+                <xs:element name="current-latest-draft-snapshot" minOccurs="1" maxOccurs="1" type="omobility:SnapshotOf_ComponentsStudied">
                     <xs:annotation>
                         <xs:documentation>
                             The current state of the `latest-draft-snapshot`, which is the *base for the
@@ -219,7 +219,7 @@
                         </xs:documentation>
                     </xs:annotation>
                 </xs:element>
-                <xs:element name="suggested-changes" minOccurs="1" maxOccurs="1" type="mobility:ListOfChangesTo_ComponentsStudied">
+                <xs:element name="suggested-changes" minOccurs="1" maxOccurs="1" type="omobility:ListOfChangesTo_ComponentsStudied">
                     <xs:annotation>
                         <xs:documentation>
                             The list of suggested changes. Changes are formatted in the same format as in
@@ -227,7 +227,7 @@
                         </xs:documentation>
                     </xs:annotation>
                 </xs:element>
-                <xs:element name="snapshot-with-changes-applied" minOccurs="1" maxOccurs="1" type="mobility:SnapshotOf_ComponentsStudied">
+                <xs:element name="snapshot-with-changes-applied" minOccurs="1" maxOccurs="1" type="omobility:SnapshotOf_ComponentsStudied">
                     <xs:annotation>
                         <xs:documentation>
                             This is the "target" snapshot which the requester is aiming for.
@@ -278,7 +278,7 @@
                     </xs:annotation>
                     <xs:complexType>
                         <xs:sequence>
-                            <xs:element name="mobility-id" type="ewp:AsciiPrintableIdentifier" minOccurs="1" maxOccurs="1">
+                            <xs:element name="omobility-id" type="ewp:AsciiPrintableIdentifier" minOccurs="1" maxOccurs="1">
                                 <xs:annotation>
                                     <xs:documentation>
                                         ID of the mobility being updated.
@@ -288,7 +288,7 @@
                                     </xs:documentation>
                                 </xs:annotation>
                             </xs:element>
-                            <xs:element name="new-status" type="mobility:MobilityStatus" minOccurs="1" maxOccurs="1">
+                            <xs:element name="new-status" type="omobility:MobilityStatus" minOccurs="1" maxOccurs="1">
                                 <xs:annotation>
                                     <xs:documentation>
                                         Suggested new status for this mobility.

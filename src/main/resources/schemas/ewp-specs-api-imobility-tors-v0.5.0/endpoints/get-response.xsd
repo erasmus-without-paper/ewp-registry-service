@@ -6,8 +6,8 @@
     xmlns:ewp="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
     elementFormDefault="qualified"
 
-    targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-api-tors/tree/stable-v1"
-    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-tors/tree/stable-v1"
+    targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-api-imobility-tors/blob/stable-v1/endpoints/get-response.xsd"
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-imobility-tors/blob/stable-v1/endpoints/get-response.xsd"
 >
     <xs:import
         schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-architecture/stable-v1/common-types.xsd"
@@ -28,11 +28,11 @@
         </xs:documentation>
     </xs:annotation>
 
-    <xs:element name="tors-response">
+    <xs:element name="imobility-tors-get-response">
         <xs:annotation>
             <xs:documentation>
-                This describes the format of the response returned by the EWP Transcripts
-                of Records API.
+                This describes the format of the response returned by the EWP Incoming
+                Mobility Transcripts of Records API.
             </xs:documentation>
         </xs:annotation>
         <xs:complexType>
@@ -41,16 +41,16 @@
                     <xs:annotation>
                         <xs:documentation>
                             Response consists of a list of matching ToR wrappers. Clients should use the
-                            `mobility_id` attribute to match objects with their `mobility_id` request
+                            `omobility_id` attribute to match objects with their `omobility_id` request
                             parameters.
                         </xs:documentation>
                     </xs:annotation>
                     <xs:complexType>
                         <xs:sequence>
-                            <xs:element name="mobility-id" type="ewp:AsciiPrintableIdentifier" minOccurs="1" maxOccurs="1">
+                            <xs:element name="omobility-id" type="ewp:AsciiPrintableIdentifier" minOccurs="1" maxOccurs="1">
                                 <xs:annotation>
                                     <xs:documentation>
-                                        The value of the `mobility_id` parameter for which this Transcript of Records
+                                        The value of the `omobility_id` parameter for which this Transcript of Records
                                         has been matched.
                                     </xs:documentation>
                                 </xs:annotation>

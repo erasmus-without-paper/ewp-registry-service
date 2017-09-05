@@ -1,15 +1,15 @@
-<req:mobilities-update-request
-    xmlns:req="https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/stable-v1/endpoints/update-request.xsd"
-    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/stable-v1/endpoints/get-response.xsd"
+<req:omobilities-update-request
+    xmlns:req="https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/blob/stable-v1/endpoints/update-request.xsd"
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/blob/stable-v1/endpoints/get-response.xsd"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="
-        https://github.com/erasmus-without-paper/ewp-specs-api-mobilities/blob/stable-v1/endpoints/update-request.xsd
-        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-mobilities/master/endpoints/update-request.xsd
+        https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/blob/stable-v1/endpoints/update-request.xsd
+        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-omobilities/master/endpoints/update-request.xsd
     "
 >
     <req:sending-hei-id>uw.edu.pl</req:sending-hei-id>
     <req:update-components-studied-v1>
-        <req:mobility-id>c442c289-5541-4cae-9edb-8ad83e133613</req:mobility-id>
+        <req:omobility-id>c442c289-5541-4cae-9edb-8ad83e133613</req:omobility-id>
         <req:current-latest-draft-snapshot>
             <component-studied>
                 <title>Introductory calculus</title>
@@ -81,4 +81,4 @@
                 </component-studied>
         </req:snapshot-with-changes-applied>
     </req:update-components-studied-v1>
-</req:mobilities-update-request>
+</req:omobilities-update-request>
