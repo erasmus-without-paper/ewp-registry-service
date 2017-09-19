@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xml="http://www.w3.org/XML/1998/namespace"
+    xmlns:ewp="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
+    elementFormDefault="qualified"
+
+    targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-api-imobilities/blob/stable-v1/endpoints/get-response.xsd"
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-imobilities/blob/stable-v1/endpoints/get-response.xsd"
+>
+    <!-- WRTODO: Do not release until dependants are released: Outgoing Mobility API -->
+
+    <xs:import
+        schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-architecture/stable-v1/common-types.xsd"
+        namespace="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
+    />
+
+    <xs:annotation>
+        <xs:documentation>
+            This schema is a part of the Erasmus Without Paper project. Before you start
+            using it, make sure you have read the general rules described here:
+
+            http://developers.erasmuswithoutpaper.eu/
+        </xs:documentation>
+    </xs:annotation>
+
+    <xs:element name="imobilities-get-response">
+        <xs:annotation>
+            <xs:documentation>
+                This describes the format of the response returned by the EWP Incoming
+                Mobilities API.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:group ref="SequenceOfIncomingMobilities" minOccurs="1" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>
+                            Clients should use the `omobility-id` subelements to match objects with their
+                            `omobility_id` request parameters.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:group>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:group name="SequenceOfIncomingMobilities">
+        <xs:annotation>
+            <xs:documentation>
+                This is global, because it is used in external XSDs. It MUST stay this way, for
+                backward compatibility.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:group ref="SingleIncomingMobilityObject" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>
+                        A list of matching mobilities.
+
+                        Currently there's only type of mobility exposed by this API. More types MAY
+                        come in the future.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:group>
+        </xs:sequence>
+    </xs:group>
+
+    <xs:group name="SingleIncomingMobilityObject">
+        <xs:annotation>
+            <xs:documentation>
+                Represents a single mobility of any type.
+
+                This is global, because it is used in external XSDs. It MUST stay this way, for
+                backward compatibility.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:choice>
+            <xs:element ref="student-mobility-for-studies"/>
+        </xs:choice>
+    </xs:group>
+
+    <xs:element name="student-mobility-for-studies">
+        <xs:complexType>
+            <xs:annotation>
+                <xs:documentation>
+                    This describes the "incoming part" of a single Student Mobility for Studies.
+                    "Incoming part" is the set of mobility's properties which the *receiving* HEI
+                    is the master of.
+
+                    In the future, it may become a "subclass" of a more generic Mobility parent class
+                    (and some of the fields might be moved to the parent).
+                </xs:documentation>
+            </xs:annotation>
+            <xs:sequence>
+                <xs:element name="omobility-id" type="ewp:AsciiPrintableIdentifier" minOccurs="1" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>
+                            Identifier of the mobility (as assigned by the sending HEI).
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="actual-arrival-date" type="xs:date" minOccurs="0" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>
+                            Actual start date of the mobility. "Actual" means "when the student has
+                            actually arrived". This stands in contrast with the "planned" date, as provided
+                            by the sending HEI in Outgoing Mobilities API.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="actual-departure-date" type="xs:date" minOccurs="0" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>
+                            Actual end date of the mobility. "Actual" means "when the student has actually
+                            left". This stands in contrast with the "planned" date, as provided by the
+                            sending HEI in Outgoing Mobilities API.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>

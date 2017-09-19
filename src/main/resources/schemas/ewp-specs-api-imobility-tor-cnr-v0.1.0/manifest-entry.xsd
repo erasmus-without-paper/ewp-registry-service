@@ -6,8 +6,8 @@
     xmlns:sec="https://github.com/erasmus-without-paper/ewp-specs-sec-intro/tree/stable-v2"
     elementFormDefault="qualified"
 
-    targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-api-imobility-tors/blob/stable-v1/manifest-entry.xsd"
-    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-imobility-tors/blob/stable-v1/manifest-entry.xsd"
+    targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-api-imobility-tor-cnr/blob/stable-v1/manifest-entry.xsd"
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-imobility-tor-cnr/blob/stable-v1/manifest-entry.xsd"
 >
     <!-- WRTODO: Once released, fix all schemaLocations pointing to its master branch. -->
 
@@ -30,13 +30,13 @@
         </xs:documentation>
     </xs:annotation>
 
-    <xs:element name="imobility-tors">
+    <xs:element name="imobility-tor-cnr">
         <xs:annotation>
             <xs:documentation>
                 If this element is present in EWP Host's manifest file, then the host states
-                that it implements the Transcripts of Records API described here:
+                that it implements the Incoming Mobility ToRs CNR API described here:
 
-                https://github.com/erasmus-without-paper/ewp-specs-api-imobility-tors
+                https://github.com/erasmus-without-paper/ewp-specs-api-imobility-tor-cnr
             </xs:documentation>
         </xs:annotation>
         <xs:complexType>
@@ -55,10 +55,10 @@
                                 </xs:documentation>
                             </xs:annotation>
                         </xs:element>
-                        <xs:element name="get-url" type="ewp:HTTPS" minOccurs="1" maxOccurs="1">
+                        <xs:element name="url" type="ewp:HTTPS" minOccurs="1" maxOccurs="1">
                             <xs:annotation>
                                 <xs:documentation>
-                                    An URL at which the `get` endpoint is being served.
+                                    An URL at which the the host will be listening.
                                 </xs:documentation>
                             </xs:annotation>
                         </xs:element>

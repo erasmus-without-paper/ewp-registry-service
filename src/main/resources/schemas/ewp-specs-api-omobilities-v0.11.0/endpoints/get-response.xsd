@@ -409,24 +409,6 @@
                         </xs:documentation>
                     </xs:annotation>
                 </xs:element>
-                <xs:element name="actual-arrival-date" type="xs:date" minOccurs="0" maxOccurs="1">
-                    <xs:annotation>
-                        <xs:documentation>
-                            Actual start date of the mobility (when the student has actually arrived).
-                            This date is provided by the receiving HEI (either by direct contact between
-                            coordinators, or via the `update` endpoint).
-                        </xs:documentation>
-                    </xs:annotation>
-                </xs:element>
-                <xs:element name="actual-departure-date" type="xs:date" minOccurs="0" maxOccurs="1">
-                    <xs:annotation>
-                        <xs:documentation>
-                            Actual end date of the mobility (when the student has actually left).
-                            This date is provided by the receiving HEI (either by direct contact between
-                            coordinators, or via the `update` endpoint).
-                        </xs:documentation>
-                    </xs:annotation>
-                </xs:element>
                 <xs:element name="eqf-level-studied-at-nomination" type="ewp:EqfLevel" minOccurs="0" maxOccurs="1">
                     <xs:annotation>
                         <xs:documentation>

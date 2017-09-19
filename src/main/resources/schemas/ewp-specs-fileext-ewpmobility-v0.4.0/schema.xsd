@@ -2,18 +2,24 @@
 <xs:schema
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
     xmlns:xml="http://www.w3.org/XML/1998/namespace"
-    xmlns:mobility="https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/blob/stable-v1/endpoints/get-response.xsd"
+    xmlns:omobility="https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/blob/stable-v1/endpoints/get-response.xsd"
+    xmlns:imobility="https://github.com/erasmus-without-paper/ewp-specs-api-imobilities/blob/stable-v1/endpoints/get-response.xsd"
     elementFormDefault="qualified"
 
     targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-fileext-ewpmobility/tree/stable-v1"
     xmlns="https://github.com/erasmus-without-paper/ewp-specs-fileext-ewpmobility/tree/stable-v1"
 >
-    <!-- WRTODO: Do not release until dependants are released: Outgoing Mobilities API -->
+    <!-- WRTODO: Do not release until dependants are released: Outgoing Mobilities API, Incoming Mobilities API. -->
     <!-- WRTODO: Once released, fix all schemaLocations pointing to its master branch. -->
 
     <xs:import
         schemaLocation="../ewp-specs-api-omobilities/endpoints/get-response.xsd"
         namespace="https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/blob/stable-v1/endpoints/get-response.xsd"
+    />
+
+    <xs:import
+        schemaLocation="../ewp-specs-api-imobilities/endpoints/get-response.xsd"
+        namespace="https://github.com/erasmus-without-paper/ewp-specs-api-imobilities/blob/stable-v1/endpoints/get-response.xsd"
     />
 
     <xs:annotation>
@@ -33,14 +39,16 @@
         </xs:annotation>
         <xs:complexType>
             <xs:sequence>
-                <xs:group ref="mobility:SequenceOfMobilities" minOccurs="1" maxOccurs="1">
+                <xs:choice minOccurs="0" maxOccurs="unbounded">
                     <xs:annotation>
                         <xs:documentation>
-                            The file consists of a list of Outgoing Mobility objects (these objects are
-                            described in a separate XML Schema).
+                            The file consists of a sequence of Outgoing Mobility and/or Incoming Mobility
+                            objects (these objects are described in a separate XML Schemas).
                         </xs:documentation>
                     </xs:annotation>
-                </xs:group>
+                    <xs:group ref="omobility:SingleMobilityObject"/>
+                    <xs:group ref="imobility:SingleIncomingMobilityObject"/>
+                </xs:choice>
             </xs:sequence>
         </xs:complexType>
     </xs:element>

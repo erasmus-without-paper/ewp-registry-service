@@ -56,7 +56,6 @@
                         </xs:documentation>
                     </xs:annotation>
                     <xs:element ref="approve-components-studied-draft-v1"/>
-                    <xs:element ref="update-arrival-departure-dates-v1"/>
                     <xs:element ref="update-components-studied-v1"/>
                     <xs:element ref="update-statuses-v1"/>
                     <!--
@@ -114,52 +113,6 @@
 
                             This element is required here to prevent edit conflicts. The server MUST
                             verify it, in similar way as it's described in `update-components-studied-v1`.
-                        </xs:documentation>
-                    </xs:annotation>
-                </xs:element>
-            </xs:sequence>
-        </xs:complexType>
-    </xs:element>
-
-    <xs:element name="update-arrival-departure-dates-v1">
-        <xs:annotation>
-            <xs:documentation>
-                This request is sent by the receiving HEI when it wants to add or update the
-                `actual-arrival-date` and/or `actual-departure-date` values on the mobility
-                object. The sending HEI *expects* the receiving HEI to provide these values at
-                some point.
-
-                If none of the replace-* elements are provided in the request, then the server
-                SHOULD respond with HTTP 400. If the dates are in an incorrect format, the
-                server MUST respond with HTTP 400.
-
-                If the dates have been saved (either directly, or for review), the server MUST
-                return HTTP 200.
-            </xs:documentation>
-        </xs:annotation>
-        <xs:complexType>
-            <xs:sequence>
-                <xs:element name="omobility-id" type="ewp:AsciiPrintableIdentifier" minOccurs="1" maxOccurs="1">
-                    <xs:annotation>
-                        <xs:documentation>
-                            ID of the mobility which this update request is about.
-
-                            The sending partner of this mobility MUST match the partner provided in
-                            `sending-hei-id`.
-                        </xs:documentation>
-                    </xs:annotation>
-                </xs:element>
-                <xs:element name="replace-actual-arrival-date" minOccurs="0" maxOccurs="1" type="xs:date">
-                    <xs:annotation>
-                        <xs:documentation>
-                            The new value for `actual-arrival-date`.
-                        </xs:documentation>
-                    </xs:annotation>
-                </xs:element>
-                <xs:element name="replace-actual-departure-date" minOccurs="0" maxOccurs="1" type="xs:date">
-                    <xs:annotation>
-                        <xs:documentation>
-                            The new value for `actual-departure-date`.
                         </xs:documentation>
                     </xs:annotation>
                 </xs:element>

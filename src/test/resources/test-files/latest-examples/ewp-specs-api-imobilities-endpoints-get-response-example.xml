@@ -1,0 +1,15 @@
+<imobilities-get-response
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-imobilities/blob/stable-v1/endpoints/get-response.xsd"
+    xmlns:xml="http://www.w3.org/XML/1998/namespace"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        https://github.com/erasmus-without-paper/ewp-specs-api-imobilities/blob/stable-v1/endpoints/get-response.xsd
+        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-imobilities/master/endpoints/get-response.xsd
+    "
+>
+    <student-mobility-for-studies>
+        <omobility-id>c442c289-5541-4cae-9edb-8ad83e133613</omobility-id>
+        <actual-arrival-date>2010-02-05</actual-arrival-date>
+        <actual-departure-date>2010-06-19</actual-departure-date>
+    </student-mobility-for-studies>
+</imobilities-get-response>
