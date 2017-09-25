@@ -145,6 +145,20 @@
         </xs:restriction>
     </xs:simpleType>
 
+    <xs:simpleType name="Sha256Hex">
+        <xs:annotation>
+            <xs:documentation>
+                HEX-encoded SHA-256 fingerprint value.
+
+                These fingerprints are used in various places in EWP (and the Registry API in
+                particular).
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[0-9a-f]{64}"/>
+        </xs:restriction>
+    </xs:simpleType>
+
     <xs:complexType name="Empty">
         <xs:annotation>
             <xs:documentation>

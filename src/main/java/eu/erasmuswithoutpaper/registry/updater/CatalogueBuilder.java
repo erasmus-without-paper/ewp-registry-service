@@ -13,9 +13,9 @@ import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -27,6 +27,7 @@ import eu.erasmuswithoutpaper.registry.common.Utils;
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
 
 import com.google.common.base.Joiner;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.joox.Match;
 import org.w3c.dom.DOMException;
@@ -71,6 +72,7 @@ class CatalogueBuilder {
 
     Map<String, Map<String, Set<String>>> heiIdTypeSets = new TreeMap<>();
     Map<String, Map<String, Set<String>>> heiLangNameSets = new TreeMap<>();
+    Map<String, RSAPublicKey> actualKeys = new TreeMap<>();
 
     // For each of the given manifests...
 
@@ -206,8 +208,10 @@ class CatalogueBuilder {
         for (String keyStr : keyStrs) {
           RSAPublicKey key = this.parseValidRsaPublicKey(keyStr);
           Element keyNode = this.newElem("rsa-public-key");
-          keyNode.setAttribute("sha-256", DigestUtils.sha256Hex(key.getEncoded()));
+          String fingerprint = DigestUtils.sha256Hex(key.getEncoded());
+          keyNode.setAttribute("sha-256", fingerprint);
           cliCreds.appendChild(keyNode);
+          actualKeys.put(fingerprint, key);
         }
       }
 
@@ -232,8 +236,10 @@ class CatalogueBuilder {
         for (String keyStr : keyStrs) {
           RSAPublicKey key = this.parseValidRsaPublicKey(keyStr);
           Element keyNode = this.newElem("rsa-public-key");
-          keyNode.setAttribute("sha-256", DigestUtils.sha256Hex(key.getEncoded()));
+          String fingerprint = DigestUtils.sha256Hex(key.getEncoded());
+          keyNode.setAttribute("sha-256", fingerprint);
           srvCreds.appendChild(keyNode);
+          actualKeys.put(fingerprint, key);
         }
       }
 
@@ -292,6 +298,30 @@ class CatalogueBuilder {
       }
     }
 
+    // Include all the previously referenced public keys.
+
+    if (!actualKeys.isEmpty()) {
+      Element binariesElem = this.newElem("binaries");
+      catalogue.appendChild(binariesElem);
+      for (Entry<String, RSAPublicKey> entry : actualKeys.entrySet()) {
+        Element keyElem = this.newElem("rsa-public-key");
+        binariesElem.appendChild(keyElem);
+        keyElem.setAttribute("sha-256", entry.getKey());
+        // We want binaries "pretty-printed" (chunked and indented).
+        StringBuilder sb = new StringBuilder();
+        sb.append('\n');
+        for (String line : this.getBase64EncodedLines(entry.getValue().getEncoded())) {
+          sb.append("            ");
+          if (line.length() > 0) {
+            sb.append(line);
+            sb.append('\n');
+          }
+        }
+        sb.append("        ");
+        keyElem.setTextContent(sb.toString());
+      }
+    }
+
     // Add xmlns:xxx attributes for most of the KnownNamespace prefixes.
 
     List<String> chunks = new ArrayList<String>();
@@ -316,6 +346,12 @@ class CatalogueBuilder {
     return this.doc;
   }
 
+  private String[] getBase64EncodedLines(byte[] data) {
+    Base64 encoder = new Base64(76, new byte[] { '\n' });
+    String encoded = encoder.encodeToString(data);
+    return encoded.split("\\n");
+  }
+
   private synchronized Element newElem(String localName) {
     return this.doc.createElementNS(KnownNamespace.RESPONSE_REGISTRY_V1.getNamespaceUri(),
         localName);
@@ -338,7 +374,7 @@ class CatalogueBuilder {
   private synchronized X509Certificate parseCert(String certStr) {
 
     certStr = certStr.replaceAll("\\s+", "");
-    byte[] decoded = Base64.getDecoder().decode(certStr);
+    byte[] decoded = Base64.decodeBase64(certStr);
 
     try {
       return (X509Certificate) this.x509factory
@@ -352,7 +388,7 @@ class CatalogueBuilder {
   private synchronized RSAPublicKey parseValidRsaPublicKey(String keyStr) {
 
     keyStr = keyStr.replaceAll("\\s+", "");
-    byte[] decoded = Base64.getDecoder().decode(keyStr);
+    byte[] decoded = Base64.decodeBase64(keyStr);
 
     try {
       return (RSAPublicKey) KeyFactory.getInstance("RSA")

@@ -114,17 +114,12 @@
                                                 </xs:documentation>
                                             </xs:annotation>
                                             <xs:complexType>
-                                                <xs:attribute name="sha-256" use="required">
+                                                <xs:attribute name="sha-256" use="required" type="ewp:Sha256Hex">
                                                     <xs:annotation>
                                                         <xs:documentation>
                                                             Certificate's SHA-256 digest (in HEX).
                                                         </xs:documentation>
                                                     </xs:annotation>
-                                                    <xs:simpleType>
-                                                        <xs:restriction base="xs:string">
-                                                            <xs:pattern value="[0-9a-f]{64}"/>
-                                                        </xs:restriction>
-                                                    </xs:simpleType>
                                                 </xs:attribute>
                                             </xs:complexType>
                                         </xs:element>
@@ -139,23 +134,18 @@
                                                     make requests in the name of the institutions listed in the adjacent
                                                     `institutions-covered` element.
 
-                                                    Note, that the Registry does NOT serve the actual content of the public key.
-                                                    Servers MUST use the `sha-256` attribute to match it to the public key the
-                                                    client presents itself with.
+                                                    Please note, that the Registry also serves the *actual content* of the public
+                                                    part for this key-pair, but this content is not included here. Instead, you
+                                                    can look up it's SHA-256 digest in the `binaries` section below.
                                                 </xs:documentation>
                                             </xs:annotation>
                                             <xs:complexType>
-                                                <xs:attribute name="sha-256" use="required">
+                                                <xs:attribute name="sha-256" use="required" type="ewp:Sha256Hex">
                                                     <xs:annotation>
                                                         <xs:documentation>
                                                             Public key's SHA-256 digest (in HEX).
                                                         </xs:documentation>
                                                     </xs:annotation>
-                                                    <xs:simpleType>
-                                                        <xs:restriction base="xs:string">
-                                                            <xs:pattern value="[0-9a-f]{64}"/>
-                                                        </xs:restriction>
-                                                    </xs:simpleType>
                                                 </xs:attribute>
                                             </xs:complexType>
                                         </xs:element>
@@ -197,24 +187,18 @@
                                                     client MUST NOT treat keys found in other hosts as valid, even if these hosts
                                                     claim to serve their APIs at the same URL as X.
 
-                                                    Note, that the Registry does NOT serve the actual content of the public key.
-                                                    Clients MUST use the `sha-256` attribute to match it to the public key the
-                                                    server presents itself with (e.g. via the `keyId` parameter of the `Signature`
-                                                    header).
+                                                    Please note, that the Registry also serves the *actual content* of the public
+                                                    part for this key-pair, but this content is not included here. Instead, you
+                                                    can look up it's SHA-256 digest in the `binaries` section below.
                                                 </xs:documentation>
                                             </xs:annotation>
                                             <xs:complexType>
-                                                <xs:attribute name="sha-256" use="required">
+                                                <xs:attribute name="sha-256" use="required" type="ewp:Sha256Hex">
                                                     <xs:annotation>
                                                         <xs:documentation>
                                                             Public key's SHA-256 digest (in HEX).
                                                         </xs:documentation>
                                                     </xs:annotation>
-                                                    <xs:simpleType>
-                                                        <xs:restriction base="xs:string">
-                                                            <xs:pattern value="[0-9a-f]{64}"/>
-                                                        </xs:restriction>
-                                                    </xs:simpleType>
                                                 </xs:attribute>
                                             </xs:complexType>
                                         </xs:element>
@@ -236,6 +220,51 @@
                     <xs:complexType>
                         <xs:sequence>
                             <xs:element ref="hei" minOccurs="0" maxOccurs="unbounded"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="binaries" minOccurs="0" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>
+                            This elements keeps a map of binaries.
+
+                            Each binary object on this list is identified by its own SHA-256 digest.
+
+                            Note, that is would be possible for the Registry Service to simply include the
+                            actual binary content wherever it is referred to, but this would mean that the
+                            content might be duplicated many times, in many different elements (e.g. when a
+                            partner uses the same RSA key-pair in many of its hosts). In order to avoid that
+                            (and reduce the size of the catalogue response), we publish these elements in
+                            an entirely separate `binaries` section.
+                        </xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="rsa-public-key" minOccurs="0" maxOccurs="unbounded">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        Contains base64-encoded binary content of RSA public key.
+                                    </xs:documentation>
+                                </xs:annotation>
+                                <xs:complexType>
+                                    <xs:simpleContent>
+                                        <xs:extension base="xs:base64Binary">
+                                            <xs:attribute name="sha-256" type="ewp:Sha256Hex" use="required">
+                                                <xs:annotation>
+                                                    <xs:documentation>
+                                                        The SHA-256 digest of the key's binary content.
+
+                                                        You might have noticed that this is information is kind of redundant (because
+                                                        it can be evaluated from the content itself). However, the Registry publishes
+                                                        it nonetheless (e.g. to reduce the work required to perform by the clients, and
+                                                        to make it easier for manual matching by humans when debugging XML).
+                                                    </xs:documentation>
+                                                </xs:annotation>
+                                            </xs:attribute>
+                                        </xs:extension>
+                                    </xs:simpleContent>
+                                </xs:complexType>
+                            </xs:element>
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>

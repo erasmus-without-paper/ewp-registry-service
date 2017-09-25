@@ -67,4 +67,10 @@
             <name xml:lang="en">University 2</name>
         </hei>
     </institutions>
+
+    <binaries>
+        <rsa-public-key sha-256="1111111111111111111111111111111111111111111111111111111111111111">cc1</rsa-public-key>
+        <rsa-public-key sha-256="2222222222222222222222222222222222222222222222222222222222222222">cc2</rsa-public-key>
+        <rsa-public-key sha-256="3333333333333333333333333333333333333333333333333333333333333333">cc3</rsa-public-key>
+    </binaries>
 </catalogue>

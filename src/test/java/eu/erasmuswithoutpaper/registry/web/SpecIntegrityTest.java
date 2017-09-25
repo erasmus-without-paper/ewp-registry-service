@@ -77,7 +77,18 @@ public class SpecIntegrityTest extends WRTest {
     assertThat(elems.get(0).getTextContent()).isEqualTo("example2.com");
 
     // Question 3: I have received a request signed with HTTP Signature with
-    // a public key `X`. Data of which HEIs is this client privileged to access?
+    // `keyId` equal to `X`. How do I retrieve the actual public key, which I can
+    // later use to validate the request's signature?
+
+    elems = this.root.xpath("//r:binaries/r:rsa-public-key[@sha-256=\"" + f1 + "\"]").get();
+    assertThat(elems).hasSize(1);
+    assertThat(elems.get(0).getTextContent()).isEqualTo("cc1");
+
+    // Question 4: I have received a request signed with HTTP Signature with
+    // `keyId` equal to `X`. I have already validated the signature (as described in
+    // question 3), so I know that the sender is in possession of the private part
+    // of the key-pair. How do I retrieve the list of HEIs who's data is this client
+    // privileged to access?
 
     elems = this.root.xpath("//r:client-credentials-in-use/r:rsa-public-key[@sha-256=\"" + f1
         + "\"]/../../r:institutions-covered/r:hei-id").get();
@@ -89,11 +100,14 @@ public class SpecIntegrityTest extends WRTest {
     assertThat(elems).hasSize(1);
     assertThat(elems.get(0).getTextContent()).isEqualTo("example2.com");
 
-    // Question 4: I want to authenticate the server via HTTP signature. I have
-    // already found the API entry `X`, extracted the endpoint's URL `Y` from
-    // it, and have received the server's response which has been signed with
-    // public key `Z`. How can I verify if `Z` is the correct key with which
-    // `Y`'s responses should have been signed with?
+    // Question 5: I don't trust regular TLS Server Authentication and I want
+    // to authenticate the server via HTTP signature. I have already found the
+    // API entry `X`, extracted the endpoint's URL `Y` from it, and have
+    // received the server's response which has been signed with `keyId=Z`. I
+    // have already validated the signature (as described in question 3), so I
+    // know that the sender is in possession of the private part of the
+    // key-pair. How can I verify if `Z` is the correct key with which `Y`'s
+    // responses should have been signed with?
 
     elems = this.root.xpath("//e1:echo[@version=\"1.1.0\"]").get();
     assertThat(elems).hasSize(1);
