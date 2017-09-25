@@ -154,7 +154,7 @@ class EchoTestSuite {
           sb.append(" Make sure you validate TLS client certificates against a fresh "
               + "Registry catalogue version.");
         }
-        throw new Failure(sb.toString(), Status.FAILURE, response); // WRTODO: add body to failure?
+        throw new Failure(sb.toString(), Status.FAILURE, response);
       }
       BuildParams params = new BuildParams(response.getBody());
       params.setExpectedKnownElement(KnownElement.RESPONSE_ECHO_V1);
