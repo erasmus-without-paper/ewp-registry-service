@@ -1,6 +1,16 @@
 Release notes
 =============
 
+1.4.0
+-----
+
+*Released on 2017-09-26*
+
+Implemented the [new Registry API v1.3.0
+features](https://github.com/erasmus-without-paper/ewp-specs-api-registry/blob/v1.3.0/CHANGELOG.md)
+(in particular, the `rsa-public-key` binaries).
+
+
 1.3.0
 -----
 
