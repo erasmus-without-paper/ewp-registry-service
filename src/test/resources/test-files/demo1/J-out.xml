@@ -49,6 +49,7 @@
             <r1:registry version="1.0.0">
                 <r1:catalogue-url>https://localhost:8080/catalogue-v1.xml</r1:catalogue-url>
             </r1:registry>
+            <fake-api-without-a-version xmlns="https://github.com/erasmus-without-paper/ewp-registry-service/issues/8"/>
         </apis-implemented>
         <institutions-covered>
             <hei-id>hei01.developers.erasmuswithoutpaper.eu</hei-id>

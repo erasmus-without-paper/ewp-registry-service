@@ -29,6 +29,7 @@
         <registry version="1.0.0" xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-registry/blob/stable-v1/manifest-entry.xsd">
             <catalogue-url>https://registry.erasmuswithoutpaper.eu/catalogue-v1.xml</catalogue-url>
         </registry>
+        <fake-api-without-a-version xmlns="https://github.com/erasmus-without-paper/ewp-registry-service/issues/8"/>
     </r:apis-implemented>
     <institutions-covered/>
     <client-credentials-in-use/>
