@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.google.common.collect.Maps;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
@@ -119,6 +120,10 @@ public interface Internet {
     private final int status;
     private final byte[] body;
     private final Map<String, List<String>> headers;
+
+    Response(int status, byte[] body) {
+      this(status, body, Maps.newHashMap());
+    }
 
     Response(int status, byte[] body, Map<String, List<String>> headers) {
       this.status = status;
