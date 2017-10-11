@@ -1,0 +1,50 @@
+
+### NOTICE: Check if our TLS client certificate has been served long enough.
+
+Our TLS client certificate is quite fresh. This means that many Echo APIs will (correctly) return HTTP 403 responses in places where we expect HTTP 200. This notice will disappear once the certificate is 10 minutes old.
+
+
+### SUCCESS: Verifying the format of the URL. Expecting a valid HTTPS-scheme URL.
+### SUCCESS: Accessing your Echo API without any TLS client certificate. Expecting to receive a valid HTTP 403 error response.
+
+### FAILURE: Accessing your Echo API with an unknown TLS client certificate (a random one, that has never been published in the Registry). Expecting to receive a valid HTTP 403 error response.
+
+HTTP 403 expected, but HTTP 200 received.
+
+
+
+### FAILURE: Running a regular GET request, with a valid (known) TLS client certificate, and without any additional parameters. Expecting to receive a valid HTTP 200 Echo API response with proper hei-ids, and without any echo values.
+
+The response has proper HTTP status and it passed the schema validation. However, the set of returned hei-ids doesn't match what we expect. It should contain the following: [hei01.developers.erasmuswithoutpaper.eu, hei02.developers.erasmuswithoutpaper.eu]
+
+
+
+### FAILURE: Running a regular POST request, with a valid (known) TLS client certificate, and without any additional parameters. Expecting to receive a valid HTTP 200 Echo API response with proper hei-ids, and without any echo values.
+
+The response has proper HTTP status and it passed the schema validation. However, the set of returned hei-ids doesn't match what we expect. It should contain the following: [hei01.developers.erasmuswithoutpaper.eu, hei02.developers.erasmuswithoutpaper.eu]
+
+
+
+### FAILURE: Running a PUT request. Expecting to receive a valid HTTP 405 error response.
+
+HTTP 405 expected, but HTTP 200 received.
+
+
+
+### FAILURE: Running a DELETE request. Expecting to receive a valid HTTP 405 error response.
+
+HTTP 405 expected, but HTTP 200 received.
+
+
+
+### FAILURE: Running a GET request with a list of echo values. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.
+
+The response has proper HTTP status and it passed the schema validation. However, the set of returned hei-ids doesn't match what we expect. It should contain the following: [hei01.developers.erasmuswithoutpaper.eu, hei02.developers.erasmuswithoutpaper.eu]
+
+
+
+### FAILURE: Run a POST request with a list of echo values. Expecting the same response as above.
+
+The response has proper HTTP status and it passed the schema validation. However, the set of returned hei-ids doesn't match what we expect. It should contain the following: [hei01.developers.erasmuswithoutpaper.eu, hei02.developers.erasmuswithoutpaper.eu]
+
+

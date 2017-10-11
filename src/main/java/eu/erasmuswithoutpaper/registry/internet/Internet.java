@@ -121,13 +121,13 @@ public interface Internet {
     private final byte[] body;
     private final Map<String, List<String>> headers;
 
-    Response(int status, byte[] body) {
+    public Response(int status, byte[] body) {
       this(status, body, Maps.newHashMap());
     }
 
-    Response(int status, byte[] body, Map<String, List<String>> headers) {
+    public Response(int status, byte[] body, Map<String, List<String>> headers) {
       this.status = status;
-      this.body = body;
+      this.body = body.clone();
       this.headers = headers;
     }
 
