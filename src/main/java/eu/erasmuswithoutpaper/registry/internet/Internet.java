@@ -47,6 +47,30 @@ public interface Internet {
       this.headers.get().add(header);
     }
 
+    public Optional<byte[]> getBody() {
+      return body;
+    }
+
+    public Optional<X509Certificate> getClientCertificate() {
+      return clientCertificate;
+    }
+
+    public Optional<List<String>> getHeaders() {
+      return headers;
+    }
+
+    public Optional<KeyPair> getKeyPair() {
+      return keyPair;
+    }
+
+    public String getMethod() {
+      return method;
+    }
+
+    public String getUrl() {
+      return url;
+    }
+
     /**
      * @param body Optional request body to be sent along the request (in case of POST requests,
      *        this often contains x-www-form-urlencoded set of parameters).
@@ -85,30 +109,6 @@ public interface Internet {
      */
     public void setUrl(String url) {
       this.url = url;
-    }
-
-    Optional<byte[]> getBody() {
-      return body;
-    }
-
-    Optional<X509Certificate> getClientCertificate() {
-      return clientCertificate;
-    }
-
-    Optional<List<String>> getHeaders() {
-      return headers;
-    }
-
-    Optional<KeyPair> getKeyPair() {
-      return keyPair;
-    }
-
-    String getMethod() {
-      return method;
-    }
-
-    String getUrl() {
-      return url;
     }
   }
 

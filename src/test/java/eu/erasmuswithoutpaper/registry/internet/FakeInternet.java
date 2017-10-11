@@ -65,6 +65,15 @@ public class FakeInternet implements Internet {
   }
 
   /**
+   * Remove everything from this Internet (URLs, emails, services, etc.).
+   */
+  public void clearAll() {
+    this.clearEmailsSent();
+    this.clearFakeInternetServices();
+    this.clearURLs();
+  }
+
+  /**
    * Remove all the emails previously stored via {@link #queueEmail(List, String, String)}.
    */
   public void clearEmailsSent() {
