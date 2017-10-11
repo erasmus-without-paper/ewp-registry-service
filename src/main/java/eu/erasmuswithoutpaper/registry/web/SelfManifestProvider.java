@@ -12,7 +12,7 @@ import eu.erasmuswithoutpaper.registry.Application;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildParams;
 import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
-import eu.erasmuswithoutpaper.registry.echotester.EchoTester;
+import eu.erasmuswithoutpaper.registry.echovalidator.EchoValidator;
 import eu.erasmuswithoutpaper.registry.xmlformatter.XmlFormatter;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,7 +59,7 @@ public class SelfManifestProvider {
    */
   @Autowired
   public SelfManifestProvider(ResourceLoader res, EwpDocBuilder docBuilder, XmlFormatter formatter,
-      @Value("${app.admin-emails}") List<String> adminEmails, EchoTester echoTester) {
+      @Value("${app.admin-emails}") List<String> adminEmails, EchoValidator echoTester) {
     this.res = res;
     this.docBuilder = docBuilder;
     this.formatter = formatter;

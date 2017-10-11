@@ -1,4 +1,4 @@
-package eu.erasmuswithoutpaper.registry.echotester;
+package eu.erasmuswithoutpaper.registry.echovalidator;
 
 import static org.joox.JOOX.$;
 
@@ -20,24 +20,31 @@ import eu.erasmuswithoutpaper.registry.documentbuilder.BuildResult;
 import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownElement;
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
-import eu.erasmuswithoutpaper.registry.echotester.EchoTest.Failure;
-import eu.erasmuswithoutpaper.registry.echotester.EchoTestResult.Status;
+import eu.erasmuswithoutpaper.registry.echovalidator.InlineValidationStep.Failure;
+import eu.erasmuswithoutpaper.registry.echovalidator.ValidationStepWithStatus.Status;
 import eu.erasmuswithoutpaper.registry.internet.Internet;
 import eu.erasmuswithoutpaper.registry.internet.Internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Internet.Response;
 
 import org.joox.Match;
 
-class EchoTestSuite {
+/**
+ * Describes the set of test/steps to be run on an Echo API implementation in order to properly
+ * validate it.
+ */
+class EchoValidationSuite {
+
+  // WRTODO: tu skończyłeś
 
   /**
-   * This {@link EchoTestResult} is dynamically added when some unexpected runtime exception occurs.
+   * This is a "fake" {@link ValidationStepWithStatus} which is dynamically added to the list of
+   * steps whenever some unexpected runtime exception occurs.
    */
-  private static final class OtherErrorTestResult implements EchoTestResult {
+  private static final class GenericErrorFakeStep implements ValidationStepWithStatus {
 
     private final RuntimeException cause;
 
-    public OtherErrorTestResult(RuntimeException cause) {
+    public GenericErrorFakeStep(RuntimeException cause) {
       this.cause = cause;
     }
 
@@ -63,37 +70,39 @@ class EchoTestSuite {
   }
 
   /**
-   * Thrown when a test fails so badly, that no other tests are supposed to be run.
+   * Thrown when a validation step fails so badly, that no other steps should be run.
    */
   @SuppressWarnings("serial")
   private static class SuiteBroken extends Exception {
   }
 
-  private final EchoTester echoTester;
-  private final String urlStr;
-  private final List<EchoTestResult> tests;
+  private final EchoValidator parentEchoValidator;
+  private final String urlToBeValidated;
+  private final List<ValidationStepWithStatus> steps;
+
   private final EwpDocBuilder docBuilder;
   private final Internet internet;
 
-  EchoTestSuite(EchoTester echoTester, EwpDocBuilder docBuilder, Internet internet, String urlStr) {
-    this.echoTester = echoTester;
-    this.urlStr = urlStr;
-    this.tests = new ArrayList<>();
+  EchoValidationSuite(EchoValidator echoValidator, EwpDocBuilder docBuilder, Internet internet,
+      String urlStr) {
+    this.parentEchoValidator = echoValidator;
+    this.urlToBeValidated = urlStr;
+    this.steps = new ArrayList<>();
     this.docBuilder = docBuilder;
     this.internet = internet;
   }
 
   /**
-   * Add the test to the public list of tests and run it.
+   * Add a new step (to the public list of steps been run) and run it.
    *
-   * @param requireSuccess If true, then a {@link SuiteBroken} exception will be raised on test
-   *        failure.
-   * @param test The test to be run.
-   * @throws SuiteBroken If a test, which was required to succeed, fails.
+   * @param requireSuccess If true, then a {@link SuiteBroken} exception will be raised, if this
+   *        steps fails.
+   * @param step The step to be added and run.
+   * @throws SuiteBroken If the step, which was required to succeed, fails.
    */
-  private void addAndRun(boolean requireSuccess, EchoTest test) throws SuiteBroken {
-    this.tests.add(test);
-    Status status = test.run();
+  private void addAndRun(boolean requireSuccess, InlineValidationStep step) throws SuiteBroken {
+    this.steps.add(step);
+    Status status = step.run();
     if (requireSuccess && !status.equals(Status.SUCCESS)) {
       throw new SuiteBroken();
     }
@@ -205,18 +214,9 @@ class EchoTestSuite {
     }
   }
 
-  private String formatDocBuildErrors(List<BuildError> errors) {
-    StringBuilder sb = new StringBuilder();
-    sb.append("Our document parser has reported the following errors:");
-    for (int i = 0; i < errors.size(); i++) {
-      sb.append("\n" + (i + 1) + ". ");
-      sb.append("(Line " + errors.get(i).getLineNumber() + ") " + errors.get(i).getMessage());
-    }
-    return sb.toString();
-  }
-
-  private EchoTest getRegularMethodTest(String method, boolean expectSuccess) {
-    return new EchoTest() {
+  private InlineValidationStep createHttpMethodValidationStep(String method,
+      boolean expectSuccess) {
+    return new InlineValidationStep() {
 
       @Override
       public String getName() {
@@ -233,34 +233,47 @@ class EchoTestSuite {
 
       @Override
       protected Optional<Response> innerRun() throws Failure {
-        Internet.Request request = new Internet.Request(method, EchoTestSuite.this.urlStr);
+        Internet.Request request =
+            new Internet.Request(method, EchoValidationSuite.this.urlToBeValidated);
         if (method.equals("POST")) {
           request.addHeader("Content-Type: application/x-www-form-urlencoded");
         }
-        request.setClientCertificate(EchoTestSuite.this.echoTester.getTlsClientCertificateInUse(),
-            EchoTestSuite.this.echoTester.getTlsKeyPairInUse());
+        request.setClientCertificate(
+            EchoValidationSuite.this.parentEchoValidator.getTlsClientCertificateInUse(),
+            EchoValidationSuite.this.parentEchoValidator.getTlsKeyPairInUse());
         if (expectSuccess) {
-          return Optional.of(EchoTestSuite.this.assertHttp200(request,
-              EchoTestSuite.this.echoTester.getCoveredHeiIDs(), Collections.<String>emptyList()));
+          return Optional.of(EchoValidationSuite.this.assertHttp200(request,
+              EchoValidationSuite.this.parentEchoValidator.getCoveredHeiIDs(),
+              Collections.<String>emptyList()));
         } else {
-          return Optional.of(EchoTestSuite.this.assertError(request, 405));
+          return Optional.of(EchoValidationSuite.this.assertError(request, 405));
         }
       }
     };
   }
 
-  List<EchoTestResult> getResults() {
-    return this.tests;
+  private String formatDocBuildErrors(List<BuildError> errors) {
+    StringBuilder sb = new StringBuilder();
+    sb.append("Our document parser has reported the following errors:");
+    for (int i = 0; i < errors.size(); i++) {
+      sb.append("\n" + (i + 1) + ". ");
+      sb.append("(Line " + errors.get(i).getLineNumber() + ") " + errors.get(i).getMessage());
+    }
+    return sb.toString();
+  }
+
+  List<ValidationStepWithStatus> getResults() {
+    return this.steps;
   }
 
   void run() {
 
-    X509Certificate myCert = this.echoTester.getTlsClientCertificateInUse();
-    KeyPair myKeyPair = this.echoTester.getTlsKeyPairInUse();
+    X509Certificate myCert = this.parentEchoValidator.getTlsClientCertificateInUse();
+    KeyPair myKeyPair = this.parentEchoValidator.getTlsKeyPairInUse();
 
     try {
 
-      this.addAndRun(false, new EchoTest() {
+      this.addAndRun(false, new InlineValidationStep() {
 
         @Override
         public String getName() {
@@ -269,9 +282,8 @@ class EchoTestSuite {
 
         @Override
         protected Optional<Response> innerRun() throws Failure {
-          if (new Date().getTime()
-              - EchoTestSuite.this.echoTester.getTlsClientCertificateUsedSince().getTime() < 10 * 60
-                  * 1000) {
+          if (new Date().getTime() - EchoValidationSuite.this.parentEchoValidator
+              .getTlsClientCertificateUsedSince().getTime() < 10 * 60 * 1000) {
             throw new Failure(
                 "Our TLS client certificate is quite fresh. This means that many Echo APIs will "
                     + "(correctly) return HTTP 403 responses in places where we expect HTTP 200. "
@@ -284,7 +296,7 @@ class EchoTestSuite {
 
       /////////////////////////////////////////
 
-      this.addAndRun(true, new EchoTest() {
+      this.addAndRun(true, new InlineValidationStep() {
 
         @Override
         public String getName() {
@@ -293,11 +305,11 @@ class EchoTestSuite {
 
         @Override
         protected Optional<Response> innerRun() throws Failure {
-          if (!EchoTestSuite.this.urlStr.startsWith("https://")) {
+          if (!EchoValidationSuite.this.urlToBeValidated.startsWith("https://")) {
             throw new Failure("It needs to be HTTPS.", Status.FAILURE, null);
           }
           try {
-            new URL(EchoTestSuite.this.urlStr);
+            new URL(EchoValidationSuite.this.urlToBeValidated);
           } catch (MalformedURLException e) {
             throw new Failure("Exception while parsing URL format: " + e, Status.FAILURE, null);
           }
@@ -307,7 +319,7 @@ class EchoTestSuite {
 
       /////////////////////////////////////////
 
-      this.addAndRun(false, new EchoTest() {
+      this.addAndRun(false, new InlineValidationStep() {
 
         @Override
         public String getName() {
@@ -317,14 +329,14 @@ class EchoTestSuite {
 
         @Override
         protected Optional<Response> innerRun() throws Failure {
-          Request request = new Request("GET", EchoTestSuite.this.urlStr);
-          return Optional.of(EchoTestSuite.this.assertError(request, 403));
+          Request request = new Request("GET", EchoValidationSuite.this.urlToBeValidated);
+          return Optional.of(EchoValidationSuite.this.assertError(request, 403));
         }
       });
 
       /////////////////////////////////////////
 
-      this.addAndRun(false, new EchoTest() {
+      this.addAndRun(false, new InlineValidationStep() {
 
         @Override
         public String getName() {
@@ -335,34 +347,34 @@ class EchoTestSuite {
 
         @Override
         protected Optional<Response> innerRun() throws Failure {
-          KeyPair otherKeyPair = EchoTestSuite.this.echoTester.generateKeyPair();
+          KeyPair otherKeyPair = EchoValidationSuite.this.parentEchoValidator.generateKeyPair();
           X509Certificate otherCert =
-              EchoTestSuite.this.echoTester.generateCertificate(otherKeyPair);
-          Request request = new Request("GET", EchoTestSuite.this.urlStr);
+              EchoValidationSuite.this.parentEchoValidator.generateCertificate(otherKeyPair);
+          Request request = new Request("GET", EchoValidationSuite.this.urlToBeValidated);
           request.setClientCertificate(otherCert, otherKeyPair);
-          return Optional.of(EchoTestSuite.this.assertError(request, 403));
+          return Optional.of(EchoValidationSuite.this.assertError(request, 403));
         }
       });
 
       /////////////////////////////////////////
 
-      this.addAndRun(false, this.getRegularMethodTest("GET", true));
+      this.addAndRun(false, this.createHttpMethodValidationStep("GET", true));
 
       /////////////////////////////////////////
 
-      this.addAndRun(false, this.getRegularMethodTest("POST", true));
+      this.addAndRun(false, this.createHttpMethodValidationStep("POST", true));
 
       /////////////////////////////////////////
 
-      this.addAndRun(false, this.getRegularMethodTest("PUT", false));
+      this.addAndRun(false, this.createHttpMethodValidationStep("PUT", false));
 
       /////////////////////////////////////////
 
-      this.addAndRun(false, this.getRegularMethodTest("DELETE", false));
+      this.addAndRun(false, this.createHttpMethodValidationStep("DELETE", false));
 
       /////////////////////////////////////////
 
-      this.addAndRun(false, new EchoTest() {
+      this.addAndRun(false, new InlineValidationStep() {
 
         @Override
         public String getName() {
@@ -372,20 +384,21 @@ class EchoTestSuite {
 
         @Override
         protected Optional<Response> innerRun() throws Failure {
-          Request request = new Request("GET", EchoTestSuite.this.urlStr + "?echo=a&echo=b&echo=a");
+          Request request = new Request("GET",
+              EchoValidationSuite.this.urlToBeValidated + "?echo=a&echo=b&echo=a");
           request.setClientCertificate(myCert, myKeyPair);
           ArrayList<String> expectedEchoValues = new ArrayList<>();
           expectedEchoValues.add("a");
           expectedEchoValues.add("b");
           expectedEchoValues.add("a");
-          return Optional.of(EchoTestSuite.this.assertHttp200(request,
-              EchoTestSuite.this.echoTester.getCoveredHeiIDs(), expectedEchoValues));
+          return Optional.of(EchoValidationSuite.this.assertHttp200(request,
+              EchoValidationSuite.this.parentEchoValidator.getCoveredHeiIDs(), expectedEchoValues));
         }
       });
 
       /////////////////////////////////////////
 
-      this.addAndRun(false, new EchoTest() {
+      this.addAndRun(false, new InlineValidationStep() {
 
         @Override
         public String getName() {
@@ -395,7 +408,7 @@ class EchoTestSuite {
 
         @Override
         protected Optional<Response> innerRun() throws Failure {
-          Request request = new Request("POST", EchoTestSuite.this.urlStr);
+          Request request = new Request("POST", EchoValidationSuite.this.urlToBeValidated);
           request.addHeader("Content-Type: application/x-www-form-urlencoded");
           request.setBody("echo=a&echo=b&echo=a".getBytes(StandardCharsets.UTF_8));
           request.setClientCertificate(myCert, myKeyPair);
@@ -403,8 +416,8 @@ class EchoTestSuite {
           expectedEchoValues.add("a");
           expectedEchoValues.add("b");
           expectedEchoValues.add("a");
-          return Optional.of(EchoTestSuite.this.assertHttp200(request,
-              EchoTestSuite.this.echoTester.getCoveredHeiIDs(), expectedEchoValues));
+          return Optional.of(EchoValidationSuite.this.assertHttp200(request,
+              EchoValidationSuite.this.parentEchoValidator.getCoveredHeiIDs(), expectedEchoValues));
         }
       });
 
@@ -413,7 +426,7 @@ class EchoTestSuite {
     } catch (SuiteBroken e) {
       // Ignore.
     } catch (RuntimeException e) {
-      this.tests.add(new OtherErrorTestResult(e));
+      this.steps.add(new GenericErrorFakeStep(e));
     }
   }
 

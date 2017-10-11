@@ -1,28 +1,28 @@
-package eu.erasmuswithoutpaper.registry.echotester;
+package eu.erasmuswithoutpaper.registry.echovalidator;
 
 import java.util.Optional;
 
 import eu.erasmuswithoutpaper.registry.internet.Internet;
 
 /**
- * A single Echo API test along with its result.
+ * Describes a single validation step, along with its result.
  */
-public interface EchoTestResult {
+public interface ValidationStepWithStatus {
 
   /**
-   * Possible outcomes of the test.
+   * Possible outcomes of the validation step.
    */
   static enum Status {
     SUCCESS, NOTICE, WARNING, FAILURE, ERROR, PENDING
   }
 
   /**
-   * @return The message to be displayed as the result of the test.
+   * @return The message to be displayed as the result of the validation step.
    */
   String getMessage();
 
   /**
-   * @return The name (label) of this test.
+   * @return The name (label) of this validation step.
    */
   String getName();
 
@@ -32,7 +32,7 @@ public interface EchoTestResult {
   Optional<Internet.Response> getServerResponse();
 
   /**
-   * @return The status of this test.
+   * @return Status of this validation step.
    */
   Status getStatus();
 }

@@ -1,4 +1,4 @@
-package eu.erasmuswithoutpaper.registry.echotester;
+package eu.erasmuswithoutpaper.registry.echovalidator;
 
 import java.math.BigInteger;
 import java.security.KeyPair;
@@ -16,6 +16,7 @@ import java.util.List;
 import eu.erasmuswithoutpaper.registry.Application;
 import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
 import eu.erasmuswithoutpaper.registry.internet.Internet;
+import eu.erasmuswithoutpaper.registry.web.SelfManifestProvider;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,17 +39,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Provides an Echo API testing feature.
+ * Service for validating external Echo API implementations.
  */
 @Service
-public class EchoTester {
+public class EchoValidator {
 
-  private static final Logger logger = LoggerFactory.getLogger(EchoTester.class);
+  private static final Logger logger = LoggerFactory.getLogger(EchoValidator.class);
 
   private final X509Certificate myTlsCertificate;
   private final KeyPair myTlsKeyPair;
-  private final List<String> coveredHeiIDs;
+  private final List<String> myCoveredHeiIDs;
   private final Date myTlsCertificateDate;
+
   private final EwpDocBuilder docBuilder;
   private final Internet internet;
 
@@ -57,7 +59,7 @@ public class EchoTester {
    * @param internet Needed to make Echo API requests across the network.
    */
   @Autowired
-  public EchoTester(EwpDocBuilder docBuilder, Internet internet) {
+  public EchoValidator(EwpDocBuilder docBuilder, Internet internet) {
 
     this.docBuilder = docBuilder;
     this.internet = internet;
@@ -75,31 +77,33 @@ public class EchoTester {
 
     /* Generate the IDs of the covered HEIs. */
 
-    this.coveredHeiIDs = new ArrayList<>();
+    this.myCoveredHeiIDs = new ArrayList<>();
     if (Application.getRootUrl().equals("https://registry.erasmuswithoutpaper.eu")) {
       // We will never introduce artificial HEIs in the official registry.
     } else {
       for (int i = 1; i <= 2; i++) {
-        this.coveredHeiIDs.add("hei0" + i + ".developers.erasmuswithoutpaper.eu");
+        this.myCoveredHeiIDs.add("hei0" + i + ".developers.erasmuswithoutpaper.eu");
       }
     }
   }
 
   /**
-   * The TLS client certificate published for the {@link EchoTester} needs to cover a specific set
-   * of virtual HEIs (so that the tester can expect Echo APIs to think that the request comes from
-   * these HEIs).
+   * The TLS client certificate published for the {@link EchoValidator} needs to cover a specific
+   * set of virtual HEIs (so that the tester can expect Echo APIs to think that the request comes
+   * from these HEIs). This method allows other services (in particular, the
+   * {@link SelfManifestProvider}) to fetch these HEIs from us.
    *
    * @return IDs of the HEIs which are to be associated with the TLS client certificate returned in
    *         {@link #getTlsClientCertificateInUse()}.
    */
   public List<String> getCoveredHeiIDs() {
-    return Collections.unmodifiableList(this.coveredHeiIDs);
+    return Collections.unmodifiableList(this.myCoveredHeiIDs);
   }
 
   /**
-   * The {@link EchoTester} instance needs to publish its TLS Client Certificate in the Registry in
-   * order to be able to test TLS Client Certificate Authentication.
+   * The {@link EchoValidator} instance needs to publish its TLS Client Certificate in the Registry
+   * in order to be able to test TLS Client Certificate Authentication. This method allows other
+   * services (in particular, the {@link SelfManifestProvider}) to fetch this information from us.
    *
    * @return An {@link X509Certificate} to be published in the Registry.
    */
@@ -124,8 +128,9 @@ public class EchoTester {
    * @param urlStr HTTPS URL pointing to the Echo API to be tested.
    * @return A list of test results.
    */
-  public List<EchoTestResult> runTests(String urlStr) {
-    EchoTestSuite suite = new EchoTestSuite(this, this.docBuilder, this.internet, urlStr);
+  public List<ValidationStepWithStatus> runTests(String urlStr) {
+    EchoValidationSuite suite =
+        new EchoValidationSuite(this, this.docBuilder, this.internet, urlStr);
     suite.run();
     return suite.getResults();
   }

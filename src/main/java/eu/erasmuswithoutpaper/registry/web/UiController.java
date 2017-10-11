@@ -17,9 +17,9 @@ import eu.erasmuswithoutpaper.registry.documentbuilder.BuildParams;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildResult;
 import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
-import eu.erasmuswithoutpaper.registry.echotester.EchoTestResult;
-import eu.erasmuswithoutpaper.registry.echotester.EchoTestResult.Status;
-import eu.erasmuswithoutpaper.registry.echotester.EchoTester;
+import eu.erasmuswithoutpaper.registry.echovalidator.EchoValidator;
+import eu.erasmuswithoutpaper.registry.echovalidator.ValidationStepWithStatus;
+import eu.erasmuswithoutpaper.registry.echovalidator.ValidationStepWithStatus.Status;
 import eu.erasmuswithoutpaper.registry.internet.Internet.Response;
 import eu.erasmuswithoutpaper.registry.notifier.NotifierFlag;
 import eu.erasmuswithoutpaper.registry.notifier.NotifierService;
@@ -69,7 +69,7 @@ public class UiController {
   private final NotifierService notifier;
   private final UptimeChecker uptimeChecker;
   private final EwpDocBuilder docBuilder;
-  private final EchoTester echoTester;
+  private final EchoValidator echoTester;
 
   /**
    * @param taskExecutor needed for running background tasks.
@@ -85,7 +85,7 @@ public class UiController {
   public UiController(TaskExecutor taskExecutor,
       ManifestUpdateStatusRepository manifestUpdateStatuses, ManifestSourceProvider sourceProvider,
       RegistryUpdater updater, NotifierService notifier, UptimeChecker uptimeChecker,
-      EwpDocBuilder docBuilder, EchoTester echoTester) {
+      EwpDocBuilder docBuilder, EchoValidator echoTester) {
     this.taskExecutor = taskExecutor;
     this.manifestStatusRepo = manifestUpdateStatuses;
     this.sourceProvider = sourceProvider;
@@ -370,7 +370,7 @@ public class UiController {
 
     JsonArray testsArray = new JsonArray();
     Status worstStatus = Status.SUCCESS;
-    for (EchoTestResult testResult : this.echoTester.runTests(url)) {
+    for (ValidationStepWithStatus testResult : this.echoTester.runTests(url)) {
       JsonObject testObj = new JsonObject();
       testObj.addProperty("name", testResult.getName());
       testObj.addProperty("status", testResult.getStatus().toString());
@@ -452,7 +452,7 @@ public class UiController {
     return new ResponseEntity<String>(json, headers, HttpStatus.OK);
   }
 
-  private JsonObject formatServerResponseObject(EchoTestResult testResult) {
+  private JsonObject formatServerResponseObject(ValidationStepWithStatus testResult) {
     if (!testResult.getServerResponse().isPresent()) {
       return null;
     }

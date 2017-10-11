@@ -1,4 +1,4 @@
-package eu.erasmuswithoutpaper.registry.echotester;
+package eu.erasmuswithoutpaper.registry.echovalidator;
 
 import java.util.Optional;
 
@@ -8,9 +8,17 @@ import eu.erasmuswithoutpaper.registry.internet.Internet.Response;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
 /**
- * A helper class for creating {@link EchoTestResult}s.
+ * Our internal base class for quickly creating validation steps implementing the
+ * {@link ValidationStepWithStatus} interface.
+ *
+ * <p>
+ * It is named "inline", because we generally intended for subclasses of this class to be created
+ * inline (in {@link EchoValidationSuite}). You only need to provide the {@link #innerRun()}
+ * implementation, and then call {@link #run()} to run the test/step (and change the status and
+ * message of this {@link ValidationStepWithStatus}).
+ * </p>
  */
-abstract class EchoTest implements EchoTestResult {
+abstract class InlineValidationStep implements ValidationStepWithStatus {
 
   @SuppressWarnings("serial")
   static class Failure extends Exception {
@@ -65,7 +73,7 @@ abstract class EchoTest implements EchoTestResult {
    * set to SUCCESS.
    *
    * @return Optional server response object.
-   * @throws Failure When a test fails, and its status is NOT supposed to be set to SUCCESS. The
+   * @throws Failure When a step fails, and its status is NOT supposed to be set to SUCCESS. The
    *         instance contains the both the error message and status to be used instead.
    */
   protected abstract Optional<Internet.Response> innerRun() throws Failure;
@@ -84,9 +92,9 @@ abstract class EchoTest implements EchoTestResult {
 
   /**
    * It runs the actual {@link #innerRun()} method, but also catches both expected and unexpected
-   * exceptions, producing proper test results.
+   * exceptions, producing proper validation results.
    *
-   * @return The new status of the test.
+   * @return The new status of this validation step.
    */
   final Status run() {
     try {
