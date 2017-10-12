@@ -1,6 +1,8 @@
 package eu.erasmuswithoutpaper.registry.echovalidator;
 
+import java.io.IOException;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
@@ -8,6 +10,7 @@ import java.security.Security;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -16,7 +19,14 @@ import java.util.List;
 import eu.erasmuswithoutpaper.registry.Application;
 import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
 import eu.erasmuswithoutpaper.registry.internet.Internet;
+import eu.erasmuswithoutpaper.registry.repository.CatalogueNotFound;
+import eu.erasmuswithoutpaper.registry.repository.ManifestRepository;
 import eu.erasmuswithoutpaper.registry.web.SelfManifestProvider;
+import eu.erasmuswithoutpaper.registryclient.CatalogueFetcher;
+import eu.erasmuswithoutpaper.registryclient.ClientImpl;
+import eu.erasmuswithoutpaper.registryclient.ClientImplOptions;
+import eu.erasmuswithoutpaper.registryclient.RegistryClient;
+import eu.erasmuswithoutpaper.registryclient.RegistryClient.RefreshFailureException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -46,34 +56,42 @@ public class EchoValidator {
 
   private static final Logger logger = LoggerFactory.getLogger(EchoValidator.class);
 
-  private final X509Certificate myTlsCertificate;
+  private final KeyPair myClientRsaKeyPair;
+  private final KeyPair myServerRsaKeyPair;
   private final KeyPair myTlsKeyPair;
+  private final X509Certificate myTlsCertificate;
+  private final Date myCredentialsDate;
+
   private final List<String> myCoveredHeiIDs;
-  private final Date myTlsCertificateDate;
 
   private final EwpDocBuilder docBuilder;
   private final Internet internet;
+  private final ManifestRepository repo;
 
   /**
    * @param docBuilder Needed for validating Echo API responses against the schemas.
    * @param internet Needed to make Echo API requests across the network.
+   * @param repo Needed to verify the tested Echo APIs configuration.
    */
   @Autowired
-  public EchoValidator(EwpDocBuilder docBuilder, Internet internet) {
+  public EchoValidator(EwpDocBuilder docBuilder, Internet internet, ManifestRepository repo) {
 
     this.docBuilder = docBuilder;
     this.internet = internet;
+    this.repo = repo;
 
     if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
       logger.debug("Registering BouncyCastle security provider");
       Security.addProvider(new BouncyCastleProvider());
     }
 
-    /* Generate the client certificate to be used. */
+    /* Generate credentials to be used. */
 
+    this.myCredentialsDate = new Date();
+    this.myClientRsaKeyPair = this.generateKeyPair();
+    this.myServerRsaKeyPair = this.generateKeyPair();
     this.myTlsKeyPair = this.generateKeyPair();
     this.myTlsCertificate = this.generateCertificate(this.myTlsKeyPair);
-    this.myTlsCertificateDate = new Date();
 
     /* Generate the IDs of the covered HEIs. */
 
@@ -85,6 +103,15 @@ public class EchoValidator {
         this.myCoveredHeiIDs.add("hei0" + i + ".developers.erasmuswithoutpaper.eu");
       }
     }
+  }
+
+  /**
+   * Similar to {@link #getTlsClientCertificateInUse()}, but for HTTPSIG keys.
+   *
+   * @return A {@link KeyPair} to be published in the Registry.
+   */
+  public RSAPublicKey getClientRsaPublicKeyInUse() {
+    return (RSAPublicKey) this.myClientRsaKeyPair.getPublic();
   }
 
   /**
@@ -101,6 +128,24 @@ public class EchoValidator {
   }
 
   /**
+   * Since it takes some time to propagate information about new client credentials, this date may
+   * be useful. If it's quite fresh, then it's an indicator that the clients might not yet be
+   * recognized by all the EWP Hosts.
+   *
+   * @return The date indicating since when the current credentials are used.
+   */
+  public Date getCredentialsGenerationDate() {
+    return new Date(this.myCredentialsDate.getTime());
+  }
+
+  /**
+   * @return A {@link KeyPair} to be published in the Registry.
+   */
+  public RSAPublicKey getServerRsaPublicKeyInUse() {
+    return (RSAPublicKey) this.myServerRsaKeyPair.getPublic();
+  }
+
+  /**
    * The {@link EchoValidator} instance needs to publish its TLS Client Certificate in the Registry
    * in order to be able to test TLS Client Certificate Authentication. This method allows other
    * services (in particular, the {@link SelfManifestProvider}) to fetch this information from us.
@@ -112,27 +157,40 @@ public class EchoValidator {
   }
 
   /**
-   * Since it takes some time to propagate information about new TLS Client Certificates, this date
-   * may be useful. If it's quite fresh, then it's an indicator that the TLS client certificate
-   * might not yet be recognized by all the EWP Hosts.
-   *
-   * @return The date indicating since when the current TLS client certificate is used.
-   */
-  public Date getTlsClientCertificateUsedSince() {
-    return new Date(this.myTlsCertificateDate.getTime());
-  }
-
-  /**
    * Run a suite of tests on the given Echo API URL.
    *
    * @param urlStr HTTPS URL pointing to the Echo API to be tested.
    * @return A list of test results.
    */
   public List<ValidationStepWithStatus> runTests(String urlStr) {
+    RegistryClient client = this.buildRegistryClient();
     EchoValidationSuite suite =
-        new EchoValidationSuite(this, this.docBuilder, this.internet, urlStr);
+        new EchoValidationSuite(this, this.docBuilder, this.internet, urlStr, client);
     suite.run();
     return suite.getResults();
+  }
+
+  private RegistryClient buildRegistryClient() {
+    ClientImplOptions options = new ClientImplOptions();
+    options.setCatalogueFetcher(new CatalogueFetcher() {
+
+      @Override
+      public RegistryResponse fetchCatalogue(String etag) throws IOException {
+        try {
+          return new Http200RegistryResponse(
+              EchoValidator.this.repo.getCatalogue().getBytes(StandardCharsets.UTF_8), null, null);
+        } catch (CatalogueNotFound e) {
+          throw new IOException(e);
+        }
+      }
+    });
+    RegistryClient client = new ClientImpl(options);
+    try {
+      client.refresh();
+    } catch (RefreshFailureException e) {
+      throw new RuntimeException(e);
+    }
+    return client;
   }
 
   X509Certificate generateCertificate(KeyPair keyPair) {
@@ -172,6 +230,14 @@ public class EchoValidator {
     }
     generator.initialize(2048);
     return generator.generateKeyPair();
+  }
+
+  KeyPair getClientRsaKeyPairInUse() {
+    return this.myClientRsaKeyPair;
+  }
+
+  KeyPair getServerRsaKeyPairInUse() {
+    return this.myServerRsaKeyPair;
   }
 
   KeyPair getTlsKeyPairInUse() {

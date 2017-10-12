@@ -33,4 +33,5 @@
     </r:apis-implemented>
     <institutions-covered/>
     <client-credentials-in-use/>
+    <server-credentials-in-use/>
 </manifest>

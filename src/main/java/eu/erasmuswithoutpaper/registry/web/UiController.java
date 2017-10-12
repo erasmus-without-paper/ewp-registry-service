@@ -2,11 +2,17 @@ package eu.erasmuswithoutpaper.registry.web;
 
 import static org.joox.JOOX.$;
 
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateEncodingException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -20,6 +26,7 @@ import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
 import eu.erasmuswithoutpaper.registry.echovalidator.EchoValidator;
 import eu.erasmuswithoutpaper.registry.echovalidator.ValidationStepWithStatus;
 import eu.erasmuswithoutpaper.registry.echovalidator.ValidationStepWithStatus.Status;
+import eu.erasmuswithoutpaper.registry.internet.Internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Internet.Response;
 import eu.erasmuswithoutpaper.registry.notifier.NotifierFlag;
 import eu.erasmuswithoutpaper.registry.notifier.NotifierService;
@@ -46,6 +53,7 @@ import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
@@ -70,6 +78,7 @@ public class UiController {
   private final UptimeChecker uptimeChecker;
   private final EwpDocBuilder docBuilder;
   private final EchoValidator echoTester;
+  private final SelfManifestProvider selfManifestProvider;
 
   /**
    * @param taskExecutor needed for running background tasks.
@@ -80,12 +89,14 @@ public class UiController {
    * @param uptimeChecker needed to display current uptime stats.
    * @param docBuilder needed to support online document validation service.
    * @param echoTester needed to support online Echo API validation service.
+   * @param selfManifestProvider needed in Echo Validator responses.
    */
   @Autowired
   public UiController(TaskExecutor taskExecutor,
       ManifestUpdateStatusRepository manifestUpdateStatuses, ManifestSourceProvider sourceProvider,
       RegistryUpdater updater, NotifierService notifier, UptimeChecker uptimeChecker,
-      EwpDocBuilder docBuilder, EchoValidator echoTester) {
+      EwpDocBuilder docBuilder, EchoValidator echoTester,
+      SelfManifestProvider selfManifestProvider) {
     this.taskExecutor = taskExecutor;
     this.manifestStatusRepo = manifestUpdateStatuses;
     this.sourceProvider = sourceProvider;
@@ -94,6 +105,7 @@ public class UiController {
     this.uptimeChecker = uptimeChecker;
     this.docBuilder = docBuilder;
     this.echoTester = echoTester;
+    this.selfManifestProvider = selfManifestProvider;
   }
 
   /**
@@ -353,24 +365,21 @@ public class UiController {
     headers.setExpires(0);
 
     JsonObject responseObj = new JsonObject();
-    JsonObject certInfo = new JsonObject();
-    responseObj.add("certInfo", certInfo);
+    JsonObject info = new JsonObject();
+    responseObj.add("info", info);
     DateFormat isoDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-    certInfo.addProperty("servedSinceDate",
-        isoDateFormat.format(this.echoTester.getTlsClientCertificateUsedSince()));
-    certInfo.addProperty("servedSinceAgeSeconds",
-        (new Date().getTime() - this.echoTester.getTlsClientCertificateUsedSince().getTime())
-            / 1000);
-    try {
-      certInfo.addProperty("sha256Digest",
-          DigestUtils.sha256Hex(this.echoTester.getTlsClientCertificateInUse().getEncoded()));
-    } catch (CertificateEncodingException e) {
-      throw new RuntimeException(e);
-    }
+    Date validationStarted = new Date();
+    info.addProperty("validationStarted", isoDateFormat.format(validationStarted));
+    Date clientKeysRegenerated = this.echoTester.getCredentialsGenerationDate();
+    info.addProperty("clientKeysRegenerated", isoDateFormat.format(clientKeysRegenerated));
+    info.addProperty("clientKeysAgeWhenValidationStartedInSeconds",
+        (validationStarted.getTime() - clientKeysRegenerated.getTime()) / 1000);
+    info.addProperty("registryManifestBody", this.selfManifestProvider.getManifest());
 
     JsonArray testsArray = new JsonArray();
     Status worstStatus = Status.SUCCESS;
-    for (ValidationStepWithStatus testResult : this.echoTester.runTests(url)) {
+    List<ValidationStepWithStatus> testResults = this.echoTester.runTests(url);
+    for (ValidationStepWithStatus testResult : testResults) {
       JsonObject testObj = new JsonObject();
       testObj.addProperty("name", testResult.getName());
       testObj.addProperty("status", testResult.getStatus().toString());
@@ -378,6 +387,7 @@ public class UiController {
         worstStatus = testResult.getStatus();
       }
       testObj.addProperty("message", testResult.getMessage());
+      testObj.add("clientRequest", this.formatClientRequestObject(testResult));
       testObj.add("serverResponse", this.formatServerResponseObject(testResult));
       testsArray.add(testObj);
     }
@@ -452,6 +462,46 @@ public class UiController {
     return new ResponseEntity<String>(json, headers, HttpStatus.OK);
   }
 
+  private JsonElement formatClientRequestObject(ValidationStepWithStatus testResult) {
+    if (!testResult.getClientRequest().isPresent()) {
+      return null;
+    }
+    Request request = testResult.getClientRequest().get();
+    JsonObject result = new JsonObject();
+    if (request.getBody().isPresent()) {
+      byte[] body = request.getBody().get();
+      result.addProperty("rawBodyBase64", Base64.encode(body));
+      CharsetDecoder decoder = StandardCharsets.UTF_8.newDecoder();
+      try {
+        CharBuffer decoded = decoder.decode(ByteBuffer.wrap(body));
+        result.addProperty("body", decoded.toString());
+      } catch (CharacterCodingException e) {
+        result.add("body", JsonNull.INSTANCE);
+      }
+    } else {
+      result.add("rawBodyBase64", JsonNull.INSTANCE);
+      result.add("body", JsonNull.INSTANCE);
+    }
+    result.addProperty("url", request.getUrl());
+    result.addProperty("method", request.getMethod());
+    JsonObject headers = new JsonObject();
+    for (Entry<String, String> entry : request.getHeaders().entrySet()) {
+      headers.addProperty(entry.getKey(), entry.getValue());
+    }
+    result.add("headers", headers);
+    if (request.getClientCertificate().isPresent()) {
+      try {
+        result.addProperty("clientCertFingerprint",
+            DigestUtils.sha256Hex(request.getClientCertificate().get().getEncoded()));
+      } catch (CertificateEncodingException e) {
+        throw new RuntimeException(e);
+      }
+    } else {
+      result.add("clientCertFingerprint", JsonNull.INSTANCE);
+    }
+    return result;
+  }
+
   private JsonObject formatServerResponseObject(ValidationStepWithStatus testResult) {
     if (!testResult.getServerResponse().isPresent()) {
       return null;
@@ -470,6 +520,11 @@ public class UiController {
     } else {
       result.add("developerMessage", JsonNull.INSTANCE);
     }
+    JsonObject headers = new JsonObject();
+    for (Entry<String, String> entry : response.getHeadersMap().entrySet()) {
+      headers.addProperty(entry.getKey(), entry.getValue());
+    }
+    result.add("headers", headers);
     return result;
   }
 

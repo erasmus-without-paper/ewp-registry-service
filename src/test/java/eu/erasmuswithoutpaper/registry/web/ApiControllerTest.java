@@ -55,16 +55,16 @@ public class ApiControllerTest extends WRTest {
 
     this.manifestSourceProvider.clearSources();
     String urlSelf, urlPL, urlSE;
-    urlSelf = "https://registry.erasmuswithoutpaper.eu/manifest.xml";
+    // urlSelf = "https://registry.erasmuswithoutpaper.eu/manifest.xml";
     urlPL = "https://schowek.usos.edu.pl/w.rygielski/ewp/uw.edu.pl/manifest.xml";
     urlSE = "https://schowek.usos.edu.pl/w.rygielski/ewp/ladok.se/manifest.xml";
-    this.manifestSourceProvider.addSource(ManifestSource.newTrustedSource(urlSelf));
+    // this.manifestSourceProvider.addSource(ManifestSource.newTrustedSource(urlSelf));
     this.manifestSourceProvider.addSource(ManifestSource.newRegularSource(urlPL,
         Lists.newArrayList(new RestrictInstitutionsCovered("^uw\\.edu\\.pl$"))));
     this.manifestSourceProvider.addSource(ManifestSource.newRegularSource(urlSE,
         Lists.newArrayList(new RestrictInstitutionsCovered("^.+\\.se$"))));
     this.repo.deleteAll();
-    this.internet.putURL(urlSelf, this.apiController.getSelfManifest().getBody());
+    // this.internet.putURL(urlSelf, this.apiController.getSelfManifest().getBody());
 
     /* Call the refresh URL and verify its contents. */
 
@@ -78,8 +78,9 @@ public class ApiControllerTest extends WRTest {
      * [Test A] At first, the catalogue should be empty, because none of the URLs was reachable.
      */
 
-    assertThat(this.getCatalogueBody()).isEqualTo(this.getFileAsString("demo1/A-out.xml"));
-    assertThat(this.status(urlSelf)).contains("Last access status: OK");
+    assertThat(this.getCatalogueBodyWithoutBinaries())
+        .isEqualTo(this.getFileAsString("demo1/A-out.xml"));
+    // assertThat(this.status(urlSelf)).contains("Last access status: OK");
     assertThat(this.status(urlPL)).contains("unable to fetch");
     assertThat(this.status(urlSE)).contains("unable to fetch");
 
@@ -89,12 +90,14 @@ public class ApiControllerTest extends WRTest {
 
     /* The calogue is not yet refreshed, because we didn't call refresh. */
 
-    assertThat(this.getCatalogueBody()).isEqualTo(this.getFileAsString("demo1/A-out.xml"));
+    assertThat(this.getCatalogueBodyWithoutBinaries())
+        .isEqualTo(this.getFileAsString("demo1/A-out.xml"));
 
     /* Refresh it. */
 
     this.uiController.refresh();
-    assertThat(this.getCatalogueBody()).isEqualTo(this.getFileAsString("demo1/B-out.xml"));
+    assertThat(this.getCatalogueBodyWithoutBinaries())
+        .isEqualTo(this.getFileAsString("demo1/B-out.xml"));
     assertThat(this.status(urlPL)).contains("Last access status: OK");
     assertThat(this.status(urlPL)).doesNotContain("unable to fetch");
 
@@ -102,25 +105,29 @@ public class ApiControllerTest extends WRTest {
 
     this.internet.putURL(urlPL, this.getFile("demo1/C-inPL.xml"));
     this.uiController.refresh();
-    assertThat(this.getCatalogueBody()).isEqualTo(this.getFileAsString("demo1/C-out.xml"));
+    assertThat(this.getCatalogueBodyWithoutBinaries())
+        .isEqualTo(this.getFileAsString("demo1/C-out.xml"));
 
     /* [Test D] Put a similar manifest into the Swedish URL. We'll use two HEIs this time. */
 
     this.internet.putURL(urlSE, this.getFile("demo1/D-inSE.xml"));
     this.uiController.refresh();
-    assertThat(this.getCatalogueBody()).isEqualTo(this.getFileAsString("demo1/D-out.xml"));
+    assertThat(this.getCatalogueBodyWithoutBinaries())
+        .isEqualTo(this.getFileAsString("demo1/D-out.xml"));
 
     /* [Test E] Add some API definitions - Echo API and some arbitrary API. */
 
     this.internet.putURL(urlSE, this.getFile("demo1/E-inSE.xml"));
     this.uiController.refresh();
-    assertThat(this.getCatalogueBody()).isEqualTo(this.getFileAsString("demo1/E-out.xml"));
+    assertThat(this.getCatalogueBodyWithoutBinaries())
+        .isEqualTo(this.getFileAsString("demo1/E-out.xml"));
 
     /* [Test F] Try to use suspicious TLS client certificates (2 invalid, 1 obsolete). */
 
     this.internet.putURL(urlSE, this.getFile("demo1/F-inSE.xml"));
     this.uiController.refresh();
-    assertThat(this.getCatalogueBody()).isEqualTo(this.getFileAsString("demo1/F-out.xml"));
+    assertThat(this.getCatalogueBodyWithoutBinaries())
+        .isEqualTo(this.getFileAsString("demo1/F-out.xml"));
     assertThat(this.status(urlSE))
         .contains("minimum required length of TLS client certificate key is 1024 bits");
     assertThat(this.status(urlSE))
@@ -136,13 +143,15 @@ public class ApiControllerTest extends WRTest {
 
     this.internet.putURL(urlSE, this.getFile("demo1/G-inSE.xml"));
     this.uiController.refresh();
-    assertThat(this.getCatalogueBody()).isEqualTo(this.getFileAsString("demo1/G-out.xml"));
+    assertThat(this.getCatalogueBodyWithoutBinaries())
+        .isEqualTo(this.getFileAsString("demo1/G-out.xml"));
 
     /* [Test H] Try to invade Poland. */
 
     this.internet.putURL(urlSE, this.getFile("demo1/H-inSE.xml"));
     this.uiController.refresh();
-    assertThat(this.getCatalogueBody()).isEqualTo(this.getFileAsString("demo1/G-out.xml"));
+    assertThat(this.getCatalogueBodyWithoutBinaries())
+        .isEqualTo(this.getFileAsString("demo1/G-out.xml"));
     assertThat(this.status(urlSE)).contains(
         "Institution <code>uw.edu.pl</code> didn't match the <code>^.+\\.se$</code> filter pattern");
 
@@ -158,7 +167,8 @@ public class ApiControllerTest extends WRTest {
     this.internet.putURL(urlPL2, this.getFile("demo1/I-inPL2.xml"));
     this.uiController.refresh();
     assertThat(this.status(urlPL2)).contains("Last access status: OK");
-    assertThat(this.getCatalogueBody()).isEqualTo(this.getFileAsString("demo1/I-out.xml"));
+    assertThat(this.getCatalogueBodyWithoutBinaries())
+        .isEqualTo(this.getFileAsString("demo1/I-out.xml"));
 
     /*
      * [Test J] Add the <hack-attempt> element to the manifest source. Expect the hack to be
@@ -168,15 +178,21 @@ public class ApiControllerTest extends WRTest {
     this.internet.putURL(urlPL2, this.getFile("demo1/J-inPL2.xml"));
     this.uiController.refresh();
     assertThat(this.status(urlPL2)).contains("Last access status: Warning");
-    assertThat(this.getCatalogueBody()).isEqualTo(this.getFileAsString("demo1/J-out.xml"));
+    assertThat(this.getCatalogueBodyWithoutBinaries())
+        .isEqualTo(this.getFileAsString("demo1/J-out.xml"));
   }
 
   /**
-   * @return Catalogue body with TLS client certificates' fingerprints replaced with zeroes.
+   * @return Catalogue body with all binary content replaced with placeholders.
    */
-  private String getCatalogueBody() {
-    return this.apiController.getCatalogue().getBody().replaceAll("\"[0-9a-f]{64,64}\"",
-        "\"0000000000000000000000000000000000000000000000000000000000000000\"");
+  private String getCatalogueBodyWithoutBinaries() {
+    String body = this.apiController.getCatalogue().getBody();
+    // Replace fingerprints
+    body = body.replaceAll("\"[0-9a-f]{64,64}\"", "\"(SHA-256 fingerprint here)\"");
+    // Replace base64 values... (this one is hackish, but it's enough for tests).
+    body = body.replaceAll(">\\n(            [^ <>]+\n)+        <",
+        ">\n            (Base64-encoded content here)\n        <");
+    return body;
   }
 
   /**

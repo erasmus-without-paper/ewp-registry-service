@@ -1,11 +1,19 @@
 package eu.erasmuswithoutpaper.registry.echovalidator;
 
+import static org.joox.JOOX.$;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.Optional;
 
 import eu.erasmuswithoutpaper.registry.internet.Internet;
+import eu.erasmuswithoutpaper.registry.internet.Internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Internet.Response;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.joox.Match;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 /**
  * Our internal base class for quickly creating validation steps implementing the
@@ -47,7 +55,13 @@ abstract class InlineValidationStep implements ValidationStepWithStatus {
 
   private Status status = Status.PENDING;
   private String message = null;
+  protected Internet.Request request = null;
   private Internet.Response serverResponse = null;
+
+  @Override
+  public Optional<Request> getClientRequest() {
+    return Optional.ofNullable(this.request);
+  }
 
   @Override
   public String getMessage() {
@@ -55,6 +69,26 @@ abstract class InlineValidationStep implements ValidationStepWithStatus {
       return this.message;
     } else {
       return "OK";
+    }
+  }
+
+  @Override
+  public Optional<String> getServerDeveloperErrorMessage() {
+    if (!this.getServerResponse().isPresent()) {
+      return Optional.empty();
+    }
+
+    Document document;
+    try {
+      document = $(new ByteArrayInputStream(this.getServerResponse().get().getBody())).document();
+    } catch (SAXException | IOException e) {
+      return Optional.of("Error while parsing XML response: " + e.getMessage());
+    }
+    Match root = $(document);
+    if (root.find("developer-message").isNotEmpty()) {
+      return Optional.of(root.find("developer-message").text());
+    } else {
+      return Optional.empty();
     }
   }
 

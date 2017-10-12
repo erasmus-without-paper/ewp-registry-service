@@ -17,6 +17,11 @@ public interface ValidationStepWithStatus {
   }
 
   /**
+   * @return Optional request, as sent to the server.
+   */
+  Optional<Internet.Request> getClientRequest();
+
+  /**
    * @return The message to be displayed as the result of the validation step.
    */
   String getMessage();
@@ -25,6 +30,11 @@ public interface ValidationStepWithStatus {
    * @return The name (label) of this validation step.
    */
   String getName();
+
+  /**
+   * @return Optional error message, as parsed from {@link #getServerResponse()}.
+   */
+  Optional<String> getServerDeveloperErrorMessage();
 
   /**
    * @return Optional response, as returned by server.

@@ -166,6 +166,76 @@ public class KnownNamespace {
       new KnownNamespace("iac2", "api-iia-cnr/blob/stable-v2/manifest-entry.xsd",
           "api-iia-cnr/stable-v2/manifest-entry.xsd", true);
 
+  /**
+   * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-sec-intro/blob/stable-v2/schema.xsd'>here
+   * </a>.
+   */
+  public static final KnownNamespace SEC_V2_COMMON =
+      new KnownNamespace("sec", "sec-intro/tree/stable-v2", "sec-intro/stable-v2/schema.xsd", true);
+
+  /**
+   * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-sec-cliauth-none/blob/stable-v1/security-entries.xsd'>
+   * here</a>.
+   */
+  public static final KnownNamespace SECENTRY_CLIAUTH_NONE_V1 = new KnownNamespace("sec-A0",
+      "sec-cliauth-none/tree/stable-v1", "sec-cliauth-none/stable-v1/security-entries.xsd", true);
+
+  /**
+   * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-sec-cliauth-tlscert/blob/stable-v1/security-entries.xsd'>
+   * here</a>.
+   */
+  public static final KnownNamespace SECENTRY_CLIAUTH_TLSCERT_V1 =
+      new KnownNamespace("sec-A1", "sec-cliauth-tlscert/tree/stable-v1",
+          "sec-cliauth-tlscert/stable-v1/security-entries.xsd", true);
+
+  /**
+   * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-sec-cliauth-httpsig/blob/master/security-entries.xsd'>
+   * here</a>.
+   */ // WRTODO: master->stable!
+  public static final KnownNamespace SECENTRY_CLIAUTH_HTTPSIG_V1 =
+      new KnownNamespace("sec-A2", "sec-cliauth-httpsig/tree/stable-v1",
+          "sec-cliauth-httpsig/master/security-entries.xsd", false);
+  // WRTODO: 1. false->true 2. master->stable
+
+  /**
+   * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-sec-srvauth-tlscert/blob/stable-v1/security-entries.xsd'>
+   * here</a>.
+   */
+  public static final KnownNamespace SECENTRY_SRVAUTH_TLSCERT_V1 =
+      new KnownNamespace("sec-B1", "sec-srvauth-tlscert/tree/stable-v1",
+          "sec-srvauth-tlscert/stable-v1/security-entries.xsd", true);
+
+  /**
+   * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-sec-srvauth-httpsig/blob/master/security-entries.xsd'>
+   * here</a>.
+   */ // WRTODO: master->stable!
+  public static final KnownNamespace SECENTRY_SRVAUTH_HTTPSIG_V1 =
+      new KnownNamespace("sec-B2", "sec-srvauth-httpsig/tree/stable-v1",
+          "sec-srvauth-httpsig/master/security-entries.xsd", false);
+  // WRTODO: 1. false->true 2. master->stable
+
+  /**
+   * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-sec-reqencr-tls/blob/stable-v1/security-entries.xsd'>
+   * here</a>.
+   */
+  public static final KnownNamespace SECENTRY_REQENCR_TLS_V1 = new KnownNamespace("sec-C1",
+      "sec-reqencr-tls/tree/stable-v1", "sec-reqencr-tls/stable-v1/security-entries.xsd", true);
+
+  /**
+   * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-sec-resencr-tls/blob/stable-v1/security-entries.xsd'>
+   * here</a>.
+   */
+  public static final KnownNamespace SECENTRY_RESENCR_TLS_V1 = new KnownNamespace("sec-D1",
+      "sec-resencr-tls/tree/stable-v1", "sec-resencr-tls/stable-v1/security-entries.xsd", true);
+
   private static final String COMMON_URI_PREFIX =
       "https://github.com/erasmus-without-paper/ewp-specs-";
   private static final String COMMON_SCHEMA_LOCATION_PREFIX =
@@ -180,6 +250,9 @@ public class KnownNamespace {
     map_prefix2uri = new HashMap<>(values.size());
     for (KnownNamespace ns : values) {
       map_uri2ns.put(ns.getNamespaceUri(), ns);
+      if (map_prefix2uri.containsKey(ns.getPreferredPrefix())) {
+        throw new RuntimeException("Namespace prefix conflict: " + ns.getPreferredPrefix());
+      }
       map_prefix2uri.put(ns.getPreferredPrefix(), ns.getNamespaceUri());
     }
   }
@@ -240,7 +313,13 @@ public class KnownNamespace {
       boolean includeInCatalogueXmlns) {
     this.preferredPrefix = preferredPrefix;
     this.uriEnding = uriEnding;
+    if (this.uriEnding.startsWith("ewp-specs-")) {
+      throw new RuntimeException("Drop the 'ewp-specs-' prefix!");
+    }
     this.schemaLocEnding = schemaLocEnding;
+    if (this.schemaLocEnding.startsWith("ewp-specs-")) {
+      throw new RuntimeException("Drop the 'ewp-specs-' prefix!");
+    }
     this.includeInCatalogueXmlns = includeInCatalogueXmlns;
   }
 

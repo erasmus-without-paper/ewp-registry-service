@@ -45,6 +45,8 @@ public class SelfManifestProvider {
   private final XmlFormatter formatter;
   private final List<String> adminEmails;
   private final String echoTesterCertEncoded;
+  private final String echoTesterClientRsaPublicKeyEncoded;
+  private final String echoTesterServerRsaPublicKeyEncoded;
   private final List<String> echoTesterHeiIDs;
 
   private volatile String cached = null;
@@ -71,6 +73,12 @@ public class SelfManifestProvider {
     } catch (CertificateEncodingException e) {
       throw new RuntimeException(e);
     }
+    this.echoTesterClientRsaPublicKeyEncoded =
+        new String(Base64.encodeBase64(echoTester.getClientRsaPublicKeyInUse().getEncoded()),
+            StandardCharsets.US_ASCII);
+    this.echoTesterServerRsaPublicKeyEncoded =
+        new String(Base64.encodeBase64(echoTester.getServerRsaPublicKeyInUse().getEncoded()),
+            StandardCharsets.US_ASCII);
     this.echoTesterHeiIDs = echoTester.getCoveredHeiIDs();
   }
 
@@ -137,14 +145,27 @@ public class SelfManifestProvider {
       heisCoveredElem.appendChild(heiElem);
     }
 
-    // Add TLS client certificates in use.
+    // Add client credentials in use.
 
-    Element credentialsElem = (Element) rootElem.getElementsByTagNameNS(
+    Element cliCredentialsElem = (Element) rootElem.getElementsByTagNameNS(
         KnownNamespace.RESPONSE_MANIFEST_V4.getNamespaceUri(), "client-credentials-in-use").item(0);
     Element certElem =
         doc.createElementNS(KnownNamespace.RESPONSE_MANIFEST_V4.getNamespaceUri(), "certificate");
     certElem.setTextContent(this.echoTesterCertEncoded);
-    credentialsElem.appendChild(certElem);
+    cliCredentialsElem.appendChild(certElem);
+    Element rsaKeyElem = doc.createElementNS(KnownNamespace.RESPONSE_MANIFEST_V4.getNamespaceUri(),
+        "rsa-public-key");
+    rsaKeyElem.setTextContent(this.echoTesterClientRsaPublicKeyEncoded);
+    cliCredentialsElem.appendChild(rsaKeyElem);
+
+    // Add server credentials in use.
+
+    Element srvCredentialsElem = (Element) rootElem.getElementsByTagNameNS(
+        KnownNamespace.RESPONSE_MANIFEST_V4.getNamespaceUri(), "server-credentials-in-use").item(0);
+    Element srvKeyElem = doc.createElementNS(KnownNamespace.RESPONSE_MANIFEST_V4.getNamespaceUri(),
+        "rsa-public-key");
+    srvKeyElem.setTextContent(this.echoTesterServerRsaPublicKeyEncoded);
+    srvCredentialsElem.appendChild(srvKeyElem);
 
     // Reformat.
 

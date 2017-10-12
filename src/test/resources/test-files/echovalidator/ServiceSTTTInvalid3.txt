@@ -1,0 +1,49 @@
+
+### NOTICE: Check if our TLS client certificate has been served long enough.
+
+Our TLS client certificate is quite fresh. This means that many Echo APIs will (correctly) return error responses in places where we expect HTTP 200. This notice will disappear once the certificate is 10 minutes old.
+
+
+### SUCCESS: Verifying the format of the URL. Expecting a valid HTTPS-scheme URL.
+
+### FAILURE: Accessing your Echo API without any form of client authentication. Expecting to receive a valid HTTP 401 or HTTP 403 error response.
+
+HTTP 401 or HTTP 403 expected, but HTTP 500 received.
+Expecting client certificate.
+
+
+### SUCCESS: Verifying if the URL is properly registered.
+
+### WARNING: Querying for supported security methods. Validating http-security integrity.
+
+Warnings:
+- It is RECOMMENDED for all EWP server endpoints to support HTTP Signature Client Authentication. Your endpoint doesn't.
+
+
+
+
+### SUCCESS: Trying TLS Client Certificate Authentication with a GET request, and without any additional parameters. Expecting to receive a valid HTTP 200 Echo API response with proper hei-ids, and without any echo values.
+### SUCCESS: Trying TLS Client Certificate Authentication with a POST request, and without any additional parameters. Expecting to receive a valid HTTP 200 Echo API response with proper hei-ids, and without any echo values.
+
+### FAILURE: Trying TLS Client Certificate Authentication with an unknown TLS client certificate (a random one, that has never been published in the Registry). Expecting to receive a valid HTTP 401 or HTTP 403 error response.
+
+HTTP 401 or HTTP 403 expected, but HTTP 500 received.
+Unknown client certificate.
+
+
+
+### FAILURE: Trying TLS Client Certificate Authentication with a PUT request. Expecting to receive a valid HTTP 405 error response.
+
+HTTP 405 expected, but HTTP 500 received.
+We expect GETs and POSTs only
+
+
+
+### FAILURE: Trying TLS Client Certificate Authentication with a DELETE request. Expecting to receive a valid HTTP 405 error response.
+
+HTTP 405 expected, but HTTP 500 received.
+We expect GETs and POSTs only
+
+
+### SUCCESS: Trying TLS Client Certificate Authentication GET request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.
+### SUCCESS: Trying TLS Client Certificate Authentication POST request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.

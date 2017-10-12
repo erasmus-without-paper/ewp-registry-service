@@ -111,7 +111,7 @@ public class FakeInternet implements Internet {
     byte[] value = this.map.get(request.getUrl());
     if (value != null) {
       // Found this URL in our URL map. Creating a virtual response instance.
-      responses.add(new Response(200, value));
+      responses.add(new Response(request, 200, value));
     }
     for (FakeInternetService service : this.services) {
       try {

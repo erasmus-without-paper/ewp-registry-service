@@ -1,5 +1,7 @@
 package eu.erasmuswithoutpaper.registry;
 
+import java.util.Locale;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
@@ -42,6 +44,7 @@ public class Application {
    * @param args Command-line arguments.
    */
   public static void main(String[] args) {
+    Locale.setDefault(Locale.US);
     SpringApplication app = new SpringApplication(Application.class);
     app.run(args);
   }

@@ -1,0 +1,39 @@
+
+### NOTICE: Check if our TLS client certificate has been served long enough.
+
+Our TLS client certificate is quite fresh. This means that many Echo APIs will (correctly) return error responses in places where we expect HTTP 200. This notice will disappear once the certificate is 10 minutes old.
+
+
+### SUCCESS: Verifying the format of the URL. Expecting a valid HTTPS-scheme URL.
+### SUCCESS: Accessing your Echo API without any form of client authentication. Expecting to receive a valid HTTP 401 or HTTP 403 error response.
+### SUCCESS: Verifying if the URL is properly registered.
+
+### NOTICE: Querying for supported security methods. Validating http-security integrity.
+
+Notices:
+- This endpoint does not support TLS Certificate Client Authentication. It is not required to support it, but it might be a good idea to keep supporting it for some time (until all clients begin to support HTTPSIG).
+
+
+
+
+### SUCCESS: Trying HTTPSIG Client Authentication with a GET request, and without any additional parameters. Expecting to receive a valid HTTP 200 Echo API response with proper hei-ids, and without any echo values.
+### SUCCESS: Trying HTTPSIG Client Authentication with a POST request, and without any additional parameters. Expecting to receive a valid HTTP 200 Echo API response with proper hei-ids, and without any echo values.
+### SUCCESS: Trying HTTPSIG Client Authentication with an unknown RSA client key (a random one, that has never been published in the Registry). Expecting to receive a valid HTTP 401 or HTTP 403 error response.
+### SUCCESS: Trying HTTPSIG Client Authentication with a known keyId, but invalid signature. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
+### SUCCESS: Trying HTTPSIG Client Authentication with missing headers that were supposed to be signed. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
+### SUCCESS: Trying HTTPSIG Client Authentication with Original-Date (instead of Date). Expecting to receive a valid HTTP 200 response.
+### SUCCESS: Trying HTTPSIG Client Authentication with unsigned (request-target) header. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
+### SUCCESS: Trying HTTPSIG Client Authentication with unsigned host header. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
+### SUCCESS: Trying HTTPSIG Client Authentication with unsigned date header. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
+### SUCCESS: Trying HTTPSIG Client Authentication with unsigned digest header. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
+### SUCCESS: Trying HTTPSIG Client Authentication with unsigned x-request-id header. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
+### SUCCESS: Trying HTTPSIG Client Authentication with some extra unknown, but properly signed headers. Expecting to receive a valid HTTP 200 response.
+### SUCCESS: Trying HTTPSIG Client Authentication signed with a server key, instead of a client key. Expecting to receive a valid HTTP 403 error response.
+### SUCCESS: Trying HTTPSIG Client Authentication with an unsynchronized clock (Original-Date 20 minutes in the past). Expecting to receive a valid HTTP 400 error response.
+### SUCCESS: Trying HTTPSIG Client Authentication with non-canonical X-Request-ID. Expecting to receive a valid HTTP 400 error response.
+### SUCCESS: Trying HTTPSIG Client Authentication with an invalid Digest. Expecting to receive a valid HTTP 400 error response.
+### SUCCESS: Trying HTTPSIG Client Authentication with multiple Digests (one of which is SHA-256). Expecting to receive a valid HTTP 200 response.
+### SUCCESS: Trying HTTPSIG Client Authentication with a PUT request. Expecting to receive a valid HTTP 405 error response.
+### SUCCESS: Trying HTTPSIG Client Authentication with a DELETE request. Expecting to receive a valid HTTP 405 error response.
+### SUCCESS: Trying HTTPSIG Client Authentication GET request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.
+### SUCCESS: Trying HTTPSIG Client Authentication POST request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.

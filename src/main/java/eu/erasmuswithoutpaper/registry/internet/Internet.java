@@ -1,15 +1,31 @@
 package eu.erasmuswithoutpaper.registry.internet;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Base64;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import net.adamcin.httpsig.api.Algorithm;
+import net.adamcin.httpsig.api.Authorization;
+import net.adamcin.httpsig.api.Challenge;
+import net.adamcin.httpsig.api.DefaultKeychain;
+import net.adamcin.httpsig.api.Key;
+import net.adamcin.httpsig.api.RequestContent;
+import net.adamcin.httpsig.api.Signer;
+import org.apache.commons.codec.digest.DigestUtils;
 
 /**
  * This interface will be used by all the other services for accessing resources over the Internet.
@@ -25,10 +41,11 @@ public interface Internet {
    * </p>
    */
   class Request {
+
     private String method;
     private String url;
     private Optional<byte[]> body;
-    private Optional<List<String>> headers;
+    private final Map<String, String> headers;
     private Optional<X509Certificate> clientCertificate;
     private Optional<KeyPair> keyPair;
 
@@ -36,15 +53,23 @@ public interface Internet {
       this.method = method;
       this.url = url;
       this.body = Optional.empty();
-      this.headers = Optional.empty();
+      this.headers = new HashMap<>();
       this.clientCertificate = Optional.empty();
     }
 
-    public void addHeader(String header) {
-      if (!this.headers.isPresent()) {
-        this.headers = Optional.of(new ArrayList<String>());
+    /**
+     * @return Base64-encoded SHA-256 digest of request's body (if there's no body, then it's a
+     *         digest of an empty byte-array).
+     */
+    public String computeBodyDigest() {
+      byte[] body;
+      if (this.getBody().isPresent()) {
+        body = this.getBody().get();
+      } else {
+        body = new byte[0];
       }
-      this.headers.get().add(header);
+      byte[] binaryDigest = DigestUtils.sha256(body);
+      return Base64.getEncoder().encodeToString(binaryDigest);
     }
 
     public Optional<byte[]> getBody() {
@@ -55,20 +80,88 @@ public interface Internet {
       return clientCertificate;
     }
 
-    public Optional<List<String>> getHeaders() {
-      return headers;
+    public Optional<KeyPair> getClientCertificateKeyPair() {
+      return keyPair;
     }
 
-    public Optional<KeyPair> getKeyPair() {
-      return keyPair;
+    public String getHeader(String key) {
+      return this.headers.get(key.toLowerCase(Locale.US));
+    }
+
+    public Map<String, String> getHeaders() {
+      return Collections.unmodifiableMap(this.headers);
     }
 
     public String getMethod() {
       return method;
     }
 
+    /**
+     * Extract path from request's URL.
+     *
+     * @return ":path" pseudoheader, as specified in HTTP/2, Section 8.1.2.3
+     *         (https://tools.ietf.org/html/rfc7540#section-8.1.2.3).
+     */
+    public String getPathPseudoHeader() {
+      try {
+        URL parsed = new URL(this.url);
+        StringBuilder sb = new StringBuilder();
+        sb.append(parsed.getPath());
+        if (parsed.getQuery() != null) {
+          sb.append('?');
+          sb.append(parsed.getQuery());
+        }
+        if (sb.length() == 0) {
+          sb.append('/');
+        }
+        return sb.toString();
+      } catch (MalformedURLException e) {
+        throw new RuntimeException(e);
+      }
+    }
+
     public String getUrl() {
       return url;
+    }
+
+    public void putHeader(String key, String value) {
+      this.headers.put(key.toLowerCase(Locale.US), value);
+    }
+
+    public void recomputeAndAttachDigestHeader() {
+      this.putHeader("Digest", "SHA-256=" + this.computeBodyDigest());
+    }
+
+    public void recomputeAndAttachHttpSigAuthorizationHeader(String keyId, KeyPair keyPair,
+        List<String> headersToSign) {
+
+      DefaultKeychain keychain = new DefaultKeychain();
+      Key kckey = new HttpSigRsaKeyPair(keyId, keyPair);
+      keychain.add(kckey);
+      Signer signer = new Signer(keychain);
+      List<String> headersSigned = new ArrayList<>(headersToSign);
+      if (headersSigned.size() == 0) {
+        headersSigned.add("date");
+      }
+      signer.rotateKeys(
+          new Challenge("Not verified", headersSigned, Lists.newArrayList(Algorithm.RSA_SHA256)));
+
+      RequestContent.Builder rcb = new RequestContent.Builder();
+      rcb.setRequestTarget(this.getMethod(), this.getPathPseudoHeader());
+      for (Map.Entry<String, String> entry : this.headers.entrySet()) {
+        rcb.addHeader(entry.getKey(), entry.getValue());
+      }
+      RequestContent content = rcb.build();
+
+      Authorization authz = signer.sign(content, headersSigned);
+      if (authz == null) {
+        throw new RuntimeException("Could not sign");
+      }
+      this.putHeader("Authorization", authz.getHeaderValue());
+    }
+
+    public void removeHeader(String key) {
+      this.headers.remove(key.toLowerCase(Locale.US));
     }
 
     /**
@@ -76,7 +169,7 @@ public interface Internet {
      *        this often contains x-www-form-urlencoded set of parameters).
      */
     public void setBody(byte[] body) {
-      this.body = Optional.of(body);
+      this.body = Optional.ofNullable(body);
     }
 
     /**
@@ -85,16 +178,8 @@ public interface Internet {
      * @param keyPair The key-pair for which the certificate has been generated.
      */
     public void setClientCertificate(X509Certificate clientCertificate, KeyPair keyPair) {
-      this.clientCertificate = Optional.of(clientCertificate);
-      this.keyPair = Optional.of(keyPair);
-    }
-
-    /**
-     * @param headers The list of headers to be sent along the request (in case of POST requests,
-     *        this often contains "Content-Type: application/x-www-form-urlencoded").
-     */
-    public void setHeaders(List<String> headers) {
-      this.headers = Optional.of(headers);
+      this.clientCertificate = Optional.ofNullable(clientCertificate);
+      this.keyPair = Optional.ofNullable(keyPair);
     }
 
     /**
@@ -117,25 +202,67 @@ public interface Internet {
    * Represents an "advanced" HTTP response.
    */
   class Response {
+
+    private static String getSignatureFromAuthorization(String authz) {
+      // We need this helper because the library we use wasn't optimized for
+      // server signatures (signature.toString() produces output which is valid
+      // for the Authorization header, but not for the Signature header).
+      String result = authz;
+      String start = "signature ";
+      String prefix = result.substring(0, start.length()).toLowerCase(Locale.US);
+      if (prefix.equals(start)) {
+        result = result.substring(start.length());
+      }
+      return result.trim();
+    }
+
+    private final Request initialRequest;
     private final int status;
     private final byte[] body;
-    private final Map<String, List<String>> headers;
 
-    public Response(int status, byte[] body) {
-      this(status, body, Maps.newHashMap());
+    private final Map<String, String> headers;
+
+    public Response(Request initialRequest, int status, byte[] body) {
+      this(initialRequest, status, body, Maps.newHashMap());
     }
 
-    public Response(int status, byte[] body, Map<String, List<String>> headers) {
+    public Response(Request initialRequest, int status, byte[] body,
+        Map<String, String> initialHeaders) {
+      this.initialRequest = initialRequest;
       this.status = status;
       this.body = body.clone();
-      this.headers = headers;
+      this.headers = Maps.newHashMap();
+      for (Entry<String, String> entry : initialHeaders.entrySet()) {
+        this.putHeader(entry.getKey(), entry.getValue());
+      }
     }
 
-    /**
-     * @return List of response headers. Each is a string in the "Key: Value" form.
-     */
-    public Map<String, List<String>> getAllHeaders() {
-      return headers;
+    public void generateDigest() {
+      byte[] binaryDigest = DigestUtils.sha256(this.body);
+      String base64digest = Base64.getEncoder().encodeToString(binaryDigest);
+      this.putHeader("Digest", "SHA-256=" + base64digest);
+    }
+
+    public void generateHttpSigSignatureHeader(String keyId, KeyPair keyPair,
+        ArrayList<String> headersToSign) {
+
+      RequestContent.Builder rcb = new RequestContent.Builder();
+      rcb.setRequestTarget(this.initialRequest.getMethod(),
+          this.initialRequest.getPathPseudoHeader());
+      for (Map.Entry<String, String> entry : this.headers.entrySet()) {
+        rcb.addHeader(entry.getKey(), entry.getValue());
+      }
+      RequestContent content = rcb.build();
+
+      DefaultKeychain keychain = new DefaultKeychain();
+      Key kckey = new HttpSigRsaKeyPair(keyId, keyPair);
+      keychain.add(kckey);
+      Signer signer = new Signer(keychain);
+
+      Authorization authz = signer.sign(content, headersToSign);
+      if (authz != null) {
+        this.putHeader("Signature", getSignatureFromAuthorization(authz.getHeaderValue()));
+      }
     }
 
     /**
@@ -144,14 +271,32 @@ public interface Internet {
      */
     @SuppressFBWarnings(value = "EI_EXPOSE_REP")
     public byte[] getBody() {
-      return body;
+      return this.body;
+    }
+
+    public String getHeader(String key) {
+      return this.headers.get(key.toLowerCase(Locale.US));
+    }
+
+    public Map<String, String> getHeadersMap() {
+      return Collections.unmodifiableMap(this.headers);
     }
 
     /**
      * @return The HTTP status returned by the endpoint.
      */
     public int getStatus() {
-      return status;
+      return this.status;
+    }
+
+    public void putHeader(String key, String value) {
+      if (key != null) {
+        this.headers.put(key.toLowerCase(Locale.US), value);
+      }
+    }
+
+    public void removeHeader(String key) {
+      this.headers.remove(key.toLowerCase(Locale.US));
     }
   }
 

@@ -7,6 +7,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -116,18 +117,15 @@ public class RealInternet implements Internet {
     if (request.getClientCertificate().isPresent()) {
       // If certificate is present, then key-pair is also present.
       client = new SimpleEwpClient(request.getClientCertificate().get(),
-          request.getKeyPair().get().getPrivate());
+          request.getClientCertificateKeyPair().get().getPrivate());
     } else {
       client = new SimpleEwpClient(null, null);
     }
     URL url = new URL(request.getUrl());
     HttpsURLConnection conn = client.newConnection(url);
     conn.setRequestMethod(request.getMethod());
-    if (request.getHeaders().isPresent()) {
-      for (String header : request.getHeaders().get()) {
-        String[] splitted = header.split(": ?", 2);
-        conn.setRequestProperty(splitted[0], splitted[1]);
-      }
+    for (Map.Entry<String, String> entry : request.getHeaders().entrySet()) {
+      conn.setRequestProperty(entry.getKey(), entry.getValue());
     }
     if (request.getBody().isPresent()) {
       conn.setDoOutput(true);
@@ -143,7 +141,7 @@ public class RealInternet implements Internet {
     final int status = conn.getResponseCode();
 
     // Headers
-    final Map<String, List<String>> headers = conn.getHeaderFields();
+    final Map<String, String> headers = this.convertCommas(conn.getHeaderFields());
 
     // Body
     InputStream bodyStream = conn.getErrorStream();
@@ -154,7 +152,7 @@ public class RealInternet implements Internet {
 
     conn.disconnect();
 
-    return new Response(status, body, headers);
+    return new Response(request, status, body, headers);
   }
 
   @Override
@@ -169,6 +167,14 @@ public class RealInternet implements Internet {
         RealInternet.this.sendEmail(recipients, subject, contents);
       }
     });
+  }
+
+  private Map<String, String> convertCommas(Map<String, List<String>> headerFields) {
+    Map<String, String> result = new HashMap<>();
+    for (Map.Entry<String, List<String>> entry : headerFields.entrySet()) {
+      result.put(entry.getKey(), String.join(", ", entry.getValue()));
+    }
+    return result;
   }
 
   private void sendEmail(List<String> recipients, String subject, String contents) {

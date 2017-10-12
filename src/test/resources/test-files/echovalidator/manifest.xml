@@ -1,0 +1,75 @@
+<manifest
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/tree/stable-v4"
+    xmlns:r="https://github.com/erasmus-without-paper/ewp-specs-api-registry/tree/stable-v1"
+    xmlns:sec="https://github.com/erasmus-without-paper/ewp-specs-sec-intro/tree/stable-v2"
+>
+    <r:apis-implemented>
+        <discovery
+            xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/blob/stable-v4/manifest-entry.xsd"
+            version="4.1.0"
+        >
+            <url>https://university.example.com/manifest.xml</url>
+        </discovery>
+        <echo
+            xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-echo/blob/stable-v1/manifest-entry.xsd"
+            version="1.1.1"
+        >
+            <url>https://university.example.com/echo/v1/</url>
+        </echo>
+        <echo
+            xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-echo/blob/stable-v2/manifest-entry.xsd"
+            version="2.0.0"
+        >
+            <url>https://university.example.com/echo/STTT/</url>
+        </echo>
+        <echo
+            xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-echo/blob/stable-v2/manifest-entry.xsd"
+            version="2.0.0"
+        >
+            <http-security>
+                <sec:client-auth-methods>
+                    <tlscert
+                        xmlns="https://github.com/erasmus-without-paper/ewp-specs-sec-cliauth-tlscert/tree/stable-v1"
+                        allows-self-signed="false"
+                    />
+                </sec:client-auth-methods>
+                <sec:server-auth-methods>
+                    <tlscert xmlns="https://github.com/erasmus-without-paper/ewp-specs-sec-srvauth-tlscert/tree/stable-v1"/>
+                </sec:server-auth-methods>
+                <sec:request-encryption-methods>
+                    <tls xmlns="https://github.com/erasmus-without-paper/ewp-specs-sec-reqencr-tls/tree/stable-v1"/>
+                </sec:request-encryption-methods>
+                <sec:response-encryption-methods>
+                    <tls xmlns="https://github.com/erasmus-without-paper/ewp-specs-sec-resencr-tls/tree/stable-v1"/>
+                </sec:response-encryption-methods>
+            </http-security>
+            <url>https://university.example.com/echo/TTTT/</url>
+        </echo>
+        <echo
+            xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-echo/blob/stable-v2/manifest-entry.xsd"
+            version="2.0.0"
+        >
+            <http-security>
+                <sec:client-auth-methods>
+                    <httpsig xmlns="https://github.com/erasmus-without-paper/ewp-specs-sec-cliauth-httpsig/tree/stable-v1"/>
+                </sec:client-auth-methods>
+            </http-security>
+            <url>https://university.example.com/echo/HTTT/</url>
+        </echo>
+        <echo
+            xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-echo/blob/stable-v2/manifest-entry.xsd"
+            version="2.0.0"
+        >
+            <http-security>
+                <sec:client-auth-methods>
+                    <tlscert
+                        xmlns="https://github.com/erasmus-without-paper/ewp-specs-sec-cliauth-tlscert/tree/stable-v1"
+                        allows-self-signed="true"
+                    />
+                    <httpsig xmlns="https://github.com/erasmus-without-paper/ewp-specs-sec-cliauth-httpsig/tree/stable-v1"/>
+                </sec:client-auth-methods>
+            </http-security>
+            <url>https://university.example.com/echo/MTTT/</url>
+        </echo>
+    </r:apis-implemented>
+</manifest>

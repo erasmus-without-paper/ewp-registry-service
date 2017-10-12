@@ -1,0 +1,30 @@
+
+### NOTICE: Check if our TLS client certificate has been served long enough.
+
+Our TLS client certificate is quite fresh. This means that many Echo APIs will (correctly) return error responses in places where we expect HTTP 200. This notice will disappear once the certificate is 10 minutes old.
+
+
+### SUCCESS: Verifying the format of the URL. Expecting a valid HTTPS-scheme URL.
+
+### WARNING: Accessing your Echo API without any form of client authentication. Expecting to receive a valid HTTP 401 or HTTP 403 error response.
+
+HTTP 401 or HTTP 403 expected, but HTTP 404 received.
+Not implemented.
+
+
+### SUCCESS: Verifying if the URL is properly registered.
+
+### ERROR: Querying for supported security methods. Validating http-security integrity.
+
+Errors:
+- Your Echo API does not support ANY of the client authentication methods recognized by the Validator.
+
+Warnings:
+- It is RECOMMENDED for all EWP server endpoints to support HTTP Signature Client Authentication. Your endpoint doesn't.
+
+Notices:
+- Echo API Validator is able to validate TLS Client Authentication ONLY with a self-signed client certificate. You Echo API endpoint declares that it does not support self-signed Client Certificates. Therefore, TLS Client Authentication tests will be skipped.
+
+
+
+

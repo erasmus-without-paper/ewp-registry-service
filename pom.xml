@@ -71,12 +71,6 @@
             <version>1.2</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>eu.erasmuswithoutpaper</groupId>
-            <artifactId>ewp-registry-client</artifactId>
-            <version>1.5.1</version>
-            <scope>test</scope>
-        </dependency>
 
         <!-- COMPILE -->
 
@@ -156,6 +150,21 @@
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcpkix-jdk15on</artifactId>
             <version>1.57</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.erasmuswithoutpaper</groupId>
+            <artifactId>ewp-registry-client</artifactId>
+            <version>1.5.1</version>
+        </dependency>
+        <dependency>
+            <groupId>net.adamcin.httpsig</groupId>
+            <artifactId>httpsig-api</artifactId>
+            <version>1.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>net.adamcin.httpsig</groupId>
+            <artifactId>httpsig-ssh-jce</artifactId>
+            <version>1.3.0</version>
         </dependency>
     </dependencies>
 
