@@ -217,11 +217,30 @@ public class EwpDocBuilder {
       throw new RuntimeException(e);
     }
 
+    // Check if the root element matches requirements.
+
+    String rootNamespaceUri = doc.getDocumentElement().getNamespaceURI();
+    String rootLocalName = doc.getDocumentElement().getLocalName();
+    if (input.getExpectedLocalName() != null
+        && (!rootLocalName.equals(input.getExpectedLocalName()))) {
+      buildErrors.add(new BuildError("Expecting \"" + input.getExpectedLocalName()
+          + "\" element, but found \"" + rootLocalName + "\" element instead."));
+    }
+    if (input.getExpectedNamespaceUri() != null) {
+      if (rootNamespaceUri == null) {
+        buildErrors
+            .add(new BuildError("Expecting element from the \"" + input.getExpectedNamespaceUri()
+                + "\" namespace, but found an element " + "without any namespace instead."));
+      } else if (!rootNamespaceUri.equals(input.getExpectedNamespaceUri())) {
+        buildErrors.add(new BuildError("Expecting element from the \""
+            + input.getExpectedNamespaceUri() + "\" namespace, but found an element from \""
+            + rootNamespaceUri + "\" namespace instead."));
+      }
+    }
+
     // Compose a result.
 
     boolean isValid = buildErrors.isEmpty();
-    String rootNamespaceUri = doc.getDocumentElement().getNamespaceURI();
-    String rootLocalName = doc.getDocumentElement().getLocalName();
 
     return new BuildResult(isValid, doc, rootNamespaceUri, rootLocalName, buildErrors, prettyXml,
         prettyLines);

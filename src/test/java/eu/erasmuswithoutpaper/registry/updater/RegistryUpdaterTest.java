@@ -297,7 +297,8 @@ public class RegistryUpdaterTest extends WRTest {
     this.timePasses();
     this.assertManifestStatuses("Error", null, null);
     this.assertNoticesMatch(url1, "(?s).*will not be imported.*",
-        "(?s).*Cannot find the declaration of element 'xml'.*");
+        "(?s).*Cannot find the declaration of element 'xml'.*",
+        "(?s).*Expecting .*manifest.* element.*", "(?s).*Expecting element from .* namespace.*");
     assertThat(this.lastCatalogue.xpath("r:host/ewp:admin-email").text())
         .isEqualTo("admin1@example.com");
     assertThat(this.lastEmails).hasSize(0);
