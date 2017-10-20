@@ -6,8 +6,8 @@
     xmlns:sec="https://github.com/erasmus-without-paper/ewp-specs-sec-intro/tree/stable-v2"
     elementFormDefault="qualified"
 
-    targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-api-imobility-tors/blob/stable-v1/manifest-entry.xsd"
-    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-imobility-tors/blob/stable-v1/manifest-entry.xsd"
+    targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/blob/stable-v1/manifest-entry.xsd"
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/blob/stable-v1/manifest-entry.xsd"
 >
     <!-- WRTODO: Once released, fix all schemaLocations pointing to its master branch. -->
 
@@ -30,13 +30,13 @@
         </xs:documentation>
     </xs:annotation>
 
-    <xs:element name="imobility-tors">
+    <xs:element name="omobilities">
         <xs:annotation>
             <xs:documentation>
                 If this element is present in EWP Host's manifest file, then the host states
-                that it implements the Transcripts of Records API described here:
+                that it implements the Outgoing Mobilities API described here:
 
-                https://github.com/erasmus-without-paper/ewp-specs-api-imobility-tors
+                https://github.com/erasmus-without-paper/ewp-specs-api-omobilities
             </xs:documentation>
         </xs:annotation>
         <xs:complexType>
@@ -50,8 +50,10 @@
                                     given, then the server states that it supports the default set of security
                                     policies (as described in the annotations in sec:HttpSecurityOptions).
 
-                                    Clients SHOULD consult this element before accessing the endpoint given in the
-                                    `url` element (otherwise, their request might be rejected by the server).
+                                    The policies described in this element apply to all endpoints of this API (the
+                                    `*-url` elements below). Clients SHOULD consult this element before accessing
+                                    any of these endpoints (otherwise, their request might be rejected by the
+                                    server).
                                 </xs:documentation>
                             </xs:annotation>
                         </xs:element>
@@ -59,6 +61,20 @@
                             <xs:annotation>
                                 <xs:documentation>
                                     An URL at which the `get` endpoint is being served.
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="index-url" type="ewp:HTTPS" minOccurs="1" maxOccurs="1">
+                            <xs:annotation>
+                                <xs:documentation>
+                                    An URL at which the `index` endpoint is being served.
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="update-url" type="ewp:HTTPS" minOccurs="0" maxOccurs="1">
+                            <xs:annotation>
+                                <xs:documentation>
+                                    An URL at which the `update` endpoint is being served.
                                 </xs:documentation>
                             </xs:annotation>
                         </xs:element>
@@ -74,16 +90,36 @@
                             <xs:annotation>
                                 <xs:documentation>
                                     If this element is present, then the EWP Host states, that it has implemented a
-                                    Notification Sender for Incoming Mobility ToR objects - it will *try* to deliver
-                                    notifications to all Incoming Mobility ToR CNR APIs implemented throughout the EWP
-                                    Network whenever related ToRs are updated.
+                                    Notification Sender for Outgoing Mobility objects - it will *try* to deliver
+                                    notifications to all Outgoing Mobility CNR APIs implemented throughout the EWP
+                                    Network whenever related mobility objects are updated.
 
                                     It is HIGHLY RECOMMENDED for all EWP Hosts to implement this feature. If it is
-                                    not implemented, then sending institutions will need to resolve to pulling
-                                    fresh data from your Incoming Mobility ToRs API quite often - this method
+                                    not implemented, then receiving institutions will need to resolve into pulling
+                                    fresh data from your Outgoing Mobilities API quite often - this method
                                     will increase both latency and the load on both servers.
                                 </xs:documentation>
                             </xs:annotation>
+                        </xs:element>
+                        <xs:element name="supported-update-types" minOccurs="0" maxOccurs="1">
+                            <xs:annotation>
+                                <xs:documentation>
+                                    In this section the server publishes which types of updates it supports.
+                                    Clients SHOULD take this information into account before sending their requests
+                                    (otherwise, they will get HTTP 400 errors).
+
+                                    The name of each element on this list corresponds to an update element of the
+                                    same name, as described in request.xsd. If the element is present, then the
+                                    server states that it supports the corresponding update type.
+                                </xs:documentation>
+                            </xs:annotation>
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element name="approve-components-studied-draft-v1" minOccurs="0" maxOccurs="1" type="ewp:Empty"/>
+                                    <xs:element name="update-components-studied-v1" minOccurs="0" maxOccurs="1" type="ewp:Empty"/>
+                                    <xs:element name="update-statuses-v1" minOccurs="0" maxOccurs="1" type="ewp:Empty"/>
+                                </xs:sequence>
+                            </xs:complexType>
                         </xs:element>
                     </xs:sequence>
                 </xs:extension>

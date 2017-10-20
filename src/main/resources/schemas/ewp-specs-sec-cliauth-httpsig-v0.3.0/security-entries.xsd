@@ -34,7 +34,7 @@
                 particular method of *client authentication*. In particular, it is often seen
                 together with `HttpSecurityOptions` data type described here:
 
-                https://github.com/erasmus-without-paper/ewp-specs-sec-intro/blob/stable-v2/schema.md
+                https://github.com/erasmus-without-paper/ewp-specs-sec-intro/blob/stable-v2/schema.xsd
             </xs:documentation>
         </xs:annotation>
         <xs:complexType>

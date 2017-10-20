@@ -4,6 +4,7 @@
     xmlns:a="https://github.com/erasmus-without-paper/ewp-specs-types-address/tree/stable-v1"
     xmlns:p="https://github.com/erasmus-without-paper/ewp-specs-types-phonenumber/tree/stable-v1"
     xmlns:course="https://github.com/erasmus-without-paper/ewp-specs-api-courses/tree/stable-v1"
+    xmlns:trm="https://github.com/erasmus-without-paper/ewp-specs-types-academic-term/tree/stable-v1"
     xmlns:xml="http://www.w3.org/XML/1998/namespace"
     xmlns:ewp="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
     elementFormDefault="qualified"
@@ -31,6 +32,11 @@
     <xs:import
         schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-courses/master/response.xsd"
         namespace="https://github.com/erasmus-without-paper/ewp-specs-api-courses/tree/stable-v1"
+    />
+
+    <xs:import
+        schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-types-academic-term/stable-v1/schema.xsd"
+        namespace="https://github.com/erasmus-without-paper/ewp-specs-types-academic-term/tree/stable-v1"
     />
 
     <xs:annotation>
@@ -224,6 +230,14 @@
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>
+                <xs:element name="receiving-academic-year-id" type="trm:AcademicYearId" minOccurs="1" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>
+                            Academic year during which this mobility takes place (or is supposed to take
+                            place).
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
                 <xs:element name="student" minOccurs="1" maxOccurs="1">
                     <xs:annotation>
                         <xs:documentation>
@@ -393,7 +407,7 @@
                         </xs:documentation>
                     </xs:annotation>
                 </xs:element>
-                <xs:element name="planned-arrival-date" type="xs:date" minOccurs="1" maxOccurs="1">
+                <xs:element name="planned-arrival-date" type="xs:date" minOccurs="0" maxOccurs="1">
                     <xs:annotation>
                         <xs:documentation>
                             Planned start date of the mobility (when the student is supposed to arrive).
@@ -401,7 +415,7 @@
                         </xs:documentation>
                     </xs:annotation>
                 </xs:element>
-                <xs:element name="planned-departure-date" type="xs:date" minOccurs="1" maxOccurs="1">
+                <xs:element name="planned-departure-date" type="xs:date" minOccurs="0" maxOccurs="1">
                     <xs:annotation>
                         <xs:documentation>
                             Planned end date of the mobility (when the student is supposed to leave).
