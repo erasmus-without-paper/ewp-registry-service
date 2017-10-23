@@ -54,7 +54,7 @@ public class FakeInternetTest extends WRTest {
     assertThat(request.getHeader("Digest"))
         .isEqualTo("SHA-256=X48E9qOokqqrvdts8nOJRJN3OWDUoyWxBf7kbu9DBPE=");
 
-    response.generateDigest();
+    response.recomputeAndAttachDigestHeader();
     assertThat(response.getHeader("Digest"))
         .isEqualTo("SHA-256=X48E9qOokqqrvdts8nOJRJN3OWDUoyWxBf7kbu9DBPE=");
   }
@@ -215,7 +215,7 @@ public class FakeInternetTest extends WRTest {
         + "6m79cNfwwb8DMJ5cou1s7uEGKKCs+FLEEaDV5lp7q25WqS+lavg7T8hc0GppauB"
         + "6hbgEKTwblDHYGEtbGmtdHgVCk9SuS13F0hZ8FD0k/5OxEPXe5WozsbM=\","
         + "headers=\"date\",algorithm=\"rsa-sha256\"");
-    response.generateHttpSigSignatureHeader("Test", myKeyPair, Lists.newArrayList());
+    response.recomputeAndAttachSignatureHeader("Test", myKeyPair, Lists.newArrayList());
     assertThat(response.getHeader("Signature")).isEqualTo(
         "keyId=\"Test\"," + "signature=\"SjWJWbWN7i0wzBvtPl8rbASWz5xQW6mcJmn+ibttBqtifLN7Sazz"
             + "6m79cNfwwb8DMJ5cou1s7uEGKKCs+FLEEaDV5lp7q25WqS+lavg7T8hc0GppauB"
@@ -243,7 +243,7 @@ public class FakeInternetTest extends WRTest {
         + "ukWgHoBTLMhYS2Gb51gWxpeIq8knRmPnYePbF5MOkR0Zkly4zKH7s1dE=\","
         + "headers=\"(request-target) host date content-type digest content-length\","
         + "algorithm=\"rsa-sha256\"");
-    response.generateHttpSigSignatureHeader("Test", myKeyPair, Lists.newArrayList(
+    response.recomputeAndAttachSignatureHeader("Test", myKeyPair, Lists.newArrayList(
         "(request-target)", "host", "date", "content-type", "digest", "content-length"));
     assertThat(response.getHeader("Signature")).isEqualTo(
         "keyId=\"Test\"," + "signature=\"vSdrb+dS3EceC9bcwHSo4MlyKS59iFIrhgYkz8+oVLEEzmYZZvRs"

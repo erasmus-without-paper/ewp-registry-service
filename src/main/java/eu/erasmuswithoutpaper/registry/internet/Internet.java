@@ -218,7 +218,7 @@ public interface Internet {
 
     private final Request initialRequest;
     private final int status;
-    private final byte[] body;
+    private byte[] body;
 
     private final Map<String, String> headers;
 
@@ -237,32 +237,9 @@ public interface Internet {
       }
     }
 
-    public void generateDigest() {
+    public String computeBodyDigest() {
       byte[] binaryDigest = DigestUtils.sha256(this.body);
-      String base64digest = Base64.getEncoder().encodeToString(binaryDigest);
-      this.putHeader("Digest", "SHA-256=" + base64digest);
-    }
-
-    public void generateHttpSigSignatureHeader(String keyId, KeyPair keyPair,
-        ArrayList<String> headersToSign) {
-
-      RequestContent.Builder rcb = new RequestContent.Builder();
-      rcb.setRequestTarget(this.initialRequest.getMethod(),
-          this.initialRequest.getPathPseudoHeader());
-      for (Map.Entry<String, String> entry : this.headers.entrySet()) {
-        rcb.addHeader(entry.getKey(), entry.getValue());
-      }
-      RequestContent content = rcb.build();
-
-      DefaultKeychain keychain = new DefaultKeychain();
-      Key kckey = new HttpSigRsaKeyPair(keyId, keyPair);
-      keychain.add(kckey);
-      Signer signer = new Signer(keychain);
-
-      Authorization authz = signer.sign(content, headersToSign);
-      if (authz != null) {
-        this.putHeader("Signature", getSignatureFromAuthorization(authz.getHeaderValue()));
-      }
+      return Base64.getEncoder().encodeToString(binaryDigest);
     }
 
     /**
@@ -278,7 +255,7 @@ public interface Internet {
       return this.headers.get(key.toLowerCase(Locale.US));
     }
 
-    public Map<String, String> getHeadersMap() {
+    public Map<String, String> getHeaders() {
       return Collections.unmodifiableMap(this.headers);
     }
 
@@ -295,8 +272,45 @@ public interface Internet {
       }
     }
 
+    public void recomputeAndAttachDigestHeader() {
+      this.putHeader("Digest", "SHA-256=" + this.computeBodyDigest());
+    }
+
+    public void recomputeAndAttachSignatureHeader(String keyId, KeyPair keyPair,
+        List<String> headersToSign) {
+
+      DefaultKeychain keychain = new DefaultKeychain();
+      Key kckey = new HttpSigRsaKeyPair(keyId, keyPair);
+      keychain.add(kckey);
+      Signer signer = new Signer(keychain);
+      List<String> headersSigned = new ArrayList<>(headersToSign);
+      if (headersSigned.size() == 0) {
+        headersSigned.add("date");
+      }
+      signer.rotateKeys(
+          new Challenge("Not verified", headersSigned, Lists.newArrayList(Algorithm.RSA_SHA256)));
+
+      RequestContent.Builder rcb = new RequestContent.Builder();
+      rcb.setRequestTarget(this.initialRequest.getMethod(),
+          this.initialRequest.getPathPseudoHeader());
+      for (Map.Entry<String, String> entry : this.headers.entrySet()) {
+        rcb.addHeader(entry.getKey(), entry.getValue());
+      }
+      RequestContent content = rcb.build();
+
+      Authorization authz = signer.sign(content, headersSigned);
+      if (authz != null) {
+        this.putHeader("Signature", getSignatureFromAuthorization(authz.getHeaderValue()));
+      }
+    }
+
     public void removeHeader(String key) {
       this.headers.remove(key.toLowerCase(Locale.US));
+    }
+
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP2")
+    public void setBody(byte[] changed) {
+      this.body = changed;
     }
   }
 

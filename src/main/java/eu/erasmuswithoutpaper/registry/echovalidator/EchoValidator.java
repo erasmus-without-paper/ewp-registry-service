@@ -1,8 +1,6 @@
 package eu.erasmuswithoutpaper.registry.echovalidator;
 
-import java.io.IOException;
 import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
@@ -14,19 +12,14 @@ import java.security.interfaces.RSAPublicKey;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import eu.erasmuswithoutpaper.registry.Application;
 import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
 import eu.erasmuswithoutpaper.registry.internet.Internet;
-import eu.erasmuswithoutpaper.registry.repository.CatalogueNotFound;
-import eu.erasmuswithoutpaper.registry.repository.ManifestRepository;
 import eu.erasmuswithoutpaper.registry.web.SelfManifestProvider;
-import eu.erasmuswithoutpaper.registryclient.CatalogueFetcher;
-import eu.erasmuswithoutpaper.registryclient.ClientImpl;
-import eu.erasmuswithoutpaper.registryclient.ClientImplOptions;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
-import eu.erasmuswithoutpaper.registryclient.RegistryClient.RefreshFailureException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -56,29 +49,47 @@ public class EchoValidator {
 
   private static final Logger logger = LoggerFactory.getLogger(EchoValidator.class);
 
+  /**
+   * @return An ordered map of "SecMethodCombination" codes mapped to their short names.
+   */
+  public static LinkedHashMap<String, String> getCombinationLegend() {
+    LinkedHashMap<String, String> options = new LinkedHashMap<>();
+    options.put("A---", "No Client Authentication (Anonymous Client)");
+    options.put("S---", "Client Authentication with TLS Certificate (self-signed)");
+    options.put("T---", "Client Authentication with TLS Certificate (CA-signed)");
+    options.put("H---", "Client Authentication with HTTP Signature");
+    options.put("-T--", "Server Authentication with TLS Certificate (CA-signed)");
+    options.put("-H--", "Server Authentication with HTTP Signature");
+    options.put("--T-", "Request Encryption only with regular TLS");
+    options.put("---T", "Response Encryption only with regular TLS");
+    return options;
+  }
+
   private final KeyPair myClientRsaKeyPair;
   private final KeyPair myServerRsaKeyPair;
   private final KeyPair myTlsKeyPair;
+  private final KeyPair myUnregisteredKeyPair;
   private final X509Certificate myTlsCertificate;
+
   private final Date myCredentialsDate;
 
   private final List<String> myCoveredHeiIDs;
-
   private final EwpDocBuilder docBuilder;
   private final Internet internet;
-  private final ManifestRepository repo;
+
+  private final RegistryClient client;
 
   /**
    * @param docBuilder Needed for validating Echo API responses against the schemas.
    * @param internet Needed to make Echo API requests across the network.
-   * @param repo Needed to verify the tested Echo APIs configuration.
+   * @param client Needed to fetch (and verify) Echo APIs' security settings.
    */
   @Autowired
-  public EchoValidator(EwpDocBuilder docBuilder, Internet internet, ManifestRepository repo) {
+  public EchoValidator(EwpDocBuilder docBuilder, Internet internet, RegistryClient client) {
 
     this.docBuilder = docBuilder;
     this.internet = internet;
-    this.repo = repo;
+    this.client = client;
 
     if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
       logger.debug("Registering BouncyCastle security provider");
@@ -92,6 +103,7 @@ public class EchoValidator {
     this.myServerRsaKeyPair = this.generateKeyPair();
     this.myTlsKeyPair = this.generateKeyPair();
     this.myTlsCertificate = this.generateCertificate(this.myTlsKeyPair);
+    this.myUnregisteredKeyPair = this.generateKeyPair();
 
     /* Generate the IDs of the covered HEIs. */
 
@@ -163,34 +175,10 @@ public class EchoValidator {
    * @return A list of test results.
    */
   public List<ValidationStepWithStatus> runTests(String urlStr) {
-    RegistryClient client = this.buildRegistryClient();
     EchoValidationSuite suite =
-        new EchoValidationSuite(this, this.docBuilder, this.internet, urlStr, client);
+        new EchoValidationSuite(this, this.docBuilder, this.internet, urlStr, this.client);
     suite.run();
     return suite.getResults();
-  }
-
-  private RegistryClient buildRegistryClient() {
-    ClientImplOptions options = new ClientImplOptions();
-    options.setCatalogueFetcher(new CatalogueFetcher() {
-
-      @Override
-      public RegistryResponse fetchCatalogue(String etag) throws IOException {
-        try {
-          return new Http200RegistryResponse(
-              EchoValidator.this.repo.getCatalogue().getBytes(StandardCharsets.UTF_8), null, null);
-        } catch (CatalogueNotFound e) {
-          throw new IOException(e);
-        }
-      }
-    });
-    RegistryClient client = new ClientImpl(options);
-    try {
-      client.refresh();
-    } catch (RefreshFailureException e) {
-      throw new RuntimeException(e);
-    }
-    return client;
   }
 
   X509Certificate generateCertificate(KeyPair keyPair) {
@@ -242,5 +230,9 @@ public class EchoValidator {
 
   KeyPair getTlsKeyPairInUse() {
     return this.myTlsKeyPair;
+  }
+
+  KeyPair getUnregisteredKeyPair() {
+    return this.myUnregisteredKeyPair;
   }
 }

@@ -375,6 +375,14 @@ public class UiController {
     info.addProperty("clientKeysAgeWhenValidationStartedInSeconds",
         (validationStarted.getTime() - clientKeysRegenerated.getTime()) / 1000);
     info.addProperty("registryManifestBody", this.selfManifestProvider.getManifest());
+    JsonArray combinations = new JsonArray();
+    info.add("secMethodCombinations", combinations);
+    for (Entry<String, String> entry : EchoValidator.getCombinationLegend().entrySet()) {
+      JsonObject desc = new JsonObject();
+      desc.addProperty("code", entry.getKey());
+      desc.addProperty("name", entry.getValue());
+      combinations.add(desc);
+    }
 
     JsonArray testsArray = new JsonArray();
     Status worstStatus = Status.SUCCESS;
@@ -508,6 +516,7 @@ public class UiController {
     }
     Response response = testResult.getServerResponse().get();
     JsonObject result = new JsonObject();
+    result.addProperty("status", response.getStatus());
     result.addProperty("rawBodyBase64", Base64.encode(response.getBody()));
     BuildParams params = new BuildParams(response.getBody());
     params.setMakingPretty(true);
@@ -521,7 +530,7 @@ public class UiController {
       result.add("developerMessage", JsonNull.INSTANCE);
     }
     JsonObject headers = new JsonObject();
-    for (Entry<String, String> entry : response.getHeadersMap().entrySet()) {
+    for (Entry<String, String> entry : response.getHeaders().entrySet()) {
       headers.addProperty(entry.getKey(), entry.getValue());
     }
     result.add("headers", headers);

@@ -20,7 +20,7 @@ abstract public class AbstractEchoService implements FakeInternetService {
    */
   protected static class ErrorResponseException extends Exception {
 
-    private final Response response;
+    protected final Response response;
 
     public ErrorResponseException(Response response) {
       this.response = response;

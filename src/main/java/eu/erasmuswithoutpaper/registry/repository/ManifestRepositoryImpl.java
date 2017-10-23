@@ -23,6 +23,8 @@ import java.util.TreeSet;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import eu.erasmuswithoutpaper.registry.common.Utils;
+import eu.erasmuswithoutpaper.registryclient.RegistryClient;
+import eu.erasmuswithoutpaper.registryclient.RegistryClient.RefreshFailureException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -62,6 +64,7 @@ public class ManifestRepositoryImpl implements ManifestRepository {
   private static final Logger logger = LoggerFactory.getLogger(ManifestRepositoryImpl.class);
 
   private final ManifestRepositoryImplProperties repoProperties;
+  private RegistryClient client = null;
   private final Git git;
 
   private final ReentrantReadWriteLock lock;
@@ -184,6 +187,7 @@ public class ManifestRepositoryImpl implements ManifestRepository {
       this.cachedCatalogueContent = null;
       this.index.clear();
       this.flushIndex();
+      this.onCatalogueContentChanged();
     } catch (IOException e) {
       throw new RuntimeException(e);
     } finally {
@@ -386,6 +390,9 @@ public class ManifestRepositoryImpl implements ManifestRepository {
     try {
       boolean changed = this.writeFile(this.getPathForCatalogue(), contents);
       this.cachedCatalogueContent = contents;
+      if (changed) {
+        this.onCatalogueContentChanged();
+      }
       return changed;
     } finally {
       this.lock.writeLock().unlock();
@@ -421,6 +428,18 @@ public class ManifestRepositoryImpl implements ManifestRepository {
   @Override
   public void releaseWriteLock() {
     this.lock.writeLock().unlock();
+  }
+
+  /**
+   * Once set, {@link ManifestRepositoryImpl} will refresh this {@link RegistryClient} whenever the
+   * catalogue is changed.
+   *
+   * @param client The client to be kept in sync.
+   */
+  @Autowired
+  public void setRegistryClient(RegistryClient client) {
+    this.client = client;
+    this.onCatalogueContentChanged();
   }
 
   private void addToIndex(String url) {
@@ -492,6 +511,16 @@ public class ManifestRepositoryImpl implements ManifestRepository {
     result.addAll(doc.find("url").texts());
 
     return Optional.of(result);
+  }
+
+  private void onCatalogueContentChanged() {
+    if (this.client != null) {
+      try {
+        this.client.refresh();
+      } catch (RefreshFailureException e) {
+        logger.error("Local registry client refresh failed: " + e);
+      }
+    }
   }
 
   private void removeFromIndex(String url) {

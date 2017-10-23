@@ -54,7 +54,7 @@ public class ApiControllerTest extends WRTest {
     /* Set up manifest sources. */
 
     this.manifestSourceProvider.clearSources();
-    String urlSelf, urlPL, urlSE;
+    String urlPL, urlSE;
     // urlSelf = "https://registry.erasmuswithoutpaper.eu/manifest.xml";
     urlPL = "https://schowek.usos.edu.pl/w.rygielski/ewp/uw.edu.pl/manifest.xml";
     urlSE = "https://schowek.usos.edu.pl/w.rygielski/ewp/ladok.se/manifest.xml";

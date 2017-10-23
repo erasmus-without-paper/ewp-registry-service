@@ -22,6 +22,8 @@ import eu.erasmuswithoutpaper.registry.repository.ManifestRepositoryImpl;
 import eu.erasmuswithoutpaper.registry.sourceprovider.ManifestSource;
 import eu.erasmuswithoutpaper.registry.sourceprovider.TestManifestSourceProvider;
 import eu.erasmuswithoutpaper.registry.xmlformatter.XmlFormatter;
+import eu.erasmuswithoutpaper.registryclient.ApiSearchConditions;
+import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -51,6 +53,9 @@ public class RegistryUpdaterTest extends WRTest {
 
   @Autowired
   private ManifestRepositoryImpl repo;
+
+  @Autowired
+  private RegistryClient regClient;
 
   @Autowired
   private FakeInternet internet;
@@ -240,6 +245,7 @@ public class RegistryUpdaterTest extends WRTest {
     this.timePasses();
     assertThat(this.lastEmails).isEmpty();
     this.assertManifestStatuses(null, null, null);
+    assertThat(this.regClient.getAllHeis()).isEmpty();
 
     /*
      * Let's add a single manifest source, but provide no content for it. FakeInternet will throw
@@ -329,6 +335,15 @@ public class RegistryUpdaterTest extends WRTest {
     assertThat(this.lastCatalogue.xpath("r:host/r:apis-implemented/d4:discovery")).hasSize(1);
     assertThat(this.lastCatalogue.xpath("r:host/r:apis-implemented/e2:echo")).hasSize(1);
     assertThat(this.lastEmails).hasSize(0);
+
+    /* Make sure that our local client returns the same results (that it is kept in sync). */
+
+    ApiSearchConditions conds = new ApiSearchConditions();
+    conds.setApiClassRequired(KnownNamespace.APIENTRY_ECHO_V2.getNamespaceUri(), "echo");
+    assertThat(this.regClient.findApis(conds)).hasSize(1);
+    assertThat(this.regClient.getAllHeis()).hasSize(1);
+    assertThat(this.regClient.findHei("uw.edu.pl").getNameEnglish())
+        .isEqualTo("University of Warsaw");
 
     /*
      * Let's tweak his manifest a bit an try to host a Registry API. (Only the Registry host is

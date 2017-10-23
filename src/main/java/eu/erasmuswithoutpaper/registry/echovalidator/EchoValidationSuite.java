@@ -8,16 +8,22 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
+import java.security.interfaces.RSAPublicKey;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -29,6 +35,7 @@ import eu.erasmuswithoutpaper.registry.documentbuilder.KnownElement;
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
 import eu.erasmuswithoutpaper.registry.echovalidator.InlineValidationStep.Failure;
 import eu.erasmuswithoutpaper.registry.echovalidator.ValidationStepWithStatus.Status;
+import eu.erasmuswithoutpaper.registry.internet.HttpSigRsaPublicKey;
 import eu.erasmuswithoutpaper.registry.internet.Internet;
 import eu.erasmuswithoutpaper.registry.internet.Internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Internet.Response;
@@ -39,7 +46,12 @@ import com.google.common.collect.Lists;
 import net.adamcin.httpsig.api.Algorithm;
 import net.adamcin.httpsig.api.Authorization;
 import net.adamcin.httpsig.api.Challenge;
+import net.adamcin.httpsig.api.DefaultKeychain;
+import net.adamcin.httpsig.api.DefaultVerifier;
+import net.adamcin.httpsig.api.RequestContent;
+import net.adamcin.httpsig.api.VerifyResult;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.http.client.utils.DateUtils;
 import org.joox.Match;
 import org.w3c.dom.Element;
 
@@ -99,12 +111,29 @@ class EchoValidationSuite {
   private static class SuiteBroken extends Exception {
   }
 
+  public static String findErrorsInDateHeader(String dateValue) {
+    Date parsed = DateUtils.parseDate(dateValue);
+    if (parsed == null) {
+      return "Could not parse the date. Make sure it's in a valid RFC 2616 format.";
+    }
+    long given = parsed.getTime();
+    long current = new Date().getTime();
+    long differenceSec = Math.abs(current - given) / 1000;
+    final long maxThresholdSec = 5 * 60;
+    if (differenceSec > maxThresholdSec) {
+      return "Server/client difference exceeds the maximum allowed threshold (it was "
+          + differenceSec + " seconds; allowed: " + maxThresholdSec + ")";
+    }
+    // Seems valid!
+    return null;
+  }
+
   private final EchoValidator parentEchoValidator;
   private final String urlToBeValidated;
   private final List<ValidationStepWithStatus> steps;
   private int echoApiVersionDetected = 0;
   private Element matchedApiEntry;
-  private List<KnownHttpSecurityMethodsCombination> combinationsToValidate;
+  private List<SecMethodsCombination> combinationsToValidate;
 
   private final EwpDocBuilder docBuilder;
   private final Internet internet;
@@ -137,324 +166,29 @@ class EchoValidationSuite {
     }
   }
 
-  private Response assertError(Request request, int status) throws Failure {
-    return this.assertError(request, Lists.newArrayList(status));
-  }
-
-  /**
-   * Make the request and make sure that the response contains an error.
-   *
-   * @param request The request to be made.
-   * @param statuses Expected HTTP response statuses (any of those).
-   * @throws Failure If HTTP status differs from expected, or if the response body doesn't contain a
-   *         proper error response.
-   */
-  private Response assertError(Request request, List<Integer> statuses) throws Failure {
-    try {
-      Response response = this.internet.makeRequest(request);
-      if (!statuses.contains(response.getStatus())) {
-        int gotFirstDigit = response.getStatus() / 100;
-        int expectedFirstDigit = statuses.get(0) / 100;
-        Status failureStatus =
-            (gotFirstDigit == expectedFirstDigit) ? Status.WARNING : Status.FAILURE;
-        throw new Failure(
-            "HTTP "
-                + String.join(" or HTTP ",
-                    statuses.stream().map(Object::toString).collect(Collectors.toList()))
-                + " expected, but HTTP " + response.getStatus() + " received.",
-            failureStatus, response);
-      }
-      BuildParams params = new BuildParams(response.getBody());
-      params.setExpectedKnownElement(KnownElement.COMMON_ERROR_RESPONSE);
-      BuildResult result = this.docBuilder.build(params);
-      if (!result.isValid()) {
-        throw new Failure(
-            "HTTP response status was okay, but the content has failed Schema validation. "
-                + "It is recommended to return a proper <error-response> in case of errors. "
-                + this.formatDocBuildErrors(result.getErrors()),
-            Status.WARNING, response);
-      }
-      if (response.getStatus() == 401) {
-        String wwwauth = response.getHeader("WWW-Authenticate");
-        if (wwwauth == null) {
-          throw new Failure("Per HTTP specs, HTTP 401 responses MUST contain a "
-              + "WWW-Authenticate header. See here: "
-              + "https://tools.ietf.org/html/rfc7235#section-4.1", Status.FAILURE, response);
-        }
-        Challenge parsed = Challenge.parse(wwwauth);
-        if (parsed != null) {
-          if (parsed.getRealm() == null || (!parsed.getRealm().equals("EWP"))) {
-            throw new Failure("Your WWW-Authenticate header should contain the \"realm\" property "
-                + "with \"EWP\" value.", Status.WARNING, response);
-          }
-          if (!parsed.getAlgorithms().isEmpty()
-              && (!parsed.getAlgorithms().contains(Algorithm.RSA_SHA256))) {
-            throw new Failure(
-                "Your WWW-Authenticate describes required Signature algorithms, "
-                    + "but the list doesn't contain the required rsa-sha256 algorithm.",
-                Status.WARNING, response);
-          }
-          if (!parsed.getHeaders().isEmpty() && (!parsed.getHeaders().containsAll(
-              Lists.newArrayList("(request-target)", "host", "digest", "x-request-id", "date")))) {
-            throw new Failure(
-                "If you want to include the \"headers\" "
-                    + "property in your WWW-Authenticate header, then it should contain at least "
-                    + "all required values: (request-target), host, digest, x-request-id and date",
-                Status.WARNING, response);
-          }
-        }
-        String wantDigest = response.getHeader("Want-Digest");
-        if (wantDigest == null || (!wantDigest.contains("SHA-256"))) {
-          throw new Failure(
-              "It is RECOMMENDED for HTTP 401 responses to contain a proper "
-                  + "Want-Digest header with at least the SHA-256 value.",
-              Status.WARNING, response);
-        }
-      }
-      return response;
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  /**
-   * Make the request and make sure that the response contains a valid HTTP 200 Echo API response.
-   *
-   * @param request The request to be made.
-   * @param heiIdsExpected The expected contents of the hei-id list.
-   * @param echoValuesExpected The expected contents of the echo list.
-   * @throws Failure If some expectations are not met.
-   */
-  private Response assertHttp200(Request request, List<String> heiIdsExpected,
-      List<String> echoValuesExpected) throws Failure {
-    try {
-      Response response = this.internet.makeRequest(request);
-      if (response.getStatus() != 200) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("HTTP 200 expected, but HTTP " + response.getStatus() + " received.");
-        if (response.getStatus() == 403) {
-          sb.append(" Make sure you validate clients' credentials against a fresh "
-              + "Registry catalogue version.");
-        }
-        throw new Failure(sb.toString(), Status.FAILURE, response);
-      }
-      BuildParams params = new BuildParams(response.getBody());
-      if (this.echoApiVersionDetected == 1) {
-        params.setExpectedKnownElement(KnownElement.RESPONSE_ECHO_V1);
-      } else {
-        params.setExpectedKnownElement(KnownElement.RESPONSE_ECHO_V2);
-      }
-      BuildResult result = this.docBuilder.build(params);
-      if (!result.isValid()) {
-        throw new Failure(
-            "HTTP response status was okay, but the content has failed Schema validation. "
-                + this.formatDocBuildErrors(result.getErrors()),
-            Status.FAILURE, response);
-      }
-      Match root = $(result.getDocument().get()).namespaces(KnownNamespace.prefixMap());
-      List<String> heiIdsGot = new ArrayList<>();
-      String nsPrefix = (this.echoApiVersionDetected == 1) ? "er1:" : "er2:";
-      for (Match entry : root.xpath(nsPrefix + "hei-id").each()) {
-        heiIdsGot.add(entry.text());
-      }
-      for (String heiIdGot : heiIdsGot) {
-        if (!heiIdsExpected.contains(heiIdGot)) {
-          throw new Failure(
-              "The response has proper HTTP status and it passed the schema validation. However, "
-                  + "the set of returned hei-ids doesn't match what we expect. It contains <hei-id>"
-                  + heiIdGot + "</hei-id>, but it shouldn't. It should contain the following: "
-                  + heiIdsExpected,
-              Status.FAILURE, response);
-        }
-      }
-      for (String heiIdExpected : heiIdsExpected) {
-        if (!heiIdsGot.contains(heiIdExpected)) {
-          throw new Failure(
-              "The response has proper HTTP status and it passed the schema validation. However, "
-                  + "the set of returned hei-ids doesn't match what we expect. "
-                  + "It should contain the following: " + heiIdsExpected,
-              Status.FAILURE, response);
-        }
-      }
-      List<String> echoValuesGot = root.xpath(nsPrefix + "echo").texts();
-      if (!echoValuesGot.equals(echoValuesExpected)) {
-        throw new Failure(
-            "The response has proper HTTP status and it passed the schema validation. "
-                + "However, there's something wrong with the echo values produced. "
-                + "We expected the response to contain the following echo values: "
-                + echoValuesExpected + ", but the following values were found instead: "
-                + echoValuesGot,
-            Status.FAILURE, response);
-      }
-      return response;
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  /**
-   * Helper method for creating simple request method validation steps (e.g. run a PUT request and
-   * expect error, run a POST and expect success).
-   */
-  private InlineValidationStep createHttpMethodValidationStep(
-      KnownHttpSecurityMethodsCombination combination, String httpMethod, boolean expectSuccess) {
-    return new InlineValidationStep() {
-
-      @Override
-      public String getName() {
-        if (expectSuccess) {
-          return "Trying " + combination + " with a " + httpMethod + " request, "
-              + "and without any additional parameters. Expecting to "
-              + "receive a valid HTTP 200 Echo API response with proper hei-ids, and "
-              + "without any echo values.";
-        } else {
-          return "Trying " + combination + " with a " + httpMethod + " request. "
-              + "Expecting to receive a valid HTTP 405 error response.";
-        }
-      }
-
-      @Override
-      protected Optional<Response> innerRun() throws Failure {
-        this.request = EchoValidationSuite.this.createValidRequestForCombination(combination,
-            httpMethod, EchoValidationSuite.this.urlToBeValidated);
-        if (expectSuccess) {
-          return Optional.of(EchoValidationSuite.this.assertHttp200(this.request,
-              EchoValidationSuite.this.parentEchoValidator.getCoveredHeiIDs(),
-              Collections.<String>emptyList()));
-        } else {
-          return Optional.of(EchoValidationSuite.this.assertError(this.request, 405));
-        }
-      }
-    };
-  }
-
-  private String formatDocBuildErrors(List<BuildError> errors) {
-    StringBuilder sb = new StringBuilder();
-    sb.append("Our document parser has reported the following errors:");
-    for (int i = 0; i < errors.size(); i++) {
-      sb.append("\n" + (i + 1) + ". ");
-      sb.append("(Line " + errors.get(i).getLineNumber() + ") " + errors.get(i).getMessage());
-    }
-    return sb.toString();
-  }
-
-  private void validateCombination(KnownHttpSecurityMethodsCombination combination)
-      throws SuiteBroken {
-
-    /*
-     * Make sure that properly executed GET and POST requests work. This steps varies on particular
-     * combination.
-     */
-
-    this.addAndRun(false, this.createHttpMethodValidationStep(combination, "GET", true));
-    this.addAndRun(false, this.createHttpMethodValidationStep(combination, "POST", true));
-
-    /*
-     * Try a couple of invalid client authentication requests, and make sure that the server handles
-     * them as expected.
-     */
-
-    if (combination.getCliAuth().equals(KnownMethodId.CLIAUTH_TLSCERT_SELFSIGNED)) {
-
-      this.addAndRun(false, new InlineValidationStep() {
-
-        @Override
-        public String getName() {
-          return "Trying " + combination + " with an unknown TLS client certificate "
-              + "(a random one, that has never been published in the Registry). "
-              + "Expecting to receive a valid HTTP 401 or HTTP 403 error response.";
-        }
-
-        @Override
-        protected Optional<Response> innerRun() throws Failure {
-          this.request = EchoValidationSuite.this.createValidRequestForCombination(combination,
-              "GET", EchoValidationSuite.this.urlToBeValidated);
-          KeyPair otherKeyPair = EchoValidationSuite.this.parentEchoValidator.generateKeyPair();
-          X509Certificate otherCert =
-              EchoValidationSuite.this.parentEchoValidator.generateCertificate(otherKeyPair);
-          this.request.setClientCertificate(otherCert, otherKeyPair);
-          return Optional
-              .of(EchoValidationSuite.this.assertError(this.request, Lists.newArrayList(401, 403)));
-        }
-      });
-    } else if (combination.getCliAuth().equals(KnownMethodId.CLIAUTH_HTTPSIG)) {
-      this.validateHxxx(combination);
-    } else {
-      // Shouldn't happen.
-      throw new RuntimeException("Unsupported combination");
-    }
-
-
-    /////////////////////////////////////////
-
-    this.addAndRun(false, this.createHttpMethodValidationStep(combination, "PUT", false));
-
-    /////////////////////////////////////////
-
-    this.addAndRun(false, this.createHttpMethodValidationStep(combination, "DELETE", false));
-
-    /////////////////////////////////////////
+  private void checkEdgeCasesForAxxx(SecMethodsCombination combination) throws SuiteBroken {
+    assert combination.getCliAuth().equals(SecMethod.CLIAUTH_NONE);
 
     this.addAndRun(false, new InlineValidationStep() {
 
       @Override
       public String getName() {
-        return "Trying " + combination + " GET request with a list of echo values [a, b, a]. "
-            + "Expecting to receive a valid HTTP 200 Echo API response, "
-            + "with proper hei-id and matching echo values.";
+        return "Trying " + combination + " (no client authentication). "
+            + "Expecting a valid HTTP 401 or HTTP 403 error response.";
       }
 
       @Override
       protected Optional<Response> innerRun() throws Failure {
-        ArrayList<String> expectedEchoValues = new ArrayList<>();
-        expectedEchoValues.add("a");
-        expectedEchoValues.add("b");
-        expectedEchoValues.add("a");
         this.request = EchoValidationSuite.this.createValidRequestForCombination(combination, "GET",
-            EchoValidationSuite.this.urlToBeValidated + "?echo=a&echo=b&echo=a");
-        return Optional.of(EchoValidationSuite.this.assertHttp200(this.request,
-            EchoValidationSuite.this.parentEchoValidator.getCoveredHeiIDs(), expectedEchoValues));
+            EchoValidationSuite.this.urlToBeValidated);
+        return Optional.of(EchoValidationSuite.this.makeRequestAndExpectError(combination,
+            this.request, Lists.newArrayList(401, 403)));
       }
     });
-
-    /////////////////////////////////////////
-
-    this.addAndRun(false, new InlineValidationStep() {
-
-      @Override
-      public String getName() {
-        return "Trying " + combination + " POST request with a list of echo values [a, b, a]. "
-            + "Expecting to receive a valid HTTP 200 Echo API response, "
-            + "with proper hei-id and matching echo values.";
-      }
-
-      @Override
-      protected Optional<Response> innerRun() throws Failure {
-        this.request = EchoValidationSuite.this.createValidRequestForCombination(combination,
-            "POST", EchoValidationSuite.this.urlToBeValidated);
-        this.request.setBody("echo=a&echo=b&echo=a".getBytes(StandardCharsets.UTF_8));
-        ArrayList<String> expectedEchoValues = new ArrayList<>();
-        expectedEchoValues.add("a");
-        expectedEchoValues.add("b");
-        expectedEchoValues.add("a");
-        if (combination.getCliAuth().equals(KnownMethodId.CLIAUTH_HTTPSIG)) {
-          // We have changed the body, so we need to regenerate the digest and signature.
-          this.request.recomputeAndAttachDigestHeader();
-          String keyId = Authorization.parse(this.request.getHeader("Authorization")).getKeyId();
-          this.request.recomputeAndAttachHttpSigAuthorizationHeader(keyId,
-              EchoValidationSuite.this.parentEchoValidator.getClientRsaKeyPairInUse(),
-              Lists.newArrayList("(request-target)", "date", "host", "digest", "x-request-id"));
-        }
-        return Optional.of(EchoValidationSuite.this.assertHttp200(this.request,
-            EchoValidationSuite.this.parentEchoValidator.getCoveredHeiIDs(), expectedEchoValues));
-      }
-    });
-
-    /////////////////////////////////////////
   }
 
-  private void validateHxxx(KnownHttpSecurityMethodsCombination combination) throws SuiteBroken {
-    assert combination.getCliAuth().equals(KnownMethodId.CLIAUTH_HTTPSIG);
+  private void checkEdgeCasesForHxxx(SecMethodsCombination combination) throws SuiteBroken {
+    assert combination.getCliAuth().equals(SecMethod.CLIAUTH_HTTPSIG);
 
     this.addAndRun(false, new InlineValidationStep() {
 
@@ -469,12 +203,13 @@ class EchoValidationSuite {
       protected Optional<Response> innerRun() throws Failure {
         this.request = EchoValidationSuite.this.createValidRequestForCombination(combination, "GET",
             EchoValidationSuite.this.urlToBeValidated);
-        KeyPair otherKeyPair = EchoValidationSuite.this.parentEchoValidator.generateKeyPair();
+        KeyPair otherKeyPair =
+            EchoValidationSuite.this.parentEchoValidator.getUnregisteredKeyPair();
         // Replace the previously set Authorization header with a different one.
         this.request.recomputeAndAttachHttpSigAuthorizationHeader("Unknown-ID", otherKeyPair,
             Lists.newArrayList("(request-target)", "host", "date", "digest", "x-request-id"));
-        return Optional
-            .of(EchoValidationSuite.this.assertError(this.request, Lists.newArrayList(401, 403)));
+        return Optional.of(EchoValidationSuite.this.makeRequestAndExpectError(combination,
+            this.request, Lists.newArrayList(401, 403)));
       }
     });
 
@@ -492,12 +227,13 @@ class EchoValidationSuite {
             EchoValidationSuite.this.urlToBeValidated);
         // Leave keyId as is, but use a new random key for signature generation.
         String keyId = Authorization.parse(this.request.getHeader("Authorization")).getKeyId();
-        KeyPair otherKeyPair = EchoValidationSuite.this.parentEchoValidator.generateKeyPair();
+        KeyPair otherKeyPair =
+            EchoValidationSuite.this.parentEchoValidator.getUnregisteredKeyPair();
         // Replace the previously set Authorization header with a different one.
         this.request.recomputeAndAttachHttpSigAuthorizationHeader(keyId, otherKeyPair,
             Lists.newArrayList("(request-target)", "host", "date", "digest", "x-request-id"));
-        return Optional
-            .of(EchoValidationSuite.this.assertError(this.request, Lists.newArrayList(400, 401)));
+        return Optional.of(EchoValidationSuite.this.makeRequestAndExpectError(combination,
+            this.request, Lists.newArrayList(400, 401)));
       }
     });
 
@@ -518,8 +254,8 @@ class EchoValidationSuite {
         this.request.recomputeAndAttachHttpSigAuthorizationHeader(keyId, keyPair,
             Lists.newArrayList("(request-target)", "host", "date", "digest", "x-request-id",
                 "missing-header-that-should-exist"));
-        return Optional
-            .of(EchoValidationSuite.this.assertError(this.request, Lists.newArrayList(400, 401)));
+        return Optional.of(EchoValidationSuite.this.makeRequestAndExpectError(combination,
+            this.request, Lists.newArrayList(400, 401)));
       }
     });
 
@@ -542,8 +278,9 @@ class EchoValidationSuite {
         KeyPair keyPair = EchoValidationSuite.this.parentEchoValidator.getClientRsaKeyPairInUse();
         this.request.recomputeAndAttachHttpSigAuthorizationHeader(keyId, keyPair, Lists
             .newArrayList("(request-target)", "host", "original-date", "digest", "x-request-id"));
-        return Optional.of(EchoValidationSuite.this.assertHttp200(this.request,
-            EchoValidationSuite.this.parentEchoValidator.getCoveredHeiIDs(), Lists.newArrayList()));
+        return Optional.of(EchoValidationSuite.this.makeRequestAndExpectHttp200(combination,
+            this.request, EchoValidationSuite.this.parentEchoValidator.getCoveredHeiIDs(),
+            Lists.newArrayList()));
       }
     });
 
@@ -567,8 +304,8 @@ class EchoValidationSuite {
           String keyId = Authorization.parse(this.request.getHeader("Authorization")).getKeyId();
           KeyPair keyPair = EchoValidationSuite.this.parentEchoValidator.getClientRsaKeyPairInUse();
           this.request.recomputeAndAttachHttpSigAuthorizationHeader(keyId, keyPair, headersToSign);
-          return Optional
-              .of(EchoValidationSuite.this.assertError(this.request, Lists.newArrayList(400, 401)));
+          return Optional.of(EchoValidationSuite.this.makeRequestAndExpectError(combination,
+              this.request, Lists.newArrayList(400, 401)));
         }
       });
     }
@@ -592,8 +329,9 @@ class EchoValidationSuite {
         List<String> headersToSign = new ArrayList<>(authz.getHeaders());
         headersToSign.add("some-custom-header");
         this.request.recomputeAndAttachHttpSigAuthorizationHeader(keyId, keyPair, headersToSign);
-        return Optional.of(EchoValidationSuite.this.assertHttp200(this.request,
-            EchoValidationSuite.this.parentEchoValidator.getCoveredHeiIDs(), Lists.newArrayList()));
+        return Optional.of(EchoValidationSuite.this.makeRequestAndExpectHttp200(combination,
+            this.request, EchoValidationSuite.this.parentEchoValidator.getCoveredHeiIDs(),
+            Lists.newArrayList()));
       }
     });
 
@@ -614,7 +352,8 @@ class EchoValidationSuite {
         String keyId = DigestUtils.sha256Hex(keyPair.getPublic().getEncoded());
         this.request.recomputeAndAttachHttpSigAuthorizationHeader(keyId, keyPair,
             authz.getHeaders());
-        return Optional.of(EchoValidationSuite.this.assertError(this.request, 403));
+        return Optional
+            .of(EchoValidationSuite.this.makeRequestAndExpectError(combination, this.request, 403));
       }
     });
 
@@ -643,7 +382,8 @@ class EchoValidationSuite {
         String keyId = Authorization.parse(this.request.getHeader("Authorization")).getKeyId();
         KeyPair keyPair = EchoValidationSuite.this.parentEchoValidator.getClientRsaKeyPairInUse();
         this.request.recomputeAndAttachHttpSigAuthorizationHeader(keyId, keyPair, headers);
-        return Optional.of(EchoValidationSuite.this.assertError(this.request, 400));
+        return Optional
+            .of(EchoValidationSuite.this.makeRequestAndExpectError(combination, this.request, 400));
       }
     });
 
@@ -666,11 +406,16 @@ class EchoValidationSuite {
         this.request.recomputeAndAttachHttpSigAuthorizationHeader(authz.getKeyId(), keyPair,
             authz.getHeaders());
         try {
-          return Optional.of(EchoValidationSuite.this.assertError(this.request, 400));
+          return Optional.of(
+              EchoValidationSuite.this.makeRequestAndExpectError(combination, this.request, 400));
         } catch (Failure f) {
-          // We want this to be a warning, not a failure.
-          throw new Failure(f.getMessage(), Status.WARNING,
-              f.getAttachedServerResponse().orElse(null));
+          // We don't want this to be a FAILURE. WARNING is enough.
+          if (f.getStatus().equals(Status.FAILURE)) {
+            throw new Failure(f.getMessage(), Status.WARNING,
+                f.getAttachedServerResponse().orElse(null));
+          } else {
+            throw f;
+          }
         }
       }
     });
@@ -695,7 +440,8 @@ class EchoValidationSuite {
         KeyPair keyPair = EchoValidationSuite.this.parentEchoValidator.getClientRsaKeyPairInUse();
         this.request.recomputeAndAttachHttpSigAuthorizationHeader(authz.getKeyId(), keyPair,
             authz.getHeaders());
-        return Optional.of(EchoValidationSuite.this.assertError(this.request, 400));
+        return Optional
+            .of(EchoValidationSuite.this.makeRequestAndExpectError(combination, this.request, 400));
       }
     });
 
@@ -721,15 +467,634 @@ class EchoValidationSuite {
         KeyPair keyPair = EchoValidationSuite.this.parentEchoValidator.getClientRsaKeyPairInUse();
         this.request.recomputeAndAttachHttpSigAuthorizationHeader(authz.getKeyId(), keyPair,
             authz.getHeaders());
-        return Optional.of(EchoValidationSuite.this.assertHttp200(this.request,
-            EchoValidationSuite.this.parentEchoValidator.getCoveredHeiIDs(),
+        return Optional.of(EchoValidationSuite.this.makeRequestAndExpectHttp200(combination,
+            this.request, EchoValidationSuite.this.parentEchoValidator.getCoveredHeiIDs(),
             Lists.newArrayList("b", "b")));
+      }
+    });
+
+    this.addAndRun(false, new InlineValidationStep() {
+
+      @Override
+      public String getName() {
+        return "Trying " + combination + " with \"SHA\" request digest. "
+            + "This algorithm is deprecated, so we are expecting to receive a "
+            + "valid HTTP 400 response.";
+      }
+
+      @Override
+      protected Optional<Response> innerRun() throws Failure {
+        this.request = EchoValidationSuite.this.createValidRequestForCombination(combination,
+            "POST", EchoValidationSuite.this.urlToBeValidated);
+        this.request.setBody("echo=b&echo=b".getBytes(StandardCharsets.UTF_8));
+        this.request.putHeader("Digest", "SHA=" + Base64.getEncoder()
+            .encodeToString(DigestUtils.getSha1Digest().digest(this.request.getBody().get())));
+        Authorization authz = Authorization.parse(this.request.getHeader("Authorization"));
+        KeyPair keyPair = EchoValidationSuite.this.parentEchoValidator.getClientRsaKeyPairInUse();
+        this.request.recomputeAndAttachHttpSigAuthorizationHeader(authz.getKeyId(), keyPair,
+            authz.getHeaders());
+        return Optional
+            .of(EchoValidationSuite.this.makeRequestAndExpectError(combination, this.request, 400));
       }
     });
   }
 
-  protected Request createValidRequestForCombination(
-      KnownHttpSecurityMethodsCombination combination, String httpMethod, String url) {
+  private void checkEdgeCasesForSxxx(SecMethodsCombination combination) throws SuiteBroken {
+    assert combination.getCliAuth().equals(SecMethod.CLIAUTH_TLSCERT_SELFSIGNED);
+
+    this.addAndRun(false, new InlineValidationStep() {
+
+      @Override
+      public String getName() {
+        return "Trying " + combination + " with an unknown TLS client certificate "
+            + "(a random one, that has never been published in the Registry). "
+            + "Expecting to receive a valid HTTP 401 or HTTP 403 error response.";
+      }
+
+      @Override
+      protected Optional<Response> innerRun() throws Failure {
+        this.request = EchoValidationSuite.this.createValidRequestForCombination(combination, "GET",
+            EchoValidationSuite.this.urlToBeValidated);
+        KeyPair otherKeyPair =
+            EchoValidationSuite.this.parentEchoValidator.getUnregisteredKeyPair();
+        X509Certificate otherCert =
+            EchoValidationSuite.this.parentEchoValidator.generateCertificate(otherKeyPair);
+        this.request.setClientCertificate(otherCert, otherKeyPair);
+        return Optional.of(EchoValidationSuite.this.makeRequestAndExpectError(combination,
+            this.request, Lists.newArrayList(401, 403)));
+      }
+    });
+  }
+
+  private void checkEdgeCasesForxHxx(SecMethodsCombination combination) throws SuiteBroken {
+
+    this.addAndRun(false, new InlineValidationStep() {
+
+      @Override
+      public String getName() {
+        return "Trying " + combination + " with no valid algorithm in Accept-Signature header. "
+            + "Expecting to receive unsigned response.";
+      }
+
+      @Override
+      protected Optional<Response> innerRun() throws Failure {
+        this.request = EchoValidationSuite.this.createValidRequestForCombination(combination, "GET",
+            EchoValidationSuite.this.urlToBeValidated);
+        this.request.putHeader("Accept-Signature", "unknown-algorithm");
+        SecMethodsCombination relaxedCombination =
+            new SecMethodsCombination(combination.getCliAuth(), SecMethod.SRVAUTH_TLSCERT,
+                combination.getReqEncr(), combination.getResEncr());
+        if (combination.getCliAuth().equals(SecMethod.CLIAUTH_NONE)) {
+          return Optional.of(EchoValidationSuite.this.makeRequestAndExpectError(relaxedCombination,
+              this.request, Lists.newArrayList(401, 403)));
+        } else {
+          return Optional
+              .of(EchoValidationSuite.this.makeRequestAndExpectHttp200(relaxedCombination,
+                  this.request, EchoValidationSuite.this.parentEchoValidator.getCoveredHeiIDs(),
+                  Lists.newArrayList()));
+        }
+      }
+    });
+
+    this.addAndRun(false, new InlineValidationStep() {
+
+      @Override
+      public String getName() {
+        return "Trying " + combination + " with multiple algorithms in Accept-Signature header "
+            + "(one of which is rsa-sha256). Expecting to receive a signed response.";
+      }
+
+      @Override
+      protected Optional<Response> innerRun() throws Failure {
+        this.request = EchoValidationSuite.this.createValidRequestForCombination(combination, "GET",
+            EchoValidationSuite.this.urlToBeValidated);
+        this.request.putHeader("Accept-Signature", "rsa-sha256, unknown-algorithm");
+        if (combination.getCliAuth().equals(SecMethod.CLIAUTH_NONE)) {
+          return Optional.of(EchoValidationSuite.this.makeRequestAndExpectError(combination,
+              this.request, Lists.newArrayList(401, 403)));
+        } else {
+          return Optional.of(EchoValidationSuite.this.makeRequestAndExpectHttp200(combination,
+              this.request, EchoValidationSuite.this.parentEchoValidator.getCoveredHeiIDs(),
+              Lists.newArrayList()));
+        }
+      }
+    });
+
+  }
+
+  /**
+   * Helper method for creating simple request method validation steps (e.g. run a PUT request and
+   * expect error, run a POST and expect success).
+   */
+  private InlineValidationStep createHttpMethodValidationStep(SecMethodsCombination combination,
+      String httpMethod, boolean expectSuccess) {
+    return new InlineValidationStep() {
+
+      @Override
+      public String getName() {
+        if (expectSuccess) {
+          return "Trying " + combination + " with a " + httpMethod + " request, "
+              + "and without any additional parameters. Expecting to "
+              + "receive a valid HTTP 200 Echo API response with proper hei-ids, and "
+              + "without any echo values.";
+        } else {
+          return "Trying " + combination + " with a " + httpMethod + " request. "
+              + "Expecting to receive a valid HTTP 405 error response.";
+        }
+      }
+
+      @Override
+      protected Optional<Response> innerRun() throws Failure {
+        this.request = EchoValidationSuite.this.createValidRequestForCombination(combination,
+            httpMethod, EchoValidationSuite.this.urlToBeValidated);
+        if (expectSuccess) {
+          return Optional.of(EchoValidationSuite.this.makeRequestAndExpectHttp200(combination,
+              this.request, EchoValidationSuite.this.parentEchoValidator.getCoveredHeiIDs(),
+              Collections.<String>emptyList()));
+        } else {
+          return Optional.of(
+              EchoValidationSuite.this.makeRequestAndExpectError(combination, this.request, 405));
+        }
+      }
+    };
+  }
+
+  private String formatDocBuildErrors(List<BuildError> errors) {
+    StringBuilder sb = new StringBuilder();
+    sb.append("Our document parser has reported the following errors:");
+    for (int i = 0; i < errors.size(); i++) {
+      sb.append("\n" + (i + 1) + ". ");
+      sb.append("(Line " + errors.get(i).getLineNumber() + ") " + errors.get(i).getMessage());
+    }
+    return sb.toString();
+  }
+
+  private Response makeRequestAndExpectError(SecMethodsCombination combination, Request request,
+      int status) throws Failure {
+    return this.makeRequestAndExpectError(combination, request, Lists.newArrayList(status));
+  }
+
+  /**
+   * Make the request and check if the response contains a valid error of expected type.
+   *
+   * @param request The request to be made.
+   * @param statuses Expected HTTP response statuses (any of those).
+   * @throws Failure If HTTP status differs from expected, or if the response body doesn't contain a
+   *         proper error response.
+   */
+  private Response makeRequestAndExpectError(SecMethodsCombination combination, Request request,
+      List<Integer> statuses) throws Failure {
+    Response response;
+    try {
+      response = this.internet.makeRequest(request);
+    } catch (IOException e) {
+      throw new Failure("IOException: " + e.getMessage(), Status.ERROR, null);
+    }
+    final List<String> notices = this.validateResponseCommons(combination, request, response);
+    if (!statuses.contains(response.getStatus())) {
+      int gotFirstDigit = response.getStatus() / 100;
+      int expectedFirstDigit = statuses.get(0) / 100;
+      Status failureStatus =
+          (gotFirstDigit == expectedFirstDigit) ? Status.WARNING : Status.FAILURE;
+      throw new Failure(
+          "HTTP "
+              + String.join(" or HTTP ",
+                  statuses.stream().map(Object::toString).collect(Collectors.toList()))
+              + " expected, but HTTP " + response.getStatus() + " received.",
+          failureStatus, response);
+    }
+    BuildParams params = new BuildParams(response.getBody());
+    params.setExpectedKnownElement(KnownElement.COMMON_ERROR_RESPONSE);
+    BuildResult result = this.docBuilder.build(params);
+    if (!result.isValid()) {
+      throw new Failure(
+          "HTTP response status was okay, but the content has failed Schema validation. "
+              + "It is recommended to return a proper <error-response> in case of errors. "
+              + this.formatDocBuildErrors(result.getErrors()),
+          Status.WARNING, response);
+    }
+    if (response.getStatus() == 401) {
+      String wwwauth = response.getHeader("WWW-Authenticate");
+      if (wwwauth == null) {
+        throw new Failure("Per HTTP specs, HTTP 401 responses MUST contain a "
+            + "WWW-Authenticate header. See here: "
+            + "https://tools.ietf.org/html/rfc7235#section-4.1", Status.FAILURE, response);
+      }
+      Challenge parsed = Challenge.parse(wwwauth);
+      if (parsed != null) {
+        if (parsed.getRealm() == null || (!parsed.getRealm().equals("EWP"))) {
+          throw new Failure("Your WWW-Authenticate header should contain the \"realm\" property "
+              + "with \"EWP\" value.", Status.WARNING, response);
+        }
+        if (!parsed.getAlgorithms().isEmpty()
+            && (!parsed.getAlgorithms().contains(Algorithm.RSA_SHA256))) {
+          throw new Failure(
+              "Your WWW-Authenticate describes required Signature algorithms, "
+                  + "but the list doesn't contain the required rsa-sha256 algorithm.",
+              Status.WARNING, response);
+        }
+        if (!parsed.getHeaders().isEmpty() && (!parsed.getHeaders().containsAll(
+            Lists.newArrayList("(request-target)", "host", "digest", "x-request-id", "date")))) {
+          throw new Failure(
+              "If you want to include the \"headers\" "
+                  + "property in your WWW-Authenticate header, then it should contain at least "
+                  + "all required values: (request-target), host, digest, x-request-id and date",
+              Status.WARNING, response);
+        }
+      }
+      String wantDigest = response.getHeader("Want-Digest");
+      // Simplified matching.
+      if (wantDigest == null || (!wantDigest.contains("SHA-256"))) {
+        throw new Failure("It is RECOMMENDED for HTTP 401 responses to contain a proper "
+            + "Want-Digest header with at least the SHA-256 value.", Status.WARNING, response);
+      }
+    }
+    StringBuilder sb = new StringBuilder();
+    if (notices.size() > 0) {
+      sb.append("Notices:\n");
+      for (String message : notices) {
+        sb.append("- ").append(message).append('\n');
+      }
+    }
+    if (sb.length() > 0) {
+      throw new Failure(sb.toString(), Status.NOTICE, response);
+    }
+    return response;
+  }
+
+  /**
+   * Make the request and make sure that the response contains a valid HTTP 200 Echo API response.
+   *
+   * @param request The request to be made.
+   * @param heiIdsExpected The expected contents of the hei-id list.
+   * @param echoValuesExpected The expected contents of the echo list.
+   * @throws Failure If some expectations are not met.
+   */
+  private Response makeRequestAndExpectHttp200(SecMethodsCombination combination, Request request,
+      List<String> heiIdsExpected, List<String> echoValuesExpected) throws Failure {
+    Response response;
+    try {
+      response = this.internet.makeRequest(request);
+    } catch (IOException e) {
+      throw new Failure("IOException: " + e.getMessage(), Status.ERROR, null);
+    }
+    final List<String> notices = this.validateResponseCommons(combination, request, response);
+    if (response.getStatus() != 200) {
+      StringBuilder sb = new StringBuilder();
+      sb.append("HTTP 200 expected, but HTTP " + response.getStatus() + " received.");
+      if (response.getStatus() == 403) {
+        sb.append(" Make sure you validate clients' credentials against a fresh "
+            + "Registry catalogue version.");
+      }
+      throw new Failure(sb.toString(), Status.FAILURE, response);
+    }
+    BuildParams params = new BuildParams(response.getBody());
+    if (this.echoApiVersionDetected == 1) {
+      params.setExpectedKnownElement(KnownElement.RESPONSE_ECHO_V1);
+    } else {
+      params.setExpectedKnownElement(KnownElement.RESPONSE_ECHO_V2);
+    }
+    BuildResult result = this.docBuilder.build(params);
+    if (!result.isValid()) {
+      throw new Failure(
+          "HTTP response status was okay, but the content has failed Schema validation. "
+              + this.formatDocBuildErrors(result.getErrors()),
+          Status.FAILURE, response);
+    }
+    Match root = $(result.getDocument().get()).namespaces(KnownNamespace.prefixMap());
+    List<String> heiIdsGot = new ArrayList<>();
+    String nsPrefix = (this.echoApiVersionDetected == 1) ? "er1:" : "er2:";
+    for (Match entry : root.xpath(nsPrefix + "hei-id").each()) {
+      heiIdsGot.add(entry.text());
+    }
+    for (String heiIdGot : heiIdsGot) {
+      if (!heiIdsExpected.contains(heiIdGot)) {
+        throw new Failure(
+            "The response has proper HTTP status and it passed the schema validation. However, "
+                + "the set of returned hei-ids doesn't match what we expect. It contains <hei-id>"
+                + heiIdGot + "</hei-id>, but it shouldn't. It should contain the following: "
+                + heiIdsExpected,
+            Status.FAILURE, response);
+      }
+    }
+    for (String heiIdExpected : heiIdsExpected) {
+      if (!heiIdsGot.contains(heiIdExpected)) {
+        throw new Failure(
+            "The response has proper HTTP status and it passed the schema validation. However, "
+                + "the set of returned hei-ids doesn't match what we expect. "
+                + "It should contain the following: " + heiIdsExpected,
+            Status.FAILURE, response);
+      }
+    }
+    List<String> echoValuesGot = root.xpath(nsPrefix + "echo").texts();
+    if (!echoValuesGot.equals(echoValuesExpected)) {
+      throw new Failure("The response has proper HTTP status and it passed the schema validation. "
+          + "However, there's something wrong with the echo values produced. "
+          + "We expected the response to contain the following echo values: " + echoValuesExpected
+          + ", but the following values were found instead: " + echoValuesGot, Status.FAILURE,
+          response);
+    }
+    StringBuilder sb = new StringBuilder();
+    if (notices.size() > 0) {
+      sb.append("Notices:\n");
+      for (String message : notices) {
+        sb.append("- ").append(message).append('\n');
+      }
+    }
+    if (sb.length() > 0) {
+      throw new Failure(sb.toString(), Status.NOTICE, response);
+    }
+    return response;
+  }
+
+  private List<String> validateResponseCommons(SecMethodsCombination combination, Request request,
+      Response response) throws Failure {
+
+    // Verify X-Request-Id
+
+    String reqReqId = request.getHeader("X-Request-Id");
+    String resReqId = response.getHeader("X-Request-Id");
+    if (resReqId != null) {
+      // If present in response, then it should also be present in the request.
+      if (reqReqId == null) {
+        throw new Failure("The request didn't contain the X-Request-Id header, so "
+            + "the response also shouldn't.", Status.FAILURE, response);
+      } else {
+        // Both should be equal.
+        if (!reqReqId.equals(resReqId)) {
+          throw new Failure("Expecting the response to contain exactly the same X-Request-Id "
+              + "as has been sent in the request.", Status.FAILURE, response);
+        }
+      }
+    } else {
+      // Not present in the response. This might be a failure, but this depends on a particular
+      // combination (and should be validated when validating this particular combination).
+    }
+
+    List<String> notices = new ArrayList<>();
+    if (combination.getSrvAuth().equals(SecMethod.SRVAUTH_TLSCERT)) {
+      if (response.getHeader("Signature") != null) {
+        notices.add("Response contains the Signature header, even though the client "
+            + "didn't ask for it. In general, there's nothing wrong with that, but "
+            + "you might want to tweak your implementation to save some computing time.");
+      }
+    } else if (combination.getSrvAuth().equals(SecMethod.SRVAUTH_HTTPSIG)) {
+      this.validateResponseCommonsForxHxx(combination, request, response);
+    }
+
+    return notices;
+  }
+
+  private void validateResponseCommonsForxHxx(SecMethodsCombination combination, // NOPMD
+      Request request, Response response) throws Failure {
+
+    // Verify X-Request-Id
+
+    if ((request.getHeader("X-Request-Id") != null)
+        && (response.getHeader("X-Request-Id") == null)) {
+      throw new Failure("HTTP Signature Server Authentication requires the server to "
+          + "include the correlated X-Request-Id, whenever it has been included "
+          + "in the request.", Status.FAILURE, response);
+    }
+    /*
+     * We don't need to check if X-Request-Id headers are equal. It has already been checked.
+     */
+
+    // Verify signature parameters
+
+    String sigHeader = response.getHeader("Signature");
+    if (sigHeader == null) {
+      throw new Failure("Expecting the response to contain the Signature header", Status.FAILURE,
+          response);
+    }
+    /*
+     * Our library parses only the Authrization header (not the Signature header), so we will
+     * reformat the value to match.
+     */
+    Authorization authz = Authorization.parse("Signature " + sigHeader);
+    if (authz == null) {
+      throw new Failure(
+          "Could not parse response's Signature header, make sure it's in a proper format",
+          Status.FAILURE, response);
+    }
+    if (!authz.getAlgorithm().equals(Algorithm.RSA_SHA256)) {
+      throw new Failure("Expecting the response's Signature to use the rsa-sha256 algorithm, "
+          + "but " + authz.getAlgorithm().getName() + " found instead.", Status.FAILURE, response);
+    }
+    Set<String> signedHeaders = new HashSet<>(authz.getHeaders());
+    List<String> headersThatShouldBeSigned = Lists.newArrayList("digest");
+    if (response.getHeader("X-Request-Id") != null) {
+      headersThatShouldBeSigned.add("x-request-id");
+    }
+    if (response.getHeader("X-Request-Signature") != null) {
+      headersThatShouldBeSigned.add("x-request-signature");
+    }
+    for (String headerName : headersThatShouldBeSigned) {
+      if (!signedHeaders.contains(headerName)) {
+        throw new Failure("Expecting the response's Signature to cover the \"" + headerName
+            + "\" header, but it doesn't.", Status.FAILURE, response);
+      }
+    }
+    if (signedHeaders.contains("date") || signedHeaders.contains("original-date")) {
+      // Okay!
+    } else {
+      throw new Failure(
+          "Expecting the response's Signature to cover the \"date\" header "
+              + "or the \"original-date\" header (or both), but it doesn't cover any of them.",
+          Status.FAILURE, response);
+    }
+
+    // Verify X-Request-Signature
+
+    String reqAuthHeader = request.getHeader("Authorization");
+    Authorization reqAuthz = Authorization.parse(reqAuthHeader);
+    if (response.getHeader("X-Request-Signature") != null) {
+      if (reqAuthz == null) {
+        throw new Failure(
+            "X-Request-Signature response header should be present only "
+                + "when HTTP Signature Client Authentication has been used in the request.",
+            Status.FAILURE, response);
+      }
+      if (!response.getHeader("X-Request-Signature").equals(reqAuthz.getSignature())) {
+        throw new Failure("X-Request-Signature response header doesn't match the actual "
+            + "HTTP Signature of the orginal request", Status.FAILURE, response);
+      }
+    } else if (reqAuthz != null) {
+      throw new Failure("Missing X-Request-Signature response header.", Status.FAILURE, response);
+    }
+
+    // Verify the date(s)
+
+    List<String> dateHeadersToVerify = new ArrayList<>();
+    if (response.getHeader("Date") != null) {
+      dateHeadersToVerify.add("Date");
+    }
+    if (response.getHeader("Original-Date") != null) {
+      dateHeadersToVerify.add("Original-Date");
+    }
+    if (dateHeadersToVerify.size() == 0) {
+      throw new Failure("Expecting the response to contain the \"Date\" "
+          + "header or the \"Original-Date\" (or both).", Status.FAILURE, response);
+    }
+    for (String headerName : dateHeadersToVerify) {
+      String errorMessage = findErrorsInDateHeader(response.getHeader(headerName));
+      if (errorMessage != null) {
+        throw new Failure("The value of response's \"" + headerName
+            + "\" header failed verification: " + errorMessage, Status.FAILURE, response);
+      }
+    }
+
+    // Look up the key
+
+    RSAPublicKey serverKey = this.regClient.findRsaPublicKey(authz.getKeyId());
+    if (serverKey == null) {
+      throw new Failure(
+          "The keyId extracted from the response's Signature header "
+              + "doesn't match any of the keys published in the Registry",
+          Status.FAILURE, response);
+    }
+    if (!this.regClient.isApiCoveredByServerKey(this.matchedApiEntry, serverKey)) {
+      throw new Failure("The keyId extracted from the response's Signature header "
+          + "has been found in the Registry, but it doesn't cover the Echo API "
+          + "endpoint which has generated the response. Make sure that you have "
+          + "included your key in a proper manifest section.", Status.FAILURE, response);
+    }
+
+    // Verify the signature
+
+    DefaultKeychain keychain = new DefaultKeychain();
+    keychain.add(new HttpSigRsaPublicKey(serverKey));
+    DefaultVerifier verifier = new DefaultVerifier(keychain);
+
+    RequestContent.Builder rcb = new RequestContent.Builder();
+    rcb.setRequestTarget(request.getMethod(), request.getPathPseudoHeader());
+    for (Map.Entry<String, String> entry : response.getHeaders().entrySet()) {
+      rcb.addHeader(entry.getKey(), entry.getValue());
+    }
+    // The library needs this challenge object in order to verify signature. So,
+    // we need to create a "fake" instance just for that.
+    Challenge challenge = new Challenge("Not verified", headersThatShouldBeSigned,
+        Lists.newArrayList(Algorithm.RSA_SHA256));
+    VerifyResult verifyResult = verifier.verifyWithResult(challenge, rcb.build(), authz);
+    if (!verifyResult.equals(VerifyResult.SUCCESS)) {
+      throw new Failure("Invalid HTTP Signature in response: " + verifyResult.toString(),
+          Status.FAILURE, response);
+    }
+
+    // Verify the digest
+
+    String digestHeader = response.getHeader("Digest");
+    if (digestHeader == null) {
+      throw new Failure("Missing response header: Digest", Status.FAILURE, response);
+    }
+    String expectedSha256Digest = response.computeBodyDigest();
+    Map<String, String> attrs = this.parseDigestHeaderValue(digestHeader);
+    if (!attrs.containsKey("SHA-256")) {
+      throw new Failure("Missing SHA-256 digest in Digest header", Status.FAILURE, response);
+    }
+    String got = attrs.get("SHA-256");
+    if (!got.equals(expectedSha256Digest)) {
+      throw new Failure("Response SHA-256 digest mismatch. Expected: " + expectedSha256Digest,
+          Status.FAILURE, response);
+    }
+  }
+
+  private void validateSecMethodCombination(SecMethodsCombination combination) throws SuiteBroken {
+
+    /*
+     * Make sure that properly executed GET and POST requests work. This steps varies on particular
+     * combination.
+     */
+
+    if (!combination.getCliAuth().equals(SecMethod.CLIAUTH_NONE)) {
+      this.addAndRun(false, this.createHttpMethodValidationStep(combination, "GET", true));
+      this.addAndRun(false, this.createHttpMethodValidationStep(combination, "POST", true));
+    }
+
+    /* Try to "break" specific security method implementations. */
+
+    if (combination.getCliAuth().equals(SecMethod.CLIAUTH_NONE)) {
+      this.checkEdgeCasesForAxxx(combination);
+    } else if (combination.getCliAuth().equals(SecMethod.CLIAUTH_TLSCERT_SELFSIGNED)) {
+      this.checkEdgeCasesForSxxx(combination);
+    } else if (combination.getCliAuth().equals(SecMethod.CLIAUTH_HTTPSIG)) {
+      this.checkEdgeCasesForHxxx(combination);
+    } else {
+      // Shouldn't happen.
+      throw new RuntimeException("Unsupported combination");
+    }
+    if (combination.getSrvAuth().equals(SecMethod.SRVAUTH_TLSCERT)) {
+      // Not much to validate.
+    } else if (combination.getSrvAuth().equals(SecMethod.SRVAUTH_HTTPSIG)) {
+      this.checkEdgeCasesForxHxx(combination);
+    } else {
+      // Shouldn't happen.
+      throw new RuntimeException("Unsupported combination");
+    }
+
+    if (!combination.getCliAuth().equals(SecMethod.CLIAUTH_NONE)) {
+      this.addAndRun(false, this.createHttpMethodValidationStep(combination, "PUT", false));
+      this.addAndRun(false, this.createHttpMethodValidationStep(combination, "DELETE", false));
+
+      this.addAndRun(false, new InlineValidationStep() {
+
+        @Override
+        public String getName() {
+          return "Trying " + combination + " GET request with a list of echo values [a, b, a]. "
+              + "Expecting to receive a valid HTTP 200 Echo API response, "
+              + "with proper hei-id and matching echo values.";
+        }
+
+        @Override
+        protected Optional<Response> innerRun() throws Failure {
+          ArrayList<String> expectedEchoValues = new ArrayList<>();
+          expectedEchoValues.add("a");
+          expectedEchoValues.add("b");
+          expectedEchoValues.add("a");
+          this.request = EchoValidationSuite.this.createValidRequestForCombination(combination,
+              "GET", EchoValidationSuite.this.urlToBeValidated + "?echo=a&echo=b&echo=a");
+          return Optional.of(EchoValidationSuite.this.makeRequestAndExpectHttp200(combination,
+              this.request, EchoValidationSuite.this.parentEchoValidator.getCoveredHeiIDs(),
+              expectedEchoValues));
+        }
+      });
+
+      this.addAndRun(false, new InlineValidationStep() {
+
+        @Override
+        public String getName() {
+          return "Trying " + combination + " POST request with a list of echo values [a, b, a]. "
+              + "Expecting to receive a valid HTTP 200 Echo API response, "
+              + "with proper hei-id and matching echo values.";
+        }
+
+        @Override
+        protected Optional<Response> innerRun() throws Failure {
+          this.request = EchoValidationSuite.this.createValidRequestForCombination(combination,
+              "POST", EchoValidationSuite.this.urlToBeValidated);
+          this.request.setBody("echo=a&echo=b&echo=a".getBytes(StandardCharsets.UTF_8));
+          ArrayList<String> expectedEchoValues = new ArrayList<>();
+          expectedEchoValues.add("a");
+          expectedEchoValues.add("b");
+          expectedEchoValues.add("a");
+          if (combination.getCliAuth().equals(SecMethod.CLIAUTH_HTTPSIG)) {
+            // We have changed the body, so we need to regenerate the digest and signature.
+            this.request.recomputeAndAttachDigestHeader();
+            String keyId = Authorization.parse(this.request.getHeader("Authorization")).getKeyId();
+            this.request.recomputeAndAttachHttpSigAuthorizationHeader(keyId,
+                EchoValidationSuite.this.parentEchoValidator.getClientRsaKeyPairInUse(),
+                Lists.newArrayList("(request-target)", "date", "host", "digest", "x-request-id"));
+          }
+          return Optional.of(EchoValidationSuite.this.makeRequestAndExpectHttp200(combination,
+              this.request, EchoValidationSuite.this.parentEchoValidator.getCoveredHeiIDs(),
+              expectedEchoValues));
+        }
+      });
+    }
+  }
+
+  protected Request createValidRequestForCombination(SecMethodsCombination combination,
+      String httpMethod, String url) {
 
     Request request = new Request(httpMethod, url);
 
@@ -739,12 +1104,12 @@ class EchoValidationSuite {
 
     // cliauth
 
-    if (combination.getCliAuth().equals(KnownMethodId.CLIAUTH_NONE)) {
+    if (combination.getCliAuth().equals(SecMethod.CLIAUTH_NONE)) {
       // pass
-    } else if (combination.getCliAuth().equals(KnownMethodId.CLIAUTH_TLSCERT_SELFSIGNED)) {
+    } else if (combination.getCliAuth().equals(SecMethod.CLIAUTH_TLSCERT_SELFSIGNED)) {
       request.setClientCertificate(this.parentEchoValidator.getTlsClientCertificateInUse(),
           this.parentEchoValidator.getTlsKeyPairInUse());
-    } else if (combination.getCliAuth().equals(KnownMethodId.CLIAUTH_HTTPSIG)) {
+    } else if (combination.getCliAuth().equals(SecMethod.CLIAUTH_HTTPSIG)) {
       String date =
           DateTimeFormatter.RFC_1123_DATE_TIME.format(ZonedDateTime.now(ZoneId.of("UTC")));
       URL parsed;
@@ -767,15 +1132,17 @@ class EchoValidationSuite {
 
     // srvauth
 
-    if (combination.getSrvAuth().equals(KnownMethodId.SRVAUTH_TLSCERT)) {
+    if (combination.getSrvAuth().equals(SecMethod.SRVAUTH_TLSCERT)) {
       // pass
+    } else if (combination.getSrvAuth().equals(SecMethod.SRVAUTH_HTTPSIG)) {
+      request.putHeader("Accept-Signature", "rsa-sha256");
     } else {
       throw new RuntimeException("Not supported");
     }
 
     // reqencr
 
-    if (combination.getReqEncr().equals(KnownMethodId.REQENCR_TLS)) {
+    if (combination.getReqEncr().equals(SecMethod.REQENCR_TLS)) {
       // pass
     } else {
       throw new RuntimeException("Not supported");
@@ -783,13 +1150,24 @@ class EchoValidationSuite {
 
     // resencr
 
-    if (combination.getResEncr().equals(KnownMethodId.RESENCR_TLS)) {
+    if (combination.getResEncr().equals(SecMethod.RESENCR_TLS)) {
       // pass
     } else {
       throw new RuntimeException("Not supported");
     }
 
     return request;
+  }
+
+  protected Map<String, String> parseDigestHeaderValue(String value) {
+    Map<String, String> result = new HashMap<>();
+    for (String pair : value.split(",")) {
+      String[] parts = pair.split("=", 2);
+      if (parts.length == 2) {
+        result.put(parts[0].trim(), parts[1].trim());
+      }
+    }
+    return result;
   }
 
   List<ValidationStepWithStatus> getResults() {
@@ -804,7 +1182,7 @@ class EchoValidationSuite {
 
         @Override
         public String getName() {
-          return "Check if our TLS client certificate has been served long enough.";
+          return "Check if our client credentials have been served long enough.";
         }
 
         @Override
@@ -812,9 +1190,9 @@ class EchoValidationSuite {
           if (new Date().getTime() - EchoValidationSuite.this.parentEchoValidator
               .getCredentialsGenerationDate().getTime() < 10 * 60 * 1000) {
             throw new Failure(
-                "Our TLS client certificate is quite fresh. This means that many Echo APIs will "
+                "Our client credentials are quite fresh. This means that many Echo APIs will "
                     + "(correctly) return error responses in places where we expect HTTP 200. "
-                    + "This notice will disappear once the certificate is 10 minutes old.",
+                    + "This notice will disappear once our credentials are 10 minutes old.",
                 Status.NOTICE, null);
           }
           return Optional.empty();
@@ -841,24 +1219,6 @@ class EchoValidationSuite {
             throw new Failure("Exception while parsing URL format: " + e, Status.FAILURE, null);
           }
           return Optional.empty();
-        }
-      });
-
-      /////////////////////////////////////////
-
-      this.addAndRun(false, new InlineValidationStep() {
-
-        @Override
-        public String getName() {
-          return "Accessing your Echo API without any form of client authentication. "
-              + "Expecting to receive a valid HTTP 401 or HTTP 403 error response.";
-        }
-
-        @Override
-        protected Optional<Response> innerRun() throws Failure {
-          this.request = new Request("GET", EchoValidationSuite.this.urlToBeValidated);
-          return Optional
-              .of(EchoValidationSuite.this.assertError(this.request, Lists.newArrayList(401, 403)));
         }
       });
 
@@ -918,12 +1278,14 @@ class EchoValidationSuite {
       });
 
       if (this.echoApiVersionDetected == 1) {
-        this.validateCombination(new KnownHttpSecurityMethodsCombination(
-            KnownMethodId.CLIAUTH_TLSCERT_SELFSIGNED, KnownMethodId.SRVAUTH_TLSCERT,
-            KnownMethodId.REQENCR_TLS, KnownMethodId.RESENCR_TLS));
+        this.validateSecMethodCombination(new SecMethodsCombination(SecMethod.CLIAUTH_NONE,
+            SecMethod.SRVAUTH_TLSCERT, SecMethod.REQENCR_TLS, SecMethod.RESENCR_TLS));
+        this.validateSecMethodCombination(
+            new SecMethodsCombination(SecMethod.CLIAUTH_TLSCERT_SELFSIGNED,
+                SecMethod.SRVAUTH_TLSCERT, SecMethod.REQENCR_TLS, SecMethod.RESENCR_TLS));
       } else if (this.echoApiVersionDetected == 2) {
 
-        this.addAndRun(true, new InlineValidationStep() {
+        this.addAndRun(false, new InlineValidationStep() {
 
           @Override
           public String getName() {
@@ -949,13 +1311,15 @@ class EchoValidationSuite {
 
             // cliauth
 
-            List<KnownMethodId> cliAuthMethodsToValidate = new ArrayList<>();
+            List<SecMethod> cliAuthMethodsToValidate = new ArrayList<>();
             if (sec.supportsCliAuthNone()) {
               warnings.add("Anonymous Client Authentication SHOULD NOT be enabled for Echo API.");
             }
+            // Even though, we will still run some tests on it.
+            cliAuthMethodsToValidate.add(SecMethod.CLIAUTH_NONE);
             if (sec.supportsCliAuthTlsCert()) {
               if (sec.supportsCliAuthTlsCertSelfSigned()) {
-                cliAuthMethodsToValidate.add(KnownMethodId.CLIAUTH_TLSCERT_SELFSIGNED);
+                cliAuthMethodsToValidate.add(SecMethod.CLIAUTH_TLSCERT_SELFSIGNED);
               } else {
                 notices.add("Echo API Validator is able to validate TLS Client Authentication "
                     + "ONLY with a self-signed client certificate. You Echo API endpoint declares "
@@ -968,25 +1332,31 @@ class EchoValidationSuite {
                   + "supporting it for some time (until all clients begin to support HTTPSIG).");
             }
             if (sec.supportsCliAuthHttpSig()) {
-              cliAuthMethodsToValidate.add(KnownMethodId.CLIAUTH_HTTPSIG);
+              cliAuthMethodsToValidate.add(SecMethod.CLIAUTH_HTTPSIG);
             } else {
               warnings.add("It is RECOMMENDED for all EWP server endpoints to support HTTP "
                   + "Signature Client Authentication. Your endpoint doesn't.");
             }
-            if (cliAuthMethodsToValidate.size() == 0) {
+            if (cliAuthMethodsToValidate.size() <= 1) {
               errors.add("Your Echo API does not support ANY of the client authentication "
                   + "methods recognized by the Validator.");
             }
 
             // srvauth
 
-            List<KnownMethodId> srvAuthMethodsToValidate = new ArrayList<>();
+            List<SecMethod> srvAuthMethodsToValidate = new ArrayList<>();
             if (sec.supportsSrvAuthTlsCert()) {
-              srvAuthMethodsToValidate.add(KnownMethodId.SRVAUTH_TLSCERT);
+              srvAuthMethodsToValidate.add(SecMethod.SRVAUTH_TLSCERT);
             }
             if (sec.supportsSrvAuthHttpSig()) {
-              notices.add("Echo API Validator does not yet support testing HTTP Signature "
-                  + "Server Authentication. Support is planned be implemented soon.");
+              srvAuthMethodsToValidate.add(SecMethod.SRVAUTH_HTTPSIG);
+              if (!sec.supportsSrvAuthTlsCert()) {
+                warnings.add("Server which support HTTP Signature Server Authentication "
+                    + "SHOULD also support TLS Server Certificate Authentication");
+              }
+            } else {
+              notices.add("It is RECOMMENDED for all servers to support "
+                  + "HTTP Signature Server Authentication.");
             }
             if (srvAuthMethodsToValidate.size() == 0) {
               errors.add("Your Echo API does not support ANY of the server authentication "
@@ -995,9 +1365,9 @@ class EchoValidationSuite {
 
             // reqencr
 
-            List<KnownMethodId> reqEncrMethodsToValidate = new ArrayList<>();
+            List<SecMethod> reqEncrMethodsToValidate = new ArrayList<>();
             if (sec.supportsReqEncrTls()) {
-              reqEncrMethodsToValidate.add(KnownMethodId.REQENCR_TLS);
+              reqEncrMethodsToValidate.add(SecMethod.REQENCR_TLS);
             }
             if (reqEncrMethodsToValidate.size() == 0) {
               errors.add("Your Echo API does not support ANY of the request encryption "
@@ -1006,9 +1376,9 @@ class EchoValidationSuite {
 
             // resencr
 
-            List<KnownMethodId> resEncrMethodsToValidate = new ArrayList<>();
+            List<SecMethod> resEncrMethodsToValidate = new ArrayList<>();
             if (sec.supportsResEncrTls()) {
-              resEncrMethodsToValidate.add(KnownMethodId.RESENCR_TLS);
+              resEncrMethodsToValidate.add(SecMethod.RESENCR_TLS);
             }
             if (resEncrMethodsToValidate.size() == 0) {
               errors.add("Your Echo API does not support ANY of the response encryption "
@@ -1018,13 +1388,12 @@ class EchoValidationSuite {
             // Generate all possible combinations of validatable security methods.
 
             EchoValidationSuite.this.combinationsToValidate = new ArrayList<>();
-            for (KnownMethodId cliauth : cliAuthMethodsToValidate) {
-              for (KnownMethodId srvauth : srvAuthMethodsToValidate) {
-                for (KnownMethodId reqencr : reqEncrMethodsToValidate) {
-                  for (KnownMethodId resencr : resEncrMethodsToValidate) {
+            for (SecMethod cliauth : cliAuthMethodsToValidate) {
+              for (SecMethod srvauth : srvAuthMethodsToValidate) {
+                for (SecMethod reqencr : reqEncrMethodsToValidate) {
+                  for (SecMethod resencr : resEncrMethodsToValidate) {
                     EchoValidationSuite.this.combinationsToValidate
-                        .add(new KnownHttpSecurityMethodsCombination(cliauth, srvauth, reqencr,
-                            resencr));
+                        .add(new SecMethodsCombination(cliauth, srvauth, reqencr, resencr));
                   }
                 }
               }
@@ -1070,8 +1439,8 @@ class EchoValidationSuite {
           }
         });
 
-        for (KnownHttpSecurityMethodsCombination combination : this.combinationsToValidate) {
-          this.validateCombination(combination);
+        for (SecMethodsCombination combination : this.combinationsToValidate) {
+          this.validateSecMethodCombination(combination);
         }
       }
 

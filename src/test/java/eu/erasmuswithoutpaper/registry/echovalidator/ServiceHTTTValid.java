@@ -6,7 +6,6 @@ import java.net.URL;
 import java.security.interfaces.RSAPublicKey;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -23,7 +22,6 @@ import net.adamcin.httpsig.api.DefaultKeychain;
 import net.adamcin.httpsig.api.DefaultVerifier;
 import net.adamcin.httpsig.api.RequestContent;
 import net.adamcin.httpsig.api.VerifyResult;
-import org.apache.http.client.utils.DateUtils;
 import org.assertj.core.util.Lists;
 
 /**
@@ -75,20 +73,7 @@ public class ServiceHTTTValid extends AbstractEchoV2Service {
   }
 
   protected String findErrorsInDateHeader(String dateValue) {
-    Date parsed = DateUtils.parseDate(dateValue);
-    if (parsed == null) {
-      return "Could not parse the date. Make sure it's in a valid RFC 2616 format.";
-    }
-    long given = parsed.getTime();
-    long current = new Date().getTime();
-    long differenceSec = Math.abs(current - given) / 1000;
-    final long maxThresholdSec = 5 * 60;
-    if (differenceSec > maxThresholdSec) {
-      return "This date exceeds the maximum allowed threshold. It was " + differenceSec
-          + " seconds (allowed: " + maxThresholdSec + ")";
-    }
-    // Seems valid!
-    return null;
+    return EchoValidationSuite.findErrorsInDateHeader(dateValue);
   }
 
   protected List<String> getAcceptedHttpMethods() {
