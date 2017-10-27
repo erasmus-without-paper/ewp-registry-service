@@ -13,7 +13,7 @@ import eu.erasmuswithoutpaper.registryclient.RegistryClient;
  * Internal "fake" implementation of an invalid STTT Echo API endpoint.
  *
  * <p>
- * Invalid because it returned HTTP 500 in place of HTTP 4xx.
+ * Invalid because it returns HTTP 500 in place of HTTP 4xx.
  * </p>
  */
 public class ServiceSTTTInvalid3 extends AbstractEchoV2Service {

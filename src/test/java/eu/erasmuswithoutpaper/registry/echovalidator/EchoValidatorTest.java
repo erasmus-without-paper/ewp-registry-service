@@ -140,7 +140,7 @@ public class EchoValidatorTest extends WRTest {
       String out = this.getValidatorReport(echoUrlHTTT);
       assertThat(out)
           .contains("FAILURE: Trying SecMethodCombination[HTTT] with an invalid Digest.");
-      assertThat(out).contains("FAILURE: Trying SecMethodCombination[HTTT] with \"SHA\" "
+      assertThat(out).contains("WARNING: Trying SecMethodCombination[HTTT] with \"SHA\" "
           + "request digest. This algorithm is deprecated, so we are expecting to "
           + "receive a valid HTTP 400 response");
       this.internet.removeFakeInternetService(service);
@@ -295,9 +295,10 @@ public class EchoValidatorTest extends WRTest {
       service = new ServiceHTTTInvalid8(echoUrlHTTT, this.client);
       this.internet.addFakeInternetService(service);
       String out = this.getValidatorReport(echoUrlHTTT);
-      assertThat(out).containsOnlyOnce("FAILURE");
+      assertThat(out).doesNotContain("FAILURE");
+      assertThat(out).containsOnlyOnce("WARNING");
       assertThat(out)
-          .contains("FAILURE: Trying SecMethodCombination[HTTT] with an unsynchronized clock");
+          .contains("WARNING: Trying SecMethodCombination[HTTT] with an unsynchronized clock");
       this.internet.removeFakeInternetService(service);
 
     } finally {
@@ -509,7 +510,7 @@ public class EchoValidatorTest extends WRTest {
       service = new ServiceMMTTInvalid9(echoUrlMMTT, this.client, myKeyId, myKeyPair);
       this.internet.addFakeInternetService(service);
       String out = this.getValidatorReport(echoUrlMMTT);
-      assertThat(out).contains("FAILURE");
+      assertThat(out).contains("WARNING");
       assertThat(out).contains("The request didn't contain the X-Request-Id header, "
           + "so the response also shouldn't.");
       this.internet.removeFakeInternetService(service);

@@ -51,6 +51,10 @@ abstract class InlineValidationStep implements ValidationStepWithStatus {
     Status getStatus() {
       return this.status;
     }
+
+    Failure withChangedStatus(Status status) {
+      return new Failure(this.getMessage(), status, this.serverResponse);
+    }
   }
 
   private Status status = Status.PENDING;

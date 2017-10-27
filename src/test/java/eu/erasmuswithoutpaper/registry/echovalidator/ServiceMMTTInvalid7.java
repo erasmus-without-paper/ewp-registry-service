@@ -7,7 +7,7 @@ import eu.erasmuswithoutpaper.registry.internet.Internet.Response;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 /**
- * This one is invalid, because it never includes a bad X-Request-Signature header.
+ * This one is invalid, because it includes a bad X-Request-Signature header.
  */
 public class ServiceMMTTInvalid7 extends ServiceMMTTValid {
 

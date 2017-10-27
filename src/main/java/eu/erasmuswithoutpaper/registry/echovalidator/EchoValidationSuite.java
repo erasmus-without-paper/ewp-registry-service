@@ -382,8 +382,17 @@ class EchoValidationSuite {
         String keyId = Authorization.parse(this.request.getHeader("Authorization")).getKeyId();
         KeyPair keyPair = EchoValidationSuite.this.parentEchoValidator.getClientRsaKeyPairInUse();
         this.request.recomputeAndAttachHttpSigAuthorizationHeader(keyId, keyPair, headers);
-        return Optional
-            .of(EchoValidationSuite.this.makeRequestAndExpectError(combination, this.request, 400));
+        try {
+          return Optional.of(
+              EchoValidationSuite.this.makeRequestAndExpectError(combination, this.request, 400));
+        } catch (Failure f) {
+          if (f.getAttachedServerResponse().isPresent()
+              && f.getAttachedServerResponse().get().getStatus() == 200) {
+            throw f.withChangedStatus(Status.WARNING);
+          } else {
+            throw f;
+          }
+        }
       }
     });
 
@@ -493,8 +502,17 @@ class EchoValidationSuite {
         KeyPair keyPair = EchoValidationSuite.this.parentEchoValidator.getClientRsaKeyPairInUse();
         this.request.recomputeAndAttachHttpSigAuthorizationHeader(authz.getKeyId(), keyPair,
             authz.getHeaders());
-        return Optional
-            .of(EchoValidationSuite.this.makeRequestAndExpectError(combination, this.request, 400));
+        try {
+          return Optional.of(
+              EchoValidationSuite.this.makeRequestAndExpectError(combination, this.request, 400));
+        } catch (Failure f) {
+          if (f.getAttachedServerResponse().isPresent()
+              && f.getAttachedServerResponse().get().getStatus() == 200) {
+            throw f.withChangedStatus(Status.WARNING);
+          } else {
+            throw f;
+          }
+        }
       }
     });
   }
@@ -818,7 +836,7 @@ class EchoValidationSuite {
       // If present in response, then it should also be present in the request.
       if (reqReqId == null) {
         throw new Failure("The request didn't contain the X-Request-Id header, so "
-            + "the response also shouldn't.", Status.FAILURE, response);
+            + "the response also shouldn't.", Status.WARNING, response);
       } else {
         // Both should be equal.
         if (!reqReqId.equals(resReqId)) {
@@ -868,7 +886,7 @@ class EchoValidationSuite {
           response);
     }
     /*
-     * Our library parses only the Authrization header (not the Signature header), so we will
+     * Our library parses only the Authorization header (not the Signature header), so we will
      * reformat the value to match.
      */
     Authorization authz = Authorization.parse("Signature " + sigHeader);
