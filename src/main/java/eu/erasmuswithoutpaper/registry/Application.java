@@ -39,6 +39,13 @@ public class Application {
   }
 
   /**
+   * @return True, if this is the official production site.
+   */
+  public static boolean isProductionSite() {
+    return getRootUrl().equals("https://registry.erasmuswithoutpaper.eu");
+  }
+
+  /**
    * Initialize and run Spring application.
    *
    * @param args Command-line arguments.

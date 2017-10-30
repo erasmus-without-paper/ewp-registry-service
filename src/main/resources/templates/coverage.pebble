@@ -1,0 +1,10 @@
+{% extends "generic-with-toolbar" %}
+
+{% block pageTitle %}HEI/API Coverage Matrix{% endblock %}
+
+{% block main %}
+    <section class='ewp-section'>
+        <h2 class='ewp-section-title'>HEI/API Coverage Matrix</h2>
+        {{ coverageMatrixHtml | raw }}
+    </section>
+{% endblock %}

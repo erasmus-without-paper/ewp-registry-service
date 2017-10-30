@@ -28,7 +28,7 @@ public class UptimeCheckerTest extends WRTest {
     String apiUrl = "https://api.uptimerobot.com/getMonitors?apiKey=fake-api-key"
         + "&customUptimeRatio=1-7-30-365";
     this.internet.putURL(apiUrl, this.getFile("uptimerobot/response.xml"));
-    assertThat(this.checker.getLast24HoursUptimeRatio()).isEqualTo("(unknown)");
+    assertThat(this.checker.getLast24HoursUptimeRatio()).isEqualTo("n/a");
     this.checker.refresh();
     assertThat(this.checker.getLast24HoursUptimeRatio()).isEqualTo("100.00%");
     assertThat(this.checker.getLast7DaysUptimeRatio()).isEqualTo("100.00%");

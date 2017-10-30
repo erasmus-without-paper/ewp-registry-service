@@ -2,6 +2,7 @@ package eu.erasmuswithoutpaper.registry.web;
 
 import static org.joox.JOOX.$;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.CharacterCodingException;
@@ -10,14 +11,17 @@ import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateEncodingException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import javax.servlet.http.HttpServletResponse;
+
 import eu.erasmuswithoutpaper.registry.Application;
-import eu.erasmuswithoutpaper.registry.common.Utils;
+import eu.erasmuswithoutpaper.registry.cmatrix.CoverageMatrixGenerator;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildError;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildParams;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildResult;
@@ -28,17 +32,19 @@ import eu.erasmuswithoutpaper.registry.echovalidator.ValidationStepWithStatus;
 import eu.erasmuswithoutpaper.registry.echovalidator.ValidationStepWithStatus.Status;
 import eu.erasmuswithoutpaper.registry.internet.Internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Internet.Response;
-import eu.erasmuswithoutpaper.registry.notifier.NotifierFlag;
 import eu.erasmuswithoutpaper.registry.notifier.NotifierService;
+import eu.erasmuswithoutpaper.registry.repository.CatalogueDependantCache;
+import eu.erasmuswithoutpaper.registry.repository.CatalogueNotFound;
 import eu.erasmuswithoutpaper.registry.sourceprovider.ManifestSource;
 import eu.erasmuswithoutpaper.registry.sourceprovider.ManifestSourceProvider;
 import eu.erasmuswithoutpaper.registry.updater.ManifestUpdateStatus;
 import eu.erasmuswithoutpaper.registry.updater.ManifestUpdateStatusRepository;
 import eu.erasmuswithoutpaper.registry.updater.RegistryUpdater;
-import eu.erasmuswithoutpaper.registry.updater.UpdateNotice;
 import eu.erasmuswithoutpaper.registry.updater.UptimeChecker;
+import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -48,6 +54,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
@@ -59,9 +67,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.xerces.impl.dv.util.Base64;
 import org.joox.Match;
-import org.ocpsoft.prettytime.PrettyTime;
 
 /**
  * Handles UI requests.
@@ -79,6 +87,16 @@ public class UiController {
   private final EwpDocBuilder docBuilder;
   private final EchoValidator echoTester;
   private final SelfManifestProvider selfManifestProvider;
+  private final ResourceLoader resLoader;
+  private final CoverageMatrixGenerator matrixGenerator;
+  private final RegistryClient regClient;
+  private final CatalogueDependantCache catcache;
+
+  private byte[] cachedCss;
+  private String cachedCssFingerprint;
+  private byte[] cachedJs;
+  private String cachedJsFingerprint;
+  private byte[] cachedLogo;
 
   /**
    * @param taskExecutor needed for running background tasks.
@@ -90,13 +108,18 @@ public class UiController {
    * @param docBuilder needed to support online document validation service.
    * @param echoTester needed to support online Echo API validation service.
    * @param selfManifestProvider needed in Echo Validator responses.
+   * @param resLoader needed to load CSS, logos etc.
+   * @param matrixGenerator needed to render "API support table".
+   * @param regClient needed to feed the {@link CoverageMatrixGenerator}.
+   * @param catcache needed for caching the result of {@link CoverageMatrixGenerator}.
    */
   @Autowired
   public UiController(TaskExecutor taskExecutor,
       ManifestUpdateStatusRepository manifestUpdateStatuses, ManifestSourceProvider sourceProvider,
       RegistryUpdater updater, NotifierService notifier, UptimeChecker uptimeChecker,
-      EwpDocBuilder docBuilder, EchoValidator echoTester,
-      SelfManifestProvider selfManifestProvider) {
+      EwpDocBuilder docBuilder, EchoValidator echoTester, SelfManifestProvider selfManifestProvider,
+      ResourceLoader resLoader, CoverageMatrixGenerator matrixGenerator, RegistryClient regClient,
+      CatalogueDependantCache catcache) {
     this.taskExecutor = taskExecutor;
     this.manifestStatusRepo = manifestUpdateStatuses;
     this.sourceProvider = sourceProvider;
@@ -106,243 +129,205 @@ public class UiController {
     this.docBuilder = docBuilder;
     this.echoTester = echoTester;
     this.selfManifestProvider = selfManifestProvider;
+    this.resLoader = resLoader;
+    this.matrixGenerator = matrixGenerator;
+    this.regClient = regClient;
+    this.catcache = catcache;
   }
 
   /**
+   * @param response Needed to add some custom headers.
+   * @return The HEI/API coverage matrix page.
+   */
+  @RequestMapping(value = "/coverage", method = RequestMethod.GET)
+  public ModelAndView coverage(HttpServletResponse response) {
+    ModelAndView mav = new ModelAndView();
+    this.initializeMavCommons(mav);
+    mav.setViewName("coverage");
+    response.addHeader("Cache-Control", "public, max-age=300");
+
+    try {
+      mav.addObject("coverageMatrixHtml", this.getCoverageMatrixHtml());
+    } catch (CatalogueNotFound e) {
+      mav.addObject("coverageMatrixHtml", "<p>No catalogue found.</p>");
+    }
+
+    return mav;
+  }
+
+  /**
+   * @param response Needed to add some custom headers.
+   * @return Our CSS file.
+   */
+  @ResponseBody
+  @RequestMapping(value = "/style-{version}.css", method = RequestMethod.GET, produces = "text/css")
+  @SuppressFBWarnings("EI_EXPOSE_REP")
+  public byte[] getCss(HttpServletResponse response) {
+    response.addHeader("Cache-Control", "public, max-age=86400, stale-while-revalidate=604800");
+    if (this.cachedCss == null) {
+      this.cacheCss();
+    }
+    return this.cachedCss;
+  }
+
+  /**
+   * @param response Needed to add some custom headers.
+   * @return Our scripts file.
+   */
+  @ResponseBody
+  @RequestMapping(value = "/scripts-{version}.js", method = RequestMethod.GET,
+      produces = "application/javascript")
+  @SuppressFBWarnings("EI_EXPOSE_REP")
+  public byte[] getJs(HttpServletResponse response) {
+    response.addHeader("Cache-Control", "public, max-age=86400, stale-while-revalidate=604800");
+    if (this.cachedJs == null) {
+      this.cacheJs();
+    }
+    return this.cachedJs;
+  }
+
+  /**
+   * @param response Needed to add some custom headers.
+   * @return EWP logo image. Depends on the result of {@link #isUsingDevDesign()}.
+   */
+  @ResponseBody
+  @RequestMapping(value = "/logo.png", method = RequestMethod.GET, produces = "image/png")
+  @SuppressFBWarnings("EI_EXPOSE_REP")
+  public byte[] getLogo(HttpServletResponse response) {
+    response.addHeader("Cache-Control", "public, max-age=86400, stale-while-revalidate=604800");
+    if (this.cachedLogo == null) {
+      try {
+        String path;
+        if (this.isUsingDevDesign()) {
+          path = "classpath:logo-dev.png";
+        } else {
+          path = "classpath:logo-prod.png";
+        }
+        this.cachedLogo = IOUtils.toByteArray(this.resLoader.getResource(path).getInputStream());
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
+    return this.cachedLogo;
+  }
+
+  /**
+   * @param response Needed to add some custom headers.
    * @return A welcome page.
    */
-  @RequestMapping("/")
-  public ResponseEntity<String> index() {
-    HttpHeaders headers = new HttpHeaders();
-    headers.setContentType(MediaType.TEXT_PLAIN);
-    headers.setCacheControl("max-age=0, must-revalidate");
-    headers.setExpires(0);
+  @RequestMapping(value = "/", method = RequestMethod.GET)
+  public ModelAndView index(HttpServletResponse response) {
 
-    StringBuilder sb = new StringBuilder();
-    sb.append("EWP Registry Service\n");
-    sb.append("====================\n");
-    sb.append('\n');
-    sb.append("Limited time deal - test our gorgeous \"text/plain skin\" for free!\n");
-    sb.append('\n');
-    String artifactVersion = this.getClass().getPackage().getImplementationVersion();
-    sb.append("Version " + artifactVersion + ".\n");
-    sb.append("Uptime ratios:\n");
-    sb.append("- Last 24 hours: ");
-    sb.append(this.uptimeChecker.getLast24HoursUptimeRatio());
-    sb.append('\n');
-    sb.append("- Last 7 days: ");
-    sb.append(this.uptimeChecker.getLast7DaysUptimeRatio());
-    sb.append('\n');
-    sb.append("- Last 30 days: ");
-    sb.append(this.uptimeChecker.getLast30DaysUptimeRatio());
-    sb.append('\n');
-    sb.append("- Last 365 days: ");
-    sb.append(this.uptimeChecker.getLast365DaysUptimeRatio());
-    sb.append('\n');
-    sb.append("\n\n");
-    sb.append("PRODUCTION and DEVELOPMENT Registry Service installations\n");
-    sb.append("---------------------------------------------------------\n");
-    sb.append('\n');
-    sb.append("The EWP Network is still being designed. During this time, we will use two\n");
-    sb.append("separate Registry Service installations:\n");
-    sb.append('\n');
-    sb.append("https://registry.erasmuswithoutpaper.eu/\n");
-    sb.append("    - the official production-ready prototype; it will be mostly empty\n");
-    sb.append("      until mid-2017,\n");
-    sb.append('\n');
-    sb.append("https://dev-registry.erasmuswithoutpaper.eu/\n");
-    sb.append("    - for active development; it will contain URLs to individual developers'\n");
-    sb.append("      workstations and it may contain alpha implementations of draft APIs.\n");
-    sb.append("\n\n");
-    sb.append("API URLs\n");
-    sb.append("--------\n");
-    sb.append('\n');
-    String root = Application.getRootUrl();
-    sb.append(root + "/catalogue-v1.xml\n");
-    sb.append("    - the catalogue itself, as documented in the Registry API specs.\n");
-    sb.append('\n');
-    sb.append(root + "/manifest.xml\n");
-    sb.append("    - a \"self-manifest\" of the Registry's EWP Host.\n");
-    sb.append('\n');
-    sb.append('\n');
-    sb.append("Other notable URLs\n");
-    sb.append("------------------\n");
-    sb.append('\n');
-    sb.append("Until we roll out a proper web interface, you can use these URLs for navigating\n");
-    sb.append("the registry:\n");
-    sb.append('\n');
-    sb.append(root + "/\n");
-    sb.append("    - this page, just an introduction.\n");
-    sb.append('\n');
-    sb.append(root + "/status\n");
-    sb.append("    - a status summary of all manifest sources.\n");
-    sb.append('\n');
-    sb.append(root + "/status?url=<manifest-source-url>\n");
-    sb.append("    - details on particular manifest status (not part of the API).\n");
-    sb.append('\n');
-    sb.append(root + "/status?email=<admin-email-address>\n");
-    sb.append("    - details on issues assigned to a particular person.\n");
-    sb.append('\n');
-    sb.append(root + "/refresh\n");
-    sb.append("    - reload all manifest sources (not part of the API).\n");
-    sb.append('\n');
-    return new ResponseEntity<String>(sb.toString(), headers, HttpStatus.OK);
+    ModelAndView mav = new ModelAndView();
+    this.initializeMavCommons(mav);
+    mav.setViewName("index");
+    response.addHeader("Cache-Control", "public, max-age=300");
+    mav.addObject("catalogueUrl", Application.getRootUrl() + "/catalogue-v1.xml");
+    mav.addObject("statusUrl", Application.getRootUrl() + "/status");
+    mav.addObject("coverageUrl", Application.getRootUrl() + "/coverage");
+    mav.addObject("uptime24", this.uptimeChecker.getLast24HoursUptimeRatio());
+    mav.addObject("uptime7", this.uptimeChecker.getLast7DaysUptimeRatio());
+    mav.addObject("uptime30", this.uptimeChecker.getLast30DaysUptimeRatio());
+    mav.addObject("uptime365", this.uptimeChecker.getLast365DaysUptimeRatio());
+    mav.addObject("artifactVersion", this.getClass().getPackage().getImplementationVersion());
+
+    return mav;
   }
 
   /**
-   * Display a manifest status page.
-   *
+   * @param response Needed to add some custom headers.
    * @param url URL of the manifest source.
    * @return A page describing the status of the manifest.
    */
-  @RequestMapping(path = "/status", params = "url")
-  public ResponseEntity<String> manifestStatus(@RequestParam String url) {
-    HttpHeaders headers = new HttpHeaders();
-    headers.setContentType(MediaType.TEXT_HTML);
-    headers.setCacheControl("max-age=0, must-revalidate");
-    headers.setExpires(0);
+  @RequestMapping(value = "/status", params = "url", method = RequestMethod.GET)
+  public ModelAndView manifestStatus(HttpServletResponse response, @RequestParam String url) {
+    ModelAndView mav = new ModelAndView();
+    this.initializeMavCommons(mav);
+    mav.setViewName("statusPerUrl");
+    response.addHeader("Cache-Control", "max-age=0, must-revalidate");
 
-    StringBuilder sb = new StringBuilder();
-    sb.append("<!DOCTYPE html>");
-    sb.append("<pre style='word-wrap: break-word; white-space: pre-wrap; max-width: 700px'>");
-    sb.append("Manifest status report\n");
-    sb.append("======================\n");
-    sb.append('\n');
-    sb.append("Requested for manifest URL:\n" + Utils.escapeHtml(url) + '\n');
-    sb.append('\n');
-    sb.append("Status\n");
-    sb.append("------\n");
-    sb.append('\n');
+    mav.addObject("manifestUrl", url);
     Optional<ManifestUpdateStatus> status =
         Optional.ofNullable(this.manifestStatusRepo.findOne(url));
     if (status.isPresent() && (!status.get().getLastAccessAttempt().isPresent())) {
       status = Optional.empty();
     }
     Optional<ManifestSource> source = this.sourceProvider.getOne(url);
-    if (source.isPresent() == false && status.isPresent() == false) {
-      sb.append("Unknown URL: This URL is not listed among the current Registry Service\n");
-      sb.append("manifest sources, nor any trace of it can be found in our logs.\n");
-    } else if (source.isPresent() == false && status.isPresent() == true) {
-      sb.append("Stale URL: This URL was once listed among Registry Service sources, but\n");
-      sb.append("it is not anymore.\n");
-      sb.append('\n');
-      sb.append("Last access attempt: " + this.formatTime(status.get().getLastAccessAttempt().get())
-          + '\n');
-    } else if (source.isPresent() == true && status.isPresent() == false) {
-      sb.append("New URL: This URL is listed among the current Registry Service manifest\n");
-      sb.append("sources, but it hasn't been accessed yet. Please refresh this page.\n");
-    } else { // both are present
-      sb.append("Last access attempt: " + this.formatTime(status.get().getLastAccessAttempt().get())
-          + '\n');
-      sb.append("Last access status: " + status.get().getLastAccessFlagStatus().toString() + '\n');
-      if (status.get().getLastAccessNotices().size() > 0) {
-        sb.append('\n');
-        sb.append("Last access notices\n");
-        sb.append("-------------------\n");
-        sb.append("\n<ul>");
-        for (UpdateNotice notice : status.get().getLastAccessNotices()) {
-          sb.append("<li style='margin: 1em 0'>");
-          sb.append("<p>[" + notice.getSeverity().toString() + "]</p>");
-          sb.append(notice.getMessageHtml());
-          sb.append("</li>");
-        }
-        sb.append("</ul>");
-      }
-    }
-    sb.append("</pre>");
-    return new ResponseEntity<String>(sb.toString(), headers, HttpStatus.OK);
+    mav.addObject("status", status);
+    mav.addObject("source", source);
+    return mav;
   }
 
   /**
-   * Perform an on-demand refresh of all manifests.
+   * Perform an on-demand reload of a single specific manifest.
    *
-   * @return A page with the confirmation.
+   * @param response Needed to add some custom headers.
+   * @param url URL of the manifest source to be reloaded.
+   * @return Empty response with HTTP 200 on success (queued). Empty HTTP 400 response on error
+   *         (unknown URL).
    */
-  @RequestMapping("/refresh")
-  public ResponseEntity<String> refresh() {
+  @RequestMapping(value = "/reload", params = "url", method = RequestMethod.POST)
+  public ResponseEntity<String> reloadManifest(HttpServletResponse response,
+      @RequestParam String url) {
+
     HttpHeaders headers = new HttpHeaders();
-    headers.setContentType(MediaType.TEXT_PLAIN);
     headers.setCacheControl("max-age=0, must-revalidate");
     headers.setExpires(0);
 
-    this.taskExecutor.execute(new Runnable() {
-      @Override
-      public void run() {
-        UiController.this.updater.reloadAllManifestSources();
-      }
-    });
+    Optional<ManifestSource> source = this.sourceProvider.getOne(url);
 
-    StringBuilder sb = new StringBuilder();
-    sb.append("Your refresh request has been successfully queued.\n\n");
-    sb.append("The catalogue should be updated in a moment:\n");
-    sb.append(Application.getRootUrl());
-    sb.append("/catalogue-v1.xml" + "\n\n");
-    sb.append("(Note, that this page is not part of the API and can be removed at any moment!)");
-    return new ResponseEntity<String>(sb.toString(), headers, HttpStatus.OK);
+    if (source.isPresent()) {
+      this.taskExecutor.execute(new Runnable() {
+        @Override
+        public void run() {
+          UiController.this.updater.reloadManifestSource(source.get());
+        }
+      });
+      return new ResponseEntity<String>("", headers, HttpStatus.OK);
+    } else {
+      return new ResponseEntity<String>("", headers, HttpStatus.BAD_REQUEST);
+    }
   }
 
+
   /**
+   * @param response Needed to add some custom headers.
    * @return A page with all manifest sources and their statuses.
    */
-  @RequestMapping(path = "/status")
-  public ResponseEntity<String> serviceStatus() {
-    HttpHeaders headers = new HttpHeaders();
-    headers.setContentType(MediaType.TEXT_PLAIN);
-    headers.setCacheControl("max-age=0, must-revalidate");
-    headers.setExpires(0);
+  @RequestMapping(value = "/status", method = RequestMethod.GET)
+  public ModelAndView serviceStatus(HttpServletResponse response) {
+    ModelAndView mav = new ModelAndView();
+    this.initializeMavCommons(mav);
+    mav.setViewName("status");
+    response.addHeader("Cache-Control", "max-age=0, must-revalidate");
 
-    StringBuilder sb = new StringBuilder();
-    sb.append("Currently defined manifest sources and their statuses\n");
-    sb.append("=====================================================\n");
-    sb.append('\n');
+    List<ManifestUpdateStatus> statuses = new ArrayList<>();
     for (ManifestSource source : this.sourceProvider.getAll()) {
-      ManifestUpdateStatus status = this.manifestStatusRepo.findOne(source.getUrl());
-      sb.append("[" + status.getLastAccessFlagStatus().toString() + "] ");
-      sb.append(source.getUrl() + '\n');
+      statuses.add(this.manifestStatusRepo.findOne(source.getUrl()));
     }
-    sb.append("\n(write us to add yours)\n");
-
-    return new ResponseEntity<String>(sb.toString(), headers, HttpStatus.OK);
+    mav.addObject("manifestStatuses", statuses);
+    return mav;
   }
+
 
   /**
    * Display a status page tailored for a given notification recipient.
    *
+   * @param response Needed to add some custom headers.
    * @param email Email address of the recipient.
    * @return A page with the list of issue statuses related to this recipient.
    */
-  @RequestMapping(path = "/status", params = "email")
-  public ResponseEntity<String> statusForRecipient(@RequestParam String email) {
-    HttpHeaders headers = new HttpHeaders();
-    headers.setContentType(MediaType.TEXT_HTML);
-    headers.setCacheControl("max-age=0, must-revalidate");
-    headers.setExpires(0);
+  @RequestMapping(value = "/status", params = "email", method = RequestMethod.GET)
+  public ModelAndView statusForRecipient(HttpServletResponse response, @RequestParam String email) {
+    ModelAndView mav = new ModelAndView();
+    this.initializeMavCommons(mav);
+    mav.setViewName("statusPerEmail");
+    response.addHeader("Cache-Control", "max-age=0, must-revalidate");
 
-    StringBuilder sb = new StringBuilder();
-    sb.append("<!DOCTYPE html>");
-    sb.append("<pre style='word-wrap: break-word; white-space: pre-wrap'>");
-    sb.append("Recipient status report\n");
-    sb.append("=======================\n");
-    sb.append('\n');
-    sb.append("Requested for recipient email address:\n" + Utils.escapeHtml(email) + '\n');
-    sb.append('\n');
-    sb.append("Issues being watched\n");
-    sb.append("--------------------\n");
-    sb.append('\n');
+    mav.addObject("email", email);
+    mav.addObject("flags", this.notifier.getFlagsWatchedBy(email));
 
-    List<NotifierFlag> flags = this.notifier.getFlagsWatchedBy(email);
-    for (NotifierFlag flag : flags) {
-      sb.append("[" + flag.getStatus() + "] ");
-      sb.append(flag.getName());
-      if (flag.getDetailsUrl().isPresent()) {
-        sb.append(" - <a href='");
-        sb.append(Utils.escapeHtml(flag.getDetailsUrl().get()));
-        sb.append("'>details</a>");
-      }
-      sb.append('\n');
-    }
-    sb.append("</pre>");
-    return new ResponseEntity<String>(sb.toString(), headers, HttpStatus.OK);
+    return mav;
   }
 
   /**
@@ -470,6 +455,26 @@ public class UiController {
     return new ResponseEntity<String>(json, headers, HttpStatus.OK);
   }
 
+  private void cacheCss() {
+    try {
+      this.cachedCss =
+          IOUtils.toByteArray(this.resLoader.getResource("classpath:style.css").getInputStream());
+      this.cachedCssFingerprint = DigestUtils.sha1Hex(this.cachedCss);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  private void cacheJs() {
+    try {
+      this.cachedJs =
+          IOUtils.toByteArray(this.resLoader.getResource("classpath:scripts.js").getInputStream());
+      this.cachedJsFingerprint = DigestUtils.sha1Hex(this.cachedJs);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
   private JsonElement formatClientRequestObject(ValidationStepWithStatus testResult) {
     if (!testResult.getClientRequest().isPresent()) {
       return null;
@@ -537,21 +542,36 @@ public class UiController {
     return result;
   }
 
-  /**
-   * Format a date for humans.
-   *
-   * @param date the date to be formatted.
-   * @return A regular {@link Date#toString()} with a suffix appended (e.g. "(3 days ago)").
-   */
-  private String formatTime(Date date) {
-    if (date == null) {
-      return "(never)";
+  private String getCoverageMatrixHtml() throws CatalogueNotFound {
+    String result = this.catcache.getCoverageMatrixHtml();
+    if (result == null) {
+      result = this.matrixGenerator.generateToHtmlTable(this.regClient);
+      this.catcache.putCoverageMatrixHtml(result);
     }
-    StringBuilder sb = new StringBuilder();
-    sb.append(date);
-    sb.append(" (");
-    sb.append(new PrettyTime().format(date));
-    sb.append(')');
-    return sb.toString();
+    return result;
+  }
+
+  private String getCssFingerprint() {
+    if (this.cachedCssFingerprint == null) {
+      this.cacheCss();
+    }
+    return this.cachedCssFingerprint;
+  }
+
+  private String getJsFingerprint() {
+    if (this.cachedJsFingerprint == null) {
+      this.cacheJs();
+    }
+    return this.cachedJsFingerprint;
+  }
+
+  private void initializeMavCommons(ModelAndView mav) {
+    mav.addObject("isUsingDevDesign", this.isUsingDevDesign());
+    mav.addObject("cssFingerprint", this.getCssFingerprint());
+    mav.addObject("jsFingerprint", this.getJsFingerprint());
+  }
+
+  private boolean isUsingDevDesign() {
+    return !Application.isProductionSite();
   }
 }

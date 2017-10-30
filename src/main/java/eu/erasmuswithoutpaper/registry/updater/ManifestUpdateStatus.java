@@ -18,6 +18,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import org.ocpsoft.prettytime.PrettyTime;
 
 /**
  * This entity stores the status of the last manifest update attempt.
@@ -25,6 +26,24 @@ import com.google.gson.JsonParser;
 @Entity
 @Table(name = "REG_MANIFEST_UPDATE_STATUSES")
 public class ManifestUpdateStatus {
+
+  /**
+   * Format a date for humans.
+   *
+   * @param date the date to be formatted.
+   * @return A regular {@link Date#toString()} with a suffix appended (e.g. "(3 days ago)").
+   */
+  private static String formatTime(Date date) {
+    if (date == null) {
+      return "(never)";
+    }
+    StringBuilder sb = new StringBuilder();
+    sb.append(date);
+    sb.append(" (");
+    sb.append(new PrettyTime().format(date));
+    sb.append(')');
+    return sb.toString();
+  }
 
   @Id
   private String url;
@@ -60,6 +79,13 @@ public class ManifestUpdateStatus {
    */
   public Optional<Date> getLastAccessAttempt() {
     return Optional.ofNullable(this.lastAccessAttempt);
+  }
+
+  /**
+   * @return Same as {@link #getLastAccessAttempt()}, but formatted for humans.
+   */
+  public String getLastAccessAttemptFormatted() {
+    return formatTime(this.lastAccessAttempt);
   }
 
   /**

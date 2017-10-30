@@ -1,0 +1,105 @@
+{% extends "generic" %}
+
+{% block pageTitle %}
+    {% if isUsingDevDesign %}
+        DEV Registry Service
+    {% else %}
+        EWP Registry Service
+    {% endif %}
+{% endblock %}
+
+{% block body %}
+    <main class='ewp-header {% if isUsingDevDesign %}ewp-header--dev{% endif %}'>
+        <div class='ewp-header__margin ewp-header__margin--top'></div>
+        <div class='ewp-header__grid'>
+            <div class='ewp-header__logo'><img src='/logo.png'></div>
+            <h1 class='ewp-header__site-name'>
+                {% if isUsingDevDesign %}
+                    <span class='ewp-header__red-text'>DEV</span> Registry Service
+                {% else %}
+                    EWP Registry Service
+                {% endif %}
+            </h1>
+            <div class='ewp-header__site-desc'>
+                {% if isUsingDevDesign %}
+                    <span class='ewp-header__site-desc-line'>
+                        An alternative instance of the
+                        <a href='https://registry.erasmuswithoutpaper.eu/'>EWP Registry Service</a>
+                        intended to be used for development
+                    </span>
+                    <span class='ewp-header__site-desc-line'>
+                        See „Development environment” chapter in the
+                        <a href='https://github.com/erasmus-without-paper/ewp-specs-architecture'>Architecture</a>
+                        document
+                    </span>
+                {% else %}
+                    <span class='ewp-header__site-desc-line'>
+                        Automated discovery service of
+                        <a href='https://en.wikipedia.org/wiki/Application_programming_interface'>APIs</a>
+                        related to Higher Education in Europe
+                    </span>
+                    <span class='ewp-header__site-desc-line'>
+                        Provided and supported by <a href='https://www.erasmuswithoutpaper.eu/'>
+                        Erasmus Without Paper</a> project
+                    </span>
+                {% endif %}
+            </div>
+            <div class='ewp-header__details'>
+                <p>At the following URL you will find the XML cata&shy;logue which describes all the
+                insti&shy;tu&shy;tions and APIs exposed by them:</p>
+
+                <p class='ewp-header__catalogue-link'>
+                    {{ catalogueUrl }}
+                </p>
+
+                <p>This catalogue is conti&shy;nously refreshed. Read the
+                <a href='https://github.com/erasmus-without-paper/ewp-specs-architecture'>Archi&shy;tec&shy;ture docu&shy;ment</a>
+                for more infor&shy;ma&shy;tion. Also check out the
+                <a href='https://developers.erasmuswithoutpaper.eu/'>Developers Hub</a>
+                for useful tools and documents.</p>
+
+                <p class='ewp-header__links'>
+                    <a class='ewp-header__link' href='{{ statusUrl }}'>Manifest Importer Status</a>
+                    <span class='ewp-header__link-div'>|</span>
+                    <a class='ewp-header__link' href='{{ coverageUrl }}'>HEI/API Coverage Matrix</a>
+                    <span class='ewp-header__link-div'>|</span>
+                    <a class='ewp-header__link' href='https://developers.erasmuswithoutpaper.eu/'>EWP Developers Hub</a>
+                </p>
+            </div>
+            <div class='ewp-header__vertical-divider'></div>
+            <div class='ewp-header__uptime-and-version'>
+                <div class='ewp-header__uptime ewp-uptime'>
+                    <div class='ewp-uptime__title'>Uptime ratios</div>
+                    <div class='ewp-uptime__tuples'>
+                        <div class='ewp-uptime__tuple'>
+                            <span class='ewp-uptime__tuple-uptime'>{{ uptime24 }}</span>
+                            <span class='ewp-uptime__tuple-div'> - </span>
+                            <span class='ewp-uptime__tuple-time'>24 hours</span>
+                        </div>
+                        <div class='ewp-uptime__tuple'>
+                            <span class='ewp-uptime__tuple-uptime'>{{ uptime7 }}</span>
+                            <span class='ewp-uptime__tuple-div'> - </span>
+                            <span class='ewp-uptime__tuple-time'>7 days</span>
+                        </div>
+                        <div class='ewp-uptime__tuple'>
+                            <span class='ewp-uptime__tuple-uptime'>{{ uptime30 }}</span>
+                            <span class='ewp-uptime__tuple-div'> - </span>
+                            <span class='ewp-uptime__tuple-time'>30 days</span>
+                        </div>
+                        <div class='ewp-uptime__tuple'>
+                            <span class='ewp-uptime__tuple-uptime'>{{ uptime365 }}</span>
+                            <span class='ewp-uptime__tuple-div'> - </span>
+                            <span class='ewp-uptime__tuple-time'>365 days</span>
+                        </div>
+                    </div>
+                </div>
+                {% if artifactVersion != null %}
+                    <div class='ewp-header__version'>
+                        v{{ artifactVersion }}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        <div class='ewp-header__margin ewp-header__margin--bottom'></div>
+    </main>
+{% endblock %}

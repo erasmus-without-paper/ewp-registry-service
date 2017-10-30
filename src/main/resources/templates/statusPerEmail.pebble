@@ -1,0 +1,32 @@
+{% extends "generic-with-toolbar" %}
+
+{% block pageTitle %}{{ email }} - Recipient Status Report{% endblock %}
+
+{% block main %}
+    <section class='ewp-section'>
+        <h2 class='ewp-section-title'>Recipient Status Report</h2>
+
+        <p class='ewp-para'>Requested for recipient email address:
+        <code class='ewpst__bordered-code'>{{ email }}</code></p>
+
+        <h2 class='ewp-section-title'>Issues being watched</h2>
+
+        {% if flags.size > 0 %}
+            <table class='ewpsrc'>
+                {% for flag in flags %}
+                    <tr class='ewpsrc__item ewpsrc__item--status-{{ flag.status }}'>
+                        <td class='ewpsrc__status'>{{ flag.status }}</td>
+                        <td class='ewpsrc__message'>
+                            {{ flag.name | raw }}
+                            {% if flag.detailsUrl.isPresent %}
+                                - <a href='{{ flag.detailsUrl.get }}'>details</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% else %}
+            <p class='ewp-para'>No watched issues found for this email address.</p>
+        {% endif %}
+    </section>
+{% endblock %}

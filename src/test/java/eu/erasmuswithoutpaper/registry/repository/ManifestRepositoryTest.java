@@ -7,6 +7,7 @@ import eu.erasmuswithoutpaper.registry.WRTest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -26,6 +27,34 @@ public class ManifestRepositoryTest extends WRTest {
 
   @Autowired
   private ManifestRepositoryImpl repo;
+
+  @Autowired
+  private CatalogueDependantCache catcache;
+
+  @After
+  public void tearDown() {
+    this.repo.deleteAll();
+  }
+
+  @Test
+  public void testCatalogueDependantCache() {
+    this.repo.deleteAll();
+
+    this.repo.putCatalogue("1");
+    this.catcache.putCoverageMatrixHtml("1");
+    assertThat(this.catcache.getCoverageMatrixHtml()).isEqualTo("1");
+
+    this.repo.putCatalogue("1");
+    assertThat(this.catcache.getCoverageMatrixHtml()).isEqualTo("1");
+
+    this.repo.putCatalogue("2");
+    assertThat(this.catcache.getCoverageMatrixHtml()).isNull();
+    this.catcache.putCoverageMatrixHtml("2");
+    assertThat(this.catcache.getCoverageMatrixHtml()).isEqualTo("2");
+
+    this.repo.putCatalogue("1");
+    assertThat(this.catcache.getCoverageMatrixHtml()).isNull();
+  }
 
   /**
    * Similar to {@link #testManifestStorage()}, but for catalogue this time.

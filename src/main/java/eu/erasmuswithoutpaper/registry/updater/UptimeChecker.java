@@ -36,7 +36,7 @@ public class UptimeChecker {
 
   private static String formatRatio(String value) {
     if (value == null) {
-      return "(unknown)";
+      return "n/a";
     }
     NumberFormat format = new DecimalFormat("#0.00", DecimalFormatSymbols.getInstance(Locale.US));
     return format.format(Double.parseDouble(value)) + "%";

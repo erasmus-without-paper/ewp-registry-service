@@ -64,6 +64,7 @@ public class ManifestRepositoryImpl implements ManifestRepository {
   private static final Logger logger = LoggerFactory.getLogger(ManifestRepositoryImpl.class);
 
   private final ManifestRepositoryImplProperties repoProperties;
+  private final CatalogueDependantCache catcache;
   private RegistryClient client = null;
   private final Git git;
 
@@ -75,11 +76,15 @@ public class ManifestRepositoryImpl implements ManifestRepository {
   /**
    * @param repoProperties Repository properties to use. These cannot be changed after the object is
    *        instantiated.
+   * @param catcache needed because it needs to be notified (cleared) whenever the catalogue
+   *        changes.
    */
   @Autowired
   @SuppressFBWarnings("BC_UNCONFIRMED_CAST_OF_RETURN_VALUE")
-  public ManifestRepositoryImpl(ManifestRepositoryImplProperties repoProperties) {
+  public ManifestRepositoryImpl(ManifestRepositoryImplProperties repoProperties,
+      CatalogueDependantCache catcache) {
     this.repoProperties = repoProperties;
+    this.catcache = catcache;
 
     FileRepositoryBuilder builder = new FileRepositoryBuilder();
     try {
@@ -514,6 +519,7 @@ public class ManifestRepositoryImpl implements ManifestRepository {
   }
 
   private void onCatalogueContentChanged() {
+    this.catcache.clear();
     if (this.client != null) {
       try {
         this.client.refresh();

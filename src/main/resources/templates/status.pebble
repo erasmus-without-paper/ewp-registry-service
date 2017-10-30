@@ -1,0 +1,26 @@
+{% extends "generic-with-toolbar" %}
+
+{% block pageTitle %}Status of the EWP Manifest Importer{% endblock %}
+
+{% block main %}
+    <section class='ewp-section'>
+        <h2 class='ewp-section-title'>Manifest Importer Status</h2>
+
+        <p class='ewp-para'>Currently defined manifest sources and their statuses:</p>
+
+        <table class='ewpsrc'>
+            {% for stat in manifestStatuses %}
+                <tr class='ewpsrc__item ewpsrc__item--status-{{ stat.lastAccessFlagStatus }}'>
+                    <td class='ewpsrc__url'>{{ stat.url }}</td>
+                    <td class='ewpsrc__status'>{{ stat.lastAccessFlagStatus }}</td>
+                    <td class='ewpsrv__details'><a href='?url={{ stat.url }}'>details</a></td>
+                    <td class='ewpsrv__details'>
+                        <a class='ewp-manifest-reloader' data-manifest-url="{{ stat.url }}">reload now</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+
+        <p class='ewp-para'>(write us to add yours)</p>
+    </section>
+{% endblock %}

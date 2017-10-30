@@ -1,5 +1,10 @@
 package eu.erasmuswithoutpaper.registry.documentbuilder;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.w3c.dom.Element;
 
 /**
@@ -14,11 +19,135 @@ import org.w3c.dom.Element;
 public class KnownElement {
 
   /**
+   * API entry for Discovery API v4.
+   */
+  public static final KnownElement APIENTRY_DISCOVERY_V4 = new KnownElement(
+      KnownNamespace.APIENTRY_DISCOVERY_V4, "discovery", "API entry: Discovery v4");
+
+  /**
+   * API entry for Echo API v1.
+   */
+  public static final KnownElement APIENTRY_ECHO_V1 =
+      new KnownElement(KnownNamespace.APIENTRY_ECHO_V1, "echo", "API entry: Echo v1");
+
+  /**
+   * API entry for Echo API v2.
+   */
+  public static final KnownElement APIENTRY_ECHO_V2 =
+      new KnownElement(KnownNamespace.APIENTRY_ECHO_V2, "echo", "API entry: Echo v2");
+
+  /**
+   * API entry for Institutions API v1.
+   */
+  public static final KnownElement APIENTRY_INSTITUTIONS_V1 = new KnownElement(
+      KnownNamespace.APIENTRY_INSTITUTIONS_V1, "institutions", "API entry: Institutions v1");
+
+  /**
+   * API entry for Institutions API v2.
+   */
+  public static final KnownElement APIENTRY_INSTITUTIONS_V2 = new KnownElement(
+      KnownNamespace.APIENTRY_INSTITUTIONS_V2, "institutions", "API entry: Institutions v2");
+
+  /**
+   * API entry for Organizational Units API v1.
+   */
+  public static final KnownElement APIENTRY_OUNITS_V1 =
+      new KnownElement(KnownNamespace.APIENTRY_OUNITS_V1, "organizational-units",
+          "API entry: Organizational Units v1");
+
+  /**
+   * API entry for Organizational Units API v2.
+   */
+  public static final KnownElement APIENTRY_OUNITS_V2 =
+      new KnownElement(KnownNamespace.APIENTRY_OUNITS_V2, "organizational-units",
+          "API entry: Organizational Units v2");
+
+  /**
+   * API entry for Courses API v1.
+   */
+  public static final KnownElement APIENTRY_COURSES_V1 =
+      new KnownElement(KnownNamespace.APIENTRY_COURSES_V1, "courses", "API entry: Courses v1");
+
+  /**
+   * API entry for Simple Course Replication API v1.
+   */
+  public static final KnownElement APIENTRY_COURSE_REPLICATION_V1 =
+      new KnownElement(KnownNamespace.APIENTRY_COURSE_REPLICATION_V1, "simple-course-replication",
+          "API entry: Simple Course Replication v1");
+
+  /**
+   * API entry for Interinstitutional Agreements API v1.
+   */
+  public static final KnownElement APIENTRY_IIAS_V1 = new KnownElement(
+      KnownNamespace.APIENTRY_IIAS_V1, "iias", "API entry: Interinstitutional Agreements API v1");
+
+  /**
+   * API entry for Interinstitutional Agreements API v2.
+   */
+  public static final KnownElement APIENTRY_IIAS_V2 = new KnownElement(
+      KnownNamespace.APIENTRY_IIAS_V2, "iias", "API entry: Interinstitutional Agreements API v2");
+
+  /**
+   * API entry for Interinstitutional Agreement CNR API v1.
+   */
+  public static final KnownElement APIENTRY_IIA_CNR_V1 =
+      new KnownElement(KnownNamespace.APIENTRY_IIA_CNR_V1, "iia-cnr",
+          "API entry: Interinstitutional Agreement CNR API v1");
+
+  /**
+   * API entry for Interinstitutional Agreement CNR API v2.
+   */
+  public static final KnownElement APIENTRY_IIA_CNR_V2 =
+      new KnownElement(KnownNamespace.APIENTRY_IIA_CNR_V2, "iia-cnr",
+          "API entry: Interinstitutional Agreement CNR API v2");
+
+  /**
+   * API entry for Outgoing Mobilities API v1.
+   */
+  public static final KnownElement APIENTRY_OMOBILITIES_V1 =
+      new KnownElement(KnownNamespace.APIENTRY_OMOBILITIES_V1, "omobilities",
+          "API entry: Outgoing Mobilities API v1");
+
+  /**
+   * API entry for Outgoing Mobility CNR API v1.
+   */
+  public static final KnownElement APIENTRY_OMOBILITY_CNR_V1 =
+      new KnownElement(KnownNamespace.APIENTRY_OMOBILITY_CNR_V1, "omobility-cnr",
+          "API entry: Outgoing Mobility CNR API v1");
+
+  /**
+   * API entry for Incoming Mobilities API v1.
+   */
+  public static final KnownElement APIENTRY_IMOBILITIES_V1 =
+      new KnownElement(KnownNamespace.APIENTRY_IMOBILITIES_V1, "imobilities",
+          "API entry: Incoming Mobilities API v1");
+
+  /**
+   * API entry for Incoming Mobility CNR API v1.
+   */
+  public static final KnownElement APIENTRY_IMOBILITY_CNR_V1 =
+      new KnownElement(KnownNamespace.APIENTRY_IMOBILITY_CNR_V1, "imobility-cnr",
+          "API entry: Incoming Mobility CNR API v1");
+
+  /**
+   * API entry for Incoming Mobility ToRs API v1.
+   */
+  public static final KnownElement APIENTRY_IMOBILITY_TORS_V1 =
+      new KnownElement(KnownNamespace.APIENTRY_IMOBILITY_TORS_V1, "imobility-tors",
+          "API entry: Incoming Mobility ToRs API v1");
+
+  /**
+   * API entry for Incoming Mobility ToR CNR API v1.
+   */
+  public static final KnownElement APIENTRY_IMOBILITY_TOR_CNR_V1 =
+      new KnownElement(KnownNamespace.APIENTRY_IMOBILITY_TOR_CNR_V1, "imobility-tor-cnr",
+          "API entry: Incoming Mobility ToR CNR API v1");
+
+  /**
    * The root of the Discovery API v4 response.
    */
   public static final KnownElement RESPONSE_MANIFEST_V4 =
       new KnownElement(KnownNamespace.RESPONSE_MANIFEST_V4, "manifest", "Discovery Manifest file");
-
 
   /**
    * The root of the Registry API v1 catalogue response.
@@ -94,6 +223,25 @@ public class KnownElement {
   public static final KnownElement SECENTRY_RESENCR_TLS_V1 =
       new KnownElement(KnownNamespace.SECENTRY_RESENCR_TLS_V1, "tls",
           "Support declaration for \"regular TLS\" method of response encryption");
+
+  /**
+   * @return A list of all {@link KnownElement} constants.
+   */
+  public static List<KnownElement> values() {
+    List<KnownElement> values = new ArrayList<>();
+    for (Field field : KnownElement.class.getDeclaredFields()) {
+      if (Modifier.isPublic(field.getModifiers()) && Modifier.isStatic(field.getModifiers())) {
+        try {
+          if (field.get(null) instanceof KnownElement) {
+            values.add((KnownElement) field.get(null));
+          }
+        } catch (IllegalArgumentException | IllegalAccessException e) {
+          throw new RuntimeException(e);
+        }
+      }
+    }
+    return values;
+  }
 
   private final KnownNamespace namespace;
   private final String elementName;

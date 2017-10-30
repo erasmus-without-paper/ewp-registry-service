@@ -1,0 +1,54 @@
+{% extends "generic-with-toolbar" %}
+
+{% block pageTitle %}Manifest Status Report{% endblock %}
+
+{% block main %}
+    <section class='ewp-section'>
+        <h2 class='ewp-section-title'>Manifest Status Report</h2>
+
+        <p class='ewp-para'>Manifest URL: <code class='ewpst__bordered-code'>{{ manifestUrl }}</code></p>
+
+        {% if (not source.isPresent) and (not status.isPresent) %}
+            <p class='ewp-para'>
+                <b>Unknown URL:</b> This URL is not listed among the current Registry Service
+                manifest sources, nor any trace of it can be found in our logs.
+            </p>
+        {% elseif (not source.isPresent) and (status.isPresent) %}
+            <p class='ewp-para'>
+                <b>Stale URL:</b> This URL was once listed among Registry Service sources, but
+                it is not anymore.
+            </p>
+            <p class='ewp-para'>
+                Last access attempt:
+                <code>{{ status.get.lastAccessAttemptFormatted }}</code>
+            </p>
+        {% elseif (source.isPresent) and (not status.isPresent) %}
+            <p class='ewp-para'>
+                <b>New URL:</b> This URL is listed among the current Registry Service manifest
+                sources, but it hasn't been accessed yet. Please refresh this page.
+            </p>
+        {% else %}
+            <p class='ewp-para'>
+                Last access attempt:
+                <code class='ewpst__bordered-code'>{{ status.get.lastAccessAttemptFormatted }}</code>
+                <br>
+                Last access status:
+                <code class='ewpst__bordered-code'>{{ status.get.lastAccessFlagStatus.toString }}</code>
+                <br>
+                <a class='ewp-manifest-reloader' data-manifest-url="{{ manifestUrl }}">reload now</a>
+            </p>
+            {% if status.get.lastAccessNotices.size > 0 %}
+                <h2 class='ewp-section-title'>Last access notices</h2>
+
+                <table class='ewpsrc'>
+                    {% for notice in status.get.lastAccessNotices %}
+                        <tr class='ewpsrc__item ewpsrc__item--status-{{ notice.severity }}'>
+                            <td class='ewpsrc__status'>{{ notice.severity }}</td>
+                            <td class='ewpsrc__message'>{{ notice.messageHtml | raw }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            {% endif %}
+        {% endif %}
+    </section>
+{% endblock %}
