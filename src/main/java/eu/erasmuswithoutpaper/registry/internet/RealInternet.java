@@ -144,11 +144,16 @@ public class RealInternet implements Internet {
     final Map<String, String> headers = this.convertCommas(conn.getHeaderFields());
 
     // Body
+    byte[] body;
     InputStream bodyStream = conn.getErrorStream();
-    if (bodyStream == null) {
-      bodyStream = conn.getInputStream();
+    try {
+      if (bodyStream == null) {
+        bodyStream = conn.getInputStream();
+      }
+      body = IOUtils.toByteArray(bodyStream);
+    } catch (IOException e) {
+      body = new byte[0];
     }
-    final byte[] body = IOUtils.toByteArray(bodyStream);
 
     conn.disconnect();
 
