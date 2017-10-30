@@ -51,8 +51,11 @@ import net.adamcin.httpsig.api.DefaultVerifier;
 import net.adamcin.httpsig.api.RequestContent;
 import net.adamcin.httpsig.api.VerifyResult;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.http.client.utils.DateUtils;
 import org.joox.Match;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 
 /**
@@ -110,6 +113,8 @@ class EchoValidationSuite {
   @SuppressWarnings("serial")
   private static class SuiteBroken extends Exception {
   }
+
+  private static final Logger logger = LoggerFactory.getLogger(EchoValidationSuite.class);
 
   public static String findErrorsInDateHeader(String dateValue) {
     Date parsed = DateUtils.parseDate(dateValue);
@@ -666,7 +671,10 @@ class EchoValidationSuite {
     try {
       response = this.internet.makeRequest(request);
     } catch (IOException e) {
-      throw new Failure("IOException: " + e.getMessage(), Status.ERROR, null);
+      logger.debug(
+          "Problems retrieving response from server: " + ExceptionUtils.getFullStackTrace(e));
+      throw new Failure("Problems retrieving response from server: " + e.getMessage(), Status.ERROR,
+          null);
     }
     final List<String> notices = this.validateResponseCommons(combination, request, response);
     if (!statuses.contains(response.getStatus())) {
@@ -754,7 +762,10 @@ class EchoValidationSuite {
     try {
       response = this.internet.makeRequest(request);
     } catch (IOException e) {
-      throw new Failure("IOException: " + e.getMessage(), Status.ERROR, null);
+      logger.debug(
+          "Problems retrieving response from server: " + ExceptionUtils.getFullStackTrace(e));
+      throw new Failure("Problems retrieving response from server: " + e.getMessage(), Status.ERROR,
+          null);
     }
     final List<String> notices = this.validateResponseCommons(combination, request, response);
     if (response.getStatus() != 200) {
