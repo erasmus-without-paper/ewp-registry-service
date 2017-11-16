@@ -1,6 +1,26 @@
 Release notes
 =============
 
+Note, that this changelog describes only the changes relevant from the
+perspective of the Registry API client implementers, and users which view the
+public Registry Service site. Most changes made to the Registry Service touch
+the *unofficial* services - such as the document validator, or Echo API
+validator - but these changes are currently not mentioned in this changelog, to
+avoid clutter.
+
+
+1.5.0
+-----
+
+*Released on 2017-11-16*
+
+ * Added an HTML user interface (up to this point, UI was text-only).
+ * Added the HEI/API coverage page.
+ * `/refresh` endpoint has been removed, but its features are now partially
+   available in the GUI. Note, that forcing manifest reloads is currently NOT
+   part of the official API (and, as such, can be removed at any time).
+
+
 1.4.0
 -----
 
@@ -25,13 +45,6 @@ features](https://github.com/erasmus-without-paper/ewp-specs-api-registry/blob/v
    RSA keys from the manifest files, verifies them, and moves their
    fingerprints to the catalogue response. Currently, keys are required to be
    at least 2048 bits in length.
-
-Note, that this changelog describes only the changes relevant from the
-perspective of the Registry API client implementers, and users which view the
-public Registry Service site. Most changes made to the Registry Service touch
-the *unofficial* services - such as the document validator, or Echo API
-validator - but these changes are currently not mentioned in this changelog, to
-avoid clutter.
 
 
 1.2.1
