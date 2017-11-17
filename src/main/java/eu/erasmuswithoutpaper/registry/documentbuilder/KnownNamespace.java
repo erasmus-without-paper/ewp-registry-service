@@ -92,7 +92,7 @@ public class KnownNamespace {
    * 'https://github.com/erasmus-without-paper/ewp-specs-api-registry/blob/stable-v1/manifest-entry.xsd'>
    * here</a>.
    */
-  public static final KnownNamespace APIENTRY_REGISTRY =
+  public static final KnownNamespace APIENTRY_REGISTRY_V1 =
       new KnownNamespace("r1", "api-registry/blob/stable-v1/manifest-entry.xsd",
           "api-registry/stable-v1/manifest-entry.xsd", true);
 

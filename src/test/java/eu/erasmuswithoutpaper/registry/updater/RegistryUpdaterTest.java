@@ -352,7 +352,7 @@ public class RegistryUpdaterTest extends WRTest {
 
     Match manifest = this.parseURL(url1);
     manifest.xpath("r:apis-implemented")
-        .append("<registry xmlns='" + KnownNamespace.APIENTRY_REGISTRY.getNamespaceUri()
+        .append("<registry xmlns='" + KnownNamespace.APIENTRY_REGISTRY_V1.getNamespaceUri()
             + "' version='1.0.0'><catalogue-url>https://example.com/catalogue-v1.xml"
             + "</catalogue-url></registry>");
     assertThat(manifest.xpath("r:apis-implemented/*")).hasSize(3);

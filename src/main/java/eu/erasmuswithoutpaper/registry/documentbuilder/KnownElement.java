@@ -25,6 +25,12 @@ public class KnownElement {
       KnownNamespace.APIENTRY_DISCOVERY_V4, "discovery", "API entry: Discovery v4");
 
   /**
+   * API entry for Registry API v1.
+   */
+  public static final KnownElement APIENTRY_REGISTRY_V1 =
+      new KnownElement(KnownNamespace.APIENTRY_REGISTRY_V1, "registry", "API entry: Registry v1");
+
+  /**
    * API entry for Echo API v1.
    */
   public static final KnownElement APIENTRY_ECHO_V1 =
