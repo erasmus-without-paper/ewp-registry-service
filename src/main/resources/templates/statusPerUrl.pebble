@@ -6,7 +6,8 @@
     <section class='ewp-section'>
         <h2 class='ewp-section-title'>Manifest Status Report</h2>
 
-        <p class='ewp-para'>Manifest URL: <code class='ewpst__bordered-code'>{{ manifestUrl }}</code></p>
+        <p class='ewp-para'>Manifest URL:
+        <code class='ewpst__bordered-code'><a href='{{ manifestUrl }}'>{{ manifestUrl }}</a></code></p>
 
         {% if (not source.isPresent) and (not status.isPresent) %}
             <p class='ewp-para'>

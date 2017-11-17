@@ -49,7 +49,7 @@
                 insti&shy;tu&shy;tions and APIs exposed by them:</p>
 
                 <p class='ewp-header__catalogue-link'>
-                    {{ catalogueUrl }}
+                    <a href='{{ catalogueUrl }}'>{{ catalogueUrl }}</a>
                 </p>
 
                 <p>This catalogue is conti&shy;nously refreshed. Read the
