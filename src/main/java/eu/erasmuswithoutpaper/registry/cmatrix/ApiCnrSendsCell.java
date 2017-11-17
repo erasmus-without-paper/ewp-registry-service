@@ -20,7 +20,7 @@ class ApiCnrSendsCell extends ApiEntriesCell {
       ContentLine line = new ContentLine();
       line.addClass("ewpst__yesNo");
       line.addClass("ewpst__yesNo--cnrSends");
-      boolean sends = $(apiEntry).child("sends-notifications").size() > 1;
+      boolean sends = $(apiEntry).children("sends-notifications").size() >= 1;
       if (sends) {
         line.setContent("yes");
         line.addClass("ewpst__yesNo--yes");
