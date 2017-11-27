@@ -32,7 +32,10 @@ public class VerifyDiscoveryApiEntry implements ManifestConstraint {
   public List<FailedConstraintNotice> filter(Document doc) {
     List<FailedConstraintNotice> notices = new ArrayList<>(1);
     Match root = $(doc).namespaces(KnownNamespace.prefixMap());
-    if (!root.xpath("r:apis-implemented/d4:discovery/d4:url").texts().contains(this.expectedUrl)) {
+    if (!root
+        .xpath("mf5:host/r:apis-implemented/d4:discovery/d4:url | "
+            + "mf5:host/r:apis-implemented/d5:discovery/d5:url")
+        .texts().contains(this.expectedUrl)) {
       StringBuilder sb = new StringBuilder();
       sb.append("We have found an inconsistency in your Discovery API manifest. We were ");
       sb.append("expecting to find this URL in one of your discovery/url elements, but we ");

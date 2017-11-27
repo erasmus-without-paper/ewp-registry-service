@@ -25,6 +25,12 @@ public class KnownElement {
       KnownNamespace.APIENTRY_DISCOVERY_V4, "discovery", "API entry: Discovery Manifest v4");
 
   /**
+   * API entry for Discovery API v5.
+   */
+  public static final KnownElement APIENTRY_DISCOVERY_V5 = new KnownElement(
+      KnownNamespace.APIENTRY_DISCOVERY_V5, "discovery", "API entry: Discovery Manifest v5");
+
+  /**
    * API entry for Registry API v1.
    */
   public static final KnownElement APIENTRY_REGISTRY_V1 =
@@ -154,6 +160,12 @@ public class KnownElement {
    */
   public static final KnownElement RESPONSE_MANIFEST_V4 = new KnownElement(
       KnownNamespace.RESPONSE_MANIFEST_V4, "manifest", "Discovery Manifest v4 file");
+
+  /**
+   * The root of the Discovery API v5 response.
+   */
+  public static final KnownElement RESPONSE_MANIFEST_V5 = new KnownElement(
+      KnownNamespace.RESPONSE_MANIFEST_V5, "manifest", "Discovery Manifest v5 file");
 
   /**
    * The root of the Registry API v1 catalogue response.

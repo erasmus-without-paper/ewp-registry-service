@@ -18,11 +18,8 @@ import eu.erasmuswithoutpaper.registry.common.Severity.OneOfTheValuesIsUndetermi
 import eu.erasmuswithoutpaper.registry.common.Utils;
 import eu.erasmuswithoutpaper.registry.constraints.FailedConstraintNotice;
 import eu.erasmuswithoutpaper.registry.constraints.ManifestConstraint;
-import eu.erasmuswithoutpaper.registry.documentbuilder.BuildError;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildParams;
-import eu.erasmuswithoutpaper.registry.documentbuilder.BuildResult;
 import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
-import eu.erasmuswithoutpaper.registry.documentbuilder.KnownElement;
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
 import eu.erasmuswithoutpaper.registry.internet.Internet;
 import eu.erasmuswithoutpaper.registry.notifier.NotifierFlag;
@@ -32,6 +29,7 @@ import eu.erasmuswithoutpaper.registry.repository.ManifestNotFound;
 import eu.erasmuswithoutpaper.registry.repository.ManifestRepository;
 import eu.erasmuswithoutpaper.registry.sourceprovider.ManifestSource;
 import eu.erasmuswithoutpaper.registry.sourceprovider.ManifestSourceProvider;
+import eu.erasmuswithoutpaper.registry.updater.ManifestConverter.NotValidManifest;
 import eu.erasmuswithoutpaper.registry.xmlformatter.XmlFormatter;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,6 +62,7 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
   private final XmlFormatter xmlFormatter;
   private final Map<ManifestSource, ManifestUpdateStatusNotifierFlag> notifierFlags;
   private final NotifierService notifier;
+  private final ManifestConverter converter;
 
   /**
    * @param manifestSourceProvider to get the list of Manifest sources.
@@ -74,12 +73,13 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
    * @param docBuilder to parse the manifests.
    * @param xmlFormatter to format the filtered versions of the manifests.
    * @param notifier to register our custom {@link NotifierFlag}s.
+   * @param converter to be able to convert older manifests into the latest versions.
    */
   @Autowired
   public RegistryUpdaterImpl(ManifestSourceProvider manifestSourceProvider,
       ManifestUpdateStatusRepository manifestUpdateStatusRepository, Internet internet,
       ManifestRepository repo, EwpDocBuilder docBuilder, XmlFormatter xmlFormatter,
-      NotifierService notifier) {
+      NotifierService notifier, ManifestConverter converter) {
     this.manifestSourceProvider = manifestSourceProvider;
     this.manifestUpdateStatusRepository = manifestUpdateStatusRepository;
     this.internet = internet;
@@ -88,6 +88,7 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
     this.xmlFormatter = xmlFormatter;
     this.notifier = notifier;
     this.notifierFlags = new HashMap<>();
+    this.converter = converter;
     this.onSourcesUpdated();
   }
 
@@ -124,8 +125,12 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
           $(this.docBuilder.build(new BuildParams(this.repo.getCatalogue())).getDocument().get())
               .namespaces(KnownNamespace.prefixMap());
       for (Match host : catalogue.xpath("r:host").each()) {
-        List<String> adminEmails = host.xpath("ewp:admin-email").texts();
-        for (String url : host.xpath("r:apis-implemented/d4:discovery/d4:url").texts()) {
+        List<String> adminEmails =
+            host.xpath("ewp:admin-email | " + "r:apis-implemented/d4:discovery/ewp:admin-email | "
+                + "r:apis-implemented/d5:discovery/ewp:admin-email").texts();
+        for (String url : host.xpath(
+            "r:apis-implemented/d4:discovery/d4:url | " + "r:apis-implemented/d5:discovery/d5:url")
+            .texts()) {
           recipients.put(url, adminEmails);
         }
       }
@@ -221,33 +226,26 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
 
         this.repo.putOriginalManifest(source.getUrl(), originalContents);
 
-        // Prepare the filtered version of the contents.
+        // Try to read it (and dynamically convert it to version 5).
 
-        BuildParams params = new BuildParams(originalContents);
-        params.setExpectedKnownElement(KnownElement.RESPONSE_MANIFEST_V4);
-        BuildResult result = this.docBuilder.build(params);
-
-        if (!result.isValid()) {
-
+        Document doc;
+        try {
+          doc = this.converter.buildToV5(originalContents);
+        } catch (NotValidManifest e) {
           // The manifest failed basic validation. We cannot continue.
 
           this.repo.commit("Update original (invalid!) contents of manifest: " + source.getUrl());
           notices.add(new UpdateNotice(Severity.ERROR,
-              "The contents of the manifest have failed XML Schema validation. "
-                  + "The manifest will not be imported. We will keep serving the last successfully "
-                  + "imported version of this manifest, if we have one."));
-          for (BuildError error : result.getErrors()) {
-            StringBuilder sb = new StringBuilder();
-            sb.append("Line ").append(error.getLineNumber()).append(": ");
-            sb.append(Utils.escapeHtml(error.getMessage()));
-            notices.add(new UpdateNotice(Severity.ERROR, sb.toString()));
+              "The file doesn't contain a proper supported manifest element. "
+                  + "The manifest will not be imported. We will keep serving the last "
+                  + "successfully imported version of this manifest, if we have one."));
+          for (String error : e.getErrorList()) {
+            notices.add(new UpdateNotice(Severity.ERROR, Utils.escapeHtml(error)));
           }
           status.setLastAccessFlagStatus(Severity.ERROR);
           status.setLastAccessNotices(notices);
           return;
         }
-
-        Document doc = result.getDocument().get();
 
         /*
          * The contents passed XML Schema validation, but they are still unsafe. We need to create
@@ -289,7 +287,7 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
           // Update the list of our notifierFlag's recipients.
 
           Match manifest = $(doc).namespaces(KnownNamespace.prefixMap());
-          notifierFlag.setRecipientEmails(manifest.xpath("ewp:admin-email").texts());
+          notifierFlag.setRecipientEmails(manifest.xpath("mf5:host/ewp:admin-email").texts());
 
           // Update the catalogue too.
 
@@ -348,14 +346,19 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
         }
 
         /*
-         * Parse it. Note that this document is already guaranteed to be safe. We do not need to
-         * verify it.
+         * Parse it. Note that this document is already guaranteed to be safe, but during the brief
+         * update-phase (immediately after v5 is introduced), there's a chance that this will be in
+         * version 4, not 5.
          */
 
-        BuildParams params = new BuildParams(xml);
-        params.setExpectedKnownElement(KnownElement.RESPONSE_MANIFEST_V4);
-        Document doc = this.docBuilder.build(params).getDocument().get();
-        manifests.add(doc);
+        try {
+          manifests.add(this.converter.buildToV5(xml));
+        } catch (NotValidManifest e) {
+          logger.error("Ignoring {}, because couldn't load it (should not happen)", src);
+          for (String err : e.getErrorList()) {
+            logger.error(err);
+          }
+        }
       }
 
       // Build the catalogue document.

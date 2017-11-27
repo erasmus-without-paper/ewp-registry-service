@@ -81,6 +81,16 @@ public class EwpDocBuilderTest extends WRTest {
     assertThat(result.getErrors().get(0).getMessage()).contains("DOCTYPE is disallowed");
   }
 
+  @Test
+  public void checkForXxeV5() {
+    BuildParams params = new BuildParams(this.getFile("manifests-v5/xxe.xml"));
+    params.setExpectedKnownElement(KnownElement.RESPONSE_MANIFEST_V5);
+    BuildResult result = this.builder.build(params);
+    assertThat(result.isValid()).isFalse();
+    assertThat(result.getErrors()).hasSize(1);
+    assertThat(result.getErrors().get(0).getMessage()).contains("DOCTYPE is disallowed");
+  }
+
   /**
    * This is similar to {@link #checkIfRejectsUnknownElements()}, but from other perspective. If the
    * element is invalid (according to its schema), but this schema is unknown to the validator, then
@@ -91,6 +101,15 @@ public class EwpDocBuilderTest extends WRTest {
     BuildParams params = new BuildParams(
         this.getFile("manifests-v4/which-fails-external-api-schema-validation.xml"));
     params.setExpectedKnownElement(KnownElement.RESPONSE_MANIFEST_V4);
+    BuildResult result = this.builder.build(params);
+    assertThat(result.isValid()).isTrue();
+  }
+
+  @Test
+  public void checkIfAcceptsInvalidAPIentriesV5() {
+    BuildParams params = new BuildParams(
+        this.getFile("manifests-v5/which-fails-external-api-schema-validation.xml"));
+    params.setExpectedKnownElement(KnownElement.RESPONSE_MANIFEST_V5);
     BuildResult result = this.builder.build(params);
     assertThat(result.isValid()).isTrue();
   }
@@ -310,6 +329,14 @@ public class EwpDocBuilderTest extends WRTest {
     }
   }
 
+  @Test
+  public void testEmptyManifestV5() {
+    BuildParams params = new BuildParams(this.getFile("manifests-v5/empty.xml"));
+    params.setExpectedKnownElement(KnownElement.RESPONSE_MANIFEST_V5);
+    BuildResult result = this.builder.build(params);
+    assertThat(result.isValid()).isTrue();
+  }
+
   /**
    * Make sure it allows external (unknown) APIs entries.
    */
@@ -322,10 +349,18 @@ public class EwpDocBuilderTest extends WRTest {
   }
 
   @Test
+  public void testExternalAPIsV5() {
+    BuildParams params = new BuildParams(this.getFile("manifests-v5/a-bit-weird-but-valid.xml"));
+    params.setExpectedKnownElement(KnownElement.RESPONSE_MANIFEST_V5);
+    BuildResult result = this.builder.build(params);
+    assertThat(result.isValid()).isTrue();
+  }
+
+  @Test
   public void testManifestExample() {
     BuildParams params = new BuildParams(
         this.getFile("latest-examples/ewp-specs-api-discovery-manifest-example.xml"));
-    params.setExpectedKnownElement(KnownElement.RESPONSE_MANIFEST_V4);
+    params.setExpectedKnownElement(KnownElement.RESPONSE_MANIFEST_V5);
     BuildResult result = this.builder.build(params);
     assertThat(result.isValid()).isTrue();
   }
@@ -334,6 +369,14 @@ public class EwpDocBuilderTest extends WRTest {
   public void testManifestMinimalV4() {
     BuildParams params = new BuildParams(this.getFile("manifests-v4/tiny-but-valid.xml"));
     params.setExpectedKnownElement(KnownElement.RESPONSE_MANIFEST_V4);
+    BuildResult result = this.builder.build(params);
+    assertThat(result.isValid()).isTrue();
+  }
+
+  @Test
+  public void testManifestMinimalV5() {
+    BuildParams params = new BuildParams(this.getFile("manifests-v5/tiny-but-valid.xml"));
+    params.setExpectedKnownElement(KnownElement.RESPONSE_MANIFEST_V5);
     BuildResult result = this.builder.build(params);
     assertThat(result.isValid()).isTrue();
   }

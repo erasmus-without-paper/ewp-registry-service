@@ -1,0 +1,18 @@
+<m:manifest
+    xmlns:m="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/tree/stable-v5"
+    xmlns:r="https://github.com/erasmus-without-paper/ewp-specs-api-registry/tree/stable-v1"
+    xmlns:api-d1="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/blob/stable-v5/manifest-entry.xsd"
+    xmlns:api-d2="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/blob/stable-v5/manifest-entry.xsd"
+>
+    <!-- We use two prefixes for one namespace. This is weird, but valid.
+         Here, we do that just for testing purposes. -->
+    <m:host>
+        <r:apis-implemented>
+            <api-d1:discovery version="5.0.0">
+                <api-d2:url>https://example.com/a-bit-weird-but-valid.xml</api-d2:url>
+            </api-d1:discovery>
+            <some-other-api xmlns="urn:unknown-namespace">
+            </some-other-api>
+        </r:apis-implemented>
+    </m:host>
+</m:manifest>

@@ -44,7 +44,7 @@ public class SelfManifestProviderTest extends WRTest {
   @Test
   public void producesAValidManifest() {
     BuildParams params = new BuildParams(this.provider.getManifest());
-    params.setExpectedKnownElement(KnownElement.RESPONSE_MANIFEST_V4);
+    params.setExpectedKnownElement(KnownElement.RESPONSE_MANIFEST_V5);
     BuildResult result = this.docBuilder.build(params);
     assertThat(result.getErrors()).isEmpty();
     assertThat(result.isValid()).isTrue();

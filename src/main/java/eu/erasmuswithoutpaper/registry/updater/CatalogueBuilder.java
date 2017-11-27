@@ -24,12 +24,15 @@ import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 
 import eu.erasmuswithoutpaper.registry.common.Utils;
+import eu.erasmuswithoutpaper.registry.documentbuilder.KnownElement;
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
 
 import com.google.common.base.Joiner;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.joox.Match;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -38,8 +41,14 @@ import org.w3c.dom.Node;
 /**
  * The class is responsible for building Registry catalogue documents (from a list of filtered
  * manifest documents).
+ *
+ * <p>
+ * It's not a service, because it holds a non-thread-safe {@link #doc} field.
+ * </p>
  */
 class CatalogueBuilder {
+
+  private static final Logger logger = LoggerFactory.getLogger(CatalogueBuilder.class);
 
   private final DocumentBuilder docbuilder;
   private final CertificateFactory x509factory;
@@ -58,11 +67,11 @@ class CatalogueBuilder {
   /**
    * Build a catalogue document from the given list of manifests.
    *
-   * @param manifests List of {@link Document}s - each MUST contain a VALID (and already filtered)
-   *        Discovery API Manifest document.
+   * @param manifestsV5 List of {@link Document}s - each MUST contain a VALID (and already filtered)
+   *        Discovery API Manifest document in version 5 (otherwise they will be ignored).
    * @return A new {@link Document} with a valid Registry catalogue response.
    */
-  public synchronized Document build(List<Document> manifests) {
+  public synchronized Document build(List<Document> manifestsV5) {
 
     // Create a new document with the <catalogue> root.
 
@@ -76,179 +85,192 @@ class CatalogueBuilder {
 
     // For each of the given manifests...
 
-    for (Document manifestDoc : manifests) {
-      Match srcHost = $(manifestDoc).namespaces(KnownNamespace.prefixMap());
+    for (Document manifestDoc : manifestsV5) {
 
-      // Append a new <host> element to the <catalogue>.
-
-      Element destHostElem = this.newElem("host");
-      catalogueElem.appendChild(destHostElem);
-
-      // Copy all <ewp:admin-email> and <ewp:admin-notes> values.
-
-      for (String email : srcHost.xpath("ewp:admin-email").texts()) {
-        destHostElem.appendChild(this.newEwpElem("admin-email", email));
-      }
-      if (srcHost.xpath("ewp:admin-notes").isNotEmpty()
-          && (srcHost.xpath("ewp:admin-notes").text().length() > 0)) {
-        destHostElem
-            .appendChild(this.newEwpElem("admin-notes", srcHost.xpath("ewp:admin-notes").text()));
+      if (!KnownElement.RESPONSE_MANIFEST_V5.matches(manifestDoc.getDocumentElement())) {
+        logger.error("Ignoring unsupported manifest version while building the catalogue. "
+            + "This should not happen.");
+        continue;
       }
 
-      // Append a new <apis-implemented> element to the <host>.
+      // Extract all the hosts
+      Match srcHosts = $(manifestDoc).namespaces(KnownNamespace.prefixMap()).xpath("mf5:host");
 
-      Element destApisElem = this.newElem("apis-implemented");
-      destHostElem.appendChild(destApisElem);
+      for (Element srcHostElem : srcHosts) {
+        Match srcHost = $(srcHostElem).namespaces(KnownNamespace.prefixMap());
 
-      // Copy all API entries from the manifest (and replace their prefixes with the default ones).
+        // Append a new <host> element to the <catalogue>.
 
-      for (Element srcApiElem : srcHost.xpath("r:apis-implemented/*")) {
-        Element destApiElem = (Element) this.doc.importNode(srcApiElem, true);
-        Utils.rewritePrefixes(destApiElem);
-        destApisElem.appendChild(destApiElem);
-      }
+        Element destHostElem = this.newElem("host");
+        catalogueElem.appendChild(destHostElem);
 
-      // It there are any HEIs covered in the manifest...
+        // Copy all <ewp:admin-email> and <ewp:admin-notes> values.
 
-      Match srcHeis = srcHost.xpath("mf4:institutions-covered/r:hei");
-      if (srcHeis.size() > 0) {
+        for (String email : srcHost.xpath("ewp:admin-email").texts()) {
+          destHostElem.appendChild(this.newEwpElem("admin-email", email));
+        }
+        if (srcHost.xpath("ewp:admin-notes").isNotEmpty()
+            && (srcHost.xpath("ewp:admin-notes").text().length() > 0)) {
+          destHostElem
+              .appendChild(this.newEwpElem("admin-notes", srcHost.xpath("ewp:admin-notes").text()));
+        }
 
-        // Create a <institutions-covered> element in the <host>.
+        // Append a new <apis-implemented> element to the <host>.
 
-        Element destHeisElem = this.newElem("institutions-covered");
-        destHostElem.appendChild(destHeisElem);
+        Element destApisElem = this.newElem("apis-implemented");
+        destHostElem.appendChild(destApisElem);
 
-        for (Match srcHei : srcHeis.each()) {
+        // Copy all API entries from the manifest (and replace their prefixes with the default
+        // ones).
 
-          // Append <hei-id> elements to <institutions-covered>.
+        for (Element srcApiElem : srcHost.xpath("r:apis-implemented/*")) {
+          Element destApiElem = (Element) this.doc.importNode(srcApiElem, true);
+          Utils.rewritePrefixes(destApiElem);
+          destApisElem.appendChild(destApiElem);
+        }
 
-          String id = srcHei.attr("id");
-          destHeisElem.appendChild(this.newElem("hei-id", id));
+        // It there are any HEIs covered in the manifest...
 
-          // And keep a copy of all relevant HEI attributes in our maps...
+        Match srcHeis = srcHost.xpath("mf5:institutions-covered/r:hei");
+        if (srcHeis.size() > 0) {
 
-          if (!heiIdTypeSets.containsKey(id)) {
-            heiIdTypeSets.put(id, new TreeMap<>());
-          }
-          Map<String, Set<String>> idTypeSets = heiIdTypeSets.get(id);
-          if (!heiLangNameSets.containsKey(id)) {
-            heiLangNameSets.put(id, new TreeMap<>());
-          }
-          Map<String, Set<String>> langNameSets = heiLangNameSets.get(id);
+          // Create a <institutions-covered> element in the <host>.
 
-          // For each <other-id> given for this HEI...
+          Element destHeisElem = this.newElem("institutions-covered");
+          destHostElem.appendChild(destHeisElem);
 
-          for (Match otherId : srcHei.xpath("r:other-id").each()) {
+          for (Match srcHei : srcHeis.each()) {
 
-            // Find the set of all IDs declared for this ID type.
+            // Append <hei-id> elements to <institutions-covered>.
 
-            String idType = otherId.attr("type");
-            if (!idTypeSets.containsKey(idType)) {
-              idTypeSets.put(idType, new TreeSet<>());
+            String id = srcHei.attr("id");
+            destHeisElem.appendChild(this.newElem("hei-id", id));
+
+            // And keep a copy of all relevant HEI attributes in our maps...
+
+            if (!heiIdTypeSets.containsKey(id)) {
+              heiIdTypeSets.put(id, new TreeMap<>());
             }
-            Set<String> set = idTypeSets.get(idType);
-
-            // Add the ID to this set.
-
-            set.add(otherId.text());
-          }
-
-          // For each <name> given for this HEI...
-
-          for (Match name : srcHei.xpath("r:name").each()) {
-
-            // Find the set of all names declared for this language.
-
-            String lang = name.get(0).getAttributeNS(XMLConstants.XML_NS_URI, "lang");
-            if (!langNameSets.containsKey(lang)) {
-              langNameSets.put(lang, new TreeSet<>());
+            Map<String, Set<String>> idTypeSets = heiIdTypeSets.get(id);
+            if (!heiLangNameSets.containsKey(id)) {
+              heiLangNameSets.put(id, new TreeMap<>());
             }
-            Set<String> set = langNameSets.get(lang);
+            Map<String, Set<String>> langNameSets = heiLangNameSets.get(id);
 
-            // Add the name to this set.
+            // For each <other-id> given for this HEI...
 
-            set.add(name.text());
+            for (Match otherId : srcHei.xpath("r:other-id").each()) {
+
+              // Find the set of all IDs declared for this ID type.
+
+              String idType = otherId.attr("type");
+              if (!idTypeSets.containsKey(idType)) {
+                idTypeSets.put(idType, new TreeSet<>());
+              }
+              Set<String> set = idTypeSets.get(idType);
+
+              // Add the ID to this set.
+
+              set.add(otherId.text());
+            }
+
+            // For each <name> given for this HEI...
+
+            for (Match name : srcHei.xpath("r:name").each()) {
+
+              // Find the set of all names declared for this language.
+
+              String lang = name.get(0).getAttributeNS(XMLConstants.XML_NS_URI, "lang");
+              if (!langNameSets.containsKey(lang)) {
+                langNameSets.put(lang, new TreeSet<>());
+              }
+              Set<String> set = langNameSets.get(lang);
+
+              // Add the name to this set.
+
+              set.add(name.text());
+            }
           }
         }
-      }
 
-      // Create <client-credentials-in-use> in <host>.
+        // Create <client-credentials-in-use> in <host>.
 
-      Element destCliCreds = this.newElem("client-credentials-in-use");
-      destHostElem.appendChild(destCliCreds);
+        Element destCliCreds = this.newElem("client-credentials-in-use");
+        destHostElem.appendChild(destCliCreds);
 
-      // If there are any client certificates...
+        // If there are any client certificates...
 
-      List<String> srcCertStrs =
-          srcHost.xpath("mf4:client-credentials-in-use/mf4:certificate").texts();
-      if (srcCertStrs.size() > 0) {
+        List<String> srcCertStrs =
+            srcHost.xpath("mf5:client-credentials-in-use/mf5:certificate").texts();
+        if (srcCertStrs.size() > 0) {
 
-        // For each certificate, calculate its sha-256 fingerprint, create element, and append it.
+          // For each certificate, calculate its sha-256 fingerprint, create element, and append it.
 
-        for (String srcCertStr : srcCertStrs) {
-          X509Certificate cert = this.parseCert(srcCertStr);
-          Element destCertElem = this.newElem("certificate");
-          try {
-            destCertElem.setAttribute("sha-256", DigestUtils.sha256Hex(cert.getEncoded()));
-          } catch (CertificateEncodingException e) {
-            throw new RuntimeException(e);
-          } catch (DOMException e) {
-            throw new RuntimeException(e);
+          for (String srcCertStr : srcCertStrs) {
+            X509Certificate cert = this.parseCert(srcCertStr);
+            Element destCertElem = this.newElem("certificate");
+            try {
+              destCertElem.setAttribute("sha-256", DigestUtils.sha256Hex(cert.getEncoded()));
+            } catch (CertificateEncodingException e) {
+              throw new RuntimeException(e);
+            } catch (DOMException e) {
+              throw new RuntimeException(e);
+            }
+            destCliCreds.appendChild(destCertElem);
           }
-          destCliCreds.appendChild(destCertElem);
         }
-      }
 
-      // If there are any client public keys...
+        // If there are any client public keys...
 
-      List<String> srcKeyStrs =
-          srcHost.xpath("mf4:client-credentials-in-use/mf4:rsa-public-key").texts();
-      if (srcKeyStrs.size() > 0) {
+        List<String> srcKeyStrs =
+            srcHost.xpath("mf5:client-credentials-in-use/mf5:rsa-public-key").texts();
+        if (srcKeyStrs.size() > 0) {
 
-        // For each key, calculate its sha-256 fingerprint, create element, and append it.
+          // For each key, calculate its sha-256 fingerprint, create element, and append it.
 
-        for (String srcKeyStr : srcKeyStrs) {
-          RSAPublicKey key = this.parseValidRsaPublicKey(srcKeyStr);
-          Element destKeyElem = this.newElem("rsa-public-key");
-          String fingerprint = DigestUtils.sha256Hex(key.getEncoded());
-          destKeyElem.setAttribute("sha-256", fingerprint);
-          destCliCreds.appendChild(destKeyElem);
-          actualKeys.put(fingerprint, key);
+          for (String srcKeyStr : srcKeyStrs) {
+            RSAPublicKey key = this.parseValidRsaPublicKey(srcKeyStr);
+            Element destKeyElem = this.newElem("rsa-public-key");
+            String fingerprint = DigestUtils.sha256Hex(key.getEncoded());
+            destKeyElem.setAttribute("sha-256", fingerprint);
+            destCliCreds.appendChild(destKeyElem);
+            actualKeys.put(fingerprint, key);
+          }
         }
-      }
 
-      // If credentials are still empty, then remove their empty container.
+        // If credentials are still empty, then remove their empty container.
 
-      if (destCliCreds.getChildNodes().getLength() == 0) {
-        destHostElem.removeChild(destCliCreds);
-      }
-
-      // Create <server-credentials-in-use> in <host>.
-
-      Element destSrvCreds = this.newElem("server-credentials-in-use");
-      destHostElem.appendChild(destSrvCreds);
-
-      // If there are any server public keys...
-
-      srcKeyStrs = srcHost.xpath("mf4:server-credentials-in-use/mf4:rsa-public-key").texts();
-      if (srcKeyStrs.size() > 0) {
-
-        // For each key, calculate its sha-256 fingerprint, create element, and append it.
-
-        for (String srcKeyStr : srcKeyStrs) {
-          RSAPublicKey key = this.parseValidRsaPublicKey(srcKeyStr);
-          Element destKeyElem = this.newElem("rsa-public-key");
-          String fingerprint = DigestUtils.sha256Hex(key.getEncoded());
-          destKeyElem.setAttribute("sha-256", fingerprint);
-          destSrvCreds.appendChild(destKeyElem);
-          actualKeys.put(fingerprint, key);
+        if (destCliCreds.getChildNodes().getLength() == 0) {
+          destHostElem.removeChild(destCliCreds);
         }
-      }
 
-      // If credentials are still empty, then remove their empty container.
+        // Create <server-credentials-in-use> in <host>.
 
-      if (destSrvCreds.getChildNodes().getLength() == 0) {
-        destHostElem.removeChild(destSrvCreds);
+        Element destSrvCreds = this.newElem("server-credentials-in-use");
+        destHostElem.appendChild(destSrvCreds);
+
+        // If there are any server public keys...
+
+        srcKeyStrs = srcHost.xpath("mf5:server-credentials-in-use/mf5:rsa-public-key").texts();
+        if (srcKeyStrs.size() > 0) {
+
+          // For each key, calculate its sha-256 fingerprint, create element, and append it.
+
+          for (String srcKeyStr : srcKeyStrs) {
+            RSAPublicKey key = this.parseValidRsaPublicKey(srcKeyStr);
+            Element destKeyElem = this.newElem("rsa-public-key");
+            String fingerprint = DigestUtils.sha256Hex(key.getEncoded());
+            destKeyElem.setAttribute("sha-256", fingerprint);
+            destSrvCreds.appendChild(destKeyElem);
+            actualKeys.put(fingerprint, key);
+          }
+        }
+
+        // If credentials are still empty, then remove their empty container.
+
+        if (destSrvCreds.getChildNodes().getLength() == 0) {
+          destHostElem.removeChild(destSrvCreds);
+        }
       }
     }
 

@@ -36,6 +36,12 @@
         name="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/tree/stable-v4"
         uri="ewp-specs-api-discovery-v4.1.0/manifest.xsd" />
     <uri
+        name="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/blob/stable-v5/manifest-entry.xsd"
+        uri="ewp-specs-api-discovery-v5.0.0/manifest-entry.xsd" />
+    <uri
+        name="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/tree/stable-v5"
+        uri="ewp-specs-api-discovery-v5.0.0/manifest.xsd" />
+    <uri
         name="https://github.com/erasmus-without-paper/ewp-specs-api-echo/blob/stable-v2/manifest-entry.xsd"
         uri="ewp-specs-api-echo-v2.0.0/manifest-entry.xsd" />
     <uri

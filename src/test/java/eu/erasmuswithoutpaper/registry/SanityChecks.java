@@ -57,6 +57,9 @@ public class SanityChecks extends WRTest {
     assertThat(root.xpath("x:b/x:c").size()).isEqualTo(2);
     assertThat(root.xpath("x:b/x:b").size()).isEqualTo(0);
     assertThat(root.xpath("x:b/y:b").size()).isEqualTo(1);
+
+    assertThat(root.xpath("x:b/x:c | x:b/x:b").size()).isEqualTo(2);
+    assertThat(root.xpath("x:b/x:c | x:b/y:b").size()).isEqualTo(3);
   }
 
   /**

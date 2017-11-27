@@ -1,6 +1,7 @@
 <catalogue
     xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-registry/tree/stable-v1"
     xmlns:d4="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/blob/stable-v4/manifest-entry.xsd"
+    xmlns:d5="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/blob/stable-v5/manifest-entry.xsd"
     xmlns:e2="https://github.com/erasmus-without-paper/ewp-specs-api-echo/blob/stable-v2/manifest-entry.xsd"
     xmlns:ewp="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
     xmlns:ia2="https://github.com/erasmus-without-paper/ewp-specs-api-iias/blob/stable-v2/manifest-entry.xsd"
@@ -26,6 +27,9 @@
 
         https://github.com/erasmus-without-paper/ewp-specs-api-discovery/blob/stable-v4/manifest-entry.xsd
         https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-discovery/stable-v4/manifest-entry.xsd
+
+        https://github.com/erasmus-without-paper/ewp-specs-api-discovery/blob/stable-v5/manifest-entry.xsd
+        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-discovery/stable-v5/manifest-entry.xsd
 
         https://github.com/erasmus-without-paper/ewp-specs-api-echo/blob/stable-v2/manifest-entry.xsd
         https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-echo/stable-v2/manifest-entry.xsd
@@ -75,9 +79,9 @@
         <ewp:admin-email>registry-service-admin@example.com</ewp:admin-email>
         <ewp:admin-notes>Registry's EWP Host</ewp:admin-notes>
         <apis-implemented>
-            <d4:discovery version="4.0.0">
-                <d4:url>https://registry.erasmuswithoutpaper.eu/manifest.xml</d4:url>
-            </d4:discovery>
+            <d5:discovery version="5.0.0">
+                <d5:url>https://registry.erasmuswithoutpaper.eu/manifest.xml</d5:url>
+            </d5:discovery>
             <r1:registry version="1.0.0">
                 <r1:catalogue-url>https://registry.erasmuswithoutpaper.eu/catalogue-v1.xml</r1:catalogue-url>
             </r1:registry>
@@ -91,9 +95,9 @@
         <ewp:admin-email>admin-or-developer@example.com</ewp:admin-email>
         <ewp:admin-notes>It's not a real manifest. Just an example.</ewp:admin-notes>
         <apis-implemented>
-            <d4:discovery version="4.0.0">
-                <d4:url>https://example.com/manifest.xml</d4:url>
-            </d4:discovery>
+            <d5:discovery version="5.0.0">
+                <d5:url>https://example.com/manifest.xml</d5:url>
+            </d5:discovery>
             <e2:echo version="2.0.0">
                 <ewp:admin-email>usually-a-developer@example.com</ewp:admin-email>
                 <ewp:admin-email>some-other-developer@example.com</ewp:admin-email>

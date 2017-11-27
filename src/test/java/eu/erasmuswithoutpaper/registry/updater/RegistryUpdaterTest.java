@@ -70,16 +70,15 @@ public class RegistryUpdaterTest extends WRTest {
   private ManifestUpdateStatusRepository updateStatuses;
 
   @Autowired
-  private EwpDocBuilder builder;
-  @Autowired
   private NotifierService notifier;
+
   @Autowired
   private EwpDocBuilder docBuilder;
 
   @Autowired
   private XmlFormatter xmlFormatter;
-  private Match lastCatalogue;
 
+  private Match lastCatalogue;
   private List<String> lastEmails;
 
   /**
@@ -95,7 +94,7 @@ public class RegistryUpdaterTest extends WRTest {
      */
     String urlA = "https://registry.erasmuswithoutpaper.eu/manifest.xml";
     String urlB = "https://example.com/manifest.xml";
-    this.internet.putURL(urlA, this.getFile("manifests-v4/sample-registry-manifest.xml"));
+    this.internet.putURL(urlA, this.getFile("manifests-v5/sample-registry-manifest.xml"));
     this.internet.putURL(urlB,
         this.getFile("latest-examples/ewp-specs-api-discovery-manifest-example.xml"));
     this.sourceProvider.addSource(ManifestSource.newTrustedSource(urlA));
@@ -105,9 +104,26 @@ public class RegistryUpdaterTest extends WRTest {
     assertThat(this.updateStatuses.findOne(urlA).getLastAccessFlagStatus()).isEqualTo(Severity.OK);
     assertThat(this.updateStatuses.findOne(urlB).getLastAccessFlagStatus()).isEqualTo(Severity.OK);
     try {
-      assertThat(
-          this.getFileAsString("latest-examples/ewp-specs-api-registry-catalogue-example.xml"))
-              .isEqualTo(this.repo.getCatalogue());
+      assertThat(this.repo.getCatalogue()).isEqualTo(
+          this.getFileAsString("latest-examples/ewp-specs-api-registry-catalogue-example.xml"));
+    } catch (CatalogueNotFound e) {
+      throw new RuntimeException(e);
+    }
+
+    /*
+     * Also add an empty manifest here. It's just to make sure that adding an empty manifest doesn't
+     * break anything.
+     */
+
+    String urlC = "https://example.com/empty.xml";
+    this.internet.putURL(urlC, this.getFile("manifests-v5/empty.xml"));
+    this.sourceProvider.addSource(ManifestSource.newRegularSource(urlC, Arrays.asList()));
+    this.timePasses();
+    assertThat(this.updateStatuses.findOne(urlC).getLastAccessFlagStatus())
+        .isEqualTo(Severity.WARNING);
+    try {
+      assertThat(this.repo.getCatalogue()).isEqualTo(
+          this.getFileAsString("latest-examples/ewp-specs-api-registry-catalogue-example.xml"));
     } catch (CatalogueNotFound e) {
       throw new RuntimeException(e);
     }
@@ -285,7 +301,8 @@ public class RegistryUpdaterTest extends WRTest {
     this.internet.putURL(url1, "invalid");
     this.timePasses();
     this.assertManifestStatuses("Error", null, null);
-    this.assertNoticesMatch(url1, "(?s).*failed XML Schema validation.*will not be imported.*",
+    this.assertNoticesMatch(url1,
+        "(?s).*doesn't contain.*supported manifest.*will not be imported.*",
         "(?s).*Content is not allowed in prolog.*");
     assertThat(this.lastCatalogue.xpath("r:host/ewp:admin-email").text())
         .isEqualTo("admin1@example.com");
@@ -303,8 +320,7 @@ public class RegistryUpdaterTest extends WRTest {
     this.timePasses();
     this.assertManifestStatuses("Error", null, null);
     this.assertNoticesMatch(url1, "(?s).*will not be imported.*",
-        "(?s).*Cannot find the declaration of element 'xml'.*",
-        "(?s).*Expecting .*manifest.* element.*", "(?s).*Expecting element from .* namespace.*");
+        "(?s).*Cannot find the declaration of element 'xml'.*");
     assertThat(this.lastCatalogue.xpath("r:host/ewp:admin-email").text())
         .isEqualTo("admin1@example.com");
     assertThat(this.lastEmails).hasSize(0);
@@ -332,7 +348,7 @@ public class RegistryUpdaterTest extends WRTest {
     assertThat(this.lastCatalogue.xpath("r:host/ewp:admin-email").text())
         .isEqualTo("admin-or-developer@example.com"); // new email!
     assertThat(this.lastCatalogue.xpath("r:host/r:apis-implemented/*")).hasSize(2);
-    assertThat(this.lastCatalogue.xpath("r:host/r:apis-implemented/d4:discovery")).hasSize(1);
+    assertThat(this.lastCatalogue.xpath("r:host/r:apis-implemented/d5:discovery")).hasSize(1);
     assertThat(this.lastCatalogue.xpath("r:host/r:apis-implemented/e2:echo")).hasSize(1);
     assertThat(this.lastEmails).hasSize(0);
 
@@ -351,12 +367,12 @@ public class RegistryUpdaterTest extends WRTest {
      */
 
     Match manifest = this.parseURL(url1);
-    manifest.xpath("r:apis-implemented")
+    manifest.xpath("mf5:host/r:apis-implemented").first()
         .append("<registry xmlns='" + KnownNamespace.APIENTRY_REGISTRY_V1.getNamespaceUri()
             + "' version='1.0.0'><catalogue-url>https://example.com/catalogue-v1.xml"
             + "</catalogue-url></registry>");
-    assertThat(manifest.xpath("r:apis-implemented/*")).hasSize(3);
-    assertThat(manifest.xpath("r:apis-implemented/r1:registry")).hasSize(1);
+    assertThat(manifest.xpath("mf5:host/r:apis-implemented/*")).hasSize(3);
+    assertThat(manifest.xpath("mf5:host/r:apis-implemented/r1:registry")).hasSize(1);
     this.internet.putURL(url1, this.xmlFormatter.format(manifest.document()));
     this.timePasses();
     this.assertManifestStatuses("Warning", "Error", null);
@@ -447,13 +463,13 @@ public class RegistryUpdaterTest extends WRTest {
   private String getMinimalManifest(String email) {
     StringBuilder sb = new StringBuilder();
     sb.append("<manifest xmlns='");
-    sb.append("https://github.com/erasmus-without-paper/ewp-specs-api-discovery/tree/stable-v4");
-    sb.append("'><admin-email xmlns='");
+    sb.append("https://github.com/erasmus-without-paper/ewp-specs-api-discovery/tree/stable-v5");
+    sb.append("'><host><admin-email xmlns='");
     sb.append(
         "https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd");
     sb.append("'>");
     sb.append(Utils.escapeXml(email));
-    sb.append("</admin-email></manifest>");
+    sb.append("</admin-email></host></manifest>");
     return sb.toString();
   }
 
@@ -478,7 +494,7 @@ public class RegistryUpdaterTest extends WRTest {
     this.notifier.sendNotifications();
     try {
       this.lastCatalogue =
-          $(this.builder.build(new BuildParams(this.repo.getCatalogue())).getDocument().get())
+          $(this.docBuilder.build(new BuildParams(this.repo.getCatalogue())).getDocument().get())
               .namespaces(KnownNamespace.prefixMap());
     } catch (CatalogueNotFound e) {
       this.lastCatalogue = null;
