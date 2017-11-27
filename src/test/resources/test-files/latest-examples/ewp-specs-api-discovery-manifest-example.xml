@@ -19,6 +19,9 @@
         https://github.com/erasmus-without-paper/ewp-specs-api-echo/blob/stable-v2/manifest-entry.xsd
         https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-echo/stable-v2/manifest-entry.xsd
 
+        https://github.com/erasmus-without-paper/ewp-specs-sec-intro/tree/stable-v2
+        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-sec-intro/stable-v2/schema.xsd
+
         https://github.com/erasmus-without-paper/ewp-specs-sec-cliauth-none/tree/stable-v1
         https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-sec-cliauth-none/stable-v1/security-entries.xsd
 
@@ -30,6 +33,9 @@
 
         https://github.com/erasmus-without-paper/ewp-specs-sec-srvauth-tlscert/tree/stable-v1
         https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-sec-srvauth-tlscert/stable-v1/security-entries.xsd
+
+        https://github.com/erasmus-without-paper/ewp-specs-sec-srvauth-httpsig/tree/stable-v1
+        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-sec-srvauth-httpsig/stable-v1/security-entries.xsd
 
         https://github.com/erasmus-without-paper/ewp-specs-sec-reqencr-tls/tree/stable-v1
         https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-sec-reqencr-tls/stable-v1/security-entries.xsd

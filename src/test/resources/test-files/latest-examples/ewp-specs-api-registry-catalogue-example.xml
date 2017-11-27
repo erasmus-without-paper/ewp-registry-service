@@ -11,7 +11,9 @@
     xmlns:sec="https://github.com/erasmus-without-paper/ewp-specs-sec-intro/tree/stable-v2"
     xmlns:sec-A0="https://github.com/erasmus-without-paper/ewp-specs-sec-cliauth-none/tree/stable-v1"
     xmlns:sec-A1="https://github.com/erasmus-without-paper/ewp-specs-sec-cliauth-tlscert/tree/stable-v1"
+    xmlns:sec-A2="https://github.com/erasmus-without-paper/ewp-specs-sec-cliauth-httpsig/tree/stable-v1"
     xmlns:sec-B1="https://github.com/erasmus-without-paper/ewp-specs-sec-srvauth-tlscert/tree/stable-v1"
+    xmlns:sec-B2="https://github.com/erasmus-without-paper/ewp-specs-sec-srvauth-httpsig/tree/stable-v1"
     xmlns:sec-C1="https://github.com/erasmus-without-paper/ewp-specs-sec-reqencr-tls/tree/stable-v1"
     xmlns:sec-D1="https://github.com/erasmus-without-paper/ewp-specs-sec-resencr-tls/tree/stable-v1"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -52,8 +54,14 @@
         https://github.com/erasmus-without-paper/ewp-specs-sec-cliauth-tlscert/tree/stable-v1
         https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-sec-cliauth-tlscert/stable-v1/security-entries.xsd
 
+        https://github.com/erasmus-without-paper/ewp-specs-sec-cliauth-httpsig/tree/stable-v1
+        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-sec-cliauth-httpsig/stable-v1/security-entries.xsd
+
         https://github.com/erasmus-without-paper/ewp-specs-sec-srvauth-tlscert/tree/stable-v1
         https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-sec-srvauth-tlscert/stable-v1/security-entries.xsd
+
+        https://github.com/erasmus-without-paper/ewp-specs-sec-srvauth-httpsig/tree/stable-v1
+        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-sec-srvauth-httpsig/stable-v1/security-entries.xsd
 
         https://github.com/erasmus-without-paper/ewp-specs-sec-reqencr-tls/tree/stable-v1
         https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-sec-reqencr-tls/stable-v1/security-entries.xsd
@@ -93,11 +101,11 @@
                 <e2:http-security>
                     <sec:client-auth-methods>
                         <sec-A1:tlscert allows-self-signed="true"/>
-                        <sec-A2:httpsig xmlns:sec-A2="https://github.com/erasmus-without-paper/ewp-specs-sec-cliauth-httpsig/tree/stable-v1"/>
+                        <sec-A2:httpsig/>
                     </sec:client-auth-methods>
                     <sec:server-auth-methods>
                         <sec-B1:tlscert/>
-                        <sec-B2:httpsig xmlns:sec-B2="https://github.com/erasmus-without-paper/ewp-specs-sec-srvauth-httpsig/tree/stable-v1"/>
+                        <sec-B2:httpsig/>
                     </sec:server-auth-methods>
                 </e2:http-security>
                 <e2:url>https://example.com/ewp/echo</e2:url>

@@ -273,13 +273,12 @@ public class KnownNamespace {
 
   /**
    * As described <a href=
-   * 'https://github.com/erasmus-without-paper/ewp-specs-sec-cliauth-httpsig/blob/master/security-entries.xsd'>
+   * 'https://github.com/erasmus-without-paper/ewp-specs-sec-cliauth-httpsig/blob/stable-v1/security-entries.xsd'>
    * here</a>.
-   */ // WRTODO: master->stable!
+   */
   public static final KnownNamespace SECENTRY_CLIAUTH_HTTPSIG_V1 =
       new KnownNamespace("sec-A2", "sec-cliauth-httpsig/tree/stable-v1",
-          "sec-cliauth-httpsig/master/security-entries.xsd", false);
-  // WRTODO: 1. false->true 2. master->stable
+          "sec-cliauth-httpsig/stable-v1/security-entries.xsd", true);
 
   /**
    * As described <a href=
@@ -292,13 +291,12 @@ public class KnownNamespace {
 
   /**
    * As described <a href=
-   * 'https://github.com/erasmus-without-paper/ewp-specs-sec-srvauth-httpsig/blob/master/security-entries.xsd'>
+   * 'https://github.com/erasmus-without-paper/ewp-specs-sec-srvauth-httpsig/blob/stable-v1/security-entries.xsd'>
    * here</a>.
-   */ // WRTODO: master->stable!
+   */
   public static final KnownNamespace SECENTRY_SRVAUTH_HTTPSIG_V1 =
       new KnownNamespace("sec-B2", "sec-srvauth-httpsig/tree/stable-v1",
-          "sec-srvauth-httpsig/master/security-entries.xsd", false);
-  // WRTODO: 1. false->true 2. master->stable
+          "sec-srvauth-httpsig/stable-v1/security-entries.xsd", true);
 
   /**
    * As described <a href=
