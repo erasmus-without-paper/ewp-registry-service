@@ -95,7 +95,7 @@ public class RegistryUpdaterTest extends WRTest {
      */
     String urlA = "https://registry.erasmuswithoutpaper.eu/manifest.xml";
     String urlB = "https://example.com/manifest.xml";
-    this.internet.putURL(urlA, this.getFile("manifests/sample-registry-manifest.xml"));
+    this.internet.putURL(urlA, this.getFile("manifests-v4/sample-registry-manifest.xml"));
     this.internet.putURL(urlB,
         this.getFile("latest-examples/ewp-specs-api-discovery-manifest-example.xml"));
     this.sourceProvider.addSource(ManifestSource.newTrustedSource(urlA));

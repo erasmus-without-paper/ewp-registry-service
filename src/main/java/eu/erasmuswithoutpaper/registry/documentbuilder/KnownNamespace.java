@@ -34,7 +34,7 @@ public class KnownNamespace {
    * 'https://github.com/erasmus-without-paper/ewp-specs-api-discovery/blob/stable-v4/manifest.xsd'>
    * here</a>.
    */
-  public static final KnownNamespace RESPONSE_MANIFEST_V4 = new KnownNamespace("mf",
+  public static final KnownNamespace RESPONSE_MANIFEST_V4 = new KnownNamespace("mf4",
       "api-discovery/tree/stable-v4", "api-discovery/stable-v4/manifest.xsd", false);
 
   /**

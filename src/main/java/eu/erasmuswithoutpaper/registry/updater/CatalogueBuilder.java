@@ -109,7 +109,7 @@ class CatalogueBuilder {
 
       // It there are any HEIs covered in the manifest...
 
-      Match heiElems = manifest.xpath("mf:institutions-covered/r:hei");
+      Match heiElems = manifest.xpath("mf4:institutions-covered/r:hei");
       if (heiElems.size() > 0) {
 
         // Create a <institutions-covered> element in the <host>.
@@ -178,7 +178,8 @@ class CatalogueBuilder {
 
       // If there are any client certificates...
 
-      List<String> certStrs = manifest.xpath("mf:client-credentials-in-use/mf:certificate").texts();
+      List<String> certStrs =
+          manifest.xpath("mf4:client-credentials-in-use/mf4:certificate").texts();
       if (certStrs.size() > 0) {
 
         // For each certificate, calculate its sha-256 fingerprint, create element, and append it.
@@ -200,7 +201,7 @@ class CatalogueBuilder {
       // If there are any client public keys...
 
       List<String> keyStrs =
-          manifest.xpath("mf:client-credentials-in-use/mf:rsa-public-key").texts();
+          manifest.xpath("mf4:client-credentials-in-use/mf4:rsa-public-key").texts();
       if (keyStrs.size() > 0) {
 
         // For each key, calculate its sha-256 fingerprint, create element, and append it.
@@ -228,7 +229,7 @@ class CatalogueBuilder {
 
       // If there are any server public keys...
 
-      keyStrs = manifest.xpath("mf:server-credentials-in-use/mf:rsa-public-key").texts();
+      keyStrs = manifest.xpath("mf4:server-credentials-in-use/mf4:rsa-public-key").texts();
       if (keyStrs.size() > 0) {
 
         // For each key, calculate its sha-256 fingerprint, create element, and append it.

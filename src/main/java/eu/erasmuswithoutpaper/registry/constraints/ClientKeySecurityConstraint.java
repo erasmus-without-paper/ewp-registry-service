@@ -20,6 +20,6 @@ public class ClientKeySecurityConstraint extends AbstractRsaKeySecurityConstrain
 
   @Override
   protected String getXPath() {
-    return "mf:client-credentials-in-use/mf:rsa-public-key";
+    return "mf4:client-credentials-in-use/mf4:rsa-public-key";
   }
 }

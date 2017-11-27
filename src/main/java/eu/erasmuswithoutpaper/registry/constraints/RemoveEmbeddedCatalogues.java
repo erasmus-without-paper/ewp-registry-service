@@ -27,7 +27,7 @@ public class RemoveEmbeddedCatalogues implements ManifestConstraint {
     // Search for elements from catalogue and manifest namespaces in suspicious places.
 
     List<Match> elems = root.xpath("r:apis-implemented//r:*").each();
-    elems.addAll(root.xpath("r:apis-implemented//mf:*").each());
+    elems.addAll(root.xpath("r:apis-implemented//mf4:*").each());
 
     // Remove them.
 

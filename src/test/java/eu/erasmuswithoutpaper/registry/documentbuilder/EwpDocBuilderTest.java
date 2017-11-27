@@ -72,8 +72,8 @@ public class EwpDocBuilderTest extends WRTest {
   }
 
   @Test
-  public void checkForXXE() {
-    BuildParams params = new BuildParams(this.getFile("manifests/xxe.xml"));
+  public void checkForXxeV4() {
+    BuildParams params = new BuildParams(this.getFile("manifests-v4/xxe.xml"));
     params.setExpectedKnownElement(KnownElement.RESPONSE_MANIFEST_V4);
     BuildResult result = this.builder.build(params);
     assertThat(result.isValid()).isFalse();
@@ -87,9 +87,9 @@ public class EwpDocBuilderTest extends WRTest {
    * the validator SHOULD accept the invalid content.
    */
   @Test
-  public void checkIfAcceptsInvalidAPIentries() {
-    BuildParams params =
-        new BuildParams(this.getFile("manifests/which-fails-external-api-schema-validation.xml"));
+  public void checkIfAcceptsInvalidAPIentriesV4() {
+    BuildParams params = new BuildParams(
+        this.getFile("manifests-v4/which-fails-external-api-schema-validation.xml"));
     params.setExpectedKnownElement(KnownElement.RESPONSE_MANIFEST_V4);
     BuildResult result = this.builder.build(params);
     assertThat(result.isValid()).isTrue();
@@ -314,8 +314,8 @@ public class EwpDocBuilderTest extends WRTest {
    * Make sure it allows external (unknown) APIs entries.
    */
   @Test
-  public void testExternalAPIs() {
-    BuildParams params = new BuildParams(this.getFile("manifests/a-bit-weird-but-valid.xml"));
+  public void testExternalAPIsV4() {
+    BuildParams params = new BuildParams(this.getFile("manifests-v4/a-bit-weird-but-valid.xml"));
     params.setExpectedKnownElement(KnownElement.RESPONSE_MANIFEST_V4);
     BuildResult result = this.builder.build(params);
     assertThat(result.isValid()).isTrue();
@@ -331,8 +331,8 @@ public class EwpDocBuilderTest extends WRTest {
   }
 
   @Test
-  public void testManifestMinimal() {
-    BuildParams params = new BuildParams(this.getFile("manifests/tiny-but-valid.xml"));
+  public void testManifestMinimalV4() {
+    BuildParams params = new BuildParams(this.getFile("manifests-v4/tiny-but-valid.xml"));
     params.setExpectedKnownElement(KnownElement.RESPONSE_MANIFEST_V4);
     BuildResult result = this.builder.build(params);
     assertThat(result.isValid()).isTrue();
