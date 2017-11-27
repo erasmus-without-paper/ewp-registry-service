@@ -58,6 +58,9 @@ public class VerifyApiVersions implements ManifestConstraint {
           expectedVersionPrefixes.add("0.");
         }
       }
+      if (match.attr("version") == null) {
+        continue;
+      }
       boolean foundExpected = false;
       for (String prefix : expectedVersionPrefixes) {
         if (match.attr("version").startsWith(prefix)) {
