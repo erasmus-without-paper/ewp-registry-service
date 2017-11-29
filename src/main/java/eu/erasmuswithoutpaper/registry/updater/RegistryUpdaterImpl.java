@@ -206,8 +206,8 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
         sb.append("<p>The Registry was unable to fetch the manifest from its location.\n");
         sb.append("The IOException reported was:</p>");
         sb.append("<p><code>" + Utils.escapeHtml(e.toString()) + "</code></p>");
-        notices.add(new UpdateNotice(Severity.WARNING, sb.toString()));
-        status.setLastAccessFlagStatus(Severity.WARNING);
+        notices.add(new UpdateNotice(Severity.ERROR, sb.toString()));
+        status.setLastAccessFlagStatus(Severity.ERROR);
         status.setLastAccessNotices(notices);
         return;
       }

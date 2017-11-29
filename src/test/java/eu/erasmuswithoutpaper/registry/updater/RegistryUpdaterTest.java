@@ -256,7 +256,7 @@ public class RegistryUpdaterTest extends WRTest {
     ManifestSource ms1 = ManifestSource.newRegularSource(url1, Arrays.asList());
     this.sourceProvider.addSource(ms1);
     this.timePasses();
-    this.assertManifestStatuses("Warning", null, null);
+    this.assertManifestStatuses("Error", null, null);
     this.assertNoticesMatch(url1, "(?s).*No such URL in our FakeInternet.*");
     assertThat(this.lastEmails).isEmpty();
 
@@ -314,7 +314,7 @@ public class RegistryUpdaterTest extends WRTest {
     ManifestSource ms2 = ManifestSource.newRegularSource(url2, Arrays.asList());
     this.sourceProvider.addSource(ms2);
     this.timePasses();
-    this.assertManifestStatuses("Error", "Warning", null);
+    this.assertManifestStatuses("Error", "Error", null);
     this.assertNoticesMatch(url2, "(?s).*No such URL in our FakeInternet.*");
     assertThat(this.lastEmails).hasSize(0);
 
@@ -328,7 +328,7 @@ public class RegistryUpdaterTest extends WRTest {
     this.internet.putURL(url1,
         this.getFile("latest-examples/ewp-specs-api-discovery-manifest-example.xml"));
     this.timePasses();
-    this.assertManifestStatuses("OK", "Warning", null);
+    this.assertManifestStatuses("OK", "Error", null);
     assertThat(this.lastCatalogue.xpath("r:host/ewp:admin-email").text())
         .isEqualTo("admin-or-developer@example.com"); // new email!
     assertThat(this.lastCatalogue.xpath("r:host/r:apis-implemented/*")).hasSize(2);
@@ -359,7 +359,7 @@ public class RegistryUpdaterTest extends WRTest {
     assertThat(manifest.xpath("r:apis-implemented/r1:registry")).hasSize(1);
     this.internet.putURL(url1, this.xmlFormatter.format(manifest.document()));
     this.timePasses();
-    this.assertManifestStatuses("Warning", "Warning", null);
+    this.assertManifestStatuses("Warning", "Error", null);
     assertThat(this.lastCatalogue.xpath("r:host/r:apis-implemented/*")).hasSize(2);
     assertThat(this.lastCatalogue.xpath("r:host/r:apis-implemented/r1:registry")).hasSize(0);
     this.assertNoticesMatch(url1, "(?s).*Registry API entries will not be imported.*");
@@ -377,7 +377,7 @@ public class RegistryUpdaterTest extends WRTest {
     ManifestSource ms3 = ManifestSource.newRegularSource(url3, Arrays.asList());
     this.sourceProvider.addSource(ms3);
     this.timePasses();
-    this.assertManifestStatuses("Warning", "Warning", "Warning");
+    this.assertManifestStatuses("Warning", "Error", "Warning");
     this.assertNoticesMatch(url3, "(?s).*inconsistency in your Discovery API.*");
     assertThat(this.lastEmails).hasSize(0);
 
@@ -389,7 +389,7 @@ public class RegistryUpdaterTest extends WRTest {
     this.internet.putURL(url1,
         this.getFile("latest-examples/ewp-specs-api-discovery-manifest-example.xml"));
     this.timePasses();
-    this.assertManifestStatuses("OK", "Warning", "Warning");
+    this.assertManifestStatuses("OK", "Error", "Warning");
     assertThat(this.lastEmails).hasSize(0);
 
     /*
@@ -398,7 +398,7 @@ public class RegistryUpdaterTest extends WRTest {
 
     this.sourceProvider.removeSource(ms3);
     this.timePasses();
-    this.assertManifestStatuses("OK", "Warning", null);
+    this.assertManifestStatuses("OK", "Error", null);
     assertThat(this.lastEmails).hasSize(1);
     assertThat(this.lastEmails.get(0)).contains("To: admin-or-developer@example.com");
     assertThat(this.lastEmails.get(0)).contains("All problems seem to be resolved now!");
