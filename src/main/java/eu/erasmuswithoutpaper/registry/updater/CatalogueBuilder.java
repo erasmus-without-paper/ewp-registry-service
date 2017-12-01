@@ -67,8 +67,8 @@ class CatalogueBuilder {
     // Create a new document with the <catalogue> root.
 
     this.doc = this.docbuilder.newDocument();
-    Element catalogue = this.newElem("catalogue");
-    this.doc.appendChild(catalogue);
+    Element catalogueElem = this.newElem("catalogue");
+    this.doc.appendChild(catalogueElem);
 
     Map<String, Map<String, Set<String>>> heiIdTypeSets = new TreeMap<>();
     Map<String, Map<String, Set<String>>> heiLangNameSets = new TreeMap<>();
@@ -77,52 +77,53 @@ class CatalogueBuilder {
     // For each of the given manifests...
 
     for (Document manifestDoc : manifests) {
-      Match manifest = $(manifestDoc).namespaces(KnownNamespace.prefixMap());
+      Match srcHost = $(manifestDoc).namespaces(KnownNamespace.prefixMap());
 
       // Append a new <host> element to the <catalogue>.
 
-      Element host = this.newElem("host");
-      catalogue.appendChild(host);
+      Element destHostElem = this.newElem("host");
+      catalogueElem.appendChild(destHostElem);
 
       // Copy all <ewp:admin-email> and <ewp:admin-notes> values.
 
-      for (String email : manifest.xpath("ewp:admin-email").texts()) {
-        host.appendChild(this.newEwpElem("admin-email", email));
+      for (String email : srcHost.xpath("ewp:admin-email").texts()) {
+        destHostElem.appendChild(this.newEwpElem("admin-email", email));
       }
-      if (manifest.xpath("ewp:admin-notes").isNotEmpty()
-          && (manifest.xpath("ewp:admin-notes").text().length() > 0)) {
-        host.appendChild(this.newEwpElem("admin-notes", manifest.xpath("ewp:admin-notes").text()));
+      if (srcHost.xpath("ewp:admin-notes").isNotEmpty()
+          && (srcHost.xpath("ewp:admin-notes").text().length() > 0)) {
+        destHostElem
+            .appendChild(this.newEwpElem("admin-notes", srcHost.xpath("ewp:admin-notes").text()));
       }
 
       // Append a new <apis-implemented> element to the <host>.
 
-      Element apisImplemented = this.newElem("apis-implemented");
-      host.appendChild(apisImplemented);
+      Element destApisElem = this.newElem("apis-implemented");
+      destHostElem.appendChild(destApisElem);
 
       // Copy all API entries from the manifest (and replace their prefixes with the default ones).
 
-      for (Element api : manifest.xpath("r:apis-implemented/*")) {
-        Element newElement = (Element) this.doc.importNode(api, true);
-        Utils.rewritePrefixes(newElement);
-        apisImplemented.appendChild(newElement);
+      for (Element srcApiElem : srcHost.xpath("r:apis-implemented/*")) {
+        Element destApiElem = (Element) this.doc.importNode(srcApiElem, true);
+        Utils.rewritePrefixes(destApiElem);
+        destApisElem.appendChild(destApiElem);
       }
 
       // It there are any HEIs covered in the manifest...
 
-      Match heiElems = manifest.xpath("mf4:institutions-covered/r:hei");
-      if (heiElems.size() > 0) {
+      Match srcHeis = srcHost.xpath("mf4:institutions-covered/r:hei");
+      if (srcHeis.size() > 0) {
 
         // Create a <institutions-covered> element in the <host>.
 
-        Element heisCovered = this.newElem("institutions-covered");
-        host.appendChild(heisCovered);
+        Element destHeisElem = this.newElem("institutions-covered");
+        destHostElem.appendChild(destHeisElem);
 
-        for (Match hei : heiElems.each()) {
+        for (Match srcHei : srcHeis.each()) {
 
           // Append <hei-id> elements to <institutions-covered>.
 
-          String id = hei.attr("id");
-          heisCovered.appendChild(this.newElem("hei-id", id));
+          String id = srcHei.attr("id");
+          destHeisElem.appendChild(this.newElem("hei-id", id));
 
           // And keep a copy of all relevant HEI attributes in our maps...
 
@@ -137,7 +138,7 @@ class CatalogueBuilder {
 
           // For each <other-id> given for this HEI...
 
-          for (Match otherId : hei.xpath("r:other-id").each()) {
+          for (Match otherId : srcHei.xpath("r:other-id").each()) {
 
             // Find the set of all IDs declared for this ID type.
 
@@ -154,7 +155,7 @@ class CatalogueBuilder {
 
           // For each <name> given for this HEI...
 
-          for (Match name : hei.xpath("r:name").each()) {
+          for (Match name : srcHei.xpath("r:name").each()) {
 
             // Find the set of all names declared for this language.
 
@@ -173,88 +174,88 @@ class CatalogueBuilder {
 
       // Create <client-credentials-in-use> in <host>.
 
-      Element cliCreds = this.newElem("client-credentials-in-use");
-      host.appendChild(cliCreds);
+      Element destCliCreds = this.newElem("client-credentials-in-use");
+      destHostElem.appendChild(destCliCreds);
 
       // If there are any client certificates...
 
-      List<String> certStrs =
-          manifest.xpath("mf4:client-credentials-in-use/mf4:certificate").texts();
-      if (certStrs.size() > 0) {
+      List<String> srcCertStrs =
+          srcHost.xpath("mf4:client-credentials-in-use/mf4:certificate").texts();
+      if (srcCertStrs.size() > 0) {
 
         // For each certificate, calculate its sha-256 fingerprint, create element, and append it.
 
-        for (String certStr : certStrs) {
-          X509Certificate cert = this.parseCert(certStr);
-          Element certNode = this.newElem("certificate");
+        for (String srcCertStr : srcCertStrs) {
+          X509Certificate cert = this.parseCert(srcCertStr);
+          Element destCertElem = this.newElem("certificate");
           try {
-            certNode.setAttribute("sha-256", DigestUtils.sha256Hex(cert.getEncoded()));
+            destCertElem.setAttribute("sha-256", DigestUtils.sha256Hex(cert.getEncoded()));
           } catch (CertificateEncodingException e) {
             throw new RuntimeException(e);
           } catch (DOMException e) {
             throw new RuntimeException(e);
           }
-          cliCreds.appendChild(certNode);
+          destCliCreds.appendChild(destCertElem);
         }
       }
 
       // If there are any client public keys...
 
-      List<String> keyStrs =
-          manifest.xpath("mf4:client-credentials-in-use/mf4:rsa-public-key").texts();
-      if (keyStrs.size() > 0) {
+      List<String> srcKeyStrs =
+          srcHost.xpath("mf4:client-credentials-in-use/mf4:rsa-public-key").texts();
+      if (srcKeyStrs.size() > 0) {
 
         // For each key, calculate its sha-256 fingerprint, create element, and append it.
 
-        for (String keyStr : keyStrs) {
-          RSAPublicKey key = this.parseValidRsaPublicKey(keyStr);
-          Element keyNode = this.newElem("rsa-public-key");
+        for (String srcKeyStr : srcKeyStrs) {
+          RSAPublicKey key = this.parseValidRsaPublicKey(srcKeyStr);
+          Element destKeyElem = this.newElem("rsa-public-key");
           String fingerprint = DigestUtils.sha256Hex(key.getEncoded());
-          keyNode.setAttribute("sha-256", fingerprint);
-          cliCreds.appendChild(keyNode);
+          destKeyElem.setAttribute("sha-256", fingerprint);
+          destCliCreds.appendChild(destKeyElem);
           actualKeys.put(fingerprint, key);
         }
       }
 
       // If credentials are still empty, then remove their empty container.
 
-      if (cliCreds.getChildNodes().getLength() == 0) {
-        host.removeChild(cliCreds);
+      if (destCliCreds.getChildNodes().getLength() == 0) {
+        destHostElem.removeChild(destCliCreds);
       }
 
       // Create <server-credentials-in-use> in <host>.
 
-      Element srvCreds = this.newElem("server-credentials-in-use");
-      host.appendChild(srvCreds);
+      Element destSrvCreds = this.newElem("server-credentials-in-use");
+      destHostElem.appendChild(destSrvCreds);
 
       // If there are any server public keys...
 
-      keyStrs = manifest.xpath("mf4:server-credentials-in-use/mf4:rsa-public-key").texts();
-      if (keyStrs.size() > 0) {
+      srcKeyStrs = srcHost.xpath("mf4:server-credentials-in-use/mf4:rsa-public-key").texts();
+      if (srcKeyStrs.size() > 0) {
 
         // For each key, calculate its sha-256 fingerprint, create element, and append it.
 
-        for (String keyStr : keyStrs) {
-          RSAPublicKey key = this.parseValidRsaPublicKey(keyStr);
-          Element keyNode = this.newElem("rsa-public-key");
+        for (String srcKeyStr : srcKeyStrs) {
+          RSAPublicKey key = this.parseValidRsaPublicKey(srcKeyStr);
+          Element destKeyElem = this.newElem("rsa-public-key");
           String fingerprint = DigestUtils.sha256Hex(key.getEncoded());
-          keyNode.setAttribute("sha-256", fingerprint);
-          srvCreds.appendChild(keyNode);
+          destKeyElem.setAttribute("sha-256", fingerprint);
+          destSrvCreds.appendChild(destKeyElem);
           actualKeys.put(fingerprint, key);
         }
       }
 
       // If credentials are still empty, then remove their empty container.
 
-      if (srvCreds.getChildNodes().getLength() == 0) {
-        host.removeChild(srvCreds);
+      if (destSrvCreds.getChildNodes().getLength() == 0) {
+        destHostElem.removeChild(destSrvCreds);
       }
     }
 
     // Create and append the <institutions> element.
 
     Element institutions = this.newElem("institutions");
-    catalogue.appendChild(institutions);
+    catalogueElem.appendChild(institutions);
 
     // For each of the institutions found in the manifests...
 
@@ -303,7 +304,7 @@ class CatalogueBuilder {
 
     if (!actualKeys.isEmpty()) {
       Element binariesElem = this.newElem("binaries");
-      catalogue.appendChild(binariesElem);
+      catalogueElem.appendChild(binariesElem);
       for (Entry<String, RSAPublicKey> entry : actualKeys.entrySet()) {
         Element keyElem = this.newElem("rsa-public-key");
         binariesElem.appendChild(keyElem);
@@ -328,7 +329,7 @@ class CatalogueBuilder {
     List<String> chunks = new ArrayList<String>();
     for (KnownNamespace ns : KnownNamespace.values()) {
       if (ns.isToBeIncludedInCatalogueXmlns() && ns != KnownNamespace.RESPONSE_REGISTRY_V1) {
-        catalogue.setAttributeNS(XMLConstants.XMLNS_ATTRIBUTE_NS_URI,
+        catalogueElem.setAttributeNS(XMLConstants.XMLNS_ATTRIBUTE_NS_URI,
             "xmlns:" + ns.getPreferredPrefix(), ns.getNamespaceUri());
       }
       if (ns.isToBeIncludedInCatalogueXmlns()) {
@@ -339,9 +340,9 @@ class CatalogueBuilder {
     // Compose a proper xsi:schemaLocation attribute.
 
     String schemaLocation = "\n        " + Joiner.on("\n\n        ").join(chunks) + "\n    ";
-    catalogue.setAttributeNS(XMLConstants.XMLNS_ATTRIBUTE_NS_URI, "xmlns:xsi",
+    catalogueElem.setAttributeNS(XMLConstants.XMLNS_ATTRIBUTE_NS_URI, "xmlns:xsi",
         XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
-    catalogue.setAttributeNS("http://www.w3.org/2001/XMLSchema-instance", "xsi:schemaLocation",
+    catalogueElem.setAttributeNS("http://www.w3.org/2001/XMLSchema-instance", "xsi:schemaLocation",
         schemaLocation);
 
     return this.doc;
