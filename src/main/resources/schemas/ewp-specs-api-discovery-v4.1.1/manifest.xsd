@@ -38,6 +38,10 @@
             <xs:documentation>
                 EWP Discovery Manifest.
 
+                IMPORTANT: This version of Discovery API is OBSOLETE. The Registry Service
+                will keep recognizing manifests in version 4, but implementers are encouraged
+                to upgrade to version 5 in order to be able to use new features.
+
                 Defines a single EWP Host - a set of relationships between HEIs, APIs, server
                 administrators and client credentials. One EWP Host defines a single Cartesian
                 product of all these sets. (E.g. if a client certificate X and a HEI Y are

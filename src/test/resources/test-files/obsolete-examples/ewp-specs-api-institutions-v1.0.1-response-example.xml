@@ -1,5 +1,5 @@
 <institutions-response
-    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-institutions/tree/stable-v2"
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-institutions/tree/stable-v1"
     xmlns:a="https://github.com/erasmus-without-paper/ewp-specs-types-address/tree/stable-v1"
     xmlns:c="https://github.com/erasmus-without-paper/ewp-specs-types-contact/tree/stable-v1"
     xmlns:p="https://github.com/erasmus-without-paper/ewp-specs-types-phonenumber/tree/stable-v1"
@@ -7,8 +7,8 @@
     xmlns:xml="http://www.w3.org/XML/1998/namespace"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="
-        https://github.com/erasmus-without-paper/ewp-specs-api-institutions/tree/stable-v2
-        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-institutions/stable-v2/response.xsd
+        https://github.com/erasmus-without-paper/ewp-specs-api-institutions/tree/stable-v1
+        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-institutions/stable-v1/response.xsd
     "
 >
     <!--
