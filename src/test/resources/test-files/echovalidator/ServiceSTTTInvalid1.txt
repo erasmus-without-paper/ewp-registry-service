@@ -61,3 +61,9 @@ The response has proper HTTP status and it passed the schema validation. However
 The response has proper HTTP status and it passed the schema validation. However, the set of returned hei-ids doesn't match what we expect. It should contain the following: [hei01.developers.erasmuswithoutpaper.eu, hei02.developers.erasmuswithoutpaper.eu]
 
 
+
+### FAILURE: Trying SecMethodCombination[STTT] POST request with a list of echo values [a, b, a], plus an additional GET echo=c&echo=c parameters. Expecting the GET parameters to be ignored. (It's a POST request, so all parameters are passed via POST body.)
+
+The response has proper HTTP status and it passed the schema validation. However, the set of returned hei-ids doesn't match what we expect. It should contain the following: [hei01.developers.erasmuswithoutpaper.eu, hei02.developers.erasmuswithoutpaper.eu]
+
+

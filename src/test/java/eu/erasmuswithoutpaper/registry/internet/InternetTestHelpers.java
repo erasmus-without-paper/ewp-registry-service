@@ -29,6 +29,15 @@ public class InternetTestHelpers {
       } else {
         throw new RuntimeException("Unsupported method - cannot extract params");
       }
+      return extractParamsFromQueryString(query, paramName);
+    } catch (MalformedURLException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public static List<String> extractParamsFromQueryString(String query, String paramName) {
+    List<String> result = new ArrayList<>();
+    try {
       if (query != null) {
         for (String pair : query.split("&")) {
           int index = pair.indexOf("=");
@@ -40,7 +49,7 @@ public class InternetTestHelpers {
           result.add(value);
         }
       }
-    } catch (MalformedURLException | UnsupportedEncodingException e) {
+    } catch (UnsupportedEncodingException e) {
       throw new RuntimeException(e);
     }
     return result;

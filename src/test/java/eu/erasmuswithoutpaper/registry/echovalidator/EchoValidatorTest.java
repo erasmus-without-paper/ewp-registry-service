@@ -169,6 +169,26 @@ public class EchoValidatorTest extends WRTest {
   }
 
   @Test
+  public void testAgainstServiceHTTTInvalid12() {
+    try {
+      FakeInternetService service;
+
+      service = new ServiceHTTTInvalid12(echoUrlHTTT, this.client);
+      this.internet.addFakeInternetService(service);
+      String out = this.getValidatorReport(echoUrlHTTT);
+      assertThat(out).containsOnlyOnce("FAILURE");
+      assertThat(out).contains("FAILURE: Trying SecMethodCombination[HTTT] POST request with "
+          + "a list of echo values [a, b, a], plus an additional GET echo=c&echo=c parameters");
+      assertThat(out).contains("We expected the response to contain the following echo values: "
+          + "[a, b, a], but the following values were found instead: [c, c, a, b, a]");
+      this.internet.removeFakeInternetService(service);
+
+    } finally {
+      this.internet.clearAll();
+    }
+  }
+
+  @Test
   public void testAgainstServiceHTTTInvalid2() {
     try {
       FakeInternetService service;

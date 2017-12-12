@@ -1119,6 +1119,45 @@ class EchoValidationSuite {
               expectedEchoValues));
         }
       });
+
+      this.addAndRun(false, new InlineValidationStep() {
+
+        @Override
+        public String getName() {
+          return "Trying " + combination + " POST request with a list of echo values [a, b, a], "
+              + "plus an additional GET echo=c&echo=c parameters. Expecting the GET parameters "
+              + "to be ignored. (It's a POST request, so all parameters are passed via POST body.)";
+        }
+
+        @Override
+        protected Optional<Response> innerRun() throws Failure {
+          this.request = EchoValidationSuite.this.createValidRequestForCombination(combination,
+              "POST", EchoValidationSuite.this.urlToBeValidated);
+          // Update the body
+          this.request.setBody("echo=a&echo=b&echo=a".getBytes(StandardCharsets.UTF_8));
+          // Update the URL
+          String url = this.request.getUrl();
+          url += url.contains("?") ? "&" : "?";
+          url += "echo=c&echo=c";
+          this.request.setUrl(url);
+          // Expected result
+          ArrayList<String> expectedEchoValues = new ArrayList<>();
+          expectedEchoValues.add("a");
+          expectedEchoValues.add("b");
+          expectedEchoValues.add("a");
+          if (combination.getCliAuth().equals(SecMethod.CLIAUTH_HTTPSIG)) {
+            // We have changed the body, so we need to regenerate the digest and signature.
+            this.request.recomputeAndAttachDigestHeader();
+            String keyId = Authorization.parse(this.request.getHeader("Authorization")).getKeyId();
+            this.request.recomputeAndAttachHttpSigAuthorizationHeader(keyId,
+                EchoValidationSuite.this.parentEchoValidator.getClientRsaKeyPairInUse(),
+                Lists.newArrayList("(request-target)", "date", "host", "digest", "x-request-id"));
+          }
+          return Optional.of(EchoValidationSuite.this.makeRequestAndExpectHttp200(combination,
+              this.request, EchoValidationSuite.this.parentEchoValidator.getCoveredHeiIDs(),
+              expectedEchoValues));
+        }
+      });
     }
   }
 

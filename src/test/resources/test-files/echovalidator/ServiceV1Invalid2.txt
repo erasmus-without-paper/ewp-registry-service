@@ -49,3 +49,9 @@ The response has proper HTTP status and it passed the schema validation. However
 The response has proper HTTP status and it passed the schema validation. However, there's something wrong with the echo values produced. We expected the response to contain the following echo values: [a, b, a], but the following values were found instead: [a, b]
 
 
+
+### FAILURE: Trying SecMethodCombination[STTT] POST request with a list of echo values [a, b, a], plus an additional GET echo=c&echo=c parameters. Expecting the GET parameters to be ignored. (It's a POST request, so all parameters are passed via POST body.)
+
+The response has proper HTTP status and it passed the schema validation. However, there's something wrong with the echo values produced. We expected the response to contain the following echo values: [a, b, a], but the following values were found instead: [a, b]
+
+

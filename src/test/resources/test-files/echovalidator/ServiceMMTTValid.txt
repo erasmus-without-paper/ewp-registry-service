@@ -18,6 +18,7 @@ Our client credentials are quite fresh. This means that many Echo APIs will (cor
 ### SUCCESS: Trying SecMethodCombination[STTT] with a DELETE request. Expecting to receive a valid HTTP 405 error response.
 ### SUCCESS: Trying SecMethodCombination[STTT] GET request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.
 ### SUCCESS: Trying SecMethodCombination[STTT] POST request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.
+### SUCCESS: Trying SecMethodCombination[STTT] POST request with a list of echo values [a, b, a], plus an additional GET echo=c&echo=c parameters. Expecting the GET parameters to be ignored. (It's a POST request, so all parameters are passed via POST body.)
 ### SUCCESS: Trying SecMethodCombination[SHTT] with a GET request, and without any additional parameters. Expecting to receive a valid HTTP 200 Echo API response with proper hei-ids, and without any echo values.
 ### SUCCESS: Trying SecMethodCombination[SHTT] with a POST request, and without any additional parameters. Expecting to receive a valid HTTP 200 Echo API response with proper hei-ids, and without any echo values.
 ### SUCCESS: Trying SecMethodCombination[SHTT] with an unknown TLS client certificate (a random one, that has never been published in the Registry). Expecting to receive a valid HTTP 401 or HTTP 403 error response.
@@ -27,6 +28,7 @@ Our client credentials are quite fresh. This means that many Echo APIs will (cor
 ### SUCCESS: Trying SecMethodCombination[SHTT] with a DELETE request. Expecting to receive a valid HTTP 405 error response.
 ### SUCCESS: Trying SecMethodCombination[SHTT] GET request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.
 ### SUCCESS: Trying SecMethodCombination[SHTT] POST request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.
+### SUCCESS: Trying SecMethodCombination[SHTT] POST request with a list of echo values [a, b, a], plus an additional GET echo=c&echo=c parameters. Expecting the GET parameters to be ignored. (It's a POST request, so all parameters are passed via POST body.)
 ### SUCCESS: Trying SecMethodCombination[HTTT] with a GET request, and without any additional parameters. Expecting to receive a valid HTTP 200 Echo API response with proper hei-ids, and without any echo values.
 ### SUCCESS: Trying SecMethodCombination[HTTT] with a POST request, and without any additional parameters. Expecting to receive a valid HTTP 200 Echo API response with proper hei-ids, and without any echo values.
 ### SUCCESS: Trying SecMethodCombination[HTTT] with an unknown RSA client key (a random one, that has never been published in the Registry). Expecting to receive a valid HTTP 401 or HTTP 403 error response.
@@ -49,6 +51,7 @@ Our client credentials are quite fresh. This means that many Echo APIs will (cor
 ### SUCCESS: Trying SecMethodCombination[HTTT] with a DELETE request. Expecting to receive a valid HTTP 405 error response.
 ### SUCCESS: Trying SecMethodCombination[HTTT] GET request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.
 ### SUCCESS: Trying SecMethodCombination[HTTT] POST request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.
+### SUCCESS: Trying SecMethodCombination[HTTT] POST request with a list of echo values [a, b, a], plus an additional GET echo=c&echo=c parameters. Expecting the GET parameters to be ignored. (It's a POST request, so all parameters are passed via POST body.)
 ### SUCCESS: Trying SecMethodCombination[HHTT] with a GET request, and without any additional parameters. Expecting to receive a valid HTTP 200 Echo API response with proper hei-ids, and without any echo values.
 ### SUCCESS: Trying SecMethodCombination[HHTT] with a POST request, and without any additional parameters. Expecting to receive a valid HTTP 200 Echo API response with proper hei-ids, and without any echo values.
 ### SUCCESS: Trying SecMethodCombination[HHTT] with an unknown RSA client key (a random one, that has never been published in the Registry). Expecting to receive a valid HTTP 401 or HTTP 403 error response.
@@ -73,3 +76,4 @@ Our client credentials are quite fresh. This means that many Echo APIs will (cor
 ### SUCCESS: Trying SecMethodCombination[HHTT] with a DELETE request. Expecting to receive a valid HTTP 405 error response.
 ### SUCCESS: Trying SecMethodCombination[HHTT] GET request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.
 ### SUCCESS: Trying SecMethodCombination[HHTT] POST request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.
+### SUCCESS: Trying SecMethodCombination[HHTT] POST request with a list of echo values [a, b, a], plus an additional GET echo=c&echo=c parameters. Expecting the GET parameters to be ignored. (It's a POST request, so all parameters are passed via POST body.)
