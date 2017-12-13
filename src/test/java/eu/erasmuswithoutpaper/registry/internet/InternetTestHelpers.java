@@ -13,7 +13,6 @@ import eu.erasmuswithoutpaper.registry.internet.Internet.Request;
 public class InternetTestHelpers {
 
   public static List<String> extractParams(Request request, String paramName) {
-    List<String> result = new ArrayList<>();
     try {
       String query;
       if (request.getMethod().equals("GET")) {
