@@ -47,8 +47,9 @@ public class FakeInternetTest extends WRTest {
   @Test
   public void testDigestBackend() {
     Request request = new Request("GET", "https://example.com/");
-    request.setBody("{\"hello\": \"world\"}".getBytes(StandardCharsets.UTF_8));
-    Response response = new Response(request, 200, request.getBody().get());
+    byte[] myBody = "{\"hello\": \"world\"}".getBytes(StandardCharsets.UTF_8);
+    request.setBodyUnencrypted(myBody);
+    Response response = new Response(request, 200, myBody);
 
     request.recomputeAndAttachDigestHeader();
     assertThat(request.getHeader("Digest"))
@@ -193,9 +194,10 @@ public class FakeInternetTest extends WRTest {
     request.putHeader("Content-Type", "application/json");
     request.putHeader("Digest", "SHA-256=X48E9qOokqqrvdts8nOJRJN3OWDUoyWxBf7kbu9DBPE=");
     request.putHeader("Content-Length", "18");
-    request.setBody("{\"hello\": \"world\"}".getBytes(StandardCharsets.UTF_8));
+    byte[] myBody = "{\"hello\": \"world\"}".getBytes(StandardCharsets.UTF_8);
+    request.setBodyUnencrypted(myBody);
 
-    Response response = new Response(request, 200, request.getBody().get());
+    Response response = new Response(request, 200, myBody);
     response.putHeader("Host", "example.com");
     response.putHeader("Date", "Sun, 05 Jan 2014 21:31:40 GMT");
     response.putHeader("Content-Type", "application/json");

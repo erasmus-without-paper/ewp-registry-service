@@ -5,6 +5,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
+import java.security.interfaces.RSAPublicKey;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
@@ -14,6 +15,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+
+import eu.erasmuswithoutpaper.rsaaes.EwpRsaAes128GcmEncoder;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -44,17 +47,21 @@ public interface Internet {
 
     private String method;
     private String url;
-    private Optional<byte[]> body;
+    private Optional<byte[]> bodyUnencrypted;
+    private byte[] bodyEncryptedCache;
     private final Map<String, String> headers;
     private Optional<X509Certificate> clientCertificate;
     private Optional<KeyPair> keyPair;
+    private Optional<RSAPublicKey> ewpRsaAesEncryptionKey;
 
     public Request(String method, String url) {
       this.method = method;
       this.url = url;
-      this.body = Optional.empty();
+      this.bodyUnencrypted = Optional.empty();
       this.headers = new HashMap<>();
       this.clientCertificate = Optional.empty();
+      this.keyPair = Optional.empty();
+      this.ewpRsaAesEncryptionKey = Optional.empty();
     }
 
     /**
@@ -73,7 +80,21 @@ public interface Internet {
     }
 
     public Optional<byte[]> getBody() {
-      return body;
+      if (!this.ewpRsaAesEncryptionKey.isPresent()) {
+        return bodyUnencrypted;
+      }
+      if (this.bodyEncryptedCache == null) {
+        byte[] input;
+        if (bodyUnencrypted.isPresent()) {
+          input = bodyUnencrypted.get();
+        } else {
+          input = new byte[0];
+        }
+        EwpRsaAes128GcmEncoder encoder =
+            new EwpRsaAes128GcmEncoder(this.ewpRsaAesEncryptionKey.get());
+        this.bodyEncryptedCache = encoder.encode(input);
+      }
+      return Optional.of(this.bodyEncryptedCache);
     }
 
     public Optional<X509Certificate> getClientCertificate() {
@@ -124,12 +145,29 @@ public interface Internet {
       return url;
     }
 
+    public void overrideBodyEncrypted(byte[] body) {
+      if (!this.ewpRsaAesEncryptionKey.isPresent()) {
+        throw new RuntimeException("This can be done only on encrypted requests.");
+      }
+      if (!this.bodyUnencrypted.isPresent()) {
+        throw new RuntimeException("This can be done only when body is present.");
+      }
+      this.bodyEncryptedCache = body.clone();
+    }
+
     public void putHeader(String key, String value) {
       this.headers.put(key.toLowerCase(Locale.US), value);
     }
 
     public void recomputeAndAttachDigestHeader() {
       this.putHeader("Digest", "SHA-256=" + this.computeBodyDigest());
+    }
+
+    public void recomputeAndAttachHttpSigAuthorizationHeader(String keyId, KeyPair keyPair) {
+      // Simply sign all headers
+      List<String> headersToSign = new ArrayList<>(this.getHeaders().keySet());
+      headersToSign.add("(request-target)");
+      recomputeAndAttachHttpSigAuthorizationHeader(keyId, keyPair, headersToSign);
     }
 
     public void recomputeAndAttachHttpSigAuthorizationHeader(String keyId, KeyPair keyPair,
@@ -168,8 +206,9 @@ public interface Internet {
      * @param body Optional request body to be sent along the request (in case of POST requests,
      *        this often contains x-www-form-urlencoded set of parameters).
      */
-    public void setBody(byte[] body) {
-      this.body = Optional.ofNullable(body);
+    public void setBodyUnencrypted(byte[] body) {
+      this.bodyUnencrypted = Optional.ofNullable(body);
+      this.bodyEncryptedCache = null;
     }
 
     /**
@@ -180,6 +219,14 @@ public interface Internet {
     public void setClientCertificate(X509Certificate clientCertificate, KeyPair keyPair) {
       this.clientCertificate = Optional.ofNullable(clientCertificate);
       this.keyPair = Optional.ofNullable(keyPair);
+    }
+
+    /**
+     * @param key If given, then the request body will be additionally encrypted for the given key
+     *        (and encoded in ewp-rsa-aes128gcm format).
+     */
+    public void setEwpRsaAesBodyEncryptionKey(RSAPublicKey key) {
+      this.ewpRsaAesEncryptionKey = Optional.of(key);
     }
 
     /**
