@@ -325,11 +325,31 @@ public class KnownNamespace {
 
   /**
    * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-sec-reqencr-tls/blob/stable-v1/security-entries.xsd'>
+   * here</a>.
+   */
+  public static final KnownNamespace SECENTRY_REQENCR_EWP_RSA_AES128GCM_V1 =
+      new KnownNamespace("sec-C2", "sec-reqencr-rsa-aes128gcm/tree/stable-v1",
+          "sec-reqencr-rsa-aes128gcm/stable-v1/security-entries.xsd", false);
+  // WRTODO: false->true
+
+  /**
+   * As described <a href=
    * 'https://github.com/erasmus-without-paper/ewp-specs-sec-resencr-tls/blob/stable-v1/security-entries.xsd'>
    * here</a>.
    */
   public static final KnownNamespace SECENTRY_RESENCR_TLS_V1 = new KnownNamespace("sec-D1",
       "sec-resencr-tls/tree/stable-v1", "sec-resencr-tls/stable-v1/security-entries.xsd", true);
+
+  /**
+   * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-sec-resencr-tls/blob/stable-v1/security-entries.xsd'>
+   * here</a>.
+   */
+  public static final KnownNamespace SECENTRY_RESENCR_EWP_RSA_AES128GCM_V1 =
+      new KnownNamespace("sec-D2", "sec-resencr-rsa-aes128gcm/tree/stable-v1",
+          "sec-resencr-rsa-aes128gcm/stable-v1/security-entries.xsd", false);
+  // WRTODO: false->true
 
   private static final String COMMON_URI_PREFIX =
       "https://github.com/erasmus-without-paper/ewp-specs-";

@@ -1372,7 +1372,7 @@ class EchoValidationSuite {
             Element httpSecurityElem = $(EchoValidationSuite.this.matchedApiEntry)
                 .namespaces(KnownNamespace.prefixMap()).xpath("e2:http-security").get(0);
             HttpSecuritySettings sec = new HttpSecuritySettings(httpSecurityElem);
-            warnings.addAll(sec.getWarnings());
+            notices.addAll(sec.getNotices());
 
             // We will create four lists of security methods - one per type. Each added item
             // will represent one "validatable" security method.
@@ -1437,6 +1437,10 @@ class EchoValidationSuite {
             if (sec.supportsReqEncrTls()) {
               reqEncrMethodsToValidate.add(SecMethod.REQENCR_TLS);
             }
+            if (sec.supportsReqEncrEwp()) {
+              notices.add("Echo API Validator is currently NOT validating ewp-rsa-aes128gcm "
+                  + "request encryption.");
+            }
             if (reqEncrMethodsToValidate.size() == 0) {
               errors.add("Your Echo API does not support ANY of the request encryption "
                   + "methods recognized by the Validator.");
@@ -1447,6 +1451,10 @@ class EchoValidationSuite {
             List<SecMethod> resEncrMethodsToValidate = new ArrayList<>();
             if (sec.supportsResEncrTls()) {
               resEncrMethodsToValidate.add(SecMethod.RESENCR_TLS);
+            }
+            if (sec.supportsResEncrEwp()) {
+              notices.add("Echo API Validator is currently NOT validating ewp-rsa-aes128gcm "
+                  + "response encryption.");
             }
             if (resEncrMethodsToValidate.size() == 0) {
               errors.add("Your Echo API does not support ANY of the response encryption "

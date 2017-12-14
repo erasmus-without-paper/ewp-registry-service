@@ -12,13 +12,15 @@ import org.w3c.dom.Element;
 
 class HttpSecuritySettings {
 
-  private final List<String> warnings;
+  private final List<String> notices;
   private boolean cliAuthHttpSig;
   private boolean cliAuthNone;
   private boolean cliAuthTlsCert;
   private boolean cliAuthTlsCertAllowsSelfSigned;
   private boolean reqEncrTls;
+  private boolean reqEncrEwp;
   private boolean resEncrTls;
+  private boolean resEncrEwp;
   private boolean srvAuthHttpSig;
   private boolean srvAuthTlsCert;
 
@@ -32,7 +34,7 @@ class HttpSecuritySettings {
    */
   public HttpSecuritySettings(Element httpSecurityElement) {
 
-    this.warnings = new ArrayList<>();
+    this.notices = new ArrayList<>();
 
     // Parse Client Authentication Methods
 
@@ -55,7 +57,7 @@ class HttpSecuritySettings {
         } else if (KnownElement.SECENTRY_CLIAUTH_HTTPSIG_V1.matches(elem)) {
           this.cliAuthHttpSig = true;
         } else {
-          this.addWarning("Unrecognized client authentication method", elem);
+          this.addNotice("Unrecognized client authentication method", elem);
         }
       }
     } else {
@@ -77,7 +79,7 @@ class HttpSecuritySettings {
         } else if (KnownElement.SECENTRY_SRVAUTH_HTTPSIG_V1.matches(elem)) {
           this.srvAuthHttpSig = true;
         } else {
-          this.addWarning("Unrecognized server authentication method", elem);
+          this.addNotice("Unrecognized server authentication method", elem);
         }
       }
     } else {
@@ -90,39 +92,47 @@ class HttpSecuritySettings {
 
     if ($(httpSecurityElement).children("request-encryption-methods").isNotEmpty()) {
       this.reqEncrTls = false;
+      this.reqEncrEwp = false;
       for (Element elem : $(httpSecurityElement).children("request-encryption-methods")
           .children()) {
         if (KnownElement.SECENTRY_REQENCR_TLS_V1.matches(elem)) {
           this.reqEncrTls = true;
+        } else if (KnownElement.SECENTRY_REQENCR_EWP_RSA_AES128GCM_V1.matches(elem)) {
+          this.reqEncrEwp = true;
         } else {
-          this.addWarning("Unrecognized request encryption method", elem);
+          this.addNotice("Unrecognized request encryption method", elem);
         }
       }
     } else {
       // Using defaults.
       this.reqEncrTls = true;
+      this.reqEncrEwp = false;
     }
 
     // Parse Response Encryption Methods
 
     if ($(httpSecurityElement).children("response-encryption-methods").isNotEmpty()) {
       this.resEncrTls = false;
+      this.resEncrEwp = false;
       for (Element elem : $(httpSecurityElement).children("response-encryption-methods")
           .children()) {
         if (KnownElement.SECENTRY_RESENCR_TLS_V1.matches(elem)) {
           this.resEncrTls = true;
+        } else if (KnownElement.SECENTRY_RESENCR_EWP_RSA_AES128GCM_V1.matches(elem)) {
+          this.resEncrEwp = true;
         } else {
-          this.addWarning("Unrecognized response encryption method", elem);
+          this.addNotice("Unrecognized response encryption method", elem);
         }
       }
     } else {
       // Using defaults.
       this.resEncrTls = true;
+      this.resEncrEwp = false;
     }
   }
 
-  public List<String> getWarnings() {
-    return Collections.unmodifiableList(this.warnings);
+  public List<String> getNotices() {
+    return Collections.unmodifiableList(this.notices);
   }
 
   public boolean supportsCliAuthHttpSig() {
@@ -141,8 +151,16 @@ class HttpSecuritySettings {
     return this.cliAuthTlsCert && this.cliAuthTlsCertAllowsSelfSigned;
   }
 
+  public boolean supportsReqEncrEwp() {
+    return this.reqEncrEwp;
+  }
+
   public boolean supportsReqEncrTls() {
     return this.reqEncrTls;
+  }
+
+  public boolean supportsResEncrEwp() {
+    return this.resEncrEwp;
   }
 
   public boolean supportsResEncrTls() {
@@ -157,7 +175,7 @@ class HttpSecuritySettings {
     return this.srvAuthTlsCert;
   }
 
-  private void addWarning(String message, Element elem) {
-    this.warnings.add(message + ": {" + elem.getNamespaceURI() + "}" + elem.getLocalName());
+  private void addNotice(String message, Element elem) {
+    this.notices.add(message + ": {" + elem.getNamespaceURI() + "}" + elem.getLocalName());
   }
 }

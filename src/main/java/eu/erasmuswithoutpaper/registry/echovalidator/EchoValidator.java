@@ -12,7 +12,6 @@ import java.security.interfaces.RSAPublicKey;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 import eu.erasmuswithoutpaper.registry.Application;
@@ -48,22 +47,6 @@ import org.slf4j.LoggerFactory;
 public class EchoValidator {
 
   private static final Logger logger = LoggerFactory.getLogger(EchoValidator.class);
-
-  /**
-   * @return An ordered map of "SecMethodCombination" codes mapped to their short names.
-   */
-  public static LinkedHashMap<String, String> getCombinationLegend() {
-    LinkedHashMap<String, String> options = new LinkedHashMap<>();
-    options.put("A---", "No Client Authentication (Anonymous Client)");
-    options.put("S---", "Client Authentication with TLS Certificate (self-signed)");
-    options.put("T---", "Client Authentication with TLS Certificate (CA-signed)");
-    options.put("H---", "Client Authentication with HTTP Signature");
-    options.put("-T--", "Server Authentication with TLS Certificate (CA-signed)");
-    options.put("-H--", "Server Authentication with HTTP Signature");
-    options.put("--T-", "Request Encryption only with regular TLS");
-    options.put("---T", "Response Encryption only with regular TLS");
-    return options;
-  }
 
   private final KeyPair myClientRsaKeyPair;
   private final KeyPair myServerRsaKeyPair;

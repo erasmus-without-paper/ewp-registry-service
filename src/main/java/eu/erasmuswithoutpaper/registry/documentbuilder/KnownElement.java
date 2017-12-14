@@ -236,11 +236,25 @@ public class KnownElement {
           "Support declaration for \"regular TLS\" method of request encryption");
 
   /**
+   * Support declaration for "ewp-rsa-aes128gcm" request encryption.
+   */
+  public static final KnownElement SECENTRY_REQENCR_EWP_RSA_AES128GCM_V1 =
+      new KnownElement(KnownNamespace.SECENTRY_REQENCR_EWP_RSA_AES128GCM_V1, "ewp-rsa-aes128gcm",
+          "Support declaration for \"ewp-rsa-aes128gcm\" request encryption method");
+
+  /**
    * Support declaration for "regular TLS" method of response encryption.
    */
   public static final KnownElement SECENTRY_RESENCR_TLS_V1 =
       new KnownElement(KnownNamespace.SECENTRY_RESENCR_TLS_V1, "tls",
           "Support declaration for \"regular TLS\" method of response encryption");
+
+  /**
+   * Support declaration for "ewp-rsa-aes128gcm" response encryption.
+   */
+  public static final KnownElement SECENTRY_RESENCR_EWP_RSA_AES128GCM_V1 =
+      new KnownElement(KnownNamespace.SECENTRY_RESENCR_EWP_RSA_AES128GCM_V1, "ewp-rsa-aes128gcm",
+          "Support declaration for \"ewp-rsa-aes128gcm\" response encryption method");
 
   /**
    * @return A list of all {@link KnownElement} constants.

@@ -5,9 +5,9 @@ enum SecMethod {
 
   SRVAUTH_TLSCERT('T'), SRVAUTH_HTTPSIG('H'),
 
-  REQENCR_TLS('T'),
+  REQENCR_TLS('T'), REQENCR_EWP('E'),
 
-  RESENCR_TLS('T');
+  RESENCR_TLS('T'), RESENCR_EWP('E');
 
   private final char code;
 
