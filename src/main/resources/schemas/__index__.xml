@@ -7,7 +7,7 @@
         uri="ewp-specs-architecture-v1.10.0/common-types.xsd" />
     <uri
         name="https://github.com/erasmus-without-paper/ewp-specs-sec-intro/tree/stable-v2"
-        uri="ewp-specs-sec-intro-v2.0.1/schema.xsd" />
+        uri="ewp-specs-sec-intro-v2.0.2/schema.xsd" />
     <uri
         name="https://github.com/erasmus-without-paper/ewp-specs-sec-cliauth-none/tree/stable-v1"
         uri="ewp-specs-sec-cliauth-none-v1.1.0/security-entries.xsd" />
@@ -27,8 +27,14 @@
         name="https://github.com/erasmus-without-paper/ewp-specs-sec-reqencr-tls/tree/stable-v1"
         uri="ewp-specs-sec-reqencr-tls-v1.1.0/security-entries.xsd" />
     <uri
+        name="https://github.com/erasmus-without-paper/ewp-specs-sec-reqencr-rsa-aes128gcm/tree/stable-v1"
+        uri="ewp-specs-sec-reqencr-rsa-aes128gcm-v0.2.0/security-entries.xsd" />
+    <uri
         name="https://github.com/erasmus-without-paper/ewp-specs-sec-resencr-tls/tree/stable-v1"
         uri="ewp-specs-sec-resencr-tls-v1.1.0/security-entries.xsd" />
+    <uri
+        name="https://github.com/erasmus-without-paper/ewp-specs-sec-resencr-rsa-aes128gcm/tree/stable-v1"
+        uri="ewp-specs-sec-resencr-rsa-aes128gcm-v0.2.0/security-entries.xsd" />
     <uri
         name="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/blob/stable-v5/manifest-entry.xsd"
         uri="ewp-specs-api-discovery-v5.0.0-rc1/manifest-entry.xsd" />
