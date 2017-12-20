@@ -106,7 +106,7 @@ public class FakeInternetTest extends WRTest {
       try {
         Response response = this.internet.makeRequest(new Request("POST", url2));
         assertThat(response.getStatus()).isEqualTo(200);
-        assertThat(response.getBody().length)
+        assertThat(response.getBodyRaw().length)
             .isEqualTo("I'm a bad service!".getBytes(StandardCharsets.UTF_8).length);
         assertThat(response.getHeader("Special-Header")).isEqualTo("Special Value");
       } catch (IOException e) {

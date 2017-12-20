@@ -41,8 +41,11 @@ import eu.erasmuswithoutpaper.registry.internet.HttpSigRsaPublicKey;
 import eu.erasmuswithoutpaper.registry.internet.Internet;
 import eu.erasmuswithoutpaper.registry.internet.Internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Internet.Response;
+import eu.erasmuswithoutpaper.registry.internet.Internet.Response.CouldNotDecode;
 import eu.erasmuswithoutpaper.registryclient.ApiSearchConditions;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
+import eu.erasmuswithoutpaper.rsaaes.BadEwpRsaAesBody;
+import eu.erasmuswithoutpaper.rsaaes.EwpRsaAes128GcmDecoder;
 
 import com.google.common.collect.Lists;
 import net.adamcin.httpsig.api.Algorithm;
@@ -703,6 +706,215 @@ class EchoValidationSuite {
     });
   }
 
+  private void checkEdgeCasesForxxxE(SecMethodsCombination combination) throws SuiteBroken {
+
+    this.addAndRun(false, new InlineValidationStep() {
+
+      @Override
+      public String getName() {
+        return "Trying " + combination + " with a invalid Accept-Encoding header. "
+            + "Expecting unencrypted HTTP 400 error response.";
+      }
+
+      @Override
+      protected Optional<Response> innerRun() throws Failure {
+
+        this.request = EchoValidationSuite.this.createValidRequestForCombination(combination,
+            "POST", EchoValidationSuite.this.urlToBeValidated,
+            EchoValidationSuite.this.matchedApiEntry);
+        this.request.putHeader("Accept-Encoding", "invalid-coding");
+        if (combination.getCliAuth().equals(SecMethod.CLIAUTH_HTTPSIG)) {
+          KeyPair myKeyPair =
+              EchoValidationSuite.this.parentEchoValidator.getClientRsaKeyPairInUse();
+          String myKeyId = DigestUtils.sha256Hex(myKeyPair.getPublic().getEncoded());
+          this.request.recomputeAndAttachHttpSigAuthorizationHeader(myKeyId, myKeyPair);
+        }
+        return Optional.of(EchoValidationSuite.this.makeRequestAndExpectError(
+            combination.withChangedResEncr(SecMethod.RESENCR_TLS), this.request, 406));
+      }
+    });
+
+    if (combination.getCliAuth().equals(SecMethod.CLIAUTH_HTTPSIG)) {
+      this.addAndRun(false, new InlineValidationStep() {
+
+        @Override
+        public String getName() {
+          return "Trying " + combination + " with unsigned "
+              + "Accept-Response-Encryption-Key header. "
+              + "Expecting the unsigned header to be ignored " + "(man-in-the-middle attack).";
+        }
+
+        @Override
+        protected Optional<Response> innerRun() throws Failure {
+
+          this.request = EchoValidationSuite.this.createValidRequestForCombination(combination,
+              "POST", EchoValidationSuite.this.urlToBeValidated,
+              EchoValidationSuite.this.matchedApiEntry);
+          RSAPublicKey attackersKey =
+              EchoValidationSuite.this.parentEchoValidator.getServerRsaPublicKeyInUse();
+          byte[] attackersKeyFingerprint =
+              DigestUtils.getSha256Digest().digest(attackersKey.getEncoded());
+          if (this.request.getHeader("Accept-Response-Encryption-Key") == null) {
+            this.request.putHeader("Accept-Response-Encryption-Key",
+                Base64.getEncoder().encodeToString(attackersKey.getEncoded()));
+          } else {
+            // Should not happen. When httpsig client authentication is used, then this
+            // header should not be present.
+            throw new RuntimeException();
+          }
+          // Make sure that attacker's key is NOT used.
+          Response response = EchoValidationSuite.this.makeRequest(this.request);
+          try {
+            byte[] fingerprint =
+                EwpRsaAes128GcmDecoder.extractRecipientPublicKeySha256(response.getBodyRaw());
+            if (Arrays.areEqual(fingerprint, attackersKeyFingerprint)) {
+              throw new Failure(
+                  "The response was encrypted with the attacker's key. "
+                      + "Your installation is vulnerable to man-in-the-middle attacks.",
+                  Status.FAILURE, response);
+            }
+          } catch (BadEwpRsaAesBody e) {
+            // Ignore. This exception will be re-thrown in a moment (and properly cast
+            // into Failure).
+          }
+          // Make sure that a proper key is still used.
+          if (!response.getRecipientKeyPair()
+              .equals(EchoValidationSuite.this.parentEchoValidator.getClientRsaKeyPairInUse())) {
+            // Should not happen. This test assumes that requests are made with the default client
+            // key.
+            throw new RuntimeException();
+          }
+          EchoValidationSuite.this.expectHttp200(combination, this.request, response,
+              EchoValidationSuite.this.parentEchoValidator.getCoveredHeiIDs(),
+              Collections.<String>emptyList());
+          return Optional.of(response);
+        }
+      });
+
+      this.addAndRun(false, new InlineValidationStep() {
+
+        @Override
+        public String getName() {
+          return "Trying " + combination + " with overriden encryption key "
+              + "(properly signed Accept-Response-Encryption-Key header). "
+              + "Expecting the response to be encrypted for the overriden key.";
+        }
+
+        @Override
+        protected Optional<Response> innerRun() throws Failure {
+
+          this.request = EchoValidationSuite.this.createValidRequestForCombination(combination,
+              "POST", EchoValidationSuite.this.urlToBeValidated,
+              EchoValidationSuite.this.matchedApiEntry);
+          RSAPublicKey newKey =
+              EchoValidationSuite.this.parentEchoValidator.getServerRsaPublicKeyInUse();
+          byte[] newKeyFingerprint = DigestUtils.getSha256Digest().digest(newKey.getEncoded());
+          if (this.request.getHeader("Accept-Response-Encryption-Key") == null) {
+            this.request.putHeader("Accept-Response-Encryption-Key",
+                Base64.getEncoder().encodeToString(newKey.getEncoded()));
+            KeyPair myKeyPair =
+                EchoValidationSuite.this.parentEchoValidator.getClientRsaKeyPairInUse();
+            String myKeyId = DigestUtils.sha256Hex(myKeyPair.getPublic().getEncoded());
+            this.request.recomputeAndAttachHttpSigAuthorizationHeader(myKeyId, myKeyPair);
+          } else {
+            // Should not happen. When httpsig client authentication is used, then this
+            // header should not be present.
+            throw new RuntimeException();
+          }
+          // Make sure that the "old" key is not used.
+          Response response = EchoValidationSuite.this.makeRequest(this.request);
+          KeyPair oldKeyPair = response.getRecipientKeyPair();
+          byte[] oldKeyFingerprint =
+              DigestUtils.getSha256Digest().digest(oldKeyPair.getPublic().getEncoded());
+          response.setRecipientKeyPair(
+              EchoValidationSuite.this.parentEchoValidator.getServerRsaKeyPairInUse());
+          try {
+            byte[] fingerprint =
+                EwpRsaAes128GcmDecoder.extractRecipientPublicKeySha256(response.getBodyRaw());
+            if (Arrays.areEqual(fingerprint, oldKeyFingerprint)) {
+              throw new Failure("The response was encrypted with the signer's key. "
+                  + "Your installation seems to be ignoring the (properly signed) "
+                  + "Accept-Response-Encryption-Key header.", Status.FAILURE, response);
+            }
+            if (!Arrays.areEqual(fingerprint, newKeyFingerprint)) {
+              throw new Failure("The response seems to be encrypted to neither the "
+                  + "signer's key, nor to the overriden key.", Status.FAILURE, response);
+            }
+          } catch (BadEwpRsaAesBody e) {
+            // Ignore. This exception will be re-thrown in a moment (and properly cast
+            // into Failure).
+          }
+          EchoValidationSuite.this.expectHttp200(combination, this.request, response,
+              EchoValidationSuite.this.parentEchoValidator.getCoveredHeiIDs(),
+              Collections.<String>emptyList());
+          return Optional.of(response);
+        }
+      });
+
+    }
+
+    this.addAndRun(false, new InlineValidationStep() {
+
+      @Override
+      public String getName() {
+        return "Trying " + combination + " with \"gzip\" in Accept-Encoding. "
+            + "Expecting a valid encrypted (and possibly gzipped) response.";
+      }
+
+      @Override
+      protected Optional<Response> innerRun() throws Failure {
+
+        this.request = EchoValidationSuite.this.createValidRequestForCombination(combination,
+            "POST", EchoValidationSuite.this.urlToBeValidated,
+            EchoValidationSuite.this.matchedApiEntry);
+        if (!this.request.getHeader("Accept-Encoding").equals("ewp-rsa-aes128gcm, *;q=0")) {
+          // Sanity check failed. The rest of this test expects that Accept-Encoding
+          // is equal to the value stated above. You might need to rewrite it.
+          throw new RuntimeException("Unexpected Accept-Encoding in request: "
+              + this.request.getHeader("Accept-Encoding"));
+        }
+        // Allow the response to be gzipped.
+        this.request.putHeader("Accept-Encoding", "gzip, ewp-rsa-aes128gcm, *;q=0");
+        Response response = EchoValidationSuite.this.makeRequest(this.request);
+        int ewpIndex = -1;
+        int gzipIndex = -1;
+        List<String> codings = response.getContentCodings();
+        for (int i = 0; i < codings.size(); i++) {
+          if (codings.get(i).equalsIgnoreCase("gzip")) {
+            gzipIndex = i;
+          } else if (codings.get(i).equalsIgnoreCase("ewp-rsa-aes128gcm")) {
+            ewpIndex = i;
+          }
+        }
+        if (combination.getCliAuth().equals(SecMethod.CLIAUTH_NONE)) {
+          EchoValidationSuite.this.expectError(combination, this.request, response,
+              Lists.newArrayList(401, 403));
+        } else {
+          EchoValidationSuite.this.expectHttp200(combination, this.request, response,
+              EchoValidationSuite.this.parentEchoValidator.getCoveredHeiIDs(),
+              Collections.<String>emptyList());
+        }
+        if (ewpIndex == -1) {
+          throw new Failure("Expecting the response to be encrypted.", Status.FAILURE, response);
+        }
+        if (gzipIndex == -1) {
+          throw new Failure(
+              "The response was properly encrypted, but it wasn't gzipped. "
+                  + "It might be useful to support gzip encoding to save bandwidth.",
+              Status.NOTICE, response);
+        }
+        if (gzipIndex > ewpIndex) {
+          throw new Failure("The response was valid, but the order of its encodings was \"weird\". "
+              + "Your response was first encrypted, and then gzipped. "
+              + "(Gzipping encrypted content doesn't work well.)", Status.WARNING, response);
+        }
+        return Optional.of(response);
+      }
+    });
+
+    // WRTODO: more tests are needed here!
+  }
+
   /**
    * Helper method for creating simple request method validation steps (e.g. run a PUT request and
    * expect error, run a POST and expect success).
@@ -741,40 +953,8 @@ class EchoValidationSuite {
     };
   }
 
-  private String formatDocBuildErrors(List<BuildError> errors) {
-    StringBuilder sb = new StringBuilder();
-    sb.append("Our document parser has reported the following errors:");
-    for (int i = 0; i < errors.size(); i++) {
-      sb.append("\n" + (i + 1) + ". ");
-      sb.append("(Line " + errors.get(i).getLineNumber() + ") " + errors.get(i).getMessage());
-    }
-    return sb.toString();
-  }
-
-  private Response makeRequestAndExpectError(SecMethodsCombination combination, Request request,
-      int status) throws Failure {
-    return this.makeRequestAndExpectError(combination, request, Lists.newArrayList(status));
-  }
-
-  /**
-   * Make the request and check if the response contains a valid error of expected type.
-   *
-   * @param request The request to be made.
-   * @param statuses Expected HTTP response statuses (any of those).
-   * @throws Failure If HTTP status differs from expected, or if the response body doesn't contain a
-   *         proper error response.
-   */
-  private Response makeRequestAndExpectError(SecMethodsCombination combination, Request request,
+  private void expectError(SecMethodsCombination combination, Request request, Response response,
       List<Integer> statuses) throws Failure {
-    Response response;
-    try {
-      response = this.internet.makeRequest(request);
-    } catch (IOException e) {
-      logger.debug(
-          "Problems retrieving response from server: " + ExceptionUtils.getFullStackTrace(e));
-      throw new Failure("Problems retrieving response from server: " + e.getMessage(), Status.ERROR,
-          null);
-    }
     final List<String> notices = this.validateResponseCommons(combination, request, response);
     if (!statuses.contains(response.getStatus())) {
       int gotFirstDigit = response.getStatus() / 100;
@@ -788,7 +968,14 @@ class EchoValidationSuite {
               + " expected, but HTTP " + response.getStatus() + " received.",
           failureStatus, response);
     }
-    BuildParams params = new BuildParams(response.getBody());
+    byte[] body;
+    try {
+      body = response.getBodyDecoded();
+    } catch (CouldNotDecode e) {
+      throw new Failure("Could not decode the response body: " + e.getMessage(), Status.FAILURE,
+          response);
+    }
+    BuildParams params = new BuildParams(body);
     params.setExpectedKnownElement(KnownElement.COMMON_ERROR_RESPONSE);
     BuildResult result = this.docBuilder.build(params);
     if (!result.isValid()) {
@@ -844,28 +1031,10 @@ class EchoValidationSuite {
     if (sb.length() > 0) {
       throw new Failure(sb.toString(), Status.NOTICE, response);
     }
-    return response;
   }
 
-  /**
-   * Make the request and make sure that the response contains a valid HTTP 200 Echo API response.
-   *
-   * @param request The request to be made.
-   * @param heiIdsExpected The expected contents of the hei-id list.
-   * @param echoValuesExpected The expected contents of the echo list.
-   * @throws Failure If some expectations are not met.
-   */
-  private Response makeRequestAndExpectHttp200(SecMethodsCombination combination, Request request,
+  private void expectHttp200(SecMethodsCombination combination, Request request, Response response,
       List<String> heiIdsExpected, List<String> echoValuesExpected) throws Failure {
-    Response response;
-    try {
-      response = this.internet.makeRequest(request);
-    } catch (IOException e) {
-      logger.debug(
-          "Problems retrieving response from server: " + ExceptionUtils.getFullStackTrace(e));
-      throw new Failure("Problems retrieving response from server: " + e.getMessage(), Status.ERROR,
-          null);
-    }
     final List<String> notices = this.validateResponseCommons(combination, request, response);
     if (response.getStatus() != 200) {
       StringBuilder sb = new StringBuilder();
@@ -876,7 +1045,14 @@ class EchoValidationSuite {
       }
       throw new Failure(sb.toString(), Status.FAILURE, response);
     }
-    BuildParams params = new BuildParams(response.getBody());
+    byte[] body;
+    try {
+      body = response.getBodyDecoded();
+    } catch (CouldNotDecode e) {
+      throw new Failure("Could not decode response body: " + e.getMessage(), Status.FAILURE,
+          response);
+    }
+    BuildParams params = new BuildParams(body);
     if (this.echoApiVersionDetected == 1) {
       params.setExpectedKnownElement(KnownElement.RESPONSE_ECHO_V1);
     } else {
@@ -932,6 +1108,61 @@ class EchoValidationSuite {
     if (sb.length() > 0) {
       throw new Failure(sb.toString(), Status.NOTICE, response);
     }
+  }
+
+  private String formatDocBuildErrors(List<BuildError> errors) {
+    StringBuilder sb = new StringBuilder();
+    sb.append("Our document parser has reported the following errors:");
+    for (int i = 0; i < errors.size(); i++) {
+      sb.append("\n" + (i + 1) + ". ");
+      sb.append("(Line " + errors.get(i).getLineNumber() + ") " + errors.get(i).getMessage());
+    }
+    return sb.toString();
+  }
+
+  private Response makeRequest(Request request) throws Failure {
+    try {
+      return this.internet.makeRequest(request);
+    } catch (IOException e) {
+      logger.debug(
+          "Problems retrieving response from server: " + ExceptionUtils.getFullStackTrace(e));
+      throw new Failure("Problems retrieving response from server: " + e.getMessage(), Status.ERROR,
+          null);
+    }
+  }
+
+  private Response makeRequestAndExpectError(SecMethodsCombination combination, Request request,
+      int status) throws Failure {
+    return this.makeRequestAndExpectError(combination, request, Lists.newArrayList(status));
+  }
+
+  /**
+   * Make the request and check if the response contains a valid error of expected type.
+   *
+   * @param request The request to be made.
+   * @param statuses Expected HTTP response statuses (any of those).
+   * @throws Failure If HTTP status differs from expected, or if the response body doesn't contain a
+   *         proper error response.
+   */
+  private Response makeRequestAndExpectError(SecMethodsCombination combination, Request request,
+      List<Integer> statuses) throws Failure {
+    Response response = this.makeRequest(request);
+    this.expectError(combination, request, response, statuses);
+    return response;
+  }
+
+  /**
+   * Make the request and make sure that the response contains a valid HTTP 200 Echo API response.
+   *
+   * @param request The request to be made.
+   * @param heiIdsExpected The expected contents of the hei-id list.
+   * @param echoValuesExpected The expected contents of the echo list.
+   * @throws Failure If some expectations are not met.
+   */
+  private Response makeRequestAndExpectHttp200(SecMethodsCombination combination, Request request,
+      List<String> heiIdsExpected, List<String> echoValuesExpected) throws Failure {
+    Response response = this.makeRequest(request);
+    this.expectHttp200(combination, request, response, heiIdsExpected, echoValuesExpected);
     return response;
   }
 
@@ -965,6 +1196,8 @@ class EchoValidationSuite {
       // combination (and should be validated when validating this particular combination).
     }
 
+    // Unnecessary Signature
+
     List<String> notices = new ArrayList<>();
     if (combination.getSrvAuth().equals(SecMethod.SRVAUTH_TLSCERT)) {
       if (response.getHeader("Signature") != null) {
@@ -974,6 +1207,37 @@ class EchoValidationSuite {
       }
     } else if (combination.getSrvAuth().equals(SecMethod.SRVAUTH_HTTPSIG)) {
       this.validateResponseCommonsForxHxx(combination, request, response);
+    }
+
+    // Check if encrypted
+
+    if (combination.getResEncr().equals(SecMethod.RESENCR_EWP)) {
+      response.setRecipientKeyPair(this.parentEchoValidator.getClientRsaKeyPairInUse());
+      boolean matched = false;
+      for (String coding : response.getContentCodings()) {
+        if (coding.equalsIgnoreCase("ewp-rsa-aes128gcm")) {
+          matched = true;
+          break;
+        }
+      }
+      if (!matched) {
+        throw new Failure("Expecting the response to be encoded with ewp-rsa-aes128gcm.",
+            Status.FAILURE, response);
+      }
+    }
+
+    // Check if Content-Encoding is a subset of request's Accept-Encoding
+
+    Set<String> acceptableCodings = request.getAcceptableCodings().stream()
+        .map(s -> s.toLowerCase(Locale.US)).collect(Collectors.toSet());
+    for (String coding : response.getContentCodings()) {
+      coding = coding.toLowerCase(Locale.US);
+      if (!acceptableCodings.contains(coding)) {
+        throw new Failure(
+            "The response was encoded with the '" + coding + "' coding, "
+                + "but the client didn't declare this " + "encoding as acceptable.",
+            Status.FAILURE, response);
+      }
     }
 
     return notices;
@@ -1173,6 +1437,14 @@ class EchoValidationSuite {
       // Shouldn't happen.
       throw new RuntimeException("Unsupported combination");
     }
+    if (combination.getResEncr().equals(SecMethod.RESENCR_TLS)) {
+      // Not much to test against.
+    } else if (combination.getResEncr().equals(SecMethod.RESENCR_EWP)) {
+      this.checkEdgeCasesForxxxE(combination);
+    } else {
+      // Shouldn't happen.
+      throw new RuntimeException("Unsupported combination");
+    }
 
     if (!combination.getCliAuth().equals(SecMethod.CLIAUTH_NONE)) {
       this.addAndRun(false, this.createHttpMethodValidationStep(combination, "PUT", false));
@@ -1343,6 +1615,12 @@ class EchoValidationSuite {
 
     if (combination.getResEncr().equals(SecMethod.RESENCR_TLS)) {
       // pass
+    } else if (combination.getResEncr().equals(SecMethod.RESENCR_EWP)) {
+      request.putHeader("Accept-Encoding", "ewp-rsa-aes128gcm, *;q=0");
+      if (!combination.getCliAuth().equals(SecMethod.CLIAUTH_HTTPSIG)) {
+        request.putHeader("Accept-Response-Encryption-Key", Base64.getEncoder()
+            .encodeToString(this.parentEchoValidator.getClientRsaPublicKeyInUse().getEncoded()));
+      }
     } else {
       throw new RuntimeException("Not supported");
     }
@@ -1575,8 +1853,7 @@ class EchoValidationSuite {
               resEncrMethodsToValidate.add(SecMethod.RESENCR_TLS);
             }
             if (sec.supportsResEncrEwp()) {
-              notices.add("Echo API Validator is currently NOT validating ewp-rsa-aes128gcm "
-                  + "response encryption.");
+              resEncrMethodsToValidate.add(SecMethod.RESENCR_EWP);
             }
             if (resEncrMethodsToValidate.size() == 0) {
               errors.add("Your Echo API does not support ANY of the response encryption "

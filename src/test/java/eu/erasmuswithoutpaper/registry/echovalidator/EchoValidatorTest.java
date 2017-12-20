@@ -39,6 +39,7 @@ public class EchoValidatorTest extends WRTest {
   private static String echoUrlMHTT;
   private static String echoUrlMMTT;
   private static String echoUrlSTET;
+  private static String echoUrlSTTE;
   private static boolean needsReinit;
 
   /**
@@ -60,6 +61,7 @@ public class EchoValidatorTest extends WRTest {
     echoUrlMHTT = "https://university.example.com/echo/MHTT/";
     echoUrlMMTT = "https://university.example.com/echo/MMTT/";
     echoUrlSTET = "https://university.example.com/echo/STET/";
+    echoUrlSTTE = "https://university.example.com/echo/STTE/";
     needsReinit = true;
 
     // https://github.com/adamcin/httpsig-java/issues/9
@@ -696,6 +698,78 @@ public class EchoValidatorTest extends WRTest {
       assertThat(out).containsOnlyOnce("WARNING");
       assertThat(out).contains("It is RECOMMENDED for all EWP server endpoints to support "
           + "HTTP Signature Client Authentication");
+
+    } finally {
+      this.internet.clearAll();
+    }
+  }
+
+  @Test
+  public void testAgainstServiceSTTEInvalid1() {
+    try {
+      FakeInternetService service;
+
+      service = new ServiceSTTEInvalid1(echoUrlSTTE, this.client);
+      this.internet.addFakeInternetService(service);
+      String out = this.getValidatorReport(echoUrlSTTE);
+      assertThat(out).doesNotContain("FAILURE");
+      assertThat(out).doesNotContain("ERROR");
+      assertThat(out).contains("WARNING: Querying for supported security methods");
+      assertThat(out).containsPattern("WARNING: Trying SecMethodCombination...... with \"gzip\"");
+      assertThat(out).contains("Your response was first encrypted, and then gzipped");
+      assertThat(out).containsOnlyOnce("NOTICE");
+
+    } finally {
+      this.internet.clearAll();
+    }
+  }
+
+  @Test
+  public void testAgainstServiceSTTEInvalid2() {
+    try {
+      FakeInternetService service;
+
+      service = new ServiceSTTEInvalid2(echoUrlSTTE, this.client);
+      this.internet.addFakeInternetService(service);
+      String out = this.getValidatorReport(echoUrlSTTE);
+      assertThat(out).contains("FAILURE");
+      assertThat(out).contains("The response was encoded with the 'gzip' coding, "
+          + "but the client didn't declare this encoding as acceptable.");
+
+    } finally {
+      this.internet.clearAll();
+    }
+  }
+
+  @Test
+  public void testAgainstServiceSTTEInvalid3() {
+    try {
+      FakeInternetService service;
+
+      service = new ServiceSTTEInvalid3(echoUrlSTTE, this.client);
+      this.internet.addFakeInternetService(service);
+      String out = this.getValidatorReport(echoUrlSTTE);
+      assertThat(out).contains("FAILURE");
+      assertThat(out).contains("Expecting the response to be encoded with ewp-rsa-aes128gcm");
+
+    } finally {
+      this.internet.clearAll();
+    }
+  }
+
+  @Test
+  public void testAgainstServiceSTTEValid() {
+    try {
+      FakeInternetService service;
+
+      service = new ServiceSTTEValid(echoUrlSTTE, this.client);
+      this.internet.addFakeInternetService(service);
+      String out = this.getValidatorReport(echoUrlSTTE);
+      assertThat(out).doesNotContain("FAILURE");
+      assertThat(out).doesNotContain("ERROR");
+      assertThat(out).containsOnlyOnce("WARNING");
+      assertThat(out).contains("WARNING: Querying for supported security methods");
+      assertThat(out).containsOnlyOnce("NOTICE");
 
     } finally {
       this.internet.clearAll();

@@ -101,7 +101,7 @@ public class FakeInternet implements Internet {
   @Override
   public byte[] getUrl(String url) throws IOException {
     Response response = this.makeRequest(new Request("GET", url));
-    return response.getBody();
+    return response.getBodyRaw();
   }
 
   @Override

@@ -1,10 +1,13 @@
 package eu.erasmuswithoutpaper.registry.internet;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
+import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -15,8 +18,12 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.zip.GZIPInputStream;
 
+import eu.erasmuswithoutpaper.rsaaes.BadEwpRsaAesBody;
+import eu.erasmuswithoutpaper.rsaaes.EwpRsaAes128GcmDecoder;
 import eu.erasmuswithoutpaper.rsaaes.EwpRsaAes128GcmEncoder;
+import eu.erasmuswithoutpaper.rsaaes.InvalidRecipient;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -29,6 +36,7 @@ import net.adamcin.httpsig.api.Key;
 import net.adamcin.httpsig.api.RequestContent;
 import net.adamcin.httpsig.api.Signer;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.io.IOUtils;
 
 /**
  * This interface will be used by all the other services for accessing resources over the Internet.
@@ -79,6 +87,29 @@ public interface Internet {
       return Base64.getEncoder().encodeToString(binaryDigest);
     }
 
+    public List<String> getAcceptableCodings() {
+      List<String> result = new ArrayList<>();
+      String headerValue = this.getHeader("Accept-Encoding");
+      if (headerValue == null) {
+        return result;
+      }
+      String[] codings = headerValue.split(" *, *");
+      for (String entry : codings) {
+        String[] params = entry.split(" *; *");
+        String coding = params[0];
+        boolean acceptable = true;
+        for (int i = 1; i < params.length; i++) {
+          if (params[i].equals("q=0")) {
+            acceptable = false;
+          }
+        }
+        if (acceptable) {
+          result.add(coding);
+        }
+      }
+      return result;
+    }
+
     public Optional<byte[]> getBody() {
       if (!this.ewpRsaAesEncryptionKey.isPresent()) {
         return bodyUnencrypted;
@@ -116,6 +147,7 @@ public interface Internet {
     public String getMethod() {
       return method;
     }
+
 
     /**
      * Extract path from request's URL.
@@ -250,6 +282,18 @@ public interface Internet {
    */
   class Response {
 
+    @SuppressWarnings("serial")
+    public static class CouldNotDecode extends Exception {
+
+      public CouldNotDecode(String message) {
+        super(message);
+      }
+
+      public CouldNotDecode(String message, Exception cause) {
+        super(message, cause);
+      }
+    }
+
     private static String getSignatureFromAuthorization(String authz) {
       // We need this helper because the library we use wasn't optimized for
       // server signatures (signature.toString() produces output which is valid
@@ -265,6 +309,7 @@ public interface Internet {
 
     private final Request initialRequest;
     private final int status;
+    private KeyPair recipientKeyPair;
     private byte[] body;
 
     private final Map<String, String> headers;
@@ -289,13 +334,37 @@ public interface Internet {
       return Base64.getEncoder().encodeToString(binaryDigest);
     }
 
+    public byte[] getBodyDecoded() throws CouldNotDecode {
+      byte[] data = this.getBodyRaw();
+      for (String coding : Lists.reverse(this.getContentCodings())) {
+        data = this.decodeCoding(data, coding);
+      }
+      return data;
+    }
+
     /**
-     * @return The response body, as returned by the server. This is available regardless of the
+     * @return Raw response body, as returned by the server. This is available regardless of the
      *         response status. In case of error responses, it will contain the error response body.
+     *         If you need the decoded body, use {@link #getBodyDecoded()}.
      */
     @SuppressFBWarnings(value = "EI_EXPOSE_REP")
-    public byte[] getBody() {
+    public byte[] getBodyRaw() {
       return this.body;
+    }
+
+    public List<String> getContentCodings() {
+      String value = this.getHeader("Content-Encoding");
+      List<String> codings = new ArrayList<>();
+      if (value == null) {
+        // Nothing.
+      } else {
+        for (String item : value.split(" *, *")) {
+          if (item.length() > 0) {
+            codings.add(item);
+          }
+        }
+      }
+      return codings;
     }
 
     public String getHeader(String key) {
@@ -304,6 +373,13 @@ public interface Internet {
 
     public Map<String, String> getHeaders() {
       return Collections.unmodifiableMap(this.headers);
+    }
+
+    /**
+     * @return Key pair previously set with {@link #setRecipientKeyPair(KeyPair)} (or null).
+     */
+    public KeyPair getRecipientKeyPair() {
+      return this.recipientKeyPair;
     }
 
     /**
@@ -358,6 +434,56 @@ public interface Internet {
     @SuppressFBWarnings(value = "EI_EXPOSE_REP2")
     public void setBody(byte[] changed) {
       this.body = changed;
+    }
+
+    /**
+     * This should be set whenever we expect the response to be encrypted. You SHOULD NOT set it if
+     * you don't expect the response to be encrypted.
+     *
+     * @param keyPair The RSA key pair of the recipient.
+     */
+    public void setRecipientKeyPair(KeyPair keyPair) {
+      this.recipientKeyPair = keyPair;
+    }
+
+    private byte[] decodeCoding(byte[] data, String coding) throws CouldNotDecode {
+      if (coding.equalsIgnoreCase("ewp-rsa-aes128gcm")) {
+        return this.decodeEwpEncryption(data);
+      } else if (coding.equalsIgnoreCase("gzip")) {
+        return this.decodeGzip(data);
+      } else {
+        throw new CouldNotDecode("Unknown Content-Encoding, could not decode: " + coding);
+      }
+    }
+
+    private byte[] decodeEwpEncryption(byte[] data) throws CouldNotDecode {
+      if (this.recipientKeyPair == null) {
+        // Should not happen.
+        throw new CouldNotDecode("We didn't expect an encrypted response here!");
+      }
+      EwpRsaAes128GcmDecoder decoder =
+          new EwpRsaAes128GcmDecoder((RSAPublicKey) this.recipientKeyPair.getPublic(),
+              (RSAPrivateKey) this.recipientKeyPair.getPrivate());
+      try {
+        return decoder.decode(data);
+      } catch (BadEwpRsaAesBody e) {
+        throw new CouldNotDecode(
+            "Could not decode the response body. " + "Broken encryption algorithm?", e);
+      } catch (InvalidRecipient e) {
+        throw new CouldNotDecode("This response seems to be encrypted to a wrong recipient. "
+            + "We don't have a proper key pair needed to decrypt it.");
+      }
+    }
+
+    private byte[] decodeGzip(byte[] data) throws CouldNotDecode {
+      try {
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        GZIPInputStream gunzipped = new GZIPInputStream(new ByteArrayInputStream(data));
+        IOUtils.copy(gunzipped, output);
+        return output.toByteArray();
+      } catch (IOException e) {
+        throw new CouldNotDecode("Error occurred while trying to decode gzipped contents", e);
+      }
     }
   }
 

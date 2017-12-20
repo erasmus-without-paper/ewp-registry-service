@@ -64,4 +64,24 @@ public class SecMethodsCombination {
   SecMethod getSrvAuth() {
     return this.srvauth;
   }
+
+  SecMethodsCombination withChangedCliAuth(SecMethod cliAuthMethod) {
+    return new SecMethodsCombination(cliAuthMethod, this.getSrvAuth(), this.getReqEncr(),
+        this.getResEncr());
+  }
+
+  SecMethodsCombination withChangedReqEncr(SecMethod reqEncrMethod) {
+    return new SecMethodsCombination(this.getCliAuth(), this.getSrvAuth(), reqEncrMethod,
+        this.getResEncr());
+  }
+
+  SecMethodsCombination withChangedResEncr(SecMethod resEncrMethod) {
+    return new SecMethodsCombination(this.getCliAuth(), this.getSrvAuth(), this.getReqEncr(),
+        resEncrMethod);
+  }
+
+  SecMethodsCombination withChangedSrvAuth(SecMethod srvAuthMethod) {
+    return new SecMethodsCombination(this.getCliAuth(), srvAuthMethod, this.getReqEncr(),
+        this.getResEncr());
+  }
 }

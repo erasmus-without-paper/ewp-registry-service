@@ -9,6 +9,7 @@ import java.util.Optional;
 import eu.erasmuswithoutpaper.registry.internet.Internet;
 import eu.erasmuswithoutpaper.registry.internet.Internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Internet.Response;
+import eu.erasmuswithoutpaper.registry.internet.Internet.Response.CouldNotDecode;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.joox.Match;
@@ -91,9 +92,12 @@ abstract class InlineValidationStep implements ValidationStepWithStatus {
 
     Document document;
     try {
-      document = $(new ByteArrayInputStream(this.getServerResponse().get().getBody())).document();
+      document =
+          $(new ByteArrayInputStream(this.getServerResponse().get().getBodyDecoded())).document();
     } catch (SAXException | IOException e) {
       return Optional.of("Error while parsing XML response: " + e.getMessage());
+    } catch (CouldNotDecode e) {
+      return Optional.of("Could not decode the response body: " + e.getMessage());
     }
     Match root = $(document);
     if (root.find("developer-message").isNotEmpty()) {
