@@ -20,7 +20,7 @@
         <!-- Identifiers (same as in the Manifest). -->
         <hei-id>uio.no</hei-id>
         <other-id type="erasmus">N Oslo01</other-id>
-        <other-id type="erasmus-charter">12345</other-id>
+        <other-id type="euc">12345</other-id>
         <other-id type="local">UIO</other-id>
 
         <!-- Primary attributes (name, website, logo, etc.) -->

@@ -21,6 +21,7 @@
         <receiving-hei>
             <hei-id>uw.edu.pl</hei-id>
         </receiving-hei>
+        <sending-academic-term-ewp-id>2009/2010-2/2</sending-academic-term-ewp-id>
         <receiving-academic-year-id>2009/2010</receiving-academic-year-id>
         <student>
             <given-names>Mister</given-names>

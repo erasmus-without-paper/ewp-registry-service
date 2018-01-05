@@ -29,6 +29,7 @@
                 <end>2016-12-31</end>
                 <trm:academic-term>
                     <trm:academic-year-id>2016/2017</trm:academic-year-id>
+                    <trm:ewp-id>2016/2017-1/2</trm:ewp-id>
                     <trm:display-name xml:lang="en-us">Fall 2016/2017</trm:display-name>
                     <trm:display-name xml:lang="no">Høst 2016/2017</trm:display-name>
                     <trm:start-date>2016-07-01</trm:start-date>

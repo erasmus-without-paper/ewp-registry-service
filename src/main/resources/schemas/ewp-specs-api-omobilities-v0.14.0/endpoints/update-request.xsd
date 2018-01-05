@@ -206,7 +206,7 @@
                 This request is usually sent by the receiving HEI when it wants to accept or
                 reject a group of nominations proposed by the sending HEI. In other words, it
                 allows to suggest that the status of the mobility should be changed from
-                "nomination" to either "live" or "rejected".
+                "nomination" to either "nomination-verified" or "rejected".
 
                 Additionally, receiving HEI MAY also use this API to suggest changing the
                 status to other values (e.g. notify that the mobility is cancelled), but
@@ -246,12 +246,12 @@
                                     <xs:documentation>
                                         Suggested new status for this mobility.
 
-                                        If you want to accept the nomination, then you should send "live" here. If you
-                                        want to reject it, then send "rejected". You MAY also allow your users to send
-                                        other status values, but - if you choose to do so - then you SHOULD make your
-                                        users aware, that in many cases such transaction will fail (because most
-                                        partners will use this update-type only for accepting and rejecting
-                                        nominations).
+                                        If you want to accept the nomination, then you should send "nomination-verified"
+                                        here. If you want to reject it, then send "rejected". You MAY also allow your
+                                        users to send other status values, but - if you choose to do so - then you
+                                        SHOULD make your users aware, that in many cases such transaction will fail
+                                        (because most partners will use this update-type only for accepting and
+                                        rejecting nominations).
                                     </xs:documentation>
                                 </xs:annotation>
                             </xs:element>

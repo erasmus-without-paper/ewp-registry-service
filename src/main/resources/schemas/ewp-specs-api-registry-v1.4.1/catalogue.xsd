@@ -403,7 +403,35 @@
                                     <xs:enumeration value="euc">
                                         <xs:annotation>
                                             <xs:documentation>
-                                                Erasmus University Charter number.
+                                                DEPRECATED, use "erasmus-charter" instead. Erasmus University Charter number
+                                                (aka EUC number).
+
+                                                - Newer clients SHOULD treat this as an alias for "erasmus-charter" (for
+                                                  backward compatibility).
+
+                                                - Servers MAY still publish "euc" identifiers in their manifests. They also MAY
+                                                  decide not to publish any "euc" identifiers, and only publish
+                                                  "erasmus-charter" identifiers.
+
+                                                - If the server decides to publish "euc" identifiers, it still SHOULD NOT
+                                                  publish newer Erasmus Charter numbers (such as ECHE numbers) under the "euc"
+                                                  identifier type. It is RECOMMENDED to publish them via "erasmus-charter"
+                                                  instead, to avoid confusion.
+
+                                                See this thread:
+                                                https://github.com/erasmus-without-paper/ewp-specs-api-registry/issues/3
+                                            </xs:documentation>
+                                        </xs:annotation>
+                                    </xs:enumeration>
+                                    <xs:enumeration value="erasmus-charter">
+                                        <xs:annotation>
+                                            <xs:documentation>
+                                                Erasmus Charter number (EUC/ECHE/etc.)
+
+                                                This MAY contain both EUC numbers (Erasmus University Charter) or ECHE numbers
+                                                (Erasmus Charter for Higher Education). In the future, it also MAY contain
+                                                other similar identifiers, if the European Commission decides to replace ECHE
+                                                numbers with such.
                                             </xs:documentation>
                                         </xs:annotation>
                                     </xs:enumeration>

@@ -69,7 +69,7 @@
                 every other pair of sets.)
 
                 Most partners will have exactly one `host` entry. However, in some cases you
-                might be needed to describe more than one. For example, when you server covers
+                might need to describe more than one. For example, when you server covers
                 two HEIs, but one of your APIs is available for only one of these two HEIs,
                 then it's impossible to describe such relationship with a single Cartesian
                 product. You will need to use a sum of at least two Cartesian products. (which
