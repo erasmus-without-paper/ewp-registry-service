@@ -17,8 +17,6 @@ import java.util.Base64;
 
 import eu.erasmuswithoutpaper.registry.WRTest;
 import eu.erasmuswithoutpaper.registry.internet.FakeInternet.MultipleHandlersConflict;
-import eu.erasmuswithoutpaper.registry.internet.Internet.Request;
-import eu.erasmuswithoutpaper.registry.internet.Internet.Response;
 
 import org.springframework.beans.factory.annotation.Autowired;
 

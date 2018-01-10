@@ -2,7 +2,7 @@ package eu.erasmuswithoutpaper.registry.echovalidator;
 
 import java.security.interfaces.RSAPublicKey;
 
-import eu.erasmuswithoutpaper.registry.internet.Internet.Request;
+import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 import net.adamcin.httpsig.api.Authorization;

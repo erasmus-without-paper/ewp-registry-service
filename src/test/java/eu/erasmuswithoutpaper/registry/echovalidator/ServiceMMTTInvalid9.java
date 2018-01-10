@@ -2,8 +2,8 @@ package eu.erasmuswithoutpaper.registry.echovalidator;
 
 import java.security.KeyPair;
 
-import eu.erasmuswithoutpaper.registry.internet.Internet.Request;
-import eu.erasmuswithoutpaper.registry.internet.Internet.Response;
+import eu.erasmuswithoutpaper.registry.internet.Request;
+import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 /**

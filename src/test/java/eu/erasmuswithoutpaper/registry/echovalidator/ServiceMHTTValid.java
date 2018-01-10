@@ -8,8 +8,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import eu.erasmuswithoutpaper.registry.internet.Internet.Request;
-import eu.erasmuswithoutpaper.registry.internet.Internet.Response;
+import eu.erasmuswithoutpaper.registry.internet.Request;
+import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 import net.adamcin.httpsig.api.Authorization;

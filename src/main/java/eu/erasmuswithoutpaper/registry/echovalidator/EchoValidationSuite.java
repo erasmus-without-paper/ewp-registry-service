@@ -37,8 +37,8 @@ import eu.erasmuswithoutpaper.registry.echovalidator.InlineValidationStep.Failur
 import eu.erasmuswithoutpaper.registry.echovalidator.ValidationStepWithStatus.Status;
 import eu.erasmuswithoutpaper.registry.internet.HttpSigRsaPublicKey;
 import eu.erasmuswithoutpaper.registry.internet.Internet;
-import eu.erasmuswithoutpaper.registry.internet.Internet.Request;
-import eu.erasmuswithoutpaper.registry.internet.Internet.Response;
+import eu.erasmuswithoutpaper.registry.internet.Request;
+import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registryclient.ApiSearchConditions;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 

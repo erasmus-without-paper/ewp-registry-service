@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import eu.erasmuswithoutpaper.registry.internet.Internet.Request;
+import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 public class ServiceMMTTValid extends ServiceMHTTValid {

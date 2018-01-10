@@ -11,8 +11,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import eu.erasmuswithoutpaper.registry.internet.HttpSigRsaPublicKey;
-import eu.erasmuswithoutpaper.registry.internet.Internet.Request;
-import eu.erasmuswithoutpaper.registry.internet.Internet.Response;
+import eu.erasmuswithoutpaper.registry.internet.Request;
+import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 import net.adamcin.httpsig.api.Algorithm;

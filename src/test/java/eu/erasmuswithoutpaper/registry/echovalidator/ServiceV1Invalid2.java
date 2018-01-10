@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.security.cert.X509Certificate;
 import java.util.List;
 
-import eu.erasmuswithoutpaper.registry.internet.Internet.Request;
-import eu.erasmuswithoutpaper.registry.internet.Internet.Response;
+import eu.erasmuswithoutpaper.registry.internet.Request;
+import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 import org.assertj.core.util.Lists;

@@ -8,8 +8,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-import eu.erasmuswithoutpaper.registry.internet.Internet.Request;
-
 public class InternetTestHelpers {
 
   public static List<String> extractParams(Request request, String paramName) {

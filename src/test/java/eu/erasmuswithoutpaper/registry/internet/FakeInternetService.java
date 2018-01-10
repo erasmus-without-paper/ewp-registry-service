@@ -2,9 +2,6 @@ package eu.erasmuswithoutpaper.registry.internet;
 
 import java.io.IOException;
 
-import eu.erasmuswithoutpaper.registry.internet.Internet.Request;
-import eu.erasmuswithoutpaper.registry.internet.Internet.Response;
-
 /**
  * A virtual HTTP service that can be plugged into the {@link FakeInternet} instance (for testing
  * purposes).
