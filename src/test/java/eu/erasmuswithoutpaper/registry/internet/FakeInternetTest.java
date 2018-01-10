@@ -17,6 +17,8 @@ import java.util.Base64;
 
 import eu.erasmuswithoutpaper.registry.WRTest;
 import eu.erasmuswithoutpaper.registry.internet.FakeInternet.MultipleHandlersConflict;
+import eu.erasmuswithoutpaper.registry.internet.sec.HttpSigResponseSigner;
+import eu.erasmuswithoutpaper.registry.internet.sec.ResponseSigner;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -46,13 +48,13 @@ public class FakeInternetTest extends WRTest {
   public void testDigestBackend() {
     Request request = new Request("GET", "https://example.com/");
     request.setBody("{\"hello\": \"world\"}".getBytes(StandardCharsets.UTF_8));
-    Response response = new Response(request, 200, request.getBody().get());
+    Response response = new Response(200, request.getBody().get());
 
     request.recomputeAndAttachDigestHeader();
     assertThat(request.getHeader("Digest"))
         .isEqualTo("SHA-256=X48E9qOokqqrvdts8nOJRJN3OWDUoyWxBf7kbu9DBPE=");
 
-    response.recomputeAndAttachDigestHeader();
+    HttpSigResponseSigner.recomputeAndAttachDigestHeader(response);
     assertThat(response.getHeader("Digest"))
         .isEqualTo("SHA-256=X48E9qOokqqrvdts8nOJRJN3OWDUoyWxBf7kbu9DBPE=");
   }
@@ -68,7 +70,7 @@ public class FakeInternetTest extends WRTest {
         @Override
         public Response handleInternetRequest(Request request) throws IOException {
           if (request.getUrl().equals(url1)) {
-            return new Response(request, 200, "It works!".getBytes(StandardCharsets.UTF_8));
+            return new Response(200, "It works!".getBytes(StandardCharsets.UTF_8));
           } else {
             return null;
           }
@@ -83,7 +85,7 @@ public class FakeInternetTest extends WRTest {
         @Override
         public Response handleInternetRequest(Request request) throws IOException {
           // This service always responds, it doesn't verify if the request is for its domain.
-          return new Response(request, 200, "I'm a bad service!".getBytes(StandardCharsets.UTF_8),
+          return new Response(200, "I'm a bad service!".getBytes(StandardCharsets.UTF_8),
               Maps.newHashMap("Special-Header", "Special Value"));
         }
       };
@@ -193,7 +195,7 @@ public class FakeInternetTest extends WRTest {
     request.putHeader("Content-Length", "18");
     request.setBody("{\"hello\": \"world\"}".getBytes(StandardCharsets.UTF_8));
 
-    Response response = new Response(request, 200, request.getBody().get());
+    Response response = new Response(200, request.getBody().get());
     response.putHeader("Host", "example.com");
     response.putHeader("Date", "Sun, 05 Jan 2014 21:31:40 GMT");
     response.putHeader("Content-Type", "application/json");
@@ -213,7 +215,10 @@ public class FakeInternetTest extends WRTest {
         + "6m79cNfwwb8DMJ5cou1s7uEGKKCs+FLEEaDV5lp7q25WqS+lavg7T8hc0GppauB"
         + "6hbgEKTwblDHYGEtbGmtdHgVCk9SuS13F0hZ8FD0k/5OxEPXe5WozsbM=\","
         + "headers=\"date\",algorithm=\"rsa-sha256\"");
-    response.recomputeAndAttachSignatureHeader("Test", myKeyPair, Lists.newArrayList());
+    ResponseSigner signer =
+        new HttpSigResponseSigner(request, "Test", myKeyPair, Lists.newArrayList());
+    signer.sign(response);
+    // response.recomputeAndAttachSignatureHeader("Test", myKeyPair, Lists.newArrayList());
     assertThat(response.getHeader("Signature")).isEqualTo(
         "keyId=\"Test\"," + "signature=\"SjWJWbWN7i0wzBvtPl8rbASWz5xQW6mcJmn+ibttBqtifLN7Sazz"
             + "6m79cNfwwb8DMJ5cou1s7uEGKKCs+FLEEaDV5lp7q25WqS+lavg7T8hc0GppauB"
@@ -241,8 +246,10 @@ public class FakeInternetTest extends WRTest {
         + "ukWgHoBTLMhYS2Gb51gWxpeIq8knRmPnYePbF5MOkR0Zkly4zKH7s1dE=\","
         + "headers=\"(request-target) host date content-type digest content-length\","
         + "algorithm=\"rsa-sha256\"");
-    response.recomputeAndAttachSignatureHeader("Test", myKeyPair, Lists.newArrayList(
-        "(request-target)", "host", "date", "content-type", "digest", "content-length"));
+    ResponseSigner signer2 =
+        new HttpSigResponseSigner(request, "Test", myKeyPair, Lists.newArrayList("(request-target)",
+            "host", "date", "content-type", "digest", "content-length"));
+    signer2.sign(response);
     assertThat(response.getHeader("Signature")).isEqualTo(
         "keyId=\"Test\"," + "signature=\"vSdrb+dS3EceC9bcwHSo4MlyKS59iFIrhgYkz8+oVLEEzmYZZvRs"
             + "8rgOp+63LEM3v+MFHB32NfpB2bEKBIvB1q52LaEUHFv120V01IL+TAD48XaERZF"

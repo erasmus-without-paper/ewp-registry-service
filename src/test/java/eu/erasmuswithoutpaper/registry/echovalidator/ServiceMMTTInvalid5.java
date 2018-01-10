@@ -21,6 +21,6 @@ public class ServiceMMTTInvalid5 extends ServiceMMTTValid {
     super.includeProperHeaders(request, response);
     response.removeHeader("X-Request-Id");
     // Sign again.
-    this.includeSignatureHeader(response);
+    this.includeSignatureHeader(request, response);
   }
 }

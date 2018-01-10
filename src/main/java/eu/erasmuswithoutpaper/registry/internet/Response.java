@@ -1,44 +1,16 @@
 package eu.erasmuswithoutpaper.registry.internet;
 
-import java.security.KeyPair;
-import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.google.common.collect.Lists;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import net.adamcin.httpsig.api.Algorithm;
-import net.adamcin.httpsig.api.Authorization;
-import net.adamcin.httpsig.api.Challenge;
-import net.adamcin.httpsig.api.DefaultKeychain;
-import net.adamcin.httpsig.api.Key;
-import net.adamcin.httpsig.api.RequestContent;
-import net.adamcin.httpsig.api.Signer;
-import org.apache.commons.codec.digest.DigestUtils;
 
 /**
  * Represents an "advanced" HTTP response.
  */
 public class Response {
 
-  private static String getSignatureFromAuthorization(String authz) {
-    // We need this helper because the library we use wasn't optimized for
-    // server signatures (signature.toString() produces output which is valid
-    // for the Authorization header, but not for the Signature header).
-    String result = authz;
-    String start = "signature ";
-    String prefix = result.substring(0, start.length()).toLowerCase(Locale.US);
-    if (prefix.equals(start)) {
-      result = result.substring(start.length());
-    }
-    return result.trim();
-  }
-
-  private final Request initialRequest;
   private final int status;
   private byte[] body;
   private final HeaderMap headers;
@@ -46,41 +18,27 @@ public class Response {
   /**
    * Create a new response, without and headers.
    *
-   * @param initialRequest The original {@link Request} for which this response is being created.
    * @param status The HTTP response status.
    * @param body The response body.
    */
-  public Response(Request initialRequest, int status, byte[] body) {
-    // WRTODO: is initialRequest necessary?
-    this(initialRequest, status, body, new HeaderMap());
+  public Response(int status, byte[] body) {
+    this(status, body, new HeaderMap());
   }
 
   /**
-   * Same as {@link #Response(Request, int, byte[])}, but with headers.
+   * Same as {@link #Response(int, byte[])}, but with headers.
    *
-   * @param initialRequest The original {@link Request} for which this response is being created.
    * @param status The HTTP response status.
    * @param body The response body.
    * @param initialHeaders Initial values for response headers.
    */
-  public Response(Request initialRequest, int status, byte[] body,
-      Map<String, String> initialHeaders) {
-    this.initialRequest = initialRequest;
+  public Response(int status, byte[] body, Map<String, String> initialHeaders) {
     this.status = status;
     this.body = body.clone();
     this.headers = new HeaderMap();
     for (Entry<String, String> entry : initialHeaders.entrySet()) {
       this.putHeader(entry.getKey(), entry.getValue());
     }
-  }
-
-  /**
-   * @return Compute a proper (expected) Base64-encoded for the current contents of the body (only
-   *         compute, don't change anything within the request).
-   */
-  public String computeBodyDigest() {
-    byte[] binaryDigest = DigestUtils.sha256(this.body);
-    return Base64.getEncoder().encodeToString(binaryDigest);
   }
 
   /**
@@ -123,49 +81,6 @@ public class Response {
   public void putHeader(String key, String value) {
     if (key != null) {
       this.headers.put(key, value);
-    }
-  }
-
-  /**
-   * Compute and attach a proper Digest header, based on the current response body. This needs to be
-   * called explicitly after the body changes.
-   */
-  public void recomputeAndAttachDigestHeader() {
-    this.putHeader("Digest", "SHA-256=" + this.computeBodyDigest());
-  }
-
-  /**
-   * Sign the response headers with the provided credentials.
-   *
-   * @param keyId The SHA-256 fingerprint of the {@link KeyPair} used for signing.
-   * @param keyPair {@link KeyPair} to be used for signing.
-   * @param headersToSign List of headers to be signed.
-   */
-  public void recomputeAndAttachSignatureHeader(String keyId, KeyPair keyPair,
-      List<String> headersToSign) {
-
-    DefaultKeychain keychain = new DefaultKeychain();
-    Key kckey = new HttpSigRsaKeyPair(keyId, keyPair);
-    keychain.add(kckey);
-    Signer signer = new Signer(keychain);
-    List<String> headersSigned = new ArrayList<>(headersToSign);
-    if (headersSigned.size() == 0) {
-      headersSigned.add("date");
-    }
-    signer.rotateKeys(
-        new Challenge("Not verified", headersSigned, Lists.newArrayList(Algorithm.RSA_SHA256)));
-
-    RequestContent.Builder rcb = new RequestContent.Builder();
-    rcb.setRequestTarget(this.initialRequest.getMethod(),
-        this.initialRequest.getPathPseudoHeader());
-    for (Map.Entry<String, String> entry : this.headers.entrySet()) {
-      rcb.addHeader(entry.getKey(), entry.getValue());
-    }
-    RequestContent content = rcb.build();
-
-    Authorization authz = signer.sign(content, headersSigned);
-    if (authz != null) {
-      this.putHeader("Signature", getSignatureFromAuthorization(authz.getHeaderValue()));
     }
   }
 

@@ -22,7 +22,7 @@ public class ServiceMMTTInvalid7 extends ServiceMMTTValid {
     if (response.getHeader("X-Request-Signature") != null) {
       response.putHeader("X-Request-Signature", "Bad Signature");
       // Sign again.
-      this.includeSignatureHeader(response);
+      this.includeSignatureHeader(request, response);
     }
   }
 }

@@ -157,7 +157,7 @@ public class RealInternet implements Internet {
 
     conn.disconnect();
 
-    return new Response(request, status, body, headers);
+    return new Response(status, body, headers);
   }
 
   @Override

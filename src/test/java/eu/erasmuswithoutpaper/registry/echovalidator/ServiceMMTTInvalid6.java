@@ -21,6 +21,6 @@ public class ServiceMMTTInvalid6 extends ServiceMMTTValid {
     super.includeProperHeaders(request, response);
     response.removeHeader("X-Request-Signature");
     // Sign again.
-    this.includeSignatureHeader(response);
+    this.includeSignatureHeader(request, response);
   }
 }

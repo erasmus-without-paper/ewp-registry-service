@@ -21,6 +21,6 @@ public class ServiceMMTTInvalid1 extends ServiceMMTTValid {
     this.includeDigestHeader(response);
     this.includeXRequestIdHeader(request, response);
     this.includeXRequestSignature(request, response);
-    this.includeSignatureHeader(response);
+    this.includeSignatureHeader(request, response);
   }
 }

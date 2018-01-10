@@ -10,6 +10,8 @@ import java.util.List;
 
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
+import eu.erasmuswithoutpaper.registry.internet.sec.HttpSigResponseSigner;
+import eu.erasmuswithoutpaper.registry.internet.sec.ResponseSigner;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 import net.adamcin.httpsig.api.Authorization;
@@ -71,7 +73,7 @@ public class ServiceMHTTValid extends ServiceMTTTValid {
   }
 
   protected void includeDigestHeader(Response response) {
-    response.recomputeAndAttachDigestHeader();
+    HttpSigResponseSigner.recomputeAndAttachDigestHeader(response);
     // Also add a digest in an unknown algorithm. This is valid, and shouldn't "break"
     // the validator.
     response.putHeader("Digest", response.getHeader("Digest") + ", Unknown-Algorithm=Value");
@@ -82,17 +84,19 @@ public class ServiceMHTTValid extends ServiceMTTTValid {
     this.includeDigestHeader(response);
     this.includeXRequestIdHeader(request, response);
     this.includeXRequestSignature(request, response);
-    this.includeSignatureHeader(response);
+    this.includeSignatureHeader(request, response);
   }
 
-  protected void includeSignatureHeader(Response response) {
+  protected void includeSignatureHeader(Request request, Response response) {
     List<String> headersToSign = new ArrayList<>();
     for (String headerName : this.getHeaderCandidatesToSign()) {
       if (response.getHeader(headerName) != null) {
         headersToSign.add(headerName);
       }
     }
-    response.recomputeAndAttachSignatureHeader(this.myKeyId, this.myKeyPair, headersToSign);
+    ResponseSigner signer =
+        new HttpSigResponseSigner(request, this.myKeyId, this.myKeyPair, headersToSign);
+    signer.sign(response);
   }
 
   protected void includeXRequestIdHeader(Request request, Response response) {

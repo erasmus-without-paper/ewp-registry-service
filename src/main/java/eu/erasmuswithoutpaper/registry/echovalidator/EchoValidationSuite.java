@@ -27,6 +27,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import eu.erasmuswithoutpaper.registry.common.Utils;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildError;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildParams;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildResult;
@@ -1016,7 +1017,7 @@ class EchoValidationSuite {
     if (digestHeader == null) {
       throw new Failure("Missing response header: Digest", Status.FAILURE, response);
     }
-    String expectedSha256Digest = response.computeBodyDigest();
+    String expectedSha256Digest = Utils.computeDigest(response.getBody());
     Map<String, String> attrs = this.parseDigestHeaderValue(digestHeader);
     if (!attrs.containsKey("SHA-256")) {
       throw new Failure("Missing SHA-256 digest in Digest header", Status.FAILURE, response);

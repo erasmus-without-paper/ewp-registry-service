@@ -2,6 +2,7 @@ package eu.erasmuswithoutpaper.registry.common;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Base64;
 import java.util.Optional;
 
 import javax.xml.XMLConstants;
@@ -13,6 +14,7 @@ import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
 
 import org.springframework.web.util.HtmlUtils;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
@@ -33,6 +35,15 @@ public class Utils {
 
   private static final String[] ORDINAL_SUFFIXES =
       { "th", "st", "nd", "rd", "th", "th", "th", "th", "th", "th" };
+
+  /**
+   * @param input Data to compute digest of.
+   * @return Base64-encoded SHA-256 digest of the input.
+   */
+  public static String computeDigest(byte[] input) {
+    byte[] binaryDigest = DigestUtils.sha256(input);
+    return Base64.getEncoder().encodeToString(binaryDigest);
+  }
 
   /**
    * Escape characters using HTML entities.
