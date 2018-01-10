@@ -6,7 +6,6 @@ import java.security.KeyPair;
 import java.security.cert.X509Certificate;
 import java.util.Base64;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -35,7 +34,7 @@ public class Request {
   private String method;
   private String url;
   private Optional<byte[]> body;
-  private final Map<String, String> headers;
+  private final HeaderMap headers;
   private Optional<X509Certificate> clientCertificate;
   private Optional<KeyPair> keyPair;
 
@@ -49,7 +48,7 @@ public class Request {
     this.method = method;
     this.url = url;
     this.body = Optional.empty();
-    this.headers = new HashMap<>();
+    this.headers = new HeaderMap();
     this.clientCertificate = Optional.empty();
   }
 
@@ -84,9 +83,9 @@ public class Request {
 
   /**
    * @return {@link KeyPair} which has been used for signing this request (present only if the
-   *         request has been created and signed by ourselves).
+   *         request is signed by ourselves).
    */
-  public Optional<KeyPair> getClientCertificateKeyPair() { // WRCLEANIT?
+  public Optional<KeyPair> getClientCertificateKeyPair() {
     return this.keyPair;
   }
 
@@ -95,7 +94,7 @@ public class Request {
    * @return The value of this header, or <code>null</code>, if no such header is present.
    */
   public String getHeader(String key) {
-    return this.headers.get(key.toLowerCase(Locale.US));
+    return this.headers.get(key);
   }
 
   /**
@@ -150,7 +149,7 @@ public class Request {
    * @param value The (new) value.
    */
   public void putHeader(String key, String value) {
-    this.headers.put(key.toLowerCase(Locale.US), value);
+    this.headers.put(key, value);
   }
 
   /**
@@ -176,13 +175,13 @@ public class Request {
     Key kckey = new HttpSigRsaKeyPair(keyId, keyPair);
     keychain.add(kckey);
     Signer signer = new Signer(keychain);
-    List<String> headersSigned =
+    List<String> headersBeingSigned =
         headersToSign.stream().map(s -> s.toLowerCase(Locale.US)).collect(Collectors.toList());
-    if (headersSigned.size() == 0) {
-      headersSigned.add("date");
+    if (headersBeingSigned.size() == 0) {
+      headersBeingSigned.add("date");
     }
-    signer.rotateKeys(
-        new Challenge("Not verified", headersSigned, Lists.newArrayList(Algorithm.RSA_SHA256)));
+    signer.rotateKeys(new Challenge("Not verified", headersBeingSigned,
+        Lists.newArrayList(Algorithm.RSA_SHA256)));
 
     RequestContent.Builder rcb = new RequestContent.Builder();
     rcb.setRequestTarget(this.getMethod(), this.getPathPseudoHeader());
@@ -191,7 +190,7 @@ public class Request {
     }
     RequestContent content = rcb.build();
 
-    Authorization authz = signer.sign(content, headersSigned);
+    Authorization authz = signer.sign(content, headersBeingSigned);
     if (authz == null) {
       throw new RuntimeException("Could not sign");
     }
@@ -202,7 +201,7 @@ public class Request {
    * @param key The name of the header to be removed (case-insensitive).
    */
   public void removeHeader(String key) {
-    this.headers.remove(key.toLowerCase(Locale.US));
+    this.headers.remove(key);
   }
 
   /**

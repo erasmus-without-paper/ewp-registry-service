@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import net.adamcin.httpsig.api.Algorithm;
 import net.adamcin.httpsig.api.Authorization;
@@ -42,8 +41,7 @@ public class Response {
   private final Request initialRequest;
   private final int status;
   private byte[] body;
-
-  private final Map<String, String> headers;
+  private final HeaderMap headers;
 
   /**
    * Create a new response, without and headers.
@@ -54,7 +52,7 @@ public class Response {
    */
   public Response(Request initialRequest, int status, byte[] body) {
     // WRTODO: is initialRequest necessary?
-    this(initialRequest, status, body, Maps.newHashMap());
+    this(initialRequest, status, body, new HeaderMap());
   }
 
   /**
@@ -70,7 +68,7 @@ public class Response {
     this.initialRequest = initialRequest;
     this.status = status;
     this.body = body.clone();
-    this.headers = Maps.newHashMap();
+    this.headers = new HeaderMap();
     for (Entry<String, String> entry : initialHeaders.entrySet()) {
       this.putHeader(entry.getKey(), entry.getValue());
     }
@@ -99,7 +97,7 @@ public class Response {
    * @return Value of the header, or <code>null</code> if not such header exists.
    */
   public String getHeader(String key) {
-    return this.headers.get(key.toLowerCase(Locale.US));
+    return this.headers.get(key);
   }
 
   /**
@@ -124,7 +122,7 @@ public class Response {
    */
   public void putHeader(String key, String value) {
     if (key != null) {
-      this.headers.put(key.toLowerCase(Locale.US), value);
+      this.headers.put(key, value);
     }
   }
 
@@ -177,7 +175,7 @@ public class Response {
    * @param key Name of the header to be removed (case-insensitive).
    */
   public void removeHeader(String key) {
-    this.headers.remove(key.toLowerCase(Locale.US));
+    this.headers.remove(key);
   }
 
   /**
