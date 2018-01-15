@@ -53,7 +53,6 @@ import net.adamcin.httpsig.api.RequestContent;
 import net.adamcin.httpsig.api.VerifyResult;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.http.client.utils.DateUtils;
 import org.joox.Match;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -116,23 +115,6 @@ class EchoValidationSuite {
   }
 
   private static final Logger logger = LoggerFactory.getLogger(EchoValidationSuite.class);
-
-  public static String findErrorsInDateHeader(String dateValue) {
-    Date parsed = DateUtils.parseDate(dateValue);
-    if (parsed == null) {
-      return "Could not parse the date. Make sure it's in a valid RFC 2616 format.";
-    }
-    long given = parsed.getTime();
-    long current = new Date().getTime();
-    long differenceSec = Math.abs(current - given) / 1000;
-    final long maxThresholdSec = 5 * 60;
-    if (differenceSec > maxThresholdSec) {
-      return "Server/client difference exceeds the maximum allowed threshold (it was "
-          + differenceSec + " seconds; allowed: " + maxThresholdSec + ")";
-    }
-    // Seems valid!
-    return null;
-  }
 
   private final EchoValidator parentEchoValidator;
   private final String urlToBeValidated;
@@ -967,7 +949,7 @@ class EchoValidationSuite {
           + "header or the \"Original-Date\" (or both).", Status.FAILURE, response);
     }
     for (String headerName : dateHeadersToVerify) {
-      String errorMessage = findErrorsInDateHeader(response.getHeader(headerName));
+      String errorMessage = Utils.findErrorsInHttpSigDateHeader(response.getHeader(headerName));
       if (errorMessage != null) {
         throw new Failure("The value of response's \"" + headerName
             + "\" header failed verification: " + errorMessage, Status.FAILURE, response);

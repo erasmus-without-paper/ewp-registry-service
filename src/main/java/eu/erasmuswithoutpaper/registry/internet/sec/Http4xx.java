@@ -1,8 +1,6 @@
 package eu.erasmuswithoutpaper.registry.internet.sec;
 
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
 
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
 import eu.erasmuswithoutpaper.registry.internet.HeaderMap;
@@ -19,7 +17,7 @@ public class Http4xx extends Exception {
 
   private final int statusCode;
   private final String developerMessage;
-  private final Map<String, String> extraResponseHeaders;
+  private final HeaderMap headers;
 
   /**
    * @param statusCode HTTP status code to be returned to the client.
@@ -30,7 +28,8 @@ public class Http4xx extends Exception {
     super("HTTP " + statusCode + ": " + developerMessage);
     this.statusCode = statusCode;
     this.developerMessage = developerMessage;
-    this.extraResponseHeaders = new HashMap<>();
+    this.headers = new HeaderMap();
+    this.headers.put("Content-Type", "text/xml; charset=utf-8");
   }
 
   /**
@@ -45,11 +44,7 @@ public class Http4xx extends Exception {
     sb.append("</developer-message>");
     sb.append("</error-response>");
     byte[] body = sb.toString().getBytes(StandardCharsets.UTF_8);
-
-    HeaderMap headers = new HeaderMap();
-    headers.put("Content-Type", "text/xml; charset=utf-8");
-    headers.putAll(this.extraResponseHeaders);
-    return new Response(this.statusCode, body, headers);
+    return new Response(this.statusCode, body, new HeaderMap(this.headers));
   }
 
   /**
@@ -59,7 +54,16 @@ public class Http4xx extends Exception {
    * @param key Name of the header.
    * @param value Value for the header.
    */
-  protected void putExtraEwpErrorResponseHeader(String key, String value) {
-    this.extraResponseHeaders.put(key, value);
+  public void putEwpErrorResponseHeader(String key, String value) {
+    this.headers.put(key, value);
+  }
+
+  /**
+   * Remove a header from the response which {@link #generateEwpErrorResponse()} will generate.
+   *
+   * @param key The name of the header to be removed.
+   */
+  public void removeEwpErrorResponseHeader(String key) {
+    this.headers.remove(key);
   }
 }

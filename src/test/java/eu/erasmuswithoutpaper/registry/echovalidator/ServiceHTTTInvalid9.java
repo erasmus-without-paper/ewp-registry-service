@@ -3,6 +3,8 @@ package eu.erasmuswithoutpaper.registry.echovalidator;
 import java.security.interfaces.RSAPublicKey;
 
 import eu.erasmuswithoutpaper.registry.internet.Request;
+import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigRequestAuthorizer;
+import eu.erasmuswithoutpaper.registry.internet.sec.Http4xx;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 import net.adamcin.httpsig.api.Authorization;
@@ -17,8 +19,13 @@ public class ServiceHTTTInvalid9 extends ServiceHTTTValid {
   }
 
   @Override
-  protected void verifySignature(Request request, RSAPublicKey expectedClientKey,
-      Authorization authz) throws ErrorResponseException {
-    return;
+  protected EwpHttpSigRequestAuthorizer newAuthorizer() {
+    return new EwpHttpSigRequestAuthorizer(this.registryClient) {
+      @Override
+      protected void verifySignature(Request request, RSAPublicKey expectedClientKey,
+          Authorization authz) throws Http4xx {
+        return;
+      }
+    };
   }
 }

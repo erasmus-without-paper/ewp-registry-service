@@ -18,4 +18,13 @@ public class HeaderMap extends TreeMap<String, String> {
     super(String.CASE_INSENSITIVE_ORDER);
   }
 
+  /**
+   * Construct a new {@link HeaderMap} with keys and values copied from the other map.
+   *
+   * @param headers The map whose mappings are to be placed in this map.
+   */
+  public HeaderMap(HeaderMap headers) {
+    super(headers);
+  }
+
 }
