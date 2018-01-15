@@ -42,9 +42,17 @@ public class Utils {
    * @param input Data to compute digest of.
    * @return Base64-encoded SHA-256 digest of the input.
    */
-  public static String computeDigest(byte[] input) {
+  public static String computeDigestBase64(byte[] input) {
     byte[] binaryDigest = DigestUtils.sha256(input);
     return Base64.getEncoder().encodeToString(binaryDigest);
+  }
+
+  /**
+   * @param input Data to compute digest of.
+   * @return Hex-encoded SHA-256 digest of the input.
+   */
+  public static String computeDigestHex(byte[] input) {
+    return DigestUtils.sha256Hex(input);
   }
 
   /**

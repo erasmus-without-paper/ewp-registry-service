@@ -5,22 +5,8 @@ import java.net.URL;
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
 import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
-
-import eu.erasmuswithoutpaper.registry.common.Utils;
-
-import com.google.common.collect.Lists;
-import net.adamcin.httpsig.api.Algorithm;
-import net.adamcin.httpsig.api.Authorization;
-import net.adamcin.httpsig.api.Challenge;
-import net.adamcin.httpsig.api.DefaultKeychain;
-import net.adamcin.httpsig.api.Key;
-import net.adamcin.httpsig.api.RequestContent;
-import net.adamcin.httpsig.api.Signer;
 
 /**
  * Represents an abstract HTTP request.
@@ -146,51 +132,6 @@ public class Request {
    */
   public void putHeader(String key, String value) {
     this.headers.put(key, value);
-  }
-
-  /**
-   * Analyze the current body, and attach a valid Digest header with the SHA-256 digest of this
-   * body. This needs to be called explicitly, after the body is changed.
-   */
-  public void recomputeAndAttachDigestHeader() {
-    this.putHeader("Digest", "SHA-256=" + Utils.computeDigest(this.getBodyOrEmpty()));
-  }
-
-  /**
-   * Analyze the current headers, and sign them with the given credentials. The needs to be called
-   * explicitly, after the headers are changed.
-   *
-   * @param keyId SHA-256 fingerprint of the {@link KeyPair} with which we will be signing.
-   * @param keyPair The {@link KeyPair} with which we will be signing.
-   * @param headersToSign The list of headers to be signed (case-insensitive).
-   */
-  public void recomputeAndAttachHttpSigAuthorizationHeader(String keyId, KeyPair keyPair,
-      List<String> headersToSign) {
-
-    DefaultKeychain keychain = new DefaultKeychain();
-    Key kckey = new HttpSigRsaKeyPair(keyId, keyPair);
-    keychain.add(kckey);
-    Signer signer = new Signer(keychain);
-    List<String> headersBeingSigned =
-        headersToSign.stream().map(s -> s.toLowerCase(Locale.US)).collect(Collectors.toList());
-    if (headersBeingSigned.size() == 0) {
-      headersBeingSigned.add("date");
-    }
-    signer.rotateKeys(new Challenge("Not verified", headersBeingSigned,
-        Lists.newArrayList(Algorithm.RSA_SHA256)));
-
-    RequestContent.Builder rcb = new RequestContent.Builder();
-    rcb.setRequestTarget(this.getMethod(), this.getPathPseudoHeader());
-    for (Map.Entry<String, String> entry : this.headers.entrySet()) {
-      rcb.addHeader(entry.getKey(), entry.getValue());
-    }
-    RequestContent content = rcb.build();
-
-    Authorization authz = signer.sign(content, headersBeingSigned);
-    if (authz == null) {
-      throw new RuntimeException("Could not sign");
-    }
-    this.putHeader("Authorization", authz.getHeaderValue());
   }
 
   /**

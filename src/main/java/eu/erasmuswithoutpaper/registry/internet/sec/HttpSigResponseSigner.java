@@ -7,7 +7,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import eu.erasmuswithoutpaper.registry.common.Utils;
-import eu.erasmuswithoutpaper.registry.internet.HttpSigRsaKeyPair;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
 
@@ -37,7 +36,7 @@ public class HttpSigResponseSigner implements ResponseSigner {
    * @param response The response to be processed.
    */
   public static void recomputeAndAttachDigestHeader(Response response) {
-    response.putHeader("Digest", "SHA-256=" + Utils.computeDigest(response.getBody()));
+    response.putHeader("Digest", "SHA-256=" + Utils.computeDigestBase64(response.getBody()));
   }
 
   private static String getSignatureFromAuthorization(String authz) {

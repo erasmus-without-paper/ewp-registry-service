@@ -238,7 +238,6 @@ public class EchoValidatorTest extends WRTest {
       service = new ServiceHTTTInvalid4(echoUrlHTTT, this.client);
       this.internet.addFakeInternetService(service);
       String out = this.getValidatorReport(echoUrlHTTT);
-      assertThat(out).containsOnlyOnce("FAILURE");
       assertThat(out).contains(
           "FAILURE: Trying SecMethodCombination[HTTT] with some extra unknown, but properly signed headers");
       this.internet.removeFakeInternetService(service);

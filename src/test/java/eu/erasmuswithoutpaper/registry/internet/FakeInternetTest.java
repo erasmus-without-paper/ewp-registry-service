@@ -14,10 +14,13 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
+import java.util.List;
 
 import eu.erasmuswithoutpaper.registry.WRTest;
 import eu.erasmuswithoutpaper.registry.internet.FakeInternet.MultipleHandlersConflict;
+import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigRequestSigner;
 import eu.erasmuswithoutpaper.registry.internet.sec.HttpSigResponseSigner;
+import eu.erasmuswithoutpaper.registry.internet.sec.RequestSigner;
 import eu.erasmuswithoutpaper.registry.internet.sec.ResponseSigner;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,21 +46,6 @@ public class FakeInternetTest extends WRTest {
 
   @Autowired
   private FakeInternet internet;
-
-  @Test
-  public void testDigestBackend() {
-    Request request = new Request("GET", "https://example.com/");
-    request.setBody("{\"hello\": \"world\"}".getBytes(StandardCharsets.UTF_8));
-    Response response = new Response(200, request.getBody().get());
-
-    request.recomputeAndAttachDigestHeader();
-    assertThat(request.getHeader("Digest"))
-        .isEqualTo("SHA-256=X48E9qOokqqrvdts8nOJRJN3OWDUoyWxBf7kbu9DBPE=");
-
-    HttpSigResponseSigner.recomputeAndAttachDigestHeader(response);
-    assertThat(response.getHeader("Digest"))
-        .isEqualTo("SHA-256=X48E9qOokqqrvdts8nOJRJN3OWDUoyWxBf7kbu9DBPE=");
-  }
 
   @Test
   public void testFakeServices() {
@@ -206,19 +194,29 @@ public class FakeInternetTest extends WRTest {
 
     /*
      * Note, that our backend explicitly adds the `headers="date"` attribute. This is not required
-     * be the specs, but it's still valid.
+     * by the specs, but it's still valid.
      */
 
-    request.recomputeAndAttachHttpSigAuthorizationHeader("Test", myKeyPair, Lists.newArrayList());
+    RequestSigner reqSigner1 = new EwpHttpSigRequestSigner(myKeyPair) {
+      @Override
+      public String getKeyId() {
+        return "Test";
+      }
+
+      @Override
+      protected List<String> getHeadersToSign(Request request) {
+        return Lists.newArrayList();
+      }
+    };
+    reqSigner1.sign(request);
     assertThat(request.getHeader("Authorization")).isEqualTo("Signature keyId=\"Test\","
         + "signature=\"SjWJWbWN7i0wzBvtPl8rbASWz5xQW6mcJmn+ibttBqtifLN7Sazz"
         + "6m79cNfwwb8DMJ5cou1s7uEGKKCs+FLEEaDV5lp7q25WqS+lavg7T8hc0GppauB"
         + "6hbgEKTwblDHYGEtbGmtdHgVCk9SuS13F0hZ8FD0k/5OxEPXe5WozsbM=\","
         + "headers=\"date\",algorithm=\"rsa-sha256\"");
-    ResponseSigner signer =
+    ResponseSigner resSigner1 =
         new HttpSigResponseSigner(request, "Test", myKeyPair, Lists.newArrayList());
-    signer.sign(response);
-    // response.recomputeAndAttachSignatureHeader("Test", myKeyPair, Lists.newArrayList());
+    resSigner1.sign(response);
     assertThat(response.getHeader("Signature")).isEqualTo(
         "keyId=\"Test\"," + "signature=\"SjWJWbWN7i0wzBvtPl8rbASWz5xQW6mcJmn+ibttBqtifLN7Sazz"
             + "6m79cNfwwb8DMJ5cou1s7uEGKKCs+FLEEaDV5lp7q25WqS+lavg7T8hc0GppauB"
@@ -227,8 +225,19 @@ public class FakeInternetTest extends WRTest {
 
     // C.2. Basic Test
 
-    request.recomputeAndAttachHttpSigAuthorizationHeader("Test", myKeyPair,
-        Lists.newArrayList("(request-target)", "host", "date"));
+    RequestSigner reqSigner2 = new EwpHttpSigRequestSigner(myKeyPair) {
+
+      @Override
+      public String getKeyId() {
+        return "Test";
+      }
+
+      @Override
+      protected List<String> getHeadersToSign(Request request) {
+        return Lists.newArrayList("(request-target)", "host", "date");
+      }
+    };
+    reqSigner2.sign(request);
     assertThat(request.getHeader("Authorization"))
         .isEqualTo("Signature keyId=\"Test\"," + "signature=\"qdx+H7PHHDZgy4"
             + "y/Ahn9Tny9V3GP6YgBPyUXMmoxWtLbHpUnXS2mg2+SbrQDMCJypxBLSPQR2aAjn"
@@ -238,8 +247,19 @@ public class FakeInternetTest extends WRTest {
 
     // C.3. All Headers Test
 
-    request.recomputeAndAttachHttpSigAuthorizationHeader("Test", myKeyPair, Lists.newArrayList(
-        "(request-target)", "host", "date", "content-type", "digest", "content-length"));
+    RequestSigner reqSigner3 = new EwpHttpSigRequestSigner(myKeyPair) {
+      @Override
+      public String getKeyId() {
+        return "Test";
+      }
+
+      @Override
+      protected List<String> getHeadersToSign(Request request) {
+        return Lists.newArrayList("(request-target)", "host", "date", "content-type", "digest",
+            "content-length");
+      }
+    };
+    reqSigner3.sign(request);
     assertThat(request.getHeader("Authorization")).isEqualTo("Signature keyId=\"Test\","
         + "signature=\"vSdrb+dS3EceC9bcwHSo4MlyKS59iFIrhgYkz8+oVLEEzmYZZvRs"
         + "8rgOp+63LEM3v+MFHB32NfpB2bEKBIvB1q52LaEUHFv120V01IL+TAD48XaERZF"

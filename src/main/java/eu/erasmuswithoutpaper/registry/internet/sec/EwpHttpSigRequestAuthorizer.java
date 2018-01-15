@@ -169,7 +169,7 @@ public class EwpHttpSigRequestAuthorizer implements RequestAuthorizer {
     if (digestHeader == null) {
       throw new Http4xx(400, "Missing header: Digest");
     }
-    String expectedSha256Digest = Utils.computeDigest(request.getBodyOrEmpty());
+    String expectedSha256Digest = Utils.computeDigestBase64(request.getBodyOrEmpty());
     if (!digestHeader.contains("SHA-256=" + expectedSha256Digest)) {
       throw new Http4xx(400, "Digest mismatch. Expected: " + expectedSha256Digest);
     }

@@ -1,4 +1,4 @@
-package eu.erasmuswithoutpaper.registry.internet;
+package eu.erasmuswithoutpaper.registry.internet.sec;
 
 import java.security.InvalidKeyException;
 import java.security.KeyPair;
