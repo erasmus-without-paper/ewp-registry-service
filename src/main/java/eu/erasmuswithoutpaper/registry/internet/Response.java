@@ -1,6 +1,8 @@
 package eu.erasmuswithoutpaper.registry.internet;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -14,6 +16,7 @@ public class Response {
   private final int status;
   private byte[] body;
   private final HeaderMap headers;
+  private final List<String> processingWarnings;
 
   /**
    * Create a new response, without and headers.
@@ -39,6 +42,15 @@ public class Response {
     for (Entry<String, String> entry : initialHeaders.entrySet()) {
       this.putHeader(entry.getKey(), entry.getValue());
     }
+    this.processingWarnings = new ArrayList<>();
+  }
+
+  /**
+   * @param message Warning to be added to the list of warnings returned by
+   *        {@link #getProcessingWarnings()}.
+   */
+  public void addProcessingWarning(String message) {
+    this.processingWarnings.add(message);
   }
 
   /**
@@ -63,6 +75,15 @@ public class Response {
    */
   public Map<String, String> getHeaders() {
     return Collections.unmodifiableMap(this.headers);
+  }
+
+  /**
+   * @return The list of warnings, which should be visible to the user debugging their requests and
+   *         responses. For example, it may say that some headers have been removed during the
+   *         authorization process, because they were not signed.
+   */
+  public List<String> getProcessingWarnings() {
+    return Collections.unmodifiableList(this.processingWarnings);
   }
 
   /**

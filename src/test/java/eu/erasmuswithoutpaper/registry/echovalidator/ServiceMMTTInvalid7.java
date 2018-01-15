@@ -4,6 +4,7 @@ import java.security.KeyPair;
 
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
+import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigResponseSigner;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 /**
@@ -17,12 +18,12 @@ public class ServiceMMTTInvalid7 extends ServiceMMTTValid {
   }
 
   @Override
-  protected void includeProperHeaders(Request request, Response response) {
-    super.includeProperHeaders(request, response);
-    if (response.getHeader("X-Request-Signature") != null) {
-      response.putHeader("X-Request-Signature", "Bad Signature");
-      // Sign again.
-      this.includeSignatureHeader(request, response);
-    }
+  protected EwpHttpSigResponseSigner getHttpSigSigner() {
+    return new EwpHttpSigResponseSigner(this.myKeyId, this.myKeyPair) {
+      @Override
+      protected void includeXRequestSignature(Request request, Response response) {
+        response.putHeader("X-Request-Signature", "Bad Signature");
+      }
+    };
   }
 }

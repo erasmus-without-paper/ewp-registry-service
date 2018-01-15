@@ -3,6 +3,7 @@ package eu.erasmuswithoutpaper.registry.echovalidator;
 import java.security.KeyPair;
 
 import eu.erasmuswithoutpaper.registry.internet.Response;
+import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigResponseSigner;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 /**
@@ -16,7 +17,12 @@ public class ServiceMMTTInvalid3 extends ServiceMMTTValid {
   }
 
   @Override
-  protected void includeDigestHeader(Response response) {
-    response.putHeader("Digest", "Unknown-Algorithm=Value");
+  protected EwpHttpSigResponseSigner getHttpSigSigner() {
+    return new EwpHttpSigResponseSigner(this.myKeyId, this.myKeyPair) {
+      @Override
+      protected void includeDigestHeader(Response response) {
+        response.putHeader("Digest", "Unknown-Algorithm=Value");
+      }
+    };
   }
 }

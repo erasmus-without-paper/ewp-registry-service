@@ -4,6 +4,7 @@ import java.security.KeyPair;
 
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
+import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigResponseSigner;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 /**
@@ -18,10 +19,15 @@ public class ServiceMMTTInvalid9 extends ServiceMMTTValid {
   }
 
   @Override
-  protected void includeXRequestIdHeader(Request request, Response response) {
-    super.includeXRequestIdHeader(request, response);
-    if (response.getHeader("X-Request-Id") == null) {
-      response.putHeader("X-Request-Id", ""); // empty, but exists.
-    }
+  protected EwpHttpSigResponseSigner getHttpSigSigner() {
+    return new EwpHttpSigResponseSigner(this.myKeyId, this.myKeyPair) {
+      @Override
+      protected void includeXRequestIdHeader(Request request, Response response) {
+        super.includeXRequestIdHeader(request, response);
+        if (response.getHeader("X-Request-Id") == null) {
+          response.putHeader("X-Request-Id", ""); // empty, but exists.
+        }
+      }
+    };
   }
 }

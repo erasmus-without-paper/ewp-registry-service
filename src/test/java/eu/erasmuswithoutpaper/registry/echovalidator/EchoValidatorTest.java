@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.security.KeyPair;
 import java.util.List;
-import java.util.Locale;
 
 import eu.erasmuswithoutpaper.registry.WRTest;
 import eu.erasmuswithoutpaper.registry.echovalidator.ValidationStepWithStatus.Status;
@@ -58,9 +57,6 @@ public class EchoValidatorTest extends WRTest {
     echoUrlMHTT = "https://university.example.com/echo/MHTT/";
     echoUrlMMTT = "https://university.example.com/echo/MMTT/";
     needsReinit = true;
-
-    // https://github.com/adamcin/httpsig-java/issues/9
-    Locale.setDefault(Locale.US);
   }
 
   @Autowired
@@ -460,7 +456,7 @@ public class EchoValidatorTest extends WRTest {
       String out = this.getValidatorReport(echoUrlMMTT);
       assertThat(out).contains("FAILURE");
       assertThat(out).contains("HTTP Signature Server Authentication requires the server "
-          + "to include the correlated X-Request-Id");
+          + "to include the correlated (and signed) X-Request-Id");
       this.internet.removeFakeInternetService(service);
 
     } finally {
@@ -529,7 +525,7 @@ public class EchoValidatorTest extends WRTest {
       service = new ServiceMMTTInvalid9(echoUrlMMTT, this.client, myKeyId, myKeyPair);
       this.internet.addFakeInternetService(service);
       String out = this.getValidatorReport(echoUrlMMTT);
-      assertThat(out).contains("WARNING");
+      assertThat(out).contains("FAILURE");
       assertThat(out).contains("The request didn't contain the X-Request-Id header, "
           + "so the response also shouldn't.");
       this.internet.removeFakeInternetService(service);

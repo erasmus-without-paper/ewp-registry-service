@@ -1,10 +1,16 @@
 package eu.erasmuswithoutpaper.registry.internet.sec;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.security.KeyPair;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import eu.erasmuswithoutpaper.registry.common.Utils;
@@ -39,7 +45,6 @@ public class EwpHttpSigRequestSigner implements RequestSigner {
    */
   public EwpHttpSigRequestSigner(KeyPair keyPair) {
     this.keyPair = keyPair;
-
   }
 
   /**
@@ -61,8 +66,33 @@ public class EwpHttpSigRequestSigner implements RequestSigner {
 
   @Override
   public void sign(Request request) {
-    this.recomputeAndAttachDigestHeader(request);
-    this.recomputeAndAttachAuthorizationHeader(request);
+    this.addMissingHeaders(request);
+    this.includeDigestHeader(request);
+    this.includeAuthorizationHeader(request);
+  }
+
+  private boolean shouldOverrideExistingAuthorization() {
+    return true;
+  }
+
+  /**
+   * Add all extra request headers required by the specs (if these headers have not yet been added
+   * previously).
+   *
+   * @param request The request to add headers to.
+   */
+  protected void addMissingHeaders(Request request) {
+    if (request.getHeader("Host") == null) {
+      request.putHeader("Host", this.parseUrl(request).getHost());
+    }
+    if ((request.getHeader("Date") == null) && (request.getHeader("Original-Date") == null)) {
+      String date =
+          DateTimeFormatter.RFC_1123_DATE_TIME.format(ZonedDateTime.now(ZoneId.of("UTC")));
+      request.putHeader("Date", date);
+    }
+    if (request.getHeader("X-Request-Id") == null) {
+      request.putHeader("X-Request-Id", UUID.randomUUID().toString());
+    }
   }
 
   /**
@@ -85,9 +115,13 @@ public class EwpHttpSigRequestSigner implements RequestSigner {
    *
    * @param request The request to process.
    */
-  protected void recomputeAndAttachAuthorizationHeader(Request request) {
+  protected void includeAuthorizationHeader(Request request) {
+    if ((!this.shouldOverrideExistingAuthorization())
+        && (request.getHeader("Authorization") != null)) {
+      return;
+    }
     DefaultKeychain keychain = new DefaultKeychain();
-    Key kckey = new HttpSigRsaKeyPair(this.getKeyId(), this.getKeyPair());
+    Key kckey = new MyHttpSigRsaKeyPair(this.getKeyId(), this.getKeyPair());
     keychain.add(kckey);
     Signer signer = new Signer(keychain);
     List<String> headersBeingSigned = this.getHeadersToSign(request).stream()
@@ -119,7 +153,31 @@ public class EwpHttpSigRequestSigner implements RequestSigner {
    *
    * @param request The request to be processed.
    */
-  protected void recomputeAndAttachDigestHeader(Request request) {
+  protected void includeDigestHeader(Request request) {
+    if ((!this.shouldOverrideExistingDigest()) && (request.getHeader("Digest") != null)) {
+      return;
+    }
     request.putHeader("Digest", "SHA-256=" + Utils.computeDigestBase64(request.getBodyOrEmpty()));
+  }
+
+  /**
+   * Parse the URL of the request.
+   *
+   * @param request The request to get the URL from.
+   * @return The parsed URL.
+   */
+  protected URL parseUrl(Request request) {
+    try {
+      return new URL(request.getUrl());
+    } catch (MalformedURLException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  /**
+   * @return True, if the signing process should overwrite existing Digest values.
+   */
+  protected boolean shouldOverrideExistingDigest() {
+    return true;
   }
 }

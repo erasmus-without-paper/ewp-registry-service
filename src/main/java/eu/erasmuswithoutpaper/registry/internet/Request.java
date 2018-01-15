@@ -4,7 +4,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -23,6 +25,7 @@ public class Request {
   private final HeaderMap headers;
   private Optional<X509Certificate> clientCertificate;
   private Optional<KeyPair> clientCertificateKeyPair;
+  private final List<String> processingWarnings;
 
   /**
    * Construct a new (somewhat empty) request.
@@ -36,6 +39,15 @@ public class Request {
     this.body = Optional.empty();
     this.headers = new HeaderMap();
     this.clientCertificate = Optional.empty();
+    this.processingWarnings = new ArrayList<>();
+  }
+
+  /**
+   * @param message Warning to be added to the list of warnings returned by
+   *        {@link #getProcessingWarnings()}.
+   */
+  public void addProcessingWarning(String message) {
+    this.processingWarnings.add(message);
   }
 
   /**
@@ -115,6 +127,15 @@ public class Request {
     } catch (MalformedURLException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  /**
+   * @return The list of warnings, which should be visible to the user debugging their requests and
+   *         responses. For example, it may say that some headers have been removed during the
+   *         authorization process, because they were not signed.
+   */
+  public List<String> getProcessingWarnings() {
+    return Collections.unmodifiableList(this.processingWarnings);
   }
 
   /**

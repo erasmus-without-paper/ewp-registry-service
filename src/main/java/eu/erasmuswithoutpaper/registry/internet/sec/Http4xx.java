@@ -9,7 +9,7 @@ import eu.erasmuswithoutpaper.registry.internet.Response;
 import org.apache.commons.lang.StringEscapeUtils;
 
 /**
- * Thrown by signers and authenticators when the input supplied by the external client is invalid in
+ * Thrown by signers and authorizers when the input supplied by the external client is invalid in
  * some way (or doesn't match what the signer or authenticator expects).
  */
 @SuppressWarnings("serial")

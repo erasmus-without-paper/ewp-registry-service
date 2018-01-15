@@ -9,10 +9,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import eu.erasmuswithoutpaper.registry.common.Utils;
-import eu.erasmuswithoutpaper.registry.internet.HttpSigRsaPublicKey;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
@@ -53,6 +53,7 @@ public class EwpHttpSigRequestAuthorizer implements RequestAuthorizer {
     this.verifyRequestIdHeader(request);
     this.verifySignature(request, clientKey, authz);
     this.verifyDigestHeader(request);
+    this.removeUnsignedHeaders(request, authz);
     return new EwpClientWithRsaKey(clientKey);
   }
 
@@ -112,6 +113,26 @@ public class EwpHttpSigRequestAuthorizer implements RequestAuthorizer {
     error.putEwpErrorResponseHeader("WWW-Authenticate", "Signature realm=\"EWP\"");
     error.putEwpErrorResponseHeader("Want-Digest", "SHA-256");
     return error;
+  }
+
+  /**
+   * Remove all headers that hadn't been signed.
+   *
+   * @param request The request to process.
+   * @param authz The {@link Authorization} container to get signing information from.
+   */
+  protected void removeUnsignedHeaders(Request request, Authorization authz) {
+    List<String> keys = request.getHeaders().keySet().stream().map(s -> s.toLowerCase(Locale.US))
+        .collect(Collectors.toList());
+    Set<String> signedKeys =
+        authz.getHeaders().stream().map(s -> s.toLowerCase(Locale.US)).collect(Collectors.toSet());
+    for (String key : keys) {
+      if (!signedKeys.contains(key)) {
+        request.removeHeader(key);
+        request.addProcessingWarning(key + " header was removed during the authorization process, "
+            + "because it has not been signed with HTTP Signature.");
+      }
+    }
   }
 
   /**
@@ -256,7 +277,7 @@ public class EwpHttpSigRequestAuthorizer implements RequestAuthorizer {
   protected void verifySignature(Request request, RSAPublicKey expectedClientKey,
       Authorization authz) throws Http4xx {
     DefaultKeychain keychain = new DefaultKeychain();
-    keychain.add(new HttpSigRsaPublicKey(expectedClientKey));
+    keychain.add(new MyHttpSigRsaPublicKey(expectedClientKey));
     DefaultVerifier verifier = new DefaultVerifier(keychain);
 
     RequestContent.Builder rcb = new RequestContent.Builder();

@@ -13,19 +13,17 @@ import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 
 import eu.erasmuswithoutpaper.registry.WRTest;
 import eu.erasmuswithoutpaper.registry.internet.FakeInternet.MultipleHandlersConflict;
 import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigRequestSigner;
-import eu.erasmuswithoutpaper.registry.internet.sec.HttpSigResponseSigner;
-import eu.erasmuswithoutpaper.registry.internet.sec.RequestSigner;
-import eu.erasmuswithoutpaper.registry.internet.sec.ResponseSigner;
+import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigResponseSigner;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import org.assertj.core.util.Lists;
 import org.assertj.core.util.Maps;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -34,6 +32,51 @@ import org.junit.Test;
  * Tests for {@link FakeInternet}.
  */
 public class FakeInternetTest extends WRTest {
+
+  private static class TestRequestSigner extends EwpHttpSigRequestSigner {
+
+    private final List<String> myHeaders;
+
+    public TestRequestSigner(KeyPair keyPair, String... headers) {
+      super(keyPair);
+      this.myHeaders = Arrays.asList(headers);
+    }
+
+    @Override
+    public String getKeyId() {
+      return "Test";
+    }
+
+    @Override
+    protected List<String> getHeadersToSign(Request request) {
+      return this.myHeaders;
+    }
+
+    @Override
+    protected boolean shouldOverrideExistingDigest() {
+      return false;
+    }
+  }
+
+  private static class TestResponseSigner extends EwpHttpSigResponseSigner {
+
+    private final List<String> myHeaders;
+
+    public TestResponseSigner(KeyPair keyPair, String... headers) {
+      super("Test", keyPair);
+      this.myHeaders = Arrays.asList(headers);
+    }
+
+    @Override
+    protected List<String> getHeadersToSign(Request request, Response response) {
+      return this.myHeaders;
+    }
+
+    @Override
+    protected boolean shouldOverrideExistingDigest() {
+      return false;
+    }
+  }
 
   private static String url1;
   private static String url2;
@@ -197,26 +240,15 @@ public class FakeInternetTest extends WRTest {
      * by the specs, but it's still valid.
      */
 
-    RequestSigner reqSigner1 = new EwpHttpSigRequestSigner(myKeyPair) {
-      @Override
-      public String getKeyId() {
-        return "Test";
-      }
-
-      @Override
-      protected List<String> getHeadersToSign(Request request) {
-        return Lists.newArrayList();
-      }
-    };
+    TestRequestSigner reqSigner1 = new TestRequestSigner(myKeyPair);
     reqSigner1.sign(request);
     assertThat(request.getHeader("Authorization")).isEqualTo("Signature keyId=\"Test\","
         + "signature=\"SjWJWbWN7i0wzBvtPl8rbASWz5xQW6mcJmn+ibttBqtifLN7Sazz"
         + "6m79cNfwwb8DMJ5cou1s7uEGKKCs+FLEEaDV5lp7q25WqS+lavg7T8hc0GppauB"
         + "6hbgEKTwblDHYGEtbGmtdHgVCk9SuS13F0hZ8FD0k/5OxEPXe5WozsbM=\","
         + "headers=\"date\",algorithm=\"rsa-sha256\"");
-    ResponseSigner resSigner1 =
-        new HttpSigResponseSigner(request, "Test", myKeyPair, Lists.newArrayList());
-    resSigner1.sign(response);
+    TestResponseSigner resSigner1 = new TestResponseSigner(myKeyPair);
+    resSigner1.sign(request, response);
     assertThat(response.getHeader("Signature")).isEqualTo(
         "keyId=\"Test\"," + "signature=\"SjWJWbWN7i0wzBvtPl8rbASWz5xQW6mcJmn+ibttBqtifLN7Sazz"
             + "6m79cNfwwb8DMJ5cou1s7uEGKKCs+FLEEaDV5lp7q25WqS+lavg7T8hc0GppauB"
@@ -225,18 +257,8 @@ public class FakeInternetTest extends WRTest {
 
     // C.2. Basic Test
 
-    RequestSigner reqSigner2 = new EwpHttpSigRequestSigner(myKeyPair) {
-
-      @Override
-      public String getKeyId() {
-        return "Test";
-      }
-
-      @Override
-      protected List<String> getHeadersToSign(Request request) {
-        return Lists.newArrayList("(request-target)", "host", "date");
-      }
-    };
+    TestRequestSigner reqSigner2 =
+        new TestRequestSigner(myKeyPair, "(request-target)", "host", "date");
     reqSigner2.sign(request);
     assertThat(request.getHeader("Authorization"))
         .isEqualTo("Signature keyId=\"Test\"," + "signature=\"qdx+H7PHHDZgy4"
@@ -247,18 +269,8 @@ public class FakeInternetTest extends WRTest {
 
     // C.3. All Headers Test
 
-    RequestSigner reqSigner3 = new EwpHttpSigRequestSigner(myKeyPair) {
-      @Override
-      public String getKeyId() {
-        return "Test";
-      }
-
-      @Override
-      protected List<String> getHeadersToSign(Request request) {
-        return Lists.newArrayList("(request-target)", "host", "date", "content-type", "digest",
-            "content-length");
-      }
-    };
+    TestRequestSigner reqSigner3 = new TestRequestSigner(myKeyPair, "(request-target)", "host",
+        "date", "content-type", "digest", "content-length");
     reqSigner3.sign(request);
     assertThat(request.getHeader("Authorization")).isEqualTo("Signature keyId=\"Test\","
         + "signature=\"vSdrb+dS3EceC9bcwHSo4MlyKS59iFIrhgYkz8+oVLEEzmYZZvRs"
@@ -266,10 +278,9 @@ public class FakeInternetTest extends WRTest {
         + "ukWgHoBTLMhYS2Gb51gWxpeIq8knRmPnYePbF5MOkR0Zkly4zKH7s1dE=\","
         + "headers=\"(request-target) host date content-type digest content-length\","
         + "algorithm=\"rsa-sha256\"");
-    ResponseSigner signer2 =
-        new HttpSigResponseSigner(request, "Test", myKeyPair, Lists.newArrayList("(request-target)",
-            "host", "date", "content-type", "digest", "content-length"));
-    signer2.sign(response);
+    TestResponseSigner resSigner3 = new TestResponseSigner(myKeyPair, "(request-target)", "host",
+        "date", "content-type", "digest", "content-length");
+    resSigner3.sign(request, response);
     assertThat(response.getHeader("Signature")).isEqualTo(
         "keyId=\"Test\"," + "signature=\"vSdrb+dS3EceC9bcwHSo4MlyKS59iFIrhgYkz8+oVLEEzmYZZvRs"
             + "8rgOp+63LEM3v+MFHB32NfpB2bEKBIvB1q52LaEUHFv120V01IL+TAD48XaERZF"

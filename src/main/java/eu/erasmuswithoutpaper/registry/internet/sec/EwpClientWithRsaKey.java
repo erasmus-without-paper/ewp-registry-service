@@ -7,7 +7,7 @@ import java.security.interfaces.RSAPublicKey;
  * Describes a client which made a request using an RSA {@link KeyPair} recognized by the EWP
  * Registry Service.
  */
-public class EwpClientWithRsaKey extends ClientInfo {
+public class EwpClientWithRsaKey extends EwpClient {
 
   private final RSAPublicKey publicKey;
 

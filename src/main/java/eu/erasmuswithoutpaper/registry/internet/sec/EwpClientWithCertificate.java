@@ -6,7 +6,7 @@ import java.security.cert.X509Certificate;
  * Describes a client which made a request using a TLS Client Certificate recognized by the EWP
  * Registry Service.
  */
-public class EwpClientWithCertificate extends ClientInfo {
+public class EwpClientWithCertificate extends EwpClient {
 
   private final X509Certificate cert;
 

@@ -23,12 +23,12 @@ public interface RequestAuthorizer {
    * </p>
    *
    * @param request The {@link Request} instance to process.
-   * @return {@link ClientInfo} of the client which has made the request (depending on the
-   *         particular implementation, this may be a very specific {@link ClientInfo} subclass, it
+   * @return {@link EwpClient} of the client which has made the request (depending on the
+   *         particular implementation, this may be a very specific {@link EwpClient} subclass, it
    *         also MAY be an anonymous client.
    * @throws Http4xx If the request was not properly authorized - either the client didn't try to
    *         authenticate himself with the expected authentication method, or he tried, but didn't
    *         authenticate himself properly.
    */
-  ClientInfo authorize(Request request) throws Http4xx;
+  EwpClient authorize(Request request) throws Http4xx;
 }

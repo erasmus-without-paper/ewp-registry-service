@@ -3,6 +3,9 @@ package eu.erasmuswithoutpaper.registry.echovalidator;
 import java.security.KeyPair;
 import java.util.List;
 
+import eu.erasmuswithoutpaper.registry.internet.Request;
+import eu.erasmuswithoutpaper.registry.internet.Response;
+import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigResponseSigner;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 /**
@@ -16,9 +19,14 @@ public class ServiceMMTTInvalid8 extends ServiceMMTTValid {
   }
 
   @Override
-  protected List<String> getHeaderCandidatesToSign() {
-    List<String> result = super.getHeaderCandidatesToSign();
-    result.remove("digest");
-    return result;
+  protected EwpHttpSigResponseSigner getHttpSigSigner() {
+    return new EwpHttpSigResponseSigner(this.myKeyId, this.myKeyPair) {
+      @Override
+      protected List<String> getHeadersToSign(Request request, Response response) {
+        List<String> result = super.getHeadersToSign(request, response);
+        result.remove("Digest");
+        return result;
+      }
+    };
   }
 }

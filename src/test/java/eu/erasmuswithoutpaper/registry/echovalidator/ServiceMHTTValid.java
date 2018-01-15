@@ -2,25 +2,20 @@ package eu.erasmuswithoutpaper.registry.echovalidator;
 
 import java.io.IOException;
 import java.security.KeyPair;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
 
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
-import eu.erasmuswithoutpaper.registry.internet.sec.HttpSigResponseSigner;
-import eu.erasmuswithoutpaper.registry.internet.sec.ResponseSigner;
+import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigResponseSigner;
+import eu.erasmuswithoutpaper.registry.internet.sec.Http4xx;
+import eu.erasmuswithoutpaper.registry.internet.sec.TlsResponseSigner;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
-
-import net.adamcin.httpsig.api.Authorization;
-import org.assertj.core.util.Lists;
 
 public class ServiceMHTTValid extends ServiceMTTTValid {
 
-  private final String myKeyId;
-  private final KeyPair myKeyPair;
+  protected final String myKeyId;
+  protected final KeyPair myKeyPair;
+  private EwpHttpSigResponseSigner mySignerCache;
+  private TlsResponseSigner myTlsSignerCache;
 
   public ServiceMHTTValid(String url, RegistryClient registryClient, String myKeyId,
       KeyPair myKeyPair) {
@@ -43,7 +38,13 @@ public class ServiceMHTTValid extends ServiceMTTTValid {
       response = e.response;
     }
     if (this.decideIfWeWantToSign(request)) {
-      this.includeProperHeaders(request, response);
+      this.getHttpSigSigner().sign(request, response);
+    } else {
+      try {
+        this.getTlsSigner().sign(request, response);
+      } catch (Http4xx e) {
+        return e.generateEwpErrorResponse();
+      }
     }
     return response;
   }
@@ -53,72 +54,18 @@ public class ServiceMHTTValid extends ServiceMTTTValid {
     return true;
   }
 
-  protected ZonedDateTime getCurrentTime() {
-    return ZonedDateTime.now(ZoneId.of("UTC"));
+  protected EwpHttpSigResponseSigner getHttpSigSigner() {
+    if (this.mySignerCache == null) {
+      this.mySignerCache = new EwpHttpSigResponseSigner(this.myKeyId, this.myKeyPair);
+    }
+    return this.mySignerCache;
   }
 
-  protected List<String> getHeaderCandidatesToSign() {
-    return Lists.newArrayList("date", "original-date", "digest", "x-request-id",
-        "x-request-signature");
-  }
-
-  protected void includeDateHeaders(Response response, boolean date, boolean originalDate) {
-    String now = DateTimeFormatter.RFC_1123_DATE_TIME.format(this.getCurrentTime());
-    if (date) {
-      response.putHeader("Date", now);
+  protected TlsResponseSigner getTlsSigner() {
+    if (this.myTlsSignerCache == null) {
+      this.myTlsSignerCache = new TlsResponseSigner();
     }
-    if (originalDate) {
-      response.putHeader("Original-Date", now);
-    }
-  }
-
-  protected void includeDigestHeader(Response response) {
-    HttpSigResponseSigner.recomputeAndAttachDigestHeader(response);
-    // Also add a digest in an unknown algorithm. This is valid, and shouldn't "break"
-    // the validator.
-    response.putHeader("Digest", response.getHeader("Digest") + ", Unknown-Algorithm=Value");
-  }
-
-  protected void includeProperHeaders(Request request, Response response) {
-    this.includeDateHeaders(response, true, false);
-    this.includeDigestHeader(response);
-    this.includeXRequestIdHeader(request, response);
-    this.includeXRequestSignature(request, response);
-    this.includeSignatureHeader(request, response);
-  }
-
-  protected void includeSignatureHeader(Request request, Response response) {
-    List<String> headersToSign = new ArrayList<>();
-    for (String headerName : this.getHeaderCandidatesToSign()) {
-      if (response.getHeader(headerName) != null) {
-        headersToSign.add(headerName);
-      }
-    }
-    ResponseSigner signer =
-        new HttpSigResponseSigner(request, this.myKeyId, this.myKeyPair, headersToSign);
-    signer.sign(response);
-  }
-
-  protected void includeXRequestIdHeader(Request request, Response response) {
-    String reqId = request.getHeader("X-Request-Id");
-    if (reqId != null) {
-      response.putHeader("X-Request-Id", reqId);
-    }
-  }
-
-  protected void includeXRequestSignature(Request request, Response response) {
-    String authzString = request.getHeader("Authorization");
-    if (authzString == null) {
-      return;
-    }
-    Authorization authz = Authorization.parse(authzString);
-    if (authz == null) {
-      return;
-    }
-    if (authz.getSignature() == null) {
-      return;
-    }
-    response.putHeader("X-Request-Signature", authz.getSignature());
+    return this.myTlsSignerCache;
   }
 
 }
