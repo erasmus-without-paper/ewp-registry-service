@@ -503,7 +503,7 @@ class EchoValidationSuite {
             "POST", EchoValidationSuite.this.urlToBeValidated);
         this.request.setBody("echo=b&echo=b".getBytes(StandardCharsets.UTF_8));
         this.request.putHeader("Digest", "SHA=" + Base64.getEncoder()
-            .encodeToString(DigestUtils.getSha1Digest().digest(this.request.getBody().get())));
+            .encodeToString(DigestUtils.getSha1Digest().digest(this.request.getBodyOrEmpty())));
         Authorization authz = Authorization.parse(this.request.getHeader("Authorization"));
         KeyPair keyPair = EchoValidationSuite.this.parentEchoValidator.getClientRsaKeyPairInUse();
         this.request.recomputeAndAttachHttpSigAuthorizationHeader(authz.getKeyId(), keyPair,

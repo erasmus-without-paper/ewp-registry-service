@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import eu.erasmuswithoutpaper.registry.common.Utils;
 import eu.erasmuswithoutpaper.registry.internet.HttpSigRsaPublicKey;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
@@ -130,7 +131,7 @@ public class ServiceHTTTValid extends AbstractEchoV2Service {
       throw new ErrorResponseException(
           this.createErrorResponse(request, 400, "Missing header: Digest"));
     }
-    String expectedSha256Digest = request.computeBodyDigest();
+    String expectedSha256Digest = Utils.computeDigest(request.getBodyOrEmpty());
     if (!digestHeader.contains("SHA-256=" + expectedSha256Digest)) {
       throw new ErrorResponseException(this.createErrorResponse(request, 400,
           "Digest mismatch. Expected: " + expectedSha256Digest));

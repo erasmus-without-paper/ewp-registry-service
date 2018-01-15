@@ -4,13 +4,14 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
-import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import eu.erasmuswithoutpaper.registry.common.Utils;
 
 import com.google.common.collect.Lists;
 import net.adamcin.httpsig.api.Algorithm;
@@ -20,7 +21,6 @@ import net.adamcin.httpsig.api.DefaultKeychain;
 import net.adamcin.httpsig.api.Key;
 import net.adamcin.httpsig.api.RequestContent;
 import net.adamcin.httpsig.api.Signer;
-import org.apache.commons.codec.digest.DigestUtils;
 
 /**
  * Represents an abstract HTTP request.
@@ -36,7 +36,7 @@ public class Request {
   private Optional<byte[]> body;
   private final HeaderMap headers;
   private Optional<X509Certificate> clientCertificate;
-  private Optional<KeyPair> keyPair;
+  private Optional<KeyPair> clientCertificateKeyPair;
 
   /**
    * Construct a new (somewhat empty) request.
@@ -53,25 +53,21 @@ public class Request {
   }
 
   /**
-   * @return Base64-encoded SHA-256 digest of request's body (if there's no body, then it's a digest
-   *         of an empty byte-array).
-   */
-  public String computeBodyDigest() {
-    byte[] body;
-    if (this.getBody().isPresent()) {
-      body = this.getBody().get();
-    } else {
-      body = new byte[0];
-    }
-    byte[] binaryDigest = DigestUtils.sha256(body);
-    return Base64.getEncoder().encodeToString(binaryDigest);
-  }
-
-  /**
    * @return Request body, if present.
    */
   public Optional<byte[]> getBody() {
     return this.body;
+  }
+
+  /**
+   * @return Either a request body, or an empty byte array if no request body was present.
+   */
+  public byte[] getBodyOrEmpty() {
+    if (this.body.isPresent()) {
+      return this.body.get();
+    } else {
+      return new byte[0];
+    }
   }
 
   /**
@@ -86,7 +82,7 @@ public class Request {
    *         request is signed by ourselves).
    */
   public Optional<KeyPair> getClientCertificateKeyPair() {
-    return this.keyPair;
+    return this.clientCertificateKeyPair;
   }
 
   /**
@@ -157,7 +153,7 @@ public class Request {
    * body. This needs to be called explicitly, after the body is changed.
    */
   public void recomputeAndAttachDigestHeader() {
-    this.putHeader("Digest", "SHA-256=" + this.computeBodyDigest());
+    this.putHeader("Digest", "SHA-256=" + Utils.computeDigest(this.getBodyOrEmpty()));
   }
 
   /**
@@ -213,13 +209,16 @@ public class Request {
   }
 
   /**
-   * @param clientCertificate If given, then the request will be made with the supplied TLS client
-   *        certificate (keep in mind that our {@link Internet} allows only HTTPS connections).
-   * @param keyPair The key-pair for which the certificate has been generated.
+   * @param clientCertificate If not null, then it indicates that the request was made (or will be
+   *        made) with the supplied TLS client certificate (keep in mind that our {@link Internet}
+   *        allows only HTTPS connections).
+   * @param keyPair The key-pair for which the certificate has been generated. This will be
+   *        <code>null</code> in case of requests received from outside, but it MUST be set if the
+   *        request originates from ourselves (we are signing it with our own certificate).
    */
   public void setClientCertificate(X509Certificate clientCertificate, KeyPair keyPair) {
     this.clientCertificate = Optional.ofNullable(clientCertificate);
-    this.keyPair = Optional.ofNullable(keyPair);
+    this.clientCertificateKeyPair = Optional.ofNullable(keyPair);
   }
 
   /**

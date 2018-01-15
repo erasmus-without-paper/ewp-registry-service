@@ -1,12 +1,14 @@
 package eu.erasmuswithoutpaper.registry.echovalidator;
 
 import java.io.IOException;
-import java.security.cert.X509Certificate;
 import java.util.List;
 
 import eu.erasmuswithoutpaper.registry.internet.InternetTestHelpers;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
+import eu.erasmuswithoutpaper.registry.internet.sec.EwpCertificateRequestAuthorizer;
+import eu.erasmuswithoutpaper.registry.internet.sec.EwpClientWithCertificate;
+import eu.erasmuswithoutpaper.registry.internet.sec.Http4xx;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 /**
@@ -18,8 +20,11 @@ import eu.erasmuswithoutpaper.registryclient.RegistryClient;
  */
 public class ServiceSTTTValid extends AbstractEchoV2Service {
 
+  protected EwpCertificateRequestAuthorizer myAuthorizer;
+
   public ServiceSTTTValid(String url, RegistryClient registryClient) {
     super(url, registryClient);
+    this.myAuthorizer = new EwpCertificateRequestAuthorizer(this.registryClient);
   }
 
   @Override
@@ -27,19 +32,18 @@ public class ServiceSTTTValid extends AbstractEchoV2Service {
     if (!request.getUrl().startsWith(this.myEndpoint)) {
       return null;
     }
-    if (!request.getClientCertificate().isPresent()) {
-      return this.createErrorResponse(request, 403, "Expecting client certificate.");
-    }
-    X509Certificate cert = request.getClientCertificate().get();
-    if (!this.registryClient.isCertificateKnown(cert)) {
-      return this.createErrorResponse(request, 403, "Unknown client certificate.");
+    EwpClientWithCertificate client;
+    try {
+      client = this.myAuthorizer.authorize(request);
+    } catch (Http4xx e) {
+      return e.generateEwpErrorResponse();
     }
     if (!(request.getMethod().equals("GET") || request.getMethod().equals("POST"))) {
       return this.createErrorResponse(request, 405, "We expect GETs and POSTs only");
     }
     List<String> echos = InternetTestHelpers.extractParams(request, "echo");
     return this.createEchoResponse(request, echos,
-        this.registryClient.getHeisCoveredByCertificate(cert));
+        this.registryClient.getHeisCoveredByCertificate(client.getCertificate()));
   }
 
 }
