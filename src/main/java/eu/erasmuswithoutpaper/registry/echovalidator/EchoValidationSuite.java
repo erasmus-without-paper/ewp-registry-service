@@ -40,6 +40,7 @@ import eu.erasmuswithoutpaper.registry.internet.HttpSigRsaPublicKey;
 import eu.erasmuswithoutpaper.registry.internet.Internet;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
+import eu.erasmuswithoutpaper.registry.internet.sec.EwpCertificateRequestSigner;
 import eu.erasmuswithoutpaper.registryclient.ApiSearchConditions;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
@@ -126,6 +127,7 @@ class EchoValidationSuite {
   private final EwpDocBuilder docBuilder;
   private final Internet internet;
   private final RegistryClient regClient;
+  private final EwpCertificateRequestSigner reqSignerCert;
 
   EchoValidationSuite(EchoValidator echoValidator, EwpDocBuilder docBuilder, Internet internet,
       String urlStr, RegistryClient regClient) {
@@ -135,6 +137,9 @@ class EchoValidationSuite {
     this.docBuilder = docBuilder;
     this.internet = internet;
     this.regClient = regClient;
+    this.reqSignerCert =
+        new EwpCertificateRequestSigner(this.parentEchoValidator.getTlsClientCertificateInUse(),
+            this.parentEchoValidator.getTlsKeyPairInUse());
   }
 
   /**
@@ -521,11 +526,16 @@ class EchoValidationSuite {
       protected Optional<Response> innerRun() throws Failure {
         this.request = EchoValidationSuite.this.createValidRequestForCombination(combination, "GET",
             EchoValidationSuite.this.urlToBeValidated);
+
+        // Override the work done by the original (valid) request signer.
         KeyPair otherKeyPair =
             EchoValidationSuite.this.parentEchoValidator.getUnregisteredKeyPair();
         X509Certificate otherCert =
             EchoValidationSuite.this.parentEchoValidator.generateCertificate(otherKeyPair);
-        this.request.setClientCertificate(otherCert, otherKeyPair);
+        EwpCertificateRequestSigner mySigner =
+            new EwpCertificateRequestSigner(otherCert, otherKeyPair);
+        mySigner.sign(this.request);
+
         return Optional.of(EchoValidationSuite.this.makeRequestAndExpectError(combination,
             this.request, Lists.newArrayList(401, 403)));
       }
@@ -1158,8 +1168,7 @@ class EchoValidationSuite {
     if (combination.getCliAuth().equals(SecMethod.CLIAUTH_NONE)) {
       // pass
     } else if (combination.getCliAuth().equals(SecMethod.CLIAUTH_TLSCERT_SELFSIGNED)) {
-      request.setClientCertificate(this.parentEchoValidator.getTlsClientCertificateInUse(),
-          this.parentEchoValidator.getTlsKeyPairInUse());
+      this.reqSignerCert.sign(request);
     } else if (combination.getCliAuth().equals(SecMethod.CLIAUTH_HTTPSIG)) {
       String date =
           DateTimeFormatter.RFC_1123_DATE_TIME.format(ZonedDateTime.now(ZoneId.of("UTC")));
