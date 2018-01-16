@@ -47,9 +47,8 @@ public class FakeInternetTest extends WRTest {
   @Test
   public void testDigestBackend() {
     Request request = new Request("GET", "https://example.com/");
-    byte[] myBody = "{\"hello\": \"world\"}".getBytes(StandardCharsets.UTF_8);
-    request.setBodyUnencrypted(myBody);
-    Response response = new Response(request, 200, myBody);
+    request.setBody("{\"hello\": \"world\"}".getBytes(StandardCharsets.UTF_8));
+    Response response = new Response(request, 200, request.getBody().get());
 
     request.recomputeAndAttachDigestHeader();
     assertThat(request.getHeader("Digest"))
@@ -106,7 +105,7 @@ public class FakeInternetTest extends WRTest {
       try {
         Response response = this.internet.makeRequest(new Request("POST", url2));
         assertThat(response.getStatus()).isEqualTo(200);
-        assertThat(response.getBodyRaw().length)
+        assertThat(response.getBody().length)
             .isEqualTo("I'm a bad service!".getBytes(StandardCharsets.UTF_8).length);
         assertThat(response.getHeader("Special-Header")).isEqualTo("Special Value");
       } catch (IOException e) {
@@ -194,10 +193,9 @@ public class FakeInternetTest extends WRTest {
     request.putHeader("Content-Type", "application/json");
     request.putHeader("Digest", "SHA-256=X48E9qOokqqrvdts8nOJRJN3OWDUoyWxBf7kbu9DBPE=");
     request.putHeader("Content-Length", "18");
-    byte[] myBody = "{\"hello\": \"world\"}".getBytes(StandardCharsets.UTF_8);
-    request.setBodyUnencrypted(myBody);
+    request.setBody("{\"hello\": \"world\"}".getBytes(StandardCharsets.UTF_8));
 
-    Response response = new Response(request, 200, myBody);
+    Response response = new Response(request, 200, request.getBody().get());
     response.putHeader("Host", "example.com");
     response.putHeader("Date", "Sun, 05 Jan 2014 21:31:40 GMT");
     response.putHeader("Content-Type", "application/json");

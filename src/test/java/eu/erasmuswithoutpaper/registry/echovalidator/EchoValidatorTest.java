@@ -20,7 +20,6 @@ import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.xerces.impl.dv.util.Base64;
 import org.assertj.core.util.Lists;
 import org.junit.Before;
@@ -38,8 +37,6 @@ public class EchoValidatorTest extends WRTest {
   private static String echoUrlMTTT;
   private static String echoUrlMHTT;
   private static String echoUrlMMTT;
-  private static String echoUrlSTET;
-  private static String echoUrlSTTE;
   private static boolean needsReinit;
 
   /**
@@ -60,8 +57,6 @@ public class EchoValidatorTest extends WRTest {
     echoUrlMTTT = "https://university.example.com/echo/MTTT/";
     echoUrlMHTT = "https://university.example.com/echo/MHTT/";
     echoUrlMMTT = "https://university.example.com/echo/MMTT/";
-    echoUrlSTET = "https://university.example.com/echo/STET/";
-    echoUrlSTTE = "https://university.example.com/echo/STTE/";
     needsReinit = true;
 
     // https://github.com/adamcin/httpsig-java/issues/9
@@ -243,17 +238,9 @@ public class EchoValidatorTest extends WRTest {
       service = new ServiceHTTTInvalid4(echoUrlHTTT, this.client);
       this.internet.addFakeInternetService(service);
       String out = this.getValidatorReport(echoUrlHTTT);
+      assertThat(out).containsOnlyOnce("FAILURE");
       assertThat(out).contains(
           "FAILURE: Trying SecMethodCombination[HTTT] with some extra unknown, but properly signed headers");
-      /*
-       * This service replies with "How rude of you!" when the request contains headers unknown to
-       * it. So we expect the number of failures to be the same as the number of such replies (no
-       * other failures should occur).
-       */
-      int failureCount =
-          StringUtils.countMatches(out, "FAILURE") + StringUtils.countMatches(out, "WARNING");
-      int howRudeCount = StringUtils.countMatches(out, "How rude of you!");
-      assertThat(failureCount).isEqualTo(howRudeCount);
       this.internet.removeFakeInternetService(service);
 
     } finally {
@@ -643,134 +630,6 @@ public class EchoValidatorTest extends WRTest {
       assertThat(this.getValidatorReport(echoUrlMTTT))
           .isEqualTo(this.getFileAsString("echovalidator/ServiceMTTTValid.txt"));
       this.internet.removeFakeInternetService(service);
-    } finally {
-      this.internet.clearAll();
-    }
-  }
-
-  @Test
-  public void testAgainstServiceSTETInvalid1() {
-    try {
-      FakeInternetService service;
-
-      service = new ServiceSTETInvalid1(echoUrlSTET, this.client, Lists.newArrayList(myKeyPair));
-      this.internet.addFakeInternetService(service);
-      String out = this.getValidatorReport(echoUrlSTET);
-      assertThat(out).containsOnlyOnce("FAILURE");
-      assertThat(out).contains("FAILURE: Trying SecMethodCombination[STET] with GET request");
-      assertThat(out).contains("HTTP 405 expected, but HTTP 200 received.");
-
-    } finally {
-      this.internet.clearAll();
-    }
-  }
-
-  @Test
-  public void testAgainstServiceSTETInvalid2() {
-    try {
-      FakeInternetService service;
-
-      service = new ServiceSTETInvalid2(echoUrlSTET, this.client, Lists.newArrayList(myKeyPair));
-      this.internet.addFakeInternetService(service);
-      String out = this.getValidatorReport(echoUrlSTET);
-      // Expect all failures to fail with the same message.
-      int failureCount = StringUtils.countMatches(out, "FAILURE");
-      int expectedCount =
-          StringUtils.countMatches(out, "We cannot decrypt this request. Unknown recipient key.");
-      assertThat(expectedCount).isGreaterThan(0);
-      assertThat(failureCount).isEqualTo(expectedCount);
-
-    } finally {
-      this.internet.clearAll();
-    }
-  }
-
-  @Test
-  public void testAgainstServiceSTETValid() {
-    try {
-      FakeInternetService service;
-
-      service = new ServiceSTETValid(echoUrlSTET, this.client, Lists.newArrayList(myKeyPair));
-      this.internet.addFakeInternetService(service);
-      String out = this.getValidatorReport(echoUrlSTET);
-      assertThat(out).doesNotContain("FAILURE");
-      assertThat(out).doesNotContain("ERROR");
-      assertThat(out).containsOnlyOnce("WARNING");
-      assertThat(out).contains("It is RECOMMENDED for all EWP server endpoints to support "
-          + "HTTP Signature Client Authentication");
-
-    } finally {
-      this.internet.clearAll();
-    }
-  }
-
-  @Test
-  public void testAgainstServiceSTTEInvalid1() {
-    try {
-      FakeInternetService service;
-
-      service = new ServiceSTTEInvalid1(echoUrlSTTE, this.client);
-      this.internet.addFakeInternetService(service);
-      String out = this.getValidatorReport(echoUrlSTTE);
-      assertThat(out).doesNotContain("FAILURE");
-      assertThat(out).doesNotContain("ERROR");
-      assertThat(out).contains("WARNING: Querying for supported security methods");
-      assertThat(out).containsPattern("WARNING: Trying SecMethodCombination...... with \"gzip\"");
-      assertThat(out).contains("Your response was first encrypted, and then gzipped");
-      assertThat(out).containsOnlyOnce("NOTICE");
-
-    } finally {
-      this.internet.clearAll();
-    }
-  }
-
-  @Test
-  public void testAgainstServiceSTTEInvalid2() {
-    try {
-      FakeInternetService service;
-
-      service = new ServiceSTTEInvalid2(echoUrlSTTE, this.client);
-      this.internet.addFakeInternetService(service);
-      String out = this.getValidatorReport(echoUrlSTTE);
-      assertThat(out).contains("FAILURE");
-      assertThat(out).contains("The response was encoded with the 'gzip' coding, "
-          + "but the client didn't declare this encoding as acceptable.");
-
-    } finally {
-      this.internet.clearAll();
-    }
-  }
-
-  @Test
-  public void testAgainstServiceSTTEInvalid3() {
-    try {
-      FakeInternetService service;
-
-      service = new ServiceSTTEInvalid3(echoUrlSTTE, this.client);
-      this.internet.addFakeInternetService(service);
-      String out = this.getValidatorReport(echoUrlSTTE);
-      assertThat(out).contains("FAILURE");
-      assertThat(out).contains("Expecting the response to be encoded with ewp-rsa-aes128gcm");
-
-    } finally {
-      this.internet.clearAll();
-    }
-  }
-
-  @Test
-  public void testAgainstServiceSTTEValid() {
-    try {
-      FakeInternetService service;
-
-      service = new ServiceSTTEValid(echoUrlSTTE, this.client);
-      this.internet.addFakeInternetService(service);
-      String out = this.getValidatorReport(echoUrlSTTE);
-      assertThat(out).doesNotContain("FAILURE");
-      assertThat(out).doesNotContain("ERROR");
-      assertThat(out).containsOnlyOnce("WARNING");
-      assertThat(out).contains("WARNING: Querying for supported security methods");
-      assertThat(out).containsOnlyOnce("NOTICE");
-
     } finally {
       this.internet.clearAll();
     }

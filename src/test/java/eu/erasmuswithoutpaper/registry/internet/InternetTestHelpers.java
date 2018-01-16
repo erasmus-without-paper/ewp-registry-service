@@ -40,14 +40,12 @@ public class InternetTestHelpers {
       if (query != null) {
         for (String pair : query.split("&")) {
           int index = pair.indexOf("=");
-          if (index > 0) {
-            String key = URLDecoder.decode(pair.substring(0, index), "UTF-8");
-            if (!key.equals(paramName)) {
-              continue;
-            }
-            String value = URLDecoder.decode(pair.substring(index + 1), "UTF-8");
-            result.add(value);
+          String key = URLDecoder.decode(pair.substring(0, index), "UTF-8");
+          if (!key.equals(paramName)) {
+            continue;
           }
+          String value = URLDecoder.decode(pair.substring(index + 1), "UTF-8");
+          result.add(value);
         }
       }
     } catch (UnsupportedEncodingException e) {

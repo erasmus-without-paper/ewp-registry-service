@@ -9,7 +9,6 @@ import java.util.Optional;
 import eu.erasmuswithoutpaper.registry.internet.Internet;
 import eu.erasmuswithoutpaper.registry.internet.Internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Internet.Response;
-import eu.erasmuswithoutpaper.registry.internet.Internet.Response.CouldNotDecode;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.joox.Match;
@@ -58,13 +57,6 @@ abstract class InlineValidationStep implements ValidationStepWithStatus {
     }
   }
 
-  @SuppressWarnings("serial")
-  static class SkipThisTest extends RuntimeException {
-    public SkipThisTest(String message) {
-      super(message);
-    }
-  }
-
   private Status status = Status.PENDING;
   private String message = null;
   protected Internet.Request request = null;
@@ -92,12 +84,9 @@ abstract class InlineValidationStep implements ValidationStepWithStatus {
 
     Document document;
     try {
-      document =
-          $(new ByteArrayInputStream(this.getServerResponse().get().getBodyDecoded())).document();
+      document = $(new ByteArrayInputStream(this.getServerResponse().get().getBody())).document();
     } catch (SAXException | IOException e) {
       return Optional.of("Error while parsing XML response: " + e.getMessage());
-    } catch (CouldNotDecode e) {
-      return Optional.of("Could not decode the response body: " + e.getMessage());
     }
     Match root = $(document);
     if (root.find("developer-message").isNotEmpty()) {
@@ -144,9 +133,8 @@ abstract class InlineValidationStep implements ValidationStepWithStatus {
    * exceptions, producing proper validation results.
    *
    * @return The new status of this validation step.
-   * @throws SkipThisTest When this test should be skipped.
    */
-  final Status run() throws SkipThisTest {
+  final Status run() {
     try {
       Optional<Response> response = this.innerRun();
       if (this.getStatus().equals(Status.PENDING)) {
@@ -155,8 +143,6 @@ abstract class InlineValidationStep implements ValidationStepWithStatus {
       if (response.isPresent()) {
         this.setServerResponse(response.get());
       }
-    } catch (SkipThisTest e) {
-      throw e;
     } catch (RuntimeException e) {
       this.setStatus(Status.ERROR);
       this.setMessage("Error: " + ExceptionUtils.getStackTrace(e));

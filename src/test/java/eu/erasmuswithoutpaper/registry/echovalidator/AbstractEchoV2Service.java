@@ -1,7 +1,5 @@
 package eu.erasmuswithoutpaper.registry.echovalidator;
 
-import java.security.KeyPair;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -13,17 +11,8 @@ import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 abstract public class AbstractEchoV2Service extends AbstractEchoService {
 
-  protected final List<KeyPair> serverKeys;
-
   public AbstractEchoV2Service(String url, RegistryClient registryClient) {
     super(url, registryClient);
-    this.serverKeys = new ArrayList<>();
-  }
-
-  public AbstractEchoV2Service(String url, RegistryClient registryClient,
-      List<KeyPair> serverKeys) {
-    super(url, registryClient);
-    this.serverKeys = serverKeys;
   }
 
   protected Response createEchoResponse(Request request, List<String> echos,

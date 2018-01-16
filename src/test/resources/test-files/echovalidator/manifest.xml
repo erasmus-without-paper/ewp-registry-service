@@ -109,28 +109,6 @@
             </http-security>
             <url>https://university.example.com/echo/MMTT/</url>
         </echo>
-        <echo
-            xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-echo/blob/stable-v2/manifest-entry.xsd"
-            version="2.0.0"
-        >
-            <http-security>
-                <sec:request-encryption-methods>
-                    <ewp-rsa-aes128gcm xmlns="https://github.com/erasmus-without-paper/ewp-specs-sec-reqencr-rsa-aes128gcm/tree/stable-v1"/>
-                </sec:request-encryption-methods>
-            </http-security>
-            <url>https://university.example.com/echo/STET/</url>
-        </echo>
-        <echo
-            xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-echo/blob/stable-v2/manifest-entry.xsd"
-            version="2.0.0"
-        >
-            <http-security>
-                <sec:response-encryption-methods>
-                    <ewp-rsa-aes128gcm xmlns="https://github.com/erasmus-without-paper/ewp-specs-sec-resencr-rsa-aes128gcm/tree/stable-v1"/>
-                </sec:response-encryption-methods>
-            </http-security>
-            <url>https://university.example.com/echo/STTE/</url>
-        </echo>
     </r:apis-implemented>
     <server-credentials-in-use>
         <rsa-public-key>SERVER-KEY-PLACEHOLDER</rsa-public-key>

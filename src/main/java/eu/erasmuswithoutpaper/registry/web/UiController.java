@@ -33,7 +33,6 @@ import eu.erasmuswithoutpaper.registry.echovalidator.ValidationStepWithStatus;
 import eu.erasmuswithoutpaper.registry.echovalidator.ValidationStepWithStatus.Status;
 import eu.erasmuswithoutpaper.registry.internet.Internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Internet.Response;
-import eu.erasmuswithoutpaper.registry.internet.Internet.Response.CouldNotDecode;
 import eu.erasmuswithoutpaper.registry.notifier.NotifierService;
 import eu.erasmuswithoutpaper.registry.repository.CatalogueDependantCache;
 import eu.erasmuswithoutpaper.registry.repository.CatalogueNotFound;
@@ -524,24 +523,16 @@ public class UiController {
     Response response = testResult.getServerResponse().get();
     JsonObject result = new JsonObject();
     result.addProperty("status", response.getStatus());
-    result.addProperty("rawBodyBase64", Base64.encode(response.getBodyRaw()));
-    try {
-      byte[] bodyDecoded = response.getBodyDecoded();
-      result.addProperty("decodedBodyBase64", Base64.encode(bodyDecoded));
-      BuildParams params = new BuildParams(bodyDecoded);
-      params.setMakingPretty(true);
-      BuildResult buildResult = this.docBuilder.build(params);
-      result.addProperty("prettyXml", buildResult.getPrettyXml().orElse(null));
-      if (buildResult.getDocument().isPresent()) {
-        Match root = $(buildResult.getDocument().get()).namespaces(KnownNamespace.prefixMap());
-        result.addProperty("developerMessage",
-            root.xpath("/ewp:error-response/ewp:developer-message").text());
-      } else {
-        result.add("developerMessage", JsonNull.INSTANCE);
-      }
-    } catch (CouldNotDecode e) {
-      result.add("decodedBodyBase64", JsonNull.INSTANCE);
-      result.add("prettyXml", JsonNull.INSTANCE);
+    result.addProperty("rawBodyBase64", Base64.encode(response.getBody()));
+    BuildParams params = new BuildParams(response.getBody());
+    params.setMakingPretty(true);
+    BuildResult buildResult = this.docBuilder.build(params);
+    result.addProperty("prettyXml", buildResult.getPrettyXml().orElse(null));
+    if (buildResult.getDocument().isPresent()) {
+      Match root = $(buildResult.getDocument().get()).namespaces(KnownNamespace.prefixMap());
+      result.addProperty("developerMessage",
+          root.xpath("/ewp:error-response/ewp:developer-message").text());
+    } else {
       result.add("developerMessage", JsonNull.INSTANCE);
     }
     JsonObject headers = new JsonObject();
