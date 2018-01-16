@@ -1,7 +1,7 @@
 package eu.erasmuswithoutpaper.registry.echovalidator;
 
-import eu.erasmuswithoutpaper.registry.internet.Internet.Request;
-import eu.erasmuswithoutpaper.registry.internet.Internet.Response;
+import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigRequestAuthorizer;
+import eu.erasmuswithoutpaper.registry.internet.sec.Http4xx;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 import com.google.common.collect.Lists;
@@ -19,11 +19,16 @@ public class ServiceHTTTInvalid6 extends ServiceHTTTValid {
   }
 
   @Override
-  protected Response createHttpSig401Response(Request request) {
-    Response response = super.createHttpSig401Response(request);
-    Challenge newOne = new Challenge("EWP", Lists.newArrayList("some-header"),
-        Lists.newArrayList(Algorithm.RSA_SHA256));
-    response.putHeader("WWW-Authenticate", newOne.getHeaderValue());
-    return response;
+  protected EwpHttpSigRequestAuthorizer newAuthorizer() {
+    return new EwpHttpSigRequestAuthorizer(this.registryClient) {
+      @Override
+      protected Http4xx newHttpSig401() {
+        Http4xx e = super.newHttpSig401();
+        Challenge newOne = new Challenge("EWP", Lists.newArrayList("some-header"),
+            Lists.newArrayList(Algorithm.RSA_SHA256));
+        e.putEwpErrorResponseHeader("WWW-Authenticate", newOne.getHeaderValue());
+        return e;
+      }
+    };
   }
 }

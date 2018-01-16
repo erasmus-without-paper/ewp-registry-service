@@ -2,7 +2,9 @@ package eu.erasmuswithoutpaper.registry.echovalidator;
 
 import java.util.List;
 
-import eu.erasmuswithoutpaper.registry.internet.Internet.Request;
+import eu.erasmuswithoutpaper.registry.internet.Request;
+import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigRequestAuthorizer;
+import eu.erasmuswithoutpaper.registry.internet.sec.Http4xx;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 import com.google.common.collect.Lists;
@@ -19,18 +21,23 @@ public class ServiceHTTTInvalid4 extends ServiceHTTTValid {
   }
 
   @Override
-  protected Authorization verifyHttpSignatureAuthorizationHeader(Request request)
-      throws ErrorResponseException {
-    Authorization authz = super.verifyHttpSignatureAuthorizationHeader(request);
-    List<String> expected = Lists.newArrayList("(request-target)", "host", "date", "original-date",
-        "digest", "x-request-id");
-    for (String headerName : authz.getHeaders()) {
-      if (!expected.contains(headerName)) {
-        throw new ErrorResponseException(this.createErrorResponse(request, 400,
-            "How rude of you! You have signed a " + headerName + " header. I won't accept that."));
+  protected EwpHttpSigRequestAuthorizer newAuthorizer() {
+    return new EwpHttpSigRequestAuthorizer(this.registryClient) {
+      @Override
+      protected Authorization verifyHttpSignatureAuthorizationHeader(Request request)
+          throws Http4xx {
+        Authorization authz = super.verifyHttpSignatureAuthorizationHeader(request);
+        List<String> expected = Lists.newArrayList("(request-target)", "host", "date",
+            "original-date", "digest", "x-request-id");
+        for (String headerName : authz.getHeaders()) {
+          if (!expected.contains(headerName)) {
+            throw new Http4xx(400, "How rude of you! You have signed a " + headerName
+                + " header. I won't accept that.");
+          }
+        }
+        return authz;
       }
-    }
-    return authz;
+    };
   }
 
 }

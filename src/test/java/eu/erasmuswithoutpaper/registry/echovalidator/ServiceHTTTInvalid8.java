@@ -1,5 +1,6 @@
 package eu.erasmuswithoutpaper.registry.echovalidator;
 
+import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigRequestAuthorizer;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 /**
@@ -12,8 +13,13 @@ public class ServiceHTTTInvalid8 extends ServiceHTTTValid {
   }
 
   @Override
-  protected String findErrorsInDateHeader(String dateValue) {
-    return null;
+  protected EwpHttpSigRequestAuthorizer newAuthorizer() {
+    return new EwpHttpSigRequestAuthorizer(this.registryClient) {
+      @Override
+      protected String findErrorsInDateHeader(String dateValue) {
+        return null;
+      }
+    };
   }
 
 }

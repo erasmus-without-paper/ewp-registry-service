@@ -2,7 +2,8 @@ package eu.erasmuswithoutpaper.registry.echovalidator;
 
 import java.security.interfaces.RSAPublicKey;
 
-import eu.erasmuswithoutpaper.registry.internet.Internet.Request;
+import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigRequestAuthorizer;
+import eu.erasmuswithoutpaper.registry.internet.sec.Http4xx;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 /**
@@ -15,13 +16,16 @@ public class ServiceHTTTInvalid7 extends ServiceHTTTValid {
   }
 
   @Override
-  protected RSAPublicKey verifyClientKeyId(Request request, String keyId)
-      throws ErrorResponseException {
-    RSAPublicKey clientKey = this.registryClient.findRsaPublicKey(keyId);
-    if (clientKey == null) {
-      throw new ErrorResponseException(
-          this.createErrorResponse(request, 403, "Unknown key: " + keyId));
-    }
-    return clientKey;
+  protected EwpHttpSigRequestAuthorizer newAuthorizer() {
+    return new EwpHttpSigRequestAuthorizer(this.registryClient) {
+      @Override
+      protected RSAPublicKey verifyClientKeyId(String keyId) throws Http4xx {
+        RSAPublicKey clientKey = this.registryClient.findRsaPublicKey(keyId);
+        if (clientKey == null) {
+          throw new Http4xx(403, "Unknown key: " + keyId);
+        }
+        return clientKey;
+      }
+    };
   }
 }

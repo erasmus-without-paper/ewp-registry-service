@@ -13,16 +13,17 @@ import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Arrays;
 import java.util.Base64;
+import java.util.List;
 
 import eu.erasmuswithoutpaper.registry.WRTest;
 import eu.erasmuswithoutpaper.registry.internet.FakeInternet.MultipleHandlersConflict;
-import eu.erasmuswithoutpaper.registry.internet.Internet.Request;
-import eu.erasmuswithoutpaper.registry.internet.Internet.Response;
+import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigRequestSigner;
+import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigResponseSigner;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import org.assertj.core.util.Lists;
 import org.assertj.core.util.Maps;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -31,6 +32,51 @@ import org.junit.Test;
  * Tests for {@link FakeInternet}.
  */
 public class FakeInternetTest extends WRTest {
+
+  private static class TestRequestSigner extends EwpHttpSigRequestSigner {
+
+    private final List<String> myHeaders;
+
+    public TestRequestSigner(KeyPair keyPair, String... headers) {
+      super(keyPair);
+      this.myHeaders = Arrays.asList(headers);
+    }
+
+    @Override
+    public String getKeyId() {
+      return "Test";
+    }
+
+    @Override
+    protected List<String> getHeadersToSign(Request request) {
+      return this.myHeaders;
+    }
+
+    @Override
+    protected boolean shouldOverrideExistingDigest() {
+      return false;
+    }
+  }
+
+  private static class TestResponseSigner extends EwpHttpSigResponseSigner {
+
+    private final List<String> myHeaders;
+
+    public TestResponseSigner(KeyPair keyPair, String... headers) {
+      super("Test", keyPair);
+      this.myHeaders = Arrays.asList(headers);
+    }
+
+    @Override
+    protected List<String> getHeadersToSign(Request request, Response response) {
+      return this.myHeaders;
+    }
+
+    @Override
+    protected boolean shouldOverrideExistingDigest() {
+      return false;
+    }
+  }
 
   private static String url1;
   private static String url2;
@@ -45,21 +91,6 @@ public class FakeInternetTest extends WRTest {
   private FakeInternet internet;
 
   @Test
-  public void testDigestBackend() {
-    Request request = new Request("GET", "https://example.com/");
-    request.setBody("{\"hello\": \"world\"}".getBytes(StandardCharsets.UTF_8));
-    Response response = new Response(request, 200, request.getBody().get());
-
-    request.recomputeAndAttachDigestHeader();
-    assertThat(request.getHeader("Digest"))
-        .isEqualTo("SHA-256=X48E9qOokqqrvdts8nOJRJN3OWDUoyWxBf7kbu9DBPE=");
-
-    response.recomputeAndAttachDigestHeader();
-    assertThat(response.getHeader("Digest"))
-        .isEqualTo("SHA-256=X48E9qOokqqrvdts8nOJRJN3OWDUoyWxBf7kbu9DBPE=");
-  }
-
-  @Test
   public void testFakeServices() {
     assertThat(this.fetchString(url1)).isNull();
     assertThat(this.fetchString(url2)).isNull();
@@ -70,7 +101,7 @@ public class FakeInternetTest extends WRTest {
         @Override
         public Response handleInternetRequest(Request request) throws IOException {
           if (request.getUrl().equals(url1)) {
-            return new Response(request, 200, "It works!".getBytes(StandardCharsets.UTF_8));
+            return new Response(200, "It works!".getBytes(StandardCharsets.UTF_8));
           } else {
             return null;
           }
@@ -85,7 +116,7 @@ public class FakeInternetTest extends WRTest {
         @Override
         public Response handleInternetRequest(Request request) throws IOException {
           // This service always responds, it doesn't verify if the request is for its domain.
-          return new Response(request, 200, "I'm a bad service!".getBytes(StandardCharsets.UTF_8),
+          return new Response(200, "I'm a bad service!".getBytes(StandardCharsets.UTF_8),
               Maps.newHashMap("Special-Header", "Special Value"));
         }
       };
@@ -195,7 +226,7 @@ public class FakeInternetTest extends WRTest {
     request.putHeader("Content-Length", "18");
     request.setBody("{\"hello\": \"world\"}".getBytes(StandardCharsets.UTF_8));
 
-    Response response = new Response(request, 200, request.getBody().get());
+    Response response = new Response(200, request.getBody().get());
     response.putHeader("Host", "example.com");
     response.putHeader("Date", "Sun, 05 Jan 2014 21:31:40 GMT");
     response.putHeader("Content-Type", "application/json");
@@ -206,16 +237,18 @@ public class FakeInternetTest extends WRTest {
 
     /*
      * Note, that our backend explicitly adds the `headers="date"` attribute. This is not required
-     * be the specs, but it's still valid.
+     * by the specs, but it's still valid.
      */
 
-    request.recomputeAndAttachHttpSigAuthorizationHeader("Test", myKeyPair, Lists.newArrayList());
+    TestRequestSigner reqSigner1 = new TestRequestSigner(myKeyPair);
+    reqSigner1.sign(request);
     assertThat(request.getHeader("Authorization")).isEqualTo("Signature keyId=\"Test\","
         + "signature=\"SjWJWbWN7i0wzBvtPl8rbASWz5xQW6mcJmn+ibttBqtifLN7Sazz"
         + "6m79cNfwwb8DMJ5cou1s7uEGKKCs+FLEEaDV5lp7q25WqS+lavg7T8hc0GppauB"
         + "6hbgEKTwblDHYGEtbGmtdHgVCk9SuS13F0hZ8FD0k/5OxEPXe5WozsbM=\","
         + "headers=\"date\",algorithm=\"rsa-sha256\"");
-    response.recomputeAndAttachSignatureHeader("Test", myKeyPair, Lists.newArrayList());
+    TestResponseSigner resSigner1 = new TestResponseSigner(myKeyPair);
+    resSigner1.sign(request, response);
     assertThat(response.getHeader("Signature")).isEqualTo(
         "keyId=\"Test\"," + "signature=\"SjWJWbWN7i0wzBvtPl8rbASWz5xQW6mcJmn+ibttBqtifLN7Sazz"
             + "6m79cNfwwb8DMJ5cou1s7uEGKKCs+FLEEaDV5lp7q25WqS+lavg7T8hc0GppauB"
@@ -224,8 +257,9 @@ public class FakeInternetTest extends WRTest {
 
     // C.2. Basic Test
 
-    request.recomputeAndAttachHttpSigAuthorizationHeader("Test", myKeyPair,
-        Lists.newArrayList("(request-target)", "host", "date"));
+    TestRequestSigner reqSigner2 =
+        new TestRequestSigner(myKeyPair, "(request-target)", "host", "date");
+    reqSigner2.sign(request);
     assertThat(request.getHeader("Authorization"))
         .isEqualTo("Signature keyId=\"Test\"," + "signature=\"qdx+H7PHHDZgy4"
             + "y/Ahn9Tny9V3GP6YgBPyUXMmoxWtLbHpUnXS2mg2+SbrQDMCJypxBLSPQR2aAjn"
@@ -235,16 +269,18 @@ public class FakeInternetTest extends WRTest {
 
     // C.3. All Headers Test
 
-    request.recomputeAndAttachHttpSigAuthorizationHeader("Test", myKeyPair, Lists.newArrayList(
-        "(request-target)", "host", "date", "content-type", "digest", "content-length"));
+    TestRequestSigner reqSigner3 = new TestRequestSigner(myKeyPair, "(request-target)", "host",
+        "date", "content-type", "digest", "content-length");
+    reqSigner3.sign(request);
     assertThat(request.getHeader("Authorization")).isEqualTo("Signature keyId=\"Test\","
         + "signature=\"vSdrb+dS3EceC9bcwHSo4MlyKS59iFIrhgYkz8+oVLEEzmYZZvRs"
         + "8rgOp+63LEM3v+MFHB32NfpB2bEKBIvB1q52LaEUHFv120V01IL+TAD48XaERZF"
         + "ukWgHoBTLMhYS2Gb51gWxpeIq8knRmPnYePbF5MOkR0Zkly4zKH7s1dE=\","
         + "headers=\"(request-target) host date content-type digest content-length\","
         + "algorithm=\"rsa-sha256\"");
-    response.recomputeAndAttachSignatureHeader("Test", myKeyPair, Lists.newArrayList(
-        "(request-target)", "host", "date", "content-type", "digest", "content-length"));
+    TestResponseSigner resSigner3 = new TestResponseSigner(myKeyPair, "(request-target)", "host",
+        "date", "content-type", "digest", "content-length");
+    resSigner3.sign(request, response);
     assertThat(response.getHeader("Signature")).isEqualTo(
         "keyId=\"Test\"," + "signature=\"vSdrb+dS3EceC9bcwHSo4MlyKS59iFIrhgYkz8+oVLEEzmYZZvRs"
             + "8rgOp+63LEM3v+MFHB32NfpB2bEKBIvB1q52LaEUHFv120V01IL+TAD48XaERZF"

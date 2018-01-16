@@ -3,9 +3,9 @@ package eu.erasmuswithoutpaper.registry.echovalidator;
 import java.io.IOException;
 import java.util.List;
 
-import eu.erasmuswithoutpaper.registry.internet.Internet.Request;
-import eu.erasmuswithoutpaper.registry.internet.Internet.Response;
 import eu.erasmuswithoutpaper.registry.internet.InternetTestHelpers;
+import eu.erasmuswithoutpaper.registry.internet.Request;
+import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 import com.google.common.collect.Lists;

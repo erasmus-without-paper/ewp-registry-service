@@ -2,7 +2,8 @@ package eu.erasmuswithoutpaper.registry.echovalidator;
 
 import java.util.Optional;
 
-import eu.erasmuswithoutpaper.registry.internet.Internet;
+import eu.erasmuswithoutpaper.registry.internet.Request;
+import eu.erasmuswithoutpaper.registry.internet.Response;
 
 /**
  * Describes a single validation step, along with its result.
@@ -19,7 +20,7 @@ public interface ValidationStepWithStatus {
   /**
    * @return Optional request, as sent to the server.
    */
-  Optional<Internet.Request> getClientRequest();
+  Optional<Request> getClientRequest();
 
   /**
    * @return The message to be displayed as the result of the validation step.
@@ -39,7 +40,7 @@ public interface ValidationStepWithStatus {
   /**
    * @return Optional response, as returned by server.
    */
-  Optional<Internet.Response> getServerResponse();
+  Optional<Response> getServerResponse();
 
   /**
    * @return Status of this validation step.

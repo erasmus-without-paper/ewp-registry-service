@@ -7,8 +7,8 @@ import java.util.List;
 
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
 import eu.erasmuswithoutpaper.registry.internet.FakeInternetService;
-import eu.erasmuswithoutpaper.registry.internet.Internet.Request;
-import eu.erasmuswithoutpaper.registry.internet.Internet.Response;
+import eu.erasmuswithoutpaper.registry.internet.Request;
+import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 import org.apache.commons.lang.StringEscapeUtils;
@@ -59,7 +59,7 @@ abstract public class AbstractEchoService implements FakeInternetService {
       sb.append("<echo>").append(StringEscapeUtils.escapeXml(echo)).append("</echo>");
     }
     sb.append("</response>");
-    return new Response(request, 200, sb.toString().getBytes(StandardCharsets.UTF_8));
+    return new Response(200, sb.toString().getBytes(StandardCharsets.UTF_8));
   }
 
   protected Response createErrorResponse(Request request, int status, String developerMessage) {
@@ -70,7 +70,7 @@ abstract public class AbstractEchoService implements FakeInternetService {
     sb.append(StringEscapeUtils.escapeXml(developerMessage));
     sb.append("</developer-message>");
     sb.append("</error-response>");
-    return new Response(request, status, sb.toString().getBytes(StandardCharsets.UTF_8));
+    return new Response(status, sb.toString().getBytes(StandardCharsets.UTF_8));
   }
 
   abstract protected Response handleInternetRequest2(Request request)

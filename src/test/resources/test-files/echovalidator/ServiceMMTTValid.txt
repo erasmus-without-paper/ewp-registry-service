@@ -47,6 +47,7 @@ Our client credentials are quite fresh. This means that many Echo APIs will (cor
 ### SUCCESS: Trying SecMethodCombination[HTTT] with an invalid Digest. Expecting to receive a valid HTTP 400 error response.
 ### SUCCESS: Trying SecMethodCombination[HTTT] with multiple Digests (one of which is SHA-256). Expecting to receive a valid HTTP 200 response.
 ### SUCCESS: Trying SecMethodCombination[HTTT] with "SHA" request digest. This algorithm is deprecated, so we are expecting to receive a valid HTTP 400 response.
+### SUCCESS: Trying SecMethodCombination[HTTT] with "shA-256" request digest (mixed case). Digest specs require clients to accept that. Expecting to receive a valid HTTP 200 response.
 ### SUCCESS: Trying SecMethodCombination[HTTT] with a PUT request. Expecting to receive a valid HTTP 405 error response.
 ### SUCCESS: Trying SecMethodCombination[HTTT] with a DELETE request. Expecting to receive a valid HTTP 405 error response.
 ### SUCCESS: Trying SecMethodCombination[HTTT] GET request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.
@@ -70,6 +71,7 @@ Our client credentials are quite fresh. This means that many Echo APIs will (cor
 ### SUCCESS: Trying SecMethodCombination[HHTT] with an invalid Digest. Expecting to receive a valid HTTP 400 error response.
 ### SUCCESS: Trying SecMethodCombination[HHTT] with multiple Digests (one of which is SHA-256). Expecting to receive a valid HTTP 200 response.
 ### SUCCESS: Trying SecMethodCombination[HHTT] with "SHA" request digest. This algorithm is deprecated, so we are expecting to receive a valid HTTP 400 response.
+### SUCCESS: Trying SecMethodCombination[HHTT] with "shA-256" request digest (mixed case). Digest specs require clients to accept that. Expecting to receive a valid HTTP 200 response.
 ### SUCCESS: Trying SecMethodCombination[HHTT] with no valid algorithm in Accept-Signature header. Expecting to receive unsigned response.
 ### SUCCESS: Trying SecMethodCombination[HHTT] with multiple algorithms in Accept-Signature header (one of which is rsa-sha256). Expecting to receive a signed response.
 ### SUCCESS: Trying SecMethodCombination[HHTT] with a PUT request. Expecting to receive a valid HTTP 405 error response.

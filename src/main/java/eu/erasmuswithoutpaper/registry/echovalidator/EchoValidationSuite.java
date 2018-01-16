@@ -8,7 +8,6 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
-import java.security.interfaces.RSAPublicKey;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -17,14 +16,9 @@ import java.util.Base64;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildError;
@@ -35,10 +29,15 @@ import eu.erasmuswithoutpaper.registry.documentbuilder.KnownElement;
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
 import eu.erasmuswithoutpaper.registry.echovalidator.InlineValidationStep.Failure;
 import eu.erasmuswithoutpaper.registry.echovalidator.ValidationStepWithStatus.Status;
-import eu.erasmuswithoutpaper.registry.internet.HttpSigRsaPublicKey;
 import eu.erasmuswithoutpaper.registry.internet.Internet;
-import eu.erasmuswithoutpaper.registry.internet.Internet.Request;
-import eu.erasmuswithoutpaper.registry.internet.Internet.Response;
+import eu.erasmuswithoutpaper.registry.internet.Request;
+import eu.erasmuswithoutpaper.registry.internet.Response;
+import eu.erasmuswithoutpaper.registry.internet.sec.CouldNotAuthorize;
+import eu.erasmuswithoutpaper.registry.internet.sec.EwpCertificateRequestSigner;
+import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigRequestSigner;
+import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigResponseAuthorizer;
+import eu.erasmuswithoutpaper.registry.internet.sec.RequestSigner;
+import eu.erasmuswithoutpaper.registry.internet.sec.TlsResponseAuthorizer;
 import eu.erasmuswithoutpaper.registryclient.ApiSearchConditions;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
@@ -46,13 +45,8 @@ import com.google.common.collect.Lists;
 import net.adamcin.httpsig.api.Algorithm;
 import net.adamcin.httpsig.api.Authorization;
 import net.adamcin.httpsig.api.Challenge;
-import net.adamcin.httpsig.api.DefaultKeychain;
-import net.adamcin.httpsig.api.DefaultVerifier;
-import net.adamcin.httpsig.api.RequestContent;
-import net.adamcin.httpsig.api.VerifyResult;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.http.client.utils.DateUtils;
 import org.joox.Match;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -116,23 +110,6 @@ class EchoValidationSuite {
 
   private static final Logger logger = LoggerFactory.getLogger(EchoValidationSuite.class);
 
-  public static String findErrorsInDateHeader(String dateValue) {
-    Date parsed = DateUtils.parseDate(dateValue);
-    if (parsed == null) {
-      return "Could not parse the date. Make sure it's in a valid RFC 2616 format.";
-    }
-    long given = parsed.getTime();
-    long current = new Date().getTime();
-    long differenceSec = Math.abs(current - given) / 1000;
-    final long maxThresholdSec = 5 * 60;
-    if (differenceSec > maxThresholdSec) {
-      return "Server/client difference exceeds the maximum allowed threshold (it was "
-          + differenceSec + " seconds; allowed: " + maxThresholdSec + ")";
-    }
-    // Seems valid!
-    return null;
-  }
-
   private final EchoValidator parentEchoValidator;
   private final String urlToBeValidated;
   private final List<ValidationStepWithStatus> steps;
@@ -143,6 +120,10 @@ class EchoValidationSuite {
   private final EwpDocBuilder docBuilder;
   private final Internet internet;
   private final RegistryClient regClient;
+  private final EwpCertificateRequestSigner reqSignerCert;
+  private final EwpHttpSigRequestSigner reqSignerHttpSig;
+
+  private EwpHttpSigResponseAuthorizer resAuthorizerHttpSig;
 
   EchoValidationSuite(EchoValidator echoValidator, EwpDocBuilder docBuilder, Internet internet,
       String urlStr, RegistryClient regClient) {
@@ -152,6 +133,11 @@ class EchoValidationSuite {
     this.docBuilder = docBuilder;
     this.internet = internet;
     this.regClient = regClient;
+    this.reqSignerCert =
+        new EwpCertificateRequestSigner(this.parentEchoValidator.getTlsClientCertificateInUse(),
+            this.parentEchoValidator.getTlsKeyPairInUse());
+    this.reqSignerHttpSig =
+        new EwpHttpSigRequestSigner(this.parentEchoValidator.getClientRsaKeyPairInUse());
   }
 
   /**
@@ -211,8 +197,8 @@ class EchoValidationSuite {
         KeyPair otherKeyPair =
             EchoValidationSuite.this.parentEchoValidator.getUnregisteredKeyPair();
         // Replace the previously set Authorization header with a different one.
-        this.request.recomputeAndAttachHttpSigAuthorizationHeader("Unknown-ID", otherKeyPair,
-            Lists.newArrayList("(request-target)", "host", "date", "digest", "x-request-id"));
+        RequestSigner badSigner = new EwpHttpSigRequestSigner(otherKeyPair);
+        badSigner.sign(this.request);
         return Optional.of(EchoValidationSuite.this.makeRequestAndExpectError(combination,
             this.request, Lists.newArrayList(401, 403)));
       }
@@ -231,12 +217,18 @@ class EchoValidationSuite {
         this.request = EchoValidationSuite.this.createValidRequestForCombination(combination, "GET",
             EchoValidationSuite.this.urlToBeValidated);
         // Leave keyId as is, but use a new random key for signature generation.
-        String keyId = Authorization.parse(this.request.getHeader("Authorization")).getKeyId();
+        String previousKeyId =
+            Authorization.parse(this.request.getHeader("Authorization")).getKeyId();
         KeyPair otherKeyPair =
             EchoValidationSuite.this.parentEchoValidator.getUnregisteredKeyPair();
+        RequestSigner mySigner = new EwpHttpSigRequestSigner(otherKeyPair) {
+          @Override
+          public String getKeyId() {
+            return previousKeyId;
+          }
+        };
         // Replace the previously set Authorization header with a different one.
-        this.request.recomputeAndAttachHttpSigAuthorizationHeader(keyId, otherKeyPair,
-            Lists.newArrayList("(request-target)", "host", "date", "digest", "x-request-id"));
+        mySigner.sign(this.request);
         return Optional.of(EchoValidationSuite.this.makeRequestAndExpectError(combination,
             this.request, Lists.newArrayList(400, 401)));
       }
@@ -254,11 +246,9 @@ class EchoValidationSuite {
       protected Optional<Response> innerRun() throws Failure {
         this.request = EchoValidationSuite.this.createValidRequestForCombination(combination, "GET",
             EchoValidationSuite.this.urlToBeValidated);
-        String keyId = Authorization.parse(this.request.getHeader("Authorization")).getKeyId();
-        KeyPair keyPair = EchoValidationSuite.this.parentEchoValidator.getClientRsaKeyPairInUse();
-        this.request.recomputeAndAttachHttpSigAuthorizationHeader(keyId, keyPair,
-            Lists.newArrayList("(request-target)", "host", "date", "digest", "x-request-id",
-                "missing-header-that-should-exist"));
+        this.request.putHeader("missing-header-that-should-exist", "Temporarilly exists");
+        EchoValidationSuite.this.reqSignerHttpSig.sign(this.request);
+        this.request.removeHeader("missing-header-that-should-exist");
         return Optional.of(EchoValidationSuite.this.makeRequestAndExpectError(combination,
             this.request, Lists.newArrayList(400, 401)));
       }
@@ -279,10 +269,7 @@ class EchoValidationSuite {
         String value = this.request.getHeader("Date");
         this.request.removeHeader("Date");
         this.request.putHeader("Original-Date", value);
-        String keyId = Authorization.parse(this.request.getHeader("Authorization")).getKeyId();
-        KeyPair keyPair = EchoValidationSuite.this.parentEchoValidator.getClientRsaKeyPairInUse();
-        this.request.recomputeAndAttachHttpSigAuthorizationHeader(keyId, keyPair, Lists
-            .newArrayList("(request-target)", "host", "original-date", "digest", "x-request-id"));
+        EchoValidationSuite.this.reqSignerHttpSig.sign(this.request);
         return Optional.of(EchoValidationSuite.this.makeRequestAndExpectHttp200(combination,
             this.request, EchoValidationSuite.this.parentEchoValidator.getCoveredHeiIDs(),
             Lists.newArrayList()));
@@ -306,9 +293,14 @@ class EchoValidationSuite {
               "GET", EchoValidationSuite.this.urlToBeValidated);
           List<String> headersToSign = new ArrayList<>(stdHeaders);
           headersToSign.remove(headerToSkip);
-          String keyId = Authorization.parse(this.request.getHeader("Authorization")).getKeyId();
-          KeyPair keyPair = EchoValidationSuite.this.parentEchoValidator.getClientRsaKeyPairInUse();
-          this.request.recomputeAndAttachHttpSigAuthorizationHeader(keyId, keyPair, headersToSign);
+          RequestSigner mySigner =
+              new EwpHttpSigRequestSigner(EchoValidationSuite.this.reqSignerHttpSig.getKeyPair()) {
+                @Override
+                protected List<String> getHeadersToSign(Request request) {
+                  return headersToSign;
+                }
+              };
+          mySigner.sign(this.request);
           return Optional.of(EchoValidationSuite.this.makeRequestAndExpectError(combination,
               this.request, Lists.newArrayList(400, 401)));
         }
@@ -328,12 +320,7 @@ class EchoValidationSuite {
         this.request = EchoValidationSuite.this.createValidRequestForCombination(combination, "GET",
             EchoValidationSuite.this.urlToBeValidated);
         this.request.putHeader("Some-Custom-Header", "Value");
-        Authorization authz = Authorization.parse(this.request.getHeader("Authorization"));
-        String keyId = Authorization.parse(this.request.getHeader("Authorization")).getKeyId();
-        KeyPair keyPair = EchoValidationSuite.this.parentEchoValidator.getClientRsaKeyPairInUse();
-        List<String> headersToSign = new ArrayList<>(authz.getHeaders());
-        headersToSign.add("some-custom-header");
-        this.request.recomputeAndAttachHttpSigAuthorizationHeader(keyId, keyPair, headersToSign);
+        EchoValidationSuite.this.reqSignerHttpSig.sign(this.request);
         return Optional.of(EchoValidationSuite.this.makeRequestAndExpectHttp200(combination,
             this.request, EchoValidationSuite.this.parentEchoValidator.getCoveredHeiIDs(),
             Lists.newArrayList()));
@@ -352,11 +339,9 @@ class EchoValidationSuite {
       protected Optional<Response> innerRun() throws Failure {
         this.request = EchoValidationSuite.this.createValidRequestForCombination(combination, "GET",
             EchoValidationSuite.this.urlToBeValidated);
-        Authorization authz = Authorization.parse(this.request.getHeader("Authorization"));
         KeyPair keyPair = EchoValidationSuite.this.parentEchoValidator.getServerRsaKeyPairInUse();
-        String keyId = DigestUtils.sha256Hex(keyPair.getPublic().getEncoded());
-        this.request.recomputeAndAttachHttpSigAuthorizationHeader(keyId, keyPair,
-            authz.getHeaders());
+        RequestSigner badSigner = new EwpHttpSigRequestSigner(keyPair);
+        badSigner.sign(this.request);
         return Optional
             .of(EchoValidationSuite.this.makeRequestAndExpectError(combination, this.request, 403));
       }
@@ -384,9 +369,14 @@ class EchoValidationSuite {
         List<String> headers = new ArrayList<>(authz.getHeaders());
         headers.add("original-date");
         headers.remove("date");
-        String keyId = Authorization.parse(this.request.getHeader("Authorization")).getKeyId();
-        KeyPair keyPair = EchoValidationSuite.this.parentEchoValidator.getClientRsaKeyPairInUse();
-        this.request.recomputeAndAttachHttpSigAuthorizationHeader(keyId, keyPair, headers);
+        RequestSigner mySigner =
+            new EwpHttpSigRequestSigner(EchoValidationSuite.this.reqSignerHttpSig.getKeyPair()) {
+              @Override
+              protected List<String> getHeadersToSign(Request request) {
+                return headers;
+              }
+            };
+        mySigner.sign(this.request);
         try {
           return Optional.of(
               EchoValidationSuite.this.makeRequestAndExpectError(combination, this.request, 400));
@@ -415,10 +405,7 @@ class EchoValidationSuite {
             EchoValidationSuite.this.urlToBeValidated);
         this.request.putHeader("X-Request-Id",
             this.request.getHeader("X-Request-Id").replaceAll("-", "").toUpperCase(Locale.US));
-        Authorization authz = Authorization.parse(this.request.getHeader("Authorization"));
-        KeyPair keyPair = EchoValidationSuite.this.parentEchoValidator.getClientRsaKeyPairInUse();
-        this.request.recomputeAndAttachHttpSigAuthorizationHeader(authz.getKeyId(), keyPair,
-            authz.getHeaders());
+        EchoValidationSuite.this.reqSignerHttpSig.sign(this.request);
         try {
           return Optional.of(
               EchoValidationSuite.this.makeRequestAndExpectError(combination, this.request, 400));
@@ -447,13 +434,10 @@ class EchoValidationSuite {
         this.request = EchoValidationSuite.this.createValidRequestForCombination(combination,
             "POST", EchoValidationSuite.this.urlToBeValidated);
         this.request.setBody("echo=a&echo=b&echo=a".getBytes(StandardCharsets.UTF_8));
-        this.request.recomputeAndAttachDigestHeader();
-        // This digest is valid for the previous body only.
+        EchoValidationSuite.this.reqSignerHttpSig.sign(this.request);
+        // Change the body after digest and signature were generated. This should invalidate
+        // the digest.
         this.request.setBody("echo=a&echo=b&echo=c".getBytes(StandardCharsets.UTF_8));
-        Authorization authz = Authorization.parse(this.request.getHeader("Authorization"));
-        KeyPair keyPair = EchoValidationSuite.this.parentEchoValidator.getClientRsaKeyPairInUse();
-        this.request.recomputeAndAttachHttpSigAuthorizationHeader(authz.getKeyId(), keyPair,
-            authz.getHeaders());
         return Optional
             .of(EchoValidationSuite.this.makeRequestAndExpectError(combination, this.request, 400));
       }
@@ -472,15 +456,17 @@ class EchoValidationSuite {
         this.request = EchoValidationSuite.this.createValidRequestForCombination(combination,
             "POST", EchoValidationSuite.this.urlToBeValidated);
         this.request.setBody("echo=b&echo=b".getBytes(StandardCharsets.UTF_8));
-        this.request.recomputeAndAttachDigestHeader();
-        // Add a second Digest
-        String digestHeader = this.request.getHeader("Digest");
-        digestHeader += ",Unknown-Digest-Algorithm=SomeValue";
-        this.request.putHeader("Digest", digestHeader);
-        Authorization authz = Authorization.parse(this.request.getHeader("Authorization"));
-        KeyPair keyPair = EchoValidationSuite.this.parentEchoValidator.getClientRsaKeyPairInUse();
-        this.request.recomputeAndAttachHttpSigAuthorizationHeader(authz.getKeyId(), keyPair,
-            authz.getHeaders());
+        // Override the Digest and Authorization with the output of a custom signer.
+        RequestSigner mySigner =
+            new EwpHttpSigRequestSigner(EchoValidationSuite.this.reqSignerHttpSig.getKeyPair()) {
+              @Override
+              protected void includeDigestHeader(Request request) {
+                super.includeDigestHeader(request);
+                request.putHeader("Digest",
+                    request.getHeader("Digest") + ", Unknown-Digest-Algorithm=SomeValue");
+              }
+            };
+        mySigner.sign(this.request);
         return Optional.of(EchoValidationSuite.this.makeRequestAndExpectHttp200(combination,
             this.request, EchoValidationSuite.this.parentEchoValidator.getCoveredHeiIDs(),
             Lists.newArrayList("b", "b")));
@@ -501,12 +487,15 @@ class EchoValidationSuite {
         this.request = EchoValidationSuite.this.createValidRequestForCombination(combination,
             "POST", EchoValidationSuite.this.urlToBeValidated);
         this.request.setBody("echo=b&echo=b".getBytes(StandardCharsets.UTF_8));
-        this.request.putHeader("Digest", "SHA=" + Base64.getEncoder()
-            .encodeToString(DigestUtils.getSha1Digest().digest(this.request.getBody().get())));
-        Authorization authz = Authorization.parse(this.request.getHeader("Authorization"));
-        KeyPair keyPair = EchoValidationSuite.this.parentEchoValidator.getClientRsaKeyPairInUse();
-        this.request.recomputeAndAttachHttpSigAuthorizationHeader(authz.getKeyId(), keyPair,
-            authz.getHeaders());
+        RequestSigner badSigner =
+            new EwpHttpSigRequestSigner(EchoValidationSuite.this.reqSignerHttpSig.getKeyPair()) {
+              @Override
+              protected void includeDigestHeader(Request request) {
+                request.putHeader("Digest", "SHA=" + Base64.getEncoder()
+                    .encodeToString(DigestUtils.getSha1Digest().digest(request.getBodyOrEmpty())));
+              }
+            };
+        badSigner.sign(this.request);
         try {
           return Optional.of(
               EchoValidationSuite.this.makeRequestAndExpectError(combination, this.request, 400));
@@ -518,6 +507,36 @@ class EchoValidationSuite {
             throw f;
           }
         }
+      }
+    });
+
+    this.addAndRun(false, new InlineValidationStep() {
+
+      @Override
+      public String getName() {
+        return "Trying " + combination + " with \"shA-256\" request digest (mixed case). "
+            + "Digest specs require clients to accept that. Expecting to receive a valid "
+            + "HTTP 200 response.";
+      }
+
+      @Override
+      protected Optional<Response> innerRun() throws Failure {
+        this.request = EchoValidationSuite.this.createValidRequestForCombination(combination,
+            "POST", EchoValidationSuite.this.urlToBeValidated);
+        this.request.setBody("echo=b&echo=b".getBytes(StandardCharsets.UTF_8));
+        RequestSigner mySigner =
+            new EwpHttpSigRequestSigner(EchoValidationSuite.this.reqSignerHttpSig.getKeyPair()) {
+              @Override
+              protected void includeDigestHeader(Request request) {
+                super.includeDigestHeader(request);
+                String newValue = request.getHeader("Digest").replace("SHA-256=", "shA-256=");
+                request.putHeader("Digest", newValue);
+              }
+            };
+        mySigner.sign(this.request);
+        return Optional.of(EchoValidationSuite.this.makeRequestAndExpectHttp200(combination,
+            this.request, EchoValidationSuite.this.parentEchoValidator.getCoveredHeiIDs(),
+            Lists.newArrayList("b", "b")));
       }
     });
   }
@@ -538,11 +557,16 @@ class EchoValidationSuite {
       protected Optional<Response> innerRun() throws Failure {
         this.request = EchoValidationSuite.this.createValidRequestForCombination(combination, "GET",
             EchoValidationSuite.this.urlToBeValidated);
+
+        // Override the work done by the original (valid) request signer.
         KeyPair otherKeyPair =
             EchoValidationSuite.this.parentEchoValidator.getUnregisteredKeyPair();
         X509Certificate otherCert =
             EchoValidationSuite.this.parentEchoValidator.generateCertificate(otherKeyPair);
-        this.request.setClientCertificate(otherCert, otherKeyPair);
+        EwpCertificateRequestSigner mySigner =
+            new EwpCertificateRequestSigner(otherCert, otherKeyPair);
+        mySigner.sign(this.request);
+
         return Optional.of(EchoValidationSuite.this.makeRequestAndExpectError(combination,
             this.request, Lists.newArrayList(401, 403)));
       }
@@ -564,6 +588,9 @@ class EchoValidationSuite {
         this.request = EchoValidationSuite.this.createValidRequestForCombination(combination, "GET",
             EchoValidationSuite.this.urlToBeValidated);
         this.request.putHeader("Accept-Signature", "unknown-algorithm");
+        if (combination.getCliAuth().equals(SecMethod.CLIAUTH_HTTPSIG)) {
+          EchoValidationSuite.this.reqSignerHttpSig.sign(this.request);
+        }
         SecMethodsCombination relaxedCombination =
             new SecMethodsCombination(combination.getCliAuth(), SecMethod.SRVAUTH_TLSCERT,
                 combination.getReqEncr(), combination.getResEncr());
@@ -592,6 +619,9 @@ class EchoValidationSuite {
         this.request = EchoValidationSuite.this.createValidRequestForCombination(combination, "GET",
             EchoValidationSuite.this.urlToBeValidated);
         this.request.putHeader("Accept-Signature", "rsa-sha256, unknown-algorithm");
+        if (combination.getCliAuth().equals(SecMethod.CLIAUTH_HTTPSIG)) {
+          EchoValidationSuite.this.reqSignerHttpSig.sign(this.request);
+        }
         if (combination.getCliAuth().equals(SecMethod.CLIAUTH_NONE)) {
           return Optional.of(EchoValidationSuite.this.makeRequestAndExpectError(combination,
               this.request, Lists.newArrayList(401, 403)));
@@ -650,6 +680,14 @@ class EchoValidationSuite {
       sb.append("(Line " + errors.get(i).getLineNumber() + ") " + errors.get(i).getMessage());
     }
     return sb.toString();
+  }
+
+  private EwpHttpSigResponseAuthorizer getEwpHttpSigResponseAuthorizer() {
+    if (this.resAuthorizerHttpSig == null) {
+      this.resAuthorizerHttpSig =
+          new EwpHttpSigResponseAuthorizer(this.regClient, this.matchedApiEntry);
+    }
+    return this.resAuthorizerHttpSig;
   }
 
   private Response makeRequestAndExpectError(SecMethodsCombination combination, Request request,
@@ -839,25 +877,10 @@ class EchoValidationSuite {
   private List<String> validateResponseCommons(SecMethodsCombination combination, Request request,
       Response response) throws Failure {
 
-    // Verify X-Request-Id
-
-    String reqReqId = request.getHeader("X-Request-Id");
-    String resReqId = response.getHeader("X-Request-Id");
-    if (resReqId != null) {
-      // If present in response, then it should also be present in the request.
-      if (reqReqId == null) {
-        throw new Failure("The request didn't contain the X-Request-Id header, so "
-            + "the response also shouldn't.", Status.WARNING, response);
-      } else {
-        // Both should be equal.
-        if (!reqReqId.equals(resReqId)) {
-          throw new Failure("Expecting the response to contain exactly the same X-Request-Id "
-              + "as has been sent in the request.", Status.FAILURE, response);
-        }
-      }
-    } else {
-      // Not present in the response. This might be a failure, but this depends on a particular
-      // combination (and should be validated when validating this particular combination).
+    try {
+      new TlsResponseAuthorizer().authorize(request, response);
+    } catch (CouldNotAuthorize e) {
+      throw new Failure(e.getMessage(), Status.FAILURE, response);
     }
 
     List<String> notices = new ArrayList<>();
@@ -876,155 +899,10 @@ class EchoValidationSuite {
 
   private void validateResponseCommonsForxHxx(SecMethodsCombination combination, // NOPMD
       Request request, Response response) throws Failure {
-
-    // Verify X-Request-Id
-
-    if ((request.getHeader("X-Request-Id") != null)
-        && (response.getHeader("X-Request-Id") == null)) {
-      throw new Failure("HTTP Signature Server Authentication requires the server to "
-          + "include the correlated X-Request-Id, whenever it has been included "
-          + "in the request.", Status.FAILURE, response);
-    }
-    /*
-     * We don't need to check if X-Request-Id headers are equal. It has already been checked.
-     */
-
-    // Verify signature parameters
-
-    String sigHeader = response.getHeader("Signature");
-    if (sigHeader == null) {
-      throw new Failure("Expecting the response to contain the Signature header", Status.FAILURE,
-          response);
-    }
-    /*
-     * Our library parses only the Authorization header (not the Signature header), so we will
-     * reformat the value to match.
-     */
-    Authorization authz = Authorization.parse("Signature " + sigHeader);
-    if (authz == null) {
-      throw new Failure(
-          "Could not parse response's Signature header, make sure it's in a proper format",
-          Status.FAILURE, response);
-    }
-    if (!authz.getAlgorithm().equals(Algorithm.RSA_SHA256)) {
-      throw new Failure("Expecting the response's Signature to use the rsa-sha256 algorithm, "
-          + "but " + authz.getAlgorithm().getName() + " found instead.", Status.FAILURE, response);
-    }
-    Set<String> signedHeaders = new HashSet<>(authz.getHeaders());
-    List<String> headersThatShouldBeSigned = Lists.newArrayList("digest");
-    if (response.getHeader("X-Request-Id") != null) {
-      headersThatShouldBeSigned.add("x-request-id");
-    }
-    if (response.getHeader("X-Request-Signature") != null) {
-      headersThatShouldBeSigned.add("x-request-signature");
-    }
-    for (String headerName : headersThatShouldBeSigned) {
-      if (!signedHeaders.contains(headerName)) {
-        throw new Failure("Expecting the response's Signature to cover the \"" + headerName
-            + "\" header, but it doesn't.", Status.FAILURE, response);
-      }
-    }
-    if (signedHeaders.contains("date") || signedHeaders.contains("original-date")) {
-      // Okay!
-    } else {
-      throw new Failure(
-          "Expecting the response's Signature to cover the \"date\" header "
-              + "or the \"original-date\" header (or both), but it doesn't cover any of them.",
-          Status.FAILURE, response);
-    }
-
-    // Verify X-Request-Signature
-
-    String reqAuthHeader = request.getHeader("Authorization");
-    Authorization reqAuthz = Authorization.parse(reqAuthHeader);
-    if (response.getHeader("X-Request-Signature") != null) {
-      if (reqAuthz == null) {
-        throw new Failure(
-            "X-Request-Signature response header should be present only "
-                + "when HTTP Signature Client Authentication has been used in the request.",
-            Status.FAILURE, response);
-      }
-      if (!response.getHeader("X-Request-Signature").equals(reqAuthz.getSignature())) {
-        throw new Failure("X-Request-Signature response header doesn't match the actual "
-            + "HTTP Signature of the orginal request", Status.FAILURE, response);
-      }
-    } else if (reqAuthz != null) {
-      throw new Failure("Missing X-Request-Signature response header.", Status.FAILURE, response);
-    }
-
-    // Verify the date(s)
-
-    List<String> dateHeadersToVerify = new ArrayList<>();
-    if (response.getHeader("Date") != null) {
-      dateHeadersToVerify.add("Date");
-    }
-    if (response.getHeader("Original-Date") != null) {
-      dateHeadersToVerify.add("Original-Date");
-    }
-    if (dateHeadersToVerify.size() == 0) {
-      throw new Failure("Expecting the response to contain the \"Date\" "
-          + "header or the \"Original-Date\" (or both).", Status.FAILURE, response);
-    }
-    for (String headerName : dateHeadersToVerify) {
-      String errorMessage = findErrorsInDateHeader(response.getHeader(headerName));
-      if (errorMessage != null) {
-        throw new Failure("The value of response's \"" + headerName
-            + "\" header failed verification: " + errorMessage, Status.FAILURE, response);
-      }
-    }
-
-    // Look up the key
-
-    RSAPublicKey serverKey = this.regClient.findRsaPublicKey(authz.getKeyId());
-    if (serverKey == null) {
-      throw new Failure(
-          "The keyId extracted from the response's Signature header "
-              + "doesn't match any of the keys published in the Registry",
-          Status.FAILURE, response);
-    }
-    if (!this.regClient.isApiCoveredByServerKey(this.matchedApiEntry, serverKey)) {
-      throw new Failure("The keyId extracted from the response's Signature header "
-          + "has been found in the Registry, but it doesn't cover the Echo API "
-          + "endpoint which has generated the response. Make sure that you have "
-          + "included your key in a proper manifest section.", Status.FAILURE, response);
-    }
-
-    // Verify the signature
-
-    DefaultKeychain keychain = new DefaultKeychain();
-    keychain.add(new HttpSigRsaPublicKey(serverKey));
-    DefaultVerifier verifier = new DefaultVerifier(keychain);
-
-    RequestContent.Builder rcb = new RequestContent.Builder();
-    rcb.setRequestTarget(request.getMethod(), request.getPathPseudoHeader());
-    for (Map.Entry<String, String> entry : response.getHeaders().entrySet()) {
-      rcb.addHeader(entry.getKey(), entry.getValue());
-    }
-    // The library needs this challenge object in order to verify signature. So,
-    // we need to create a "fake" instance just for that.
-    Challenge challenge = new Challenge("Not verified", headersThatShouldBeSigned,
-        Lists.newArrayList(Algorithm.RSA_SHA256));
-    VerifyResult verifyResult = verifier.verifyWithResult(challenge, rcb.build(), authz);
-    if (!verifyResult.equals(VerifyResult.SUCCESS)) {
-      throw new Failure("Invalid HTTP Signature in response: " + verifyResult.toString(),
-          Status.FAILURE, response);
-    }
-
-    // Verify the digest
-
-    String digestHeader = response.getHeader("Digest");
-    if (digestHeader == null) {
-      throw new Failure("Missing response header: Digest", Status.FAILURE, response);
-    }
-    String expectedSha256Digest = response.computeBodyDigest();
-    Map<String, String> attrs = this.parseDigestHeaderValue(digestHeader);
-    if (!attrs.containsKey("SHA-256")) {
-      throw new Failure("Missing SHA-256 digest in Digest header", Status.FAILURE, response);
-    }
-    String got = attrs.get("SHA-256");
-    if (!got.equals(expectedSha256Digest)) {
-      throw new Failure("Response SHA-256 digest mismatch. Expected: " + expectedSha256Digest,
-          Status.FAILURE, response);
+    try {
+      this.getEwpHttpSigResponseAuthorizer().authorize(request, response);
+    } catch (CouldNotAuthorize e) {
+      throw new Failure(e.getMessage(), Status.FAILURE, response);
     }
   }
 
@@ -1108,11 +986,7 @@ class EchoValidationSuite {
           expectedEchoValues.add("a");
           if (combination.getCliAuth().equals(SecMethod.CLIAUTH_HTTPSIG)) {
             // We have changed the body, so we need to regenerate the digest and signature.
-            this.request.recomputeAndAttachDigestHeader();
-            String keyId = Authorization.parse(this.request.getHeader("Authorization")).getKeyId();
-            this.request.recomputeAndAttachHttpSigAuthorizationHeader(keyId,
-                EchoValidationSuite.this.parentEchoValidator.getClientRsaKeyPairInUse(),
-                Lists.newArrayList("(request-target)", "date", "host", "digest", "x-request-id"));
+            EchoValidationSuite.this.reqSignerHttpSig.sign(this.request);
           }
           return Optional.of(EchoValidationSuite.this.makeRequestAndExpectHttp200(combination,
               this.request, EchoValidationSuite.this.parentEchoValidator.getCoveredHeiIDs(),
@@ -1147,11 +1021,7 @@ class EchoValidationSuite {
           expectedEchoValues.add("a");
           if (combination.getCliAuth().equals(SecMethod.CLIAUTH_HTTPSIG)) {
             // We have changed the body, so we need to regenerate the digest and signature.
-            this.request.recomputeAndAttachDigestHeader();
-            String keyId = Authorization.parse(this.request.getHeader("Authorization")).getKeyId();
-            this.request.recomputeAndAttachHttpSigAuthorizationHeader(keyId,
-                EchoValidationSuite.this.parentEchoValidator.getClientRsaKeyPairInUse(),
-                Lists.newArrayList("(request-target)", "date", "host", "digest", "x-request-id"));
+            EchoValidationSuite.this.reqSignerHttpSig.sign(this.request);
           }
           return Optional.of(EchoValidationSuite.this.makeRequestAndExpectHttp200(combination,
               this.request, EchoValidationSuite.this.parentEchoValidator.getCoveredHeiIDs(),
@@ -1168,34 +1038,6 @@ class EchoValidationSuite {
 
     if (httpMethod.equals("POST")) {
       request.putHeader("Content-Type", "application/x-www-form-urlencoded");
-    }
-
-    // cliauth
-
-    if (combination.getCliAuth().equals(SecMethod.CLIAUTH_NONE)) {
-      // pass
-    } else if (combination.getCliAuth().equals(SecMethod.CLIAUTH_TLSCERT_SELFSIGNED)) {
-      request.setClientCertificate(this.parentEchoValidator.getTlsClientCertificateInUse(),
-          this.parentEchoValidator.getTlsKeyPairInUse());
-    } else if (combination.getCliAuth().equals(SecMethod.CLIAUTH_HTTPSIG)) {
-      String date =
-          DateTimeFormatter.RFC_1123_DATE_TIME.format(ZonedDateTime.now(ZoneId.of("UTC")));
-      URL parsed;
-      try {
-        parsed = new URL(url);
-      } catch (MalformedURLException e) {
-        throw new RuntimeException(e);
-      }
-      request.putHeader("Host", parsed.getHost());
-      request.putHeader("Date", date);
-      request.putHeader("X-Request-Id", UUID.randomUUID().toString());
-      request.recomputeAndAttachDigestHeader();
-      KeyPair myKeyPair = this.parentEchoValidator.getClientRsaKeyPairInUse();
-      String myKeyId = DigestUtils.sha256Hex(myKeyPair.getPublic().getEncoded());
-      request.recomputeAndAttachHttpSigAuthorizationHeader(myKeyId, myKeyPair,
-          Lists.newArrayList("(request-target)", "host", "date", "digest", "x-request-id"));
-    } else {
-      throw new RuntimeException("Not supported");
     }
 
     // srvauth
@@ -1224,18 +1066,19 @@ class EchoValidationSuite {
       throw new RuntimeException("Not supported");
     }
 
-    return request;
-  }
+    // cliauth
 
-  protected Map<String, String> parseDigestHeaderValue(String value) {
-    Map<String, String> result = new HashMap<>();
-    for (String pair : value.split(",")) {
-      String[] parts = pair.split("=", 2);
-      if (parts.length == 2) {
-        result.put(parts[0].trim(), parts[1].trim());
-      }
+    if (combination.getCliAuth().equals(SecMethod.CLIAUTH_NONE)) {
+      // pass
+    } else if (combination.getCliAuth().equals(SecMethod.CLIAUTH_TLSCERT_SELFSIGNED)) {
+      this.reqSignerCert.sign(request);
+    } else if (combination.getCliAuth().equals(SecMethod.CLIAUTH_HTTPSIG)) {
+      this.reqSignerHttpSig.sign(request);
+    } else {
+      throw new RuntimeException("Not supported");
     }
-    return result;
+
+    return request;
   }
 
   List<ValidationStepWithStatus> getResults() {

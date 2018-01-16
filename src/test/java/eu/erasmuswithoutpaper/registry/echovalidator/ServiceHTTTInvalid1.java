@@ -2,6 +2,7 @@ package eu.erasmuswithoutpaper.registry.echovalidator;
 
 import java.util.List;
 
+import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigRequestAuthorizer;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 import net.adamcin.httpsig.api.Algorithm;
@@ -17,8 +18,13 @@ public class ServiceHTTTInvalid1 extends ServiceHTTTValid {
   }
 
   @Override
-  protected List<Algorithm> getSupportedHttpsigAlgorithms() {
-    return Lists.newArrayList(Algorithm.RSA_SHA512);
+  protected EwpHttpSigRequestAuthorizer newAuthorizer() {
+    return new EwpHttpSigRequestAuthorizer(this.registryClient) {
+      @Override
+      protected List<Algorithm> getSupportedHttpsigAlgorithms() {
+        return Lists.newArrayList(Algorithm.RSA_SHA512);
+      }
+    };
   }
 
 }

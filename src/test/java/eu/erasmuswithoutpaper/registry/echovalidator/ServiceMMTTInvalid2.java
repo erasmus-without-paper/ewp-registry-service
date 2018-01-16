@@ -4,6 +4,7 @@ import java.security.KeyPair;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
+import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigResponseSigner;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 /**
@@ -17,7 +18,12 @@ public class ServiceMMTTInvalid2 extends ServiceMMTTValid {
   }
 
   @Override
-  protected ZonedDateTime getCurrentTime() {
-    return ZonedDateTime.now(ZoneId.of("UTC")).minusMinutes(10);
+  protected EwpHttpSigResponseSigner getHttpSigSigner() {
+    return new EwpHttpSigResponseSigner(this.myKeyId, this.myKeyPair) {
+      @Override
+      protected ZonedDateTime getCurrentTime() {
+        return ZonedDateTime.now(ZoneId.of("UTC")).minusMinutes(10);
+      }
+    };
   }
 }

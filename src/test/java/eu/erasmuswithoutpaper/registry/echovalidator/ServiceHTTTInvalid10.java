@@ -1,6 +1,8 @@
 package eu.erasmuswithoutpaper.registry.echovalidator;
 
-import eu.erasmuswithoutpaper.registry.internet.Internet.Request;
+import eu.erasmuswithoutpaper.registry.internet.Request;
+import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigRequestAuthorizer;
+import eu.erasmuswithoutpaper.registry.internet.sec.Http4xx;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 /**
@@ -13,8 +15,13 @@ public class ServiceHTTTInvalid10 extends ServiceHTTTValid {
   }
 
   @Override
-  protected void verifyDigestHeader(Request request) throws ErrorResponseException {
-    return;
+  protected EwpHttpSigRequestAuthorizer newAuthorizer() {
+    return new EwpHttpSigRequestAuthorizer(this.registryClient) {
+      @Override
+      protected void verifyDigestHeader(Request request) throws Http4xx {
+        return;
+      }
+    };
   }
 
 }

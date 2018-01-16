@@ -2,6 +2,7 @@ package eu.erasmuswithoutpaper.registry.echovalidator;
 
 import java.util.List;
 
+import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigRequestAuthorizer;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 /**
@@ -14,9 +15,14 @@ public class ServiceHTTTInvalid3 extends ServiceHTTTValid {
   }
 
   @Override
-  protected List<String> getHeadersThatNeedToBeSignedExcludingDates() {
-    List<String> result = super.getHeadersThatNeedToBeSignedExcludingDates();
-    result.remove("x-request-id");
-    return result;
+  protected EwpHttpSigRequestAuthorizer newAuthorizer() {
+    return new EwpHttpSigRequestAuthorizer(this.registryClient) {
+      @Override
+      protected List<String> getHeadersThatNeedToBeSignedExcludingDates() {
+        List<String> result = super.getHeadersThatNeedToBeSignedExcludingDates();
+        result.remove("x-request-id");
+        return result;
+      }
+    };
   }
 }

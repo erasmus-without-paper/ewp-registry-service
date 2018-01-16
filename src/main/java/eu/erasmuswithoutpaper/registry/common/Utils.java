@@ -2,6 +2,8 @@ package eu.erasmuswithoutpaper.registry.common;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Base64;
+import java.util.Date;
 import java.util.Optional;
 
 import javax.xml.XMLConstants;
@@ -13,7 +15,9 @@ import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
 
 import org.springframework.web.util.HtmlUtils;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.http.client.utils.DateUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -35,6 +39,23 @@ public class Utils {
       { "th", "st", "nd", "rd", "th", "th", "th", "th", "th", "th" };
 
   /**
+   * @param input Data to compute digest of.
+   * @return Base64-encoded SHA-256 digest of the input.
+   */
+  public static String computeDigestBase64(byte[] input) {
+    byte[] binaryDigest = DigestUtils.sha256(input);
+    return Base64.getEncoder().encodeToString(binaryDigest);
+  }
+
+  /**
+   * @param input Data to compute digest of.
+   * @return Hex-encoded SHA-256 digest of the input.
+   */
+  public static String computeDigestHex(byte[] input) {
+    return DigestUtils.sha256Hex(input);
+  }
+
+  /**
    * Escape characters using HTML entities.
    *
    * @param str String to be escaped.
@@ -52,6 +73,36 @@ public class Utils {
    */
   public static String escapeXml(String str) {
     return StringEscapeUtils.escapeXml(str);
+  }
+
+  /**
+   * Validate the Date header for HTTP Signature usage.
+   *
+   * <p>
+   * HTTP Signatures require the date to be in a valid RFC 2616 format, and to be no more than 5
+   * minutes in the past or in the future. If the given date does not meet these criteria, then an
+   * error message is returned.
+   * </p>
+   *
+   * @param dateValue The value passed in the Date header.
+   * @return Either {@link String} (the error message) or <code>null</code> (if no errors were
+   *         found).
+   */
+  public static final String findErrorsInHttpSigDateHeader(String dateValue) {
+    Date parsed = DateUtils.parseDate(dateValue);
+    if (parsed == null) {
+      return "Could not parse the date. Make sure it's in a valid RFC 2616 format.";
+    }
+    long given = parsed.getTime();
+    long current = new Date().getTime();
+    long differenceSec = Math.abs(current - given) / 1000;
+    final long maxThresholdSec = 5 * 60;
+    if (differenceSec > maxThresholdSec) {
+      return "Server/client difference exceeds the maximum allowed threshold (it was "
+          + differenceSec + " seconds; allowed: " + maxThresholdSec + ")";
+    }
+    // Seems valid.
+    return null;
   }
 
   /**
@@ -164,4 +215,5 @@ public class Utils {
       throw new RuntimeException(e);
     }
   }
+
 }

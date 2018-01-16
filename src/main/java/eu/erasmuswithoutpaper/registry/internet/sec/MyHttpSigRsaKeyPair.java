@@ -1,9 +1,9 @@
-package eu.erasmuswithoutpaper.registry.internet;
+package eu.erasmuswithoutpaper.registry.internet.sec;
 
 import java.security.InvalidKeyException;
+import java.security.KeyPair;
 import java.security.Signature;
 import java.security.SignatureException;
-import java.security.interfaces.RSAPublicKey;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -12,13 +12,12 @@ import net.adamcin.httpsig.api.Algorithm;
 import net.adamcin.httpsig.api.Key;
 import net.adamcin.httpsig.ssh.jce.KeyFormat;
 import net.adamcin.httpsig.ssh.jce.SSHKey;
-import org.apache.commons.codec.digest.DigestUtils;
 
 /**
  * This custom class was needed because, at the time of writing this, {@link SSHKey} didn't allow us
  * to set a valid EWP-compatible keyId.
  */
-public class HttpSigRsaPublicKey implements Key {
+public class MyHttpSigRsaKeyPair implements Key {
 
   private static Set<Algorithm> algorithms;
 
@@ -28,18 +27,18 @@ public class HttpSigRsaPublicKey implements Key {
     algorithms = Collections.unmodifiableSet(algorithms);
   }
 
-  private final RSAPublicKey publicKey;
-  private final String sha256fingerprint;
+  private final String keyId;
+  private final KeyPair keyPair;
 
   @SuppressWarnings("javadoc")
-  public HttpSigRsaPublicKey(RSAPublicKey publicKey) {
-    this.publicKey = publicKey;
-    this.sha256fingerprint = DigestUtils.sha256Hex(this.publicKey.getEncoded());
+  public MyHttpSigRsaKeyPair(String keyId, KeyPair keyPair) {
+    this.keyId = keyId;
+    this.keyPair = keyPair;
   }
 
   @Override
   public boolean canSign() {
-    return false;
+    return true;
   }
 
   @Override
@@ -54,12 +53,22 @@ public class HttpSigRsaPublicKey implements Key {
 
   @Override
   public String getId() {
-    return this.sha256fingerprint;
+    return this.keyId;
   }
 
   @Override
   public byte[] sign(Algorithm algorithm, byte[] contentBytes) {
-    throw new RuntimeException("Not supported");
+    if (contentBytes == null) {
+      throw new IllegalArgumentException("contentBytes cannot be null.");
+    }
+    Signature signature = KeyFormat.SSH_RSA.getSignatureInstance(algorithm);
+    try {
+      signature.initSign(this.keyPair.getPrivate());
+      signature.update(contentBytes);
+      return signature.sign();
+    } catch (InvalidKeyException | SignatureException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   @Override
@@ -74,7 +83,7 @@ public class HttpSigRsaPublicKey implements Key {
 
     Signature signature = KeyFormat.SSH_RSA.getSignatureInstance(algorithm);
     try {
-      signature.initVerify(this.publicKey);
+      signature.initVerify(this.keyPair.getPublic());
       signature.update(contentBytes);
       return signature.verify(signatureBytes);
     } catch (InvalidKeyException | SignatureException e) {

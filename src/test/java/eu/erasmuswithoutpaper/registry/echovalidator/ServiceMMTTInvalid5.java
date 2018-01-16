@@ -2,8 +2,9 @@ package eu.erasmuswithoutpaper.registry.echovalidator;
 
 import java.security.KeyPair;
 
-import eu.erasmuswithoutpaper.registry.internet.Internet.Request;
-import eu.erasmuswithoutpaper.registry.internet.Internet.Response;
+import eu.erasmuswithoutpaper.registry.internet.Request;
+import eu.erasmuswithoutpaper.registry.internet.Response;
+import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigResponseSigner;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 /**
@@ -17,10 +18,12 @@ public class ServiceMMTTInvalid5 extends ServiceMMTTValid {
   }
 
   @Override
-  protected void includeProperHeaders(Request request, Response response) {
-    super.includeProperHeaders(request, response);
-    response.removeHeader("X-Request-Id");
-    // Sign again.
-    this.includeSignatureHeader(response);
+  protected EwpHttpSigResponseSigner getHttpSigSigner() {
+    return new EwpHttpSigResponseSigner(this.myKeyId, this.myKeyPair) {
+      @Override
+      protected void includeXRequestIdHeader(Request request, Response response) {
+        // Do nothing.
+      }
+    };
   }
 }

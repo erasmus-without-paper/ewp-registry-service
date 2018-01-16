@@ -6,9 +6,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Optional;
 
-import eu.erasmuswithoutpaper.registry.internet.Internet;
-import eu.erasmuswithoutpaper.registry.internet.Internet.Request;
-import eu.erasmuswithoutpaper.registry.internet.Internet.Response;
+import eu.erasmuswithoutpaper.registry.internet.Request;
+import eu.erasmuswithoutpaper.registry.internet.Response;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.joox.Match;
@@ -32,19 +31,19 @@ abstract class InlineValidationStep implements ValidationStepWithStatus {
   static class Failure extends Exception {
 
     private final Status status;
-    private transient Internet.Response serverResponse = null;
+    private transient Response serverResponse = null;
 
-    Failure(String message, Status status, Internet.Response serverResponse) {
+    Failure(String message, Status status, Response serverResponse) {
       super(message);
       this.status = status;
       this.serverResponse = serverResponse;
     }
 
-    void attachServerResponse(Internet.Response response) {
+    void attachServerResponse(Response response) {
       this.serverResponse = response;
     }
 
-    Optional<Internet.Response> getAttachedServerResponse() {
+    Optional<Response> getAttachedServerResponse() {
       return Optional.ofNullable(this.serverResponse);
     }
 
@@ -59,8 +58,8 @@ abstract class InlineValidationStep implements ValidationStepWithStatus {
 
   private Status status = Status.PENDING;
   private String message = null;
-  protected Internet.Request request = null;
-  private Internet.Response serverResponse = null;
+  protected Request request = null;
+  private Response serverResponse = null;
 
   @Override
   public Optional<Request> getClientRequest() {
@@ -114,13 +113,13 @@ abstract class InlineValidationStep implements ValidationStepWithStatus {
    * @throws Failure When a step fails, and its status is NOT supposed to be set to SUCCESS. The
    *         instance contains the both the error message and status to be used instead.
    */
-  protected abstract Optional<Internet.Response> innerRun() throws Failure;
+  protected abstract Optional<Response> innerRun() throws Failure;
 
   protected void setMessage(String message) {
     this.message = message;
   }
 
-  protected void setServerResponse(Internet.Response response) {
+  protected void setServerResponse(Response response) {
     this.serverResponse = response;
   }
 
