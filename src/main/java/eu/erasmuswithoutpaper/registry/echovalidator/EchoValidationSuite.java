@@ -16,10 +16,8 @@ import java.util.Base64;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -509,6 +507,36 @@ class EchoValidationSuite {
             throw f;
           }
         }
+      }
+    });
+
+    this.addAndRun(false, new InlineValidationStep() {
+
+      @Override
+      public String getName() {
+        return "Trying " + combination + " with \"shA-256\" request digest (mixed case). "
+            + "Digest specs require clients to accept that. Expecting to receive a valid "
+            + "HTTP 200 response.";
+      }
+
+      @Override
+      protected Optional<Response> innerRun() throws Failure {
+        this.request = EchoValidationSuite.this.createValidRequestForCombination(combination,
+            "POST", EchoValidationSuite.this.urlToBeValidated);
+        this.request.setBody("echo=b&echo=b".getBytes(StandardCharsets.UTF_8));
+        RequestSigner mySigner =
+            new EwpHttpSigRequestSigner(EchoValidationSuite.this.reqSignerHttpSig.getKeyPair()) {
+              @Override
+              protected void includeDigestHeader(Request request) {
+                super.includeDigestHeader(request);
+                String newValue = request.getHeader("Digest").replace("SHA-256=", "shA-256=");
+                request.putHeader("Digest", newValue);
+              }
+            };
+        mySigner.sign(this.request);
+        return Optional.of(EchoValidationSuite.this.makeRequestAndExpectHttp200(combination,
+            this.request, EchoValidationSuite.this.parentEchoValidator.getCoveredHeiIDs(),
+            Lists.newArrayList("b", "b")));
       }
     });
   }
@@ -1051,17 +1079,6 @@ class EchoValidationSuite {
     }
 
     return request;
-  }
-
-  protected Map<String, String> parseDigestHeaderValue(String value) {
-    Map<String, String> result = new HashMap<>();
-    for (String pair : value.split(",")) {
-      String[] parts = pair.split("=", 2);
-      if (parts.length == 2) {
-        result.put(parts[0].trim(), parts[1].trim());
-      }
-    }
-    return result;
   }
 
   List<ValidationStepWithStatus> getResults() {

@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import eu.erasmuswithoutpaper.registry.common.Utils;
@@ -116,6 +117,24 @@ public class EwpHttpSigRequestAuthorizer implements RequestAuthorizer {
   }
 
   /**
+   * Parse the value of the Digest header.
+   *
+   * @param value The value of the Digest header.
+   * @return The map of all digests included in the header. Keys contain the name of the digest
+   *         function, values contain the bound digest value. The map MUST be case-insensitive.
+   */
+  protected Map<String, String> parseDigestHeaderValue(String value) {
+    Map<String, String> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+    for (String pair : value.split(",")) {
+      String[] parts = pair.split("=", 2);
+      if (parts.length == 2) {
+        result.put(parts[0].trim(), parts[1].trim());
+      }
+    }
+    return result;
+  }
+
+  /**
    * Remove all headers that hadn't been signed.
    *
    * @param request The request to process.
@@ -191,8 +210,13 @@ public class EwpHttpSigRequestAuthorizer implements RequestAuthorizer {
       throw new Http4xx(400, "Missing header: Digest");
     }
     String expectedSha256Digest = Utils.computeDigestBase64(request.getBodyOrEmpty());
-    if (!digestHeader.contains("SHA-256=" + expectedSha256Digest)) {
-      throw new Http4xx(400, "Digest mismatch. Expected: " + expectedSha256Digest);
+    Map<String, String> attrs = this.parseDigestHeaderValue(digestHeader);
+    if (!attrs.containsKey("SHA-256")) {
+      throw new Http4xx(400, "Missing SHA-256 digest in Digest header");
+    }
+    String got = attrs.get("SHA-256");
+    if (!got.equals(expectedSha256Digest)) {
+      throw new Http4xx(400, "Request SHA-256 digest mismatch. Expected: " + expectedSha256Digest);
     }
   }
 
