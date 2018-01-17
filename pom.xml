@@ -159,7 +159,7 @@
         <dependency>
             <groupId>eu.erasmuswithoutpaper</groupId>
             <artifactId>ewp-registry-client</artifactId>
-            <version>1.5.1</version>
+            <version>1.6.0</version>
         </dependency>
         <dependency>
             <groupId>net.adamcin.httpsig</groupId>
@@ -175,6 +175,11 @@
             <groupId>com.mitchellbosecke</groupId>
             <artifactId>pebble</artifactId>
             <version>2.4.0</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.erasmuswithoutpaper</groupId>
+            <artifactId>ewp-rsa-aes</artifactId>
+            <version>1.0.1</version>
         </dependency>
     </dependencies>
 
