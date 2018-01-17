@@ -170,7 +170,7 @@ class EchoValidationSuite {
 
       @Override
       protected Optional<Response> innerRun() throws Failure {
-        this.request = EchoValidationSuite.this.createValidRequestForCombination(combination, "GET",
+        this.request = EchoValidationSuite.this.createValidRequestForCombination(combination,
             EchoValidationSuite.this.urlToBeValidated);
         return Optional.of(EchoValidationSuite.this.makeRequestAndExpectError(combination,
             this.request, Lists.newArrayList(401, 403)));
@@ -192,7 +192,7 @@ class EchoValidationSuite {
 
       @Override
       protected Optional<Response> innerRun() throws Failure {
-        this.request = EchoValidationSuite.this.createValidRequestForCombination(combination, "GET",
+        this.request = EchoValidationSuite.this.createValidRequestForCombination(combination,
             EchoValidationSuite.this.urlToBeValidated);
         KeyPair otherKeyPair =
             EchoValidationSuite.this.parentEchoValidator.getUnregisteredKeyPair();
@@ -214,7 +214,7 @@ class EchoValidationSuite {
 
       @Override
       protected Optional<Response> innerRun() throws Failure {
-        this.request = EchoValidationSuite.this.createValidRequestForCombination(combination, "GET",
+        this.request = EchoValidationSuite.this.createValidRequestForCombination(combination,
             EchoValidationSuite.this.urlToBeValidated);
         // Leave keyId as is, but use a new random key for signature generation.
         String previousKeyId =
@@ -244,7 +244,7 @@ class EchoValidationSuite {
 
       @Override
       protected Optional<Response> innerRun() throws Failure {
-        this.request = EchoValidationSuite.this.createValidRequestForCombination(combination, "GET",
+        this.request = EchoValidationSuite.this.createValidRequestForCombination(combination,
             EchoValidationSuite.this.urlToBeValidated);
         this.request.putHeader("missing-header-that-should-exist", "Temporarilly exists");
         EchoValidationSuite.this.reqSignerHttpSig.sign(this.request);
@@ -264,7 +264,7 @@ class EchoValidationSuite {
 
       @Override
       protected Optional<Response> innerRun() throws Failure {
-        this.request = EchoValidationSuite.this.createValidRequestForCombination(combination, "GET",
+        this.request = EchoValidationSuite.this.createValidRequestForCombination(combination,
             EchoValidationSuite.this.urlToBeValidated);
         String value = this.request.getHeader("Date");
         this.request.removeHeader("Date");
@@ -290,7 +290,7 @@ class EchoValidationSuite {
         @Override
         protected Optional<Response> innerRun() throws Failure {
           this.request = EchoValidationSuite.this.createValidRequestForCombination(combination,
-              "GET", EchoValidationSuite.this.urlToBeValidated);
+              EchoValidationSuite.this.urlToBeValidated);
           List<String> headersToSign = new ArrayList<>(stdHeaders);
           headersToSign.remove(headerToSkip);
           RequestSigner mySigner =
@@ -317,7 +317,7 @@ class EchoValidationSuite {
 
       @Override
       protected Optional<Response> innerRun() throws Failure {
-        this.request = EchoValidationSuite.this.createValidRequestForCombination(combination, "GET",
+        this.request = EchoValidationSuite.this.createValidRequestForCombination(combination,
             EchoValidationSuite.this.urlToBeValidated);
         this.request.putHeader("Some-Custom-Header", "Value");
         EchoValidationSuite.this.reqSignerHttpSig.sign(this.request);
@@ -337,7 +337,7 @@ class EchoValidationSuite {
 
       @Override
       protected Optional<Response> innerRun() throws Failure {
-        this.request = EchoValidationSuite.this.createValidRequestForCombination(combination, "GET",
+        this.request = EchoValidationSuite.this.createValidRequestForCombination(combination,
             EchoValidationSuite.this.urlToBeValidated);
         KeyPair keyPair = EchoValidationSuite.this.parentEchoValidator.getServerRsaKeyPairInUse();
         RequestSigner badSigner = new EwpHttpSigRequestSigner(keyPair);
@@ -358,7 +358,7 @@ class EchoValidationSuite {
 
       @Override
       protected Optional<Response> innerRun() throws Failure {
-        this.request = EchoValidationSuite.this.createValidRequestForCombination(combination, "GET",
+        this.request = EchoValidationSuite.this.createValidRequestForCombination(combination,
             EchoValidationSuite.this.urlToBeValidated);
         ZonedDateTime dateTime = ZonedDateTime.now(ZoneId.of("UTC"));
         dateTime = dateTime.minusMinutes(20);
@@ -401,7 +401,7 @@ class EchoValidationSuite {
 
       @Override
       protected Optional<Response> innerRun() throws Failure {
-        this.request = EchoValidationSuite.this.createValidRequestForCombination(combination, "GET",
+        this.request = EchoValidationSuite.this.createValidRequestForCombination(combination,
             EchoValidationSuite.this.urlToBeValidated);
         this.request.putHeader("X-Request-Id",
             this.request.getHeader("X-Request-Id").replaceAll("-", "").toUpperCase(Locale.US));
@@ -421,124 +421,127 @@ class EchoValidationSuite {
       }
     });
 
-    this.addAndRun(false, new InlineValidationStep() {
+    if (combination.getHttpMethod().equals("POST")) {
 
-      @Override
-      public String getName() {
-        return "Trying " + combination + " with an invalid Digest. "
-            + "Expecting to receive a valid HTTP 400 error response.";
-      }
+      this.addAndRun(false, new InlineValidationStep() {
 
-      @Override
-      protected Optional<Response> innerRun() throws Failure {
-        this.request = EchoValidationSuite.this.createValidRequestForCombination(combination,
-            "POST", EchoValidationSuite.this.urlToBeValidated);
-        this.request.setBody("echo=a&echo=b&echo=a".getBytes(StandardCharsets.UTF_8));
-        EchoValidationSuite.this.reqSignerHttpSig.sign(this.request);
-        // Change the body after digest and signature were generated. This should invalidate
-        // the digest.
-        this.request.setBody("echo=a&echo=b&echo=c".getBytes(StandardCharsets.UTF_8));
-        return Optional
-            .of(EchoValidationSuite.this.makeRequestAndExpectError(combination, this.request, 400));
-      }
-    });
+        @Override
+        public String getName() {
+          return "Trying " + combination + " with an invalid Digest. "
+              + "Expecting to receive a valid HTTP 400 error response.";
+        }
 
-    this.addAndRun(false, new InlineValidationStep() {
-
-      @Override
-      public String getName() {
-        return "Trying " + combination + " with multiple Digests (one of which is SHA-256). "
-            + "Expecting to receive a valid HTTP 200 response.";
-      }
-
-      @Override
-      protected Optional<Response> innerRun() throws Failure {
-        this.request = EchoValidationSuite.this.createValidRequestForCombination(combination,
-            "POST", EchoValidationSuite.this.urlToBeValidated);
-        this.request.setBody("echo=b&echo=b".getBytes(StandardCharsets.UTF_8));
-        // Override the Digest and Authorization with the output of a custom signer.
-        RequestSigner mySigner =
-            new EwpHttpSigRequestSigner(EchoValidationSuite.this.reqSignerHttpSig.getKeyPair()) {
-              @Override
-              protected void includeDigestHeader(Request request) {
-                super.includeDigestHeader(request);
-                request.putHeader("Digest",
-                    request.getHeader("Digest") + ", Unknown-Digest-Algorithm=SomeValue");
-              }
-            };
-        mySigner.sign(this.request);
-        return Optional.of(EchoValidationSuite.this.makeRequestAndExpectHttp200(combination,
-            this.request, EchoValidationSuite.this.parentEchoValidator.getCoveredHeiIDs(),
-            Lists.newArrayList("b", "b")));
-      }
-    });
-
-    this.addAndRun(false, new InlineValidationStep() {
-
-      @Override
-      public String getName() {
-        return "Trying " + combination + " with \"SHA\" request digest. "
-            + "This algorithm is deprecated, so we are expecting to receive a "
-            + "valid HTTP 400 response.";
-      }
-
-      @Override
-      protected Optional<Response> innerRun() throws Failure {
-        this.request = EchoValidationSuite.this.createValidRequestForCombination(combination,
-            "POST", EchoValidationSuite.this.urlToBeValidated);
-        this.request.setBody("echo=b&echo=b".getBytes(StandardCharsets.UTF_8));
-        RequestSigner badSigner =
-            new EwpHttpSigRequestSigner(EchoValidationSuite.this.reqSignerHttpSig.getKeyPair()) {
-              @Override
-              protected void includeDigestHeader(Request request) {
-                request.putHeader("Digest", "SHA=" + Base64.getEncoder()
-                    .encodeToString(DigestUtils.getSha1Digest().digest(request.getBodyOrEmpty())));
-              }
-            };
-        badSigner.sign(this.request);
-        try {
+        @Override
+        protected Optional<Response> innerRun() throws Failure {
+          this.request = EchoValidationSuite.this.createValidRequestForCombination(combination,
+              EchoValidationSuite.this.urlToBeValidated);
+          this.request.setBody("echo=a&echo=b&echo=a".getBytes(StandardCharsets.UTF_8));
+          EchoValidationSuite.this.reqSignerHttpSig.sign(this.request);
+          // Change the body after digest and signature were generated. This should invalidate
+          // the digest.
+          this.request.setBody("echo=a&echo=b&echo=c".getBytes(StandardCharsets.UTF_8));
           return Optional.of(
               EchoValidationSuite.this.makeRequestAndExpectError(combination, this.request, 400));
-        } catch (Failure f) {
-          if (f.getAttachedServerResponse().isPresent()
-              && f.getAttachedServerResponse().get().getStatus() == 200) {
-            throw f.withChangedStatus(Status.WARNING);
-          } else {
-            throw f;
+        }
+      });
+
+      this.addAndRun(false, new InlineValidationStep() {
+
+        @Override
+        public String getName() {
+          return "Trying " + combination + " with multiple Digests (one of which is SHA-256). "
+              + "Expecting to receive a valid HTTP 200 response.";
+        }
+
+        @Override
+        protected Optional<Response> innerRun() throws Failure {
+          this.request = EchoValidationSuite.this.createValidRequestForCombination(combination,
+              EchoValidationSuite.this.urlToBeValidated);
+          this.request.setBody("echo=b&echo=b".getBytes(StandardCharsets.UTF_8));
+          // Override the Digest and Authorization with the output of a custom signer.
+          RequestSigner mySigner =
+              new EwpHttpSigRequestSigner(EchoValidationSuite.this.reqSignerHttpSig.getKeyPair()) {
+                @Override
+                protected void includeDigestHeader(Request request) {
+                  super.includeDigestHeader(request);
+                  request.putHeader("Digest",
+                      request.getHeader("Digest") + ", Unknown-Digest-Algorithm=SomeValue");
+                }
+              };
+          mySigner.sign(this.request);
+          return Optional.of(EchoValidationSuite.this.makeRequestAndExpectHttp200(combination,
+              this.request, EchoValidationSuite.this.parentEchoValidator.getCoveredHeiIDs(),
+              Lists.newArrayList("b", "b")));
+        }
+      });
+
+      this.addAndRun(false, new InlineValidationStep() {
+
+        @Override
+        public String getName() {
+          return "Trying " + combination + " with \"SHA\" request digest. "
+              + "This algorithm is deprecated, so we are expecting to receive a "
+              + "valid HTTP 400 response.";
+        }
+
+        @Override
+        protected Optional<Response> innerRun() throws Failure {
+          this.request = EchoValidationSuite.this.createValidRequestForCombination(combination,
+              EchoValidationSuite.this.urlToBeValidated);
+          this.request.setBody("echo=b&echo=b".getBytes(StandardCharsets.UTF_8));
+          RequestSigner badSigner =
+              new EwpHttpSigRequestSigner(EchoValidationSuite.this.reqSignerHttpSig.getKeyPair()) {
+                @Override
+                protected void includeDigestHeader(Request request) {
+                  request.putHeader("Digest", "SHA=" + Base64.getEncoder().encodeToString(
+                      DigestUtils.getSha1Digest().digest(request.getBodyOrEmpty())));
+                }
+              };
+          badSigner.sign(this.request);
+          try {
+            return Optional.of(
+                EchoValidationSuite.this.makeRequestAndExpectError(combination, this.request, 400));
+          } catch (Failure f) {
+            if (f.getAttachedServerResponse().isPresent()
+                && f.getAttachedServerResponse().get().getStatus() == 200) {
+              throw f.withChangedStatus(Status.WARNING);
+            } else {
+              throw f;
+            }
           }
         }
-      }
-    });
+      });
 
-    this.addAndRun(false, new InlineValidationStep() {
+      this.addAndRun(false, new InlineValidationStep() {
 
-      @Override
-      public String getName() {
-        return "Trying " + combination + " with \"shA-256\" request digest (mixed case). "
-            + "Digest specs require clients to accept that. Expecting to receive a valid "
-            + "HTTP 200 response.";
-      }
+        @Override
+        public String getName() {
+          return "Trying " + combination + " with \"shA-256\" request digest (mixed case). "
+              + "Digest specs require clients to accept that. Expecting to receive a valid "
+              + "HTTP 200 response.";
+        }
 
-      @Override
-      protected Optional<Response> innerRun() throws Failure {
-        this.request = EchoValidationSuite.this.createValidRequestForCombination(combination,
-            "POST", EchoValidationSuite.this.urlToBeValidated);
-        this.request.setBody("echo=b&echo=b".getBytes(StandardCharsets.UTF_8));
-        RequestSigner mySigner =
-            new EwpHttpSigRequestSigner(EchoValidationSuite.this.reqSignerHttpSig.getKeyPair()) {
-              @Override
-              protected void includeDigestHeader(Request request) {
-                super.includeDigestHeader(request);
-                String newValue = request.getHeader("Digest").replace("SHA-256=", "shA-256=");
-                request.putHeader("Digest", newValue);
-              }
-            };
-        mySigner.sign(this.request);
-        return Optional.of(EchoValidationSuite.this.makeRequestAndExpectHttp200(combination,
-            this.request, EchoValidationSuite.this.parentEchoValidator.getCoveredHeiIDs(),
-            Lists.newArrayList("b", "b")));
-      }
-    });
+        @Override
+        protected Optional<Response> innerRun() throws Failure {
+          this.request = EchoValidationSuite.this.createValidRequestForCombination(combination,
+              EchoValidationSuite.this.urlToBeValidated);
+          this.request.setBody("echo=b&echo=b".getBytes(StandardCharsets.UTF_8));
+          RequestSigner mySigner =
+              new EwpHttpSigRequestSigner(EchoValidationSuite.this.reqSignerHttpSig.getKeyPair()) {
+                @Override
+                protected void includeDigestHeader(Request request) {
+                  super.includeDigestHeader(request);
+                  String newValue = request.getHeader("Digest").replace("SHA-256=", "shA-256=");
+                  request.putHeader("Digest", newValue);
+                }
+              };
+          mySigner.sign(this.request);
+          return Optional.of(EchoValidationSuite.this.makeRequestAndExpectHttp200(combination,
+              this.request, EchoValidationSuite.this.parentEchoValidator.getCoveredHeiIDs(),
+              Lists.newArrayList("b", "b")));
+        }
+      });
+    }
   }
 
   private void checkEdgeCasesForSxxx(SecMethodsCombination combination) throws SuiteBroken {
@@ -555,7 +558,7 @@ class EchoValidationSuite {
 
       @Override
       protected Optional<Response> innerRun() throws Failure {
-        this.request = EchoValidationSuite.this.createValidRequestForCombination(combination, "GET",
+        this.request = EchoValidationSuite.this.createValidRequestForCombination(combination,
             EchoValidationSuite.this.urlToBeValidated);
 
         // Override the work done by the original (valid) request signer.
@@ -585,15 +588,15 @@ class EchoValidationSuite {
 
       @Override
       protected Optional<Response> innerRun() throws Failure {
-        this.request = EchoValidationSuite.this.createValidRequestForCombination(combination, "GET",
+        this.request = EchoValidationSuite.this.createValidRequestForCombination(combination,
             EchoValidationSuite.this.urlToBeValidated);
         this.request.putHeader("Accept-Signature", "unknown-algorithm");
         if (combination.getCliAuth().equals(SecMethod.CLIAUTH_HTTPSIG)) {
           EchoValidationSuite.this.reqSignerHttpSig.sign(this.request);
         }
         SecMethodsCombination relaxedCombination =
-            new SecMethodsCombination(combination.getCliAuth(), SecMethod.SRVAUTH_TLSCERT,
-                combination.getReqEncr(), combination.getResEncr());
+            new SecMethodsCombination(combination.getHttpMethod(), combination.getCliAuth(),
+                SecMethod.SRVAUTH_TLSCERT, combination.getReqEncr(), combination.getResEncr());
         if (combination.getCliAuth().equals(SecMethod.CLIAUTH_NONE)) {
           return Optional.of(EchoValidationSuite.this.makeRequestAndExpectError(relaxedCombination,
               this.request, Lists.newArrayList(401, 403)));
@@ -616,7 +619,7 @@ class EchoValidationSuite {
 
       @Override
       protected Optional<Response> innerRun() throws Failure {
-        this.request = EchoValidationSuite.this.createValidRequestForCombination(combination, "GET",
+        this.request = EchoValidationSuite.this.createValidRequestForCombination(combination,
             EchoValidationSuite.this.urlToBeValidated);
         this.request.putHeader("Accept-Signature", "rsa-sha256, unknown-algorithm");
         if (combination.getCliAuth().equals(SecMethod.CLIAUTH_HTTPSIG)) {
@@ -640,18 +643,18 @@ class EchoValidationSuite {
    * expect error, run a POST and expect success).
    */
   private InlineValidationStep createHttpMethodValidationStep(SecMethodsCombination combination,
-      String httpMethod, boolean expectSuccess) {
+      boolean expectSuccess) {
     return new InlineValidationStep() {
 
       @Override
       public String getName() {
         if (expectSuccess) {
-          return "Trying " + combination + " with a " + httpMethod + " request, "
+          return "Trying " + combination + " with a " + combination.getHttpMethod() + " request, "
               + "and without any additional parameters. Expecting to "
               + "receive a valid HTTP 200 Echo API response with proper hei-ids, and "
               + "without any echo values.";
         } else {
-          return "Trying " + combination + " with a " + httpMethod + " request. "
+          return "Trying " + combination + " with a " + combination.getHttpMethod() + " request. "
               + "Expecting to receive a valid HTTP 405 error response.";
         }
       }
@@ -659,7 +662,7 @@ class EchoValidationSuite {
       @Override
       protected Optional<Response> innerRun() throws Failure {
         this.request = EchoValidationSuite.this.createValidRequestForCombination(combination,
-            httpMethod, EchoValidationSuite.this.urlToBeValidated);
+            EchoValidationSuite.this.urlToBeValidated);
         if (expectSuccess) {
           return Optional.of(EchoValidationSuite.this.makeRequestAndExpectHttp200(combination,
               this.request, EchoValidationSuite.this.parentEchoValidator.getCoveredHeiIDs(),
@@ -908,16 +911,6 @@ class EchoValidationSuite {
 
   private void validateSecMethodCombination(SecMethodsCombination combination) throws SuiteBroken {
 
-    /*
-     * Make sure that properly executed GET and POST requests work. This steps varies on particular
-     * combination.
-     */
-
-    if (!combination.getCliAuth().equals(SecMethod.CLIAUTH_NONE)) {
-      this.addAndRun(false, this.createHttpMethodValidationStep(combination, "GET", true));
-      this.addAndRun(false, this.createHttpMethodValidationStep(combination, "POST", true));
-    }
-
     /* Try to "break" specific security method implementations. */
 
     if (combination.getCliAuth().equals(SecMethod.CLIAUTH_NONE)) {
@@ -940,103 +933,112 @@ class EchoValidationSuite {
     }
 
     if (!combination.getCliAuth().equals(SecMethod.CLIAUTH_NONE)) {
-      this.addAndRun(false, this.createHttpMethodValidationStep(combination, "PUT", false));
-      this.addAndRun(false, this.createHttpMethodValidationStep(combination, "DELETE", false));
+      if (combination.getHttpMethod().equals("POST")) {
+        this.addAndRun(false,
+            this.createHttpMethodValidationStep(combination.withChangedHttpMethod("PUT"), false));
+        this.addAndRun(false, this
+            .createHttpMethodValidationStep(combination.withChangedHttpMethod("DELETE"), false));
+      }
 
-      this.addAndRun(false, new InlineValidationStep() {
+      if (combination.getHttpMethod().equals("GET")) {
+        this.addAndRun(false, new InlineValidationStep() {
 
-        @Override
-        public String getName() {
-          return "Trying " + combination + " GET request with a list of echo values [a, b, a]. "
-              + "Expecting to receive a valid HTTP 200 Echo API response, "
-              + "with proper hei-id and matching echo values.";
-        }
-
-        @Override
-        protected Optional<Response> innerRun() throws Failure {
-          ArrayList<String> expectedEchoValues = new ArrayList<>();
-          expectedEchoValues.add("a");
-          expectedEchoValues.add("b");
-          expectedEchoValues.add("a");
-          this.request = EchoValidationSuite.this.createValidRequestForCombination(combination,
-              "GET", EchoValidationSuite.this.urlToBeValidated + "?echo=a&echo=b&echo=a");
-          return Optional.of(EchoValidationSuite.this.makeRequestAndExpectHttp200(combination,
-              this.request, EchoValidationSuite.this.parentEchoValidator.getCoveredHeiIDs(),
-              expectedEchoValues));
-        }
-      });
-
-      this.addAndRun(false, new InlineValidationStep() {
-
-        @Override
-        public String getName() {
-          return "Trying " + combination + " POST request with a list of echo values [a, b, a]. "
-              + "Expecting to receive a valid HTTP 200 Echo API response, "
-              + "with proper hei-id and matching echo values.";
-        }
-
-        @Override
-        protected Optional<Response> innerRun() throws Failure {
-          this.request = EchoValidationSuite.this.createValidRequestForCombination(combination,
-              "POST", EchoValidationSuite.this.urlToBeValidated);
-          this.request.setBody("echo=a&echo=b&echo=a".getBytes(StandardCharsets.UTF_8));
-          ArrayList<String> expectedEchoValues = new ArrayList<>();
-          expectedEchoValues.add("a");
-          expectedEchoValues.add("b");
-          expectedEchoValues.add("a");
-          if (combination.getCliAuth().equals(SecMethod.CLIAUTH_HTTPSIG)) {
-            // We have changed the body, so we need to regenerate the digest and signature.
-            EchoValidationSuite.this.reqSignerHttpSig.sign(this.request);
+          @Override
+          public String getName() {
+            return "Trying " + combination + " GET request with a list of echo values [a, b, a]. "
+                + "Expecting to receive a valid HTTP 200 Echo API response, "
+                + "with proper hei-id and matching echo values.";
           }
-          return Optional.of(EchoValidationSuite.this.makeRequestAndExpectHttp200(combination,
-              this.request, EchoValidationSuite.this.parentEchoValidator.getCoveredHeiIDs(),
-              expectedEchoValues));
-        }
-      });
 
-      this.addAndRun(false, new InlineValidationStep() {
-
-        @Override
-        public String getName() {
-          return "Trying " + combination + " POST request with a list of echo values [a, b, a], "
-              + "plus an additional GET echo=c&echo=c parameters. Expecting the GET parameters "
-              + "to be ignored. (It's a POST request, so all parameters are passed via POST body.)";
-        }
-
-        @Override
-        protected Optional<Response> innerRun() throws Failure {
-          this.request = EchoValidationSuite.this.createValidRequestForCombination(combination,
-              "POST", EchoValidationSuite.this.urlToBeValidated);
-          // Update the body
-          this.request.setBody("echo=a&echo=b&echo=a".getBytes(StandardCharsets.UTF_8));
-          // Update the URL
-          String url = this.request.getUrl();
-          url += url.contains("?") ? "&" : "?";
-          url += "echo=c&echo=c";
-          this.request.setUrl(url);
-          // Expected result
-          ArrayList<String> expectedEchoValues = new ArrayList<>();
-          expectedEchoValues.add("a");
-          expectedEchoValues.add("b");
-          expectedEchoValues.add("a");
-          if (combination.getCliAuth().equals(SecMethod.CLIAUTH_HTTPSIG)) {
-            // We have changed the body, so we need to regenerate the digest and signature.
-            EchoValidationSuite.this.reqSignerHttpSig.sign(this.request);
+          @Override
+          protected Optional<Response> innerRun() throws Failure {
+            ArrayList<String> expectedEchoValues = new ArrayList<>();
+            expectedEchoValues.add("a");
+            expectedEchoValues.add("b");
+            expectedEchoValues.add("a");
+            this.request = EchoValidationSuite.this.createValidRequestForCombination(combination,
+                EchoValidationSuite.this.urlToBeValidated + "?echo=a&echo=b&echo=a");
+            return Optional.of(EchoValidationSuite.this.makeRequestAndExpectHttp200(combination,
+                this.request, EchoValidationSuite.this.parentEchoValidator.getCoveredHeiIDs(),
+                expectedEchoValues));
           }
-          return Optional.of(EchoValidationSuite.this.makeRequestAndExpectHttp200(combination,
-              this.request, EchoValidationSuite.this.parentEchoValidator.getCoveredHeiIDs(),
-              expectedEchoValues));
-        }
-      });
+        });
+      }
+
+      if (combination.getHttpMethod().equals("POST")) {
+        this.addAndRun(false, new InlineValidationStep() {
+
+          @Override
+          public String getName() {
+            return "Trying " + combination + " POST request with a list of echo values [a, b, a]. "
+                + "Expecting to receive a valid HTTP 200 Echo API response, "
+                + "with proper hei-id and matching echo values.";
+          }
+
+          @Override
+          protected Optional<Response> innerRun() throws Failure {
+            this.request = EchoValidationSuite.this.createValidRequestForCombination(combination,
+                EchoValidationSuite.this.urlToBeValidated);
+            this.request.setBody("echo=a&echo=b&echo=a".getBytes(StandardCharsets.UTF_8));
+            ArrayList<String> expectedEchoValues = new ArrayList<>();
+            expectedEchoValues.add("a");
+            expectedEchoValues.add("b");
+            expectedEchoValues.add("a");
+            if (combination.getCliAuth().equals(SecMethod.CLIAUTH_HTTPSIG)) {
+              // We have changed the body, so we need to regenerate the digest and signature.
+              EchoValidationSuite.this.reqSignerHttpSig.sign(this.request);
+            }
+            return Optional.of(EchoValidationSuite.this.makeRequestAndExpectHttp200(combination,
+                this.request, EchoValidationSuite.this.parentEchoValidator.getCoveredHeiIDs(),
+                expectedEchoValues));
+          }
+        });
+
+        this.addAndRun(false, new InlineValidationStep() {
+
+          @Override
+          public String getName() {
+            return "Trying " + combination + " POST request with a list of echo values [a, b, a], "
+                + "plus an additional GET echo=c&echo=c parameters. Expecting the GET parameters "
+                + "to be ignored. (It's a POST request, so all parameters are passed via POST "
+                + "body.)";
+          }
+
+          @Override
+          protected Optional<Response> innerRun() throws Failure {
+            this.request = EchoValidationSuite.this.createValidRequestForCombination(combination,
+                EchoValidationSuite.this.urlToBeValidated);
+            // Update the body
+            this.request.setBody("echo=a&echo=b&echo=a".getBytes(StandardCharsets.UTF_8));
+            // Update the URL
+            String url = this.request.getUrl();
+            url += url.contains("?") ? "&" : "?";
+            url += "echo=c&echo=c";
+            this.request.setUrl(url);
+            // Expected result
+            ArrayList<String> expectedEchoValues = new ArrayList<>();
+            expectedEchoValues.add("a");
+            expectedEchoValues.add("b");
+            expectedEchoValues.add("a");
+            if (combination.getCliAuth().equals(SecMethod.CLIAUTH_HTTPSIG)) {
+              // We have changed the body, so we need to regenerate the digest and signature.
+              EchoValidationSuite.this.reqSignerHttpSig.sign(this.request);
+            }
+            return Optional.of(EchoValidationSuite.this.makeRequestAndExpectHttp200(combination,
+                this.request, EchoValidationSuite.this.parentEchoValidator.getCoveredHeiIDs(),
+                expectedEchoValues));
+          }
+        });
+      }
     }
   }
 
   protected Request createValidRequestForCombination(SecMethodsCombination combination,
-      String httpMethod, String url) {
+      String url) {
 
-    Request request = new Request(httpMethod, url);
+    Request request = new Request(combination.getHttpMethod(), url);
 
-    if (httpMethod.equals("POST")) {
+    if (combination.getHttpMethod().equals("POST") || combination.getHttpMethod().equals("PUT")) {
       request.putHeader("Content-Type", "application/x-www-form-urlencoded");
     }
 
@@ -1189,11 +1191,19 @@ class EchoValidationSuite {
       });
 
       if (this.echoApiVersionDetected == 1) {
-        this.validateSecMethodCombination(new SecMethodsCombination(SecMethod.CLIAUTH_NONE,
+
+        // GATTT, PATTT, GSTTT, PSTTT
+        this.validateSecMethodCombination(new SecMethodsCombination("GET", SecMethod.CLIAUTH_NONE,
+            SecMethod.SRVAUTH_TLSCERT, SecMethod.REQENCR_TLS, SecMethod.RESENCR_TLS));
+        this.validateSecMethodCombination(new SecMethodsCombination("POST", SecMethod.CLIAUTH_NONE,
             SecMethod.SRVAUTH_TLSCERT, SecMethod.REQENCR_TLS, SecMethod.RESENCR_TLS));
         this.validateSecMethodCombination(
-            new SecMethodsCombination(SecMethod.CLIAUTH_TLSCERT_SELFSIGNED,
+            new SecMethodsCombination("GET", SecMethod.CLIAUTH_TLSCERT_SELFSIGNED,
                 SecMethod.SRVAUTH_TLSCERT, SecMethod.REQENCR_TLS, SecMethod.RESENCR_TLS));
+        this.validateSecMethodCombination(
+            new SecMethodsCombination("POST", SecMethod.CLIAUTH_TLSCERT_SELFSIGNED,
+                SecMethod.SRVAUTH_TLSCERT, SecMethod.REQENCR_TLS, SecMethod.RESENCR_TLS));
+
       } else if (this.echoApiVersionDetected == 2) {
 
         this.addAndRun(false, new InlineValidationStep() {
@@ -1311,8 +1321,16 @@ class EchoValidationSuite {
               for (SecMethod srvauth : srvAuthMethodsToValidate) {
                 for (SecMethod reqencr : reqEncrMethodsToValidate) {
                   for (SecMethod resencr : resEncrMethodsToValidate) {
+                    boolean supportsGetRequests = true;
+                    if (reqencr.equals(SecMethod.REQENCR_EWP)) {
+                      supportsGetRequests = false;
+                    }
+                    if (supportsGetRequests) {
+                      EchoValidationSuite.this.combinationsToValidate.add(
+                          new SecMethodsCombination("GET", cliauth, srvauth, reqencr, resencr));
+                    }
                     EchoValidationSuite.this.combinationsToValidate
-                        .add(new SecMethodsCombination(cliauth, srvauth, reqencr, resencr));
+                        .add(new SecMethodsCombination("POST", cliauth, srvauth, reqencr, resencr));
                   }
                 }
               }

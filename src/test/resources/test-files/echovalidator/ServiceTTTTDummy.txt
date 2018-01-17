@@ -23,7 +23,14 @@ Notices:
 
 
 
-### WARNING: Trying SecMethodCombination[ATTT] (no client authentication). Expecting a valid HTTP 401 or HTTP 403 error response.
+### WARNING: Trying SecMethodCombination[GATTT] (no client authentication). Expecting a valid HTTP 401 or HTTP 403 error response.
+
+HTTP 401 or HTTP 403 expected, but HTTP 404 received.
+Not implemented.
+
+
+
+### WARNING: Trying SecMethodCombination[PATTT] (no client authentication). Expecting a valid HTTP 401 or HTTP 403 error response.
 
 HTTP 401 or HTTP 403 expected, but HTTP 404 received.
 Not implemented.

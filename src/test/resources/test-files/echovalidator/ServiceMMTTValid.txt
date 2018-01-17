@@ -7,75 +7,103 @@ Our client credentials are quite fresh. This means that many Echo APIs will (cor
 ### SUCCESS: Verifying the format of the URL. Expecting a valid HTTPS-scheme URL.
 ### SUCCESS: Verifying if the URL is properly registered.
 ### SUCCESS: Querying for supported security methods. Validating http-security integrity.
-### SUCCESS: Trying SecMethodCombination[ATTT] (no client authentication). Expecting a valid HTTP 401 or HTTP 403 error response.
-### SUCCESS: Trying SecMethodCombination[AHTT] (no client authentication). Expecting a valid HTTP 401 or HTTP 403 error response.
-### SUCCESS: Trying SecMethodCombination[AHTT] with no valid algorithm in Accept-Signature header. Expecting to receive unsigned response.
-### SUCCESS: Trying SecMethodCombination[AHTT] with multiple algorithms in Accept-Signature header (one of which is rsa-sha256). Expecting to receive a signed response.
-### SUCCESS: Trying SecMethodCombination[STTT] with a GET request, and without any additional parameters. Expecting to receive a valid HTTP 200 Echo API response with proper hei-ids, and without any echo values.
-### SUCCESS: Trying SecMethodCombination[STTT] with a POST request, and without any additional parameters. Expecting to receive a valid HTTP 200 Echo API response with proper hei-ids, and without any echo values.
-### SUCCESS: Trying SecMethodCombination[STTT] with an unknown TLS client certificate (a random one, that has never been published in the Registry). Expecting to receive a valid HTTP 401 or HTTP 403 error response.
-### SUCCESS: Trying SecMethodCombination[STTT] with a PUT request. Expecting to receive a valid HTTP 405 error response.
-### SUCCESS: Trying SecMethodCombination[STTT] with a DELETE request. Expecting to receive a valid HTTP 405 error response.
-### SUCCESS: Trying SecMethodCombination[STTT] GET request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.
-### SUCCESS: Trying SecMethodCombination[STTT] POST request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.
-### SUCCESS: Trying SecMethodCombination[STTT] POST request with a list of echo values [a, b, a], plus an additional GET echo=c&echo=c parameters. Expecting the GET parameters to be ignored. (It's a POST request, so all parameters are passed via POST body.)
-### SUCCESS: Trying SecMethodCombination[SHTT] with a GET request, and without any additional parameters. Expecting to receive a valid HTTP 200 Echo API response with proper hei-ids, and without any echo values.
-### SUCCESS: Trying SecMethodCombination[SHTT] with a POST request, and without any additional parameters. Expecting to receive a valid HTTP 200 Echo API response with proper hei-ids, and without any echo values.
-### SUCCESS: Trying SecMethodCombination[SHTT] with an unknown TLS client certificate (a random one, that has never been published in the Registry). Expecting to receive a valid HTTP 401 or HTTP 403 error response.
-### SUCCESS: Trying SecMethodCombination[SHTT] with no valid algorithm in Accept-Signature header. Expecting to receive unsigned response.
-### SUCCESS: Trying SecMethodCombination[SHTT] with multiple algorithms in Accept-Signature header (one of which is rsa-sha256). Expecting to receive a signed response.
-### SUCCESS: Trying SecMethodCombination[SHTT] with a PUT request. Expecting to receive a valid HTTP 405 error response.
-### SUCCESS: Trying SecMethodCombination[SHTT] with a DELETE request. Expecting to receive a valid HTTP 405 error response.
-### SUCCESS: Trying SecMethodCombination[SHTT] GET request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.
-### SUCCESS: Trying SecMethodCombination[SHTT] POST request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.
-### SUCCESS: Trying SecMethodCombination[SHTT] POST request with a list of echo values [a, b, a], plus an additional GET echo=c&echo=c parameters. Expecting the GET parameters to be ignored. (It's a POST request, so all parameters are passed via POST body.)
-### SUCCESS: Trying SecMethodCombination[HTTT] with a GET request, and without any additional parameters. Expecting to receive a valid HTTP 200 Echo API response with proper hei-ids, and without any echo values.
-### SUCCESS: Trying SecMethodCombination[HTTT] with a POST request, and without any additional parameters. Expecting to receive a valid HTTP 200 Echo API response with proper hei-ids, and without any echo values.
-### SUCCESS: Trying SecMethodCombination[HTTT] with an unknown RSA client key (a random one, that has never been published in the Registry). Expecting to receive a valid HTTP 401 or HTTP 403 error response.
-### SUCCESS: Trying SecMethodCombination[HTTT] with a known keyId, but invalid signature. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
-### SUCCESS: Trying SecMethodCombination[HTTT] with missing headers that were supposed to be signed. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
-### SUCCESS: Trying SecMethodCombination[HTTT] with Original-Date (instead of Date). Expecting to receive a valid HTTP 200 response.
-### SUCCESS: Trying SecMethodCombination[HTTT] with unsigned (request-target) header. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
-### SUCCESS: Trying SecMethodCombination[HTTT] with unsigned host header. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
-### SUCCESS: Trying SecMethodCombination[HTTT] with unsigned date header. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
-### SUCCESS: Trying SecMethodCombination[HTTT] with unsigned digest header. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
-### SUCCESS: Trying SecMethodCombination[HTTT] with unsigned x-request-id header. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
-### SUCCESS: Trying SecMethodCombination[HTTT] with some extra unknown, but properly signed headers. Expecting to receive a valid HTTP 200 response.
-### SUCCESS: Trying SecMethodCombination[HTTT] signed with a server key, instead of a client key. Expecting to receive a valid HTTP 403 error response.
-### SUCCESS: Trying SecMethodCombination[HTTT] with an unsynchronized clock (Original-Date 20 minutes in the past). Expecting to receive a valid HTTP 400 error response.
-### SUCCESS: Trying SecMethodCombination[HTTT] with non-canonical X-Request-ID. Expecting to receive a valid HTTP 400 error response.
-### SUCCESS: Trying SecMethodCombination[HTTT] with an invalid Digest. Expecting to receive a valid HTTP 400 error response.
-### SUCCESS: Trying SecMethodCombination[HTTT] with multiple Digests (one of which is SHA-256). Expecting to receive a valid HTTP 200 response.
-### SUCCESS: Trying SecMethodCombination[HTTT] with "SHA" request digest. This algorithm is deprecated, so we are expecting to receive a valid HTTP 400 response.
-### SUCCESS: Trying SecMethodCombination[HTTT] with "shA-256" request digest (mixed case). Digest specs require clients to accept that. Expecting to receive a valid HTTP 200 response.
-### SUCCESS: Trying SecMethodCombination[HTTT] with a PUT request. Expecting to receive a valid HTTP 405 error response.
-### SUCCESS: Trying SecMethodCombination[HTTT] with a DELETE request. Expecting to receive a valid HTTP 405 error response.
-### SUCCESS: Trying SecMethodCombination[HTTT] GET request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.
-### SUCCESS: Trying SecMethodCombination[HTTT] POST request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.
-### SUCCESS: Trying SecMethodCombination[HTTT] POST request with a list of echo values [a, b, a], plus an additional GET echo=c&echo=c parameters. Expecting the GET parameters to be ignored. (It's a POST request, so all parameters are passed via POST body.)
-### SUCCESS: Trying SecMethodCombination[HHTT] with a GET request, and without any additional parameters. Expecting to receive a valid HTTP 200 Echo API response with proper hei-ids, and without any echo values.
-### SUCCESS: Trying SecMethodCombination[HHTT] with a POST request, and without any additional parameters. Expecting to receive a valid HTTP 200 Echo API response with proper hei-ids, and without any echo values.
-### SUCCESS: Trying SecMethodCombination[HHTT] with an unknown RSA client key (a random one, that has never been published in the Registry). Expecting to receive a valid HTTP 401 or HTTP 403 error response.
-### SUCCESS: Trying SecMethodCombination[HHTT] with a known keyId, but invalid signature. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
-### SUCCESS: Trying SecMethodCombination[HHTT] with missing headers that were supposed to be signed. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
-### SUCCESS: Trying SecMethodCombination[HHTT] with Original-Date (instead of Date). Expecting to receive a valid HTTP 200 response.
-### SUCCESS: Trying SecMethodCombination[HHTT] with unsigned (request-target) header. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
-### SUCCESS: Trying SecMethodCombination[HHTT] with unsigned host header. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
-### SUCCESS: Trying SecMethodCombination[HHTT] with unsigned date header. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
-### SUCCESS: Trying SecMethodCombination[HHTT] with unsigned digest header. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
-### SUCCESS: Trying SecMethodCombination[HHTT] with unsigned x-request-id header. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
-### SUCCESS: Trying SecMethodCombination[HHTT] with some extra unknown, but properly signed headers. Expecting to receive a valid HTTP 200 response.
-### SUCCESS: Trying SecMethodCombination[HHTT] signed with a server key, instead of a client key. Expecting to receive a valid HTTP 403 error response.
-### SUCCESS: Trying SecMethodCombination[HHTT] with an unsynchronized clock (Original-Date 20 minutes in the past). Expecting to receive a valid HTTP 400 error response.
-### SUCCESS: Trying SecMethodCombination[HHTT] with non-canonical X-Request-ID. Expecting to receive a valid HTTP 400 error response.
-### SUCCESS: Trying SecMethodCombination[HHTT] with an invalid Digest. Expecting to receive a valid HTTP 400 error response.
-### SUCCESS: Trying SecMethodCombination[HHTT] with multiple Digests (one of which is SHA-256). Expecting to receive a valid HTTP 200 response.
-### SUCCESS: Trying SecMethodCombination[HHTT] with "SHA" request digest. This algorithm is deprecated, so we are expecting to receive a valid HTTP 400 response.
-### SUCCESS: Trying SecMethodCombination[HHTT] with "shA-256" request digest (mixed case). Digest specs require clients to accept that. Expecting to receive a valid HTTP 200 response.
-### SUCCESS: Trying SecMethodCombination[HHTT] with no valid algorithm in Accept-Signature header. Expecting to receive unsigned response.
-### SUCCESS: Trying SecMethodCombination[HHTT] with multiple algorithms in Accept-Signature header (one of which is rsa-sha256). Expecting to receive a signed response.
-### SUCCESS: Trying SecMethodCombination[HHTT] with a PUT request. Expecting to receive a valid HTTP 405 error response.
-### SUCCESS: Trying SecMethodCombination[HHTT] with a DELETE request. Expecting to receive a valid HTTP 405 error response.
-### SUCCESS: Trying SecMethodCombination[HHTT] GET request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.
-### SUCCESS: Trying SecMethodCombination[HHTT] POST request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.
-### SUCCESS: Trying SecMethodCombination[HHTT] POST request with a list of echo values [a, b, a], plus an additional GET echo=c&echo=c parameters. Expecting the GET parameters to be ignored. (It's a POST request, so all parameters are passed via POST body.)
+### SUCCESS: Trying SecMethodCombination[GATTT] (no client authentication). Expecting a valid HTTP 401 or HTTP 403 error response.
+### SUCCESS: Trying SecMethodCombination[PATTT] (no client authentication). Expecting a valid HTTP 401 or HTTP 403 error response.
+### SUCCESS: Trying SecMethodCombination[GAHTT] (no client authentication). Expecting a valid HTTP 401 or HTTP 403 error response.
+### SUCCESS: Trying SecMethodCombination[GAHTT] with no valid algorithm in Accept-Signature header. Expecting to receive unsigned response.
+### SUCCESS: Trying SecMethodCombination[GAHTT] with multiple algorithms in Accept-Signature header (one of which is rsa-sha256). Expecting to receive a signed response.
+### SUCCESS: Trying SecMethodCombination[PAHTT] (no client authentication). Expecting a valid HTTP 401 or HTTP 403 error response.
+### SUCCESS: Trying SecMethodCombination[PAHTT] with no valid algorithm in Accept-Signature header. Expecting to receive unsigned response.
+### SUCCESS: Trying SecMethodCombination[PAHTT] with multiple algorithms in Accept-Signature header (one of which is rsa-sha256). Expecting to receive a signed response.
+### SUCCESS: Trying SecMethodCombination[GSTTT] with an unknown TLS client certificate (a random one, that has never been published in the Registry). Expecting to receive a valid HTTP 401 or HTTP 403 error response.
+### SUCCESS: Trying SecMethodCombination[GSTTT] GET request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.
+### SUCCESS: Trying SecMethodCombination[PSTTT] with an unknown TLS client certificate (a random one, that has never been published in the Registry). Expecting to receive a valid HTTP 401 or HTTP 403 error response.
+### SUCCESS: Trying SecMethodCombination[-STTT] with a PUT request. Expecting to receive a valid HTTP 405 error response.
+### SUCCESS: Trying SecMethodCombination[-STTT] with a DELETE request. Expecting to receive a valid HTTP 405 error response.
+### SUCCESS: Trying SecMethodCombination[PSTTT] POST request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.
+### SUCCESS: Trying SecMethodCombination[PSTTT] POST request with a list of echo values [a, b, a], plus an additional GET echo=c&echo=c parameters. Expecting the GET parameters to be ignored. (It's a POST request, so all parameters are passed via POST body.)
+### SUCCESS: Trying SecMethodCombination[GSHTT] with an unknown TLS client certificate (a random one, that has never been published in the Registry). Expecting to receive a valid HTTP 401 or HTTP 403 error response.
+### SUCCESS: Trying SecMethodCombination[GSHTT] with no valid algorithm in Accept-Signature header. Expecting to receive unsigned response.
+### SUCCESS: Trying SecMethodCombination[GSHTT] with multiple algorithms in Accept-Signature header (one of which is rsa-sha256). Expecting to receive a signed response.
+### SUCCESS: Trying SecMethodCombination[GSHTT] GET request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.
+### SUCCESS: Trying SecMethodCombination[PSHTT] with an unknown TLS client certificate (a random one, that has never been published in the Registry). Expecting to receive a valid HTTP 401 or HTTP 403 error response.
+### SUCCESS: Trying SecMethodCombination[PSHTT] with no valid algorithm in Accept-Signature header. Expecting to receive unsigned response.
+### SUCCESS: Trying SecMethodCombination[PSHTT] with multiple algorithms in Accept-Signature header (one of which is rsa-sha256). Expecting to receive a signed response.
+### SUCCESS: Trying SecMethodCombination[-SHTT] with a PUT request. Expecting to receive a valid HTTP 405 error response.
+### SUCCESS: Trying SecMethodCombination[-SHTT] with a DELETE request. Expecting to receive a valid HTTP 405 error response.
+### SUCCESS: Trying SecMethodCombination[PSHTT] POST request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.
+### SUCCESS: Trying SecMethodCombination[PSHTT] POST request with a list of echo values [a, b, a], plus an additional GET echo=c&echo=c parameters. Expecting the GET parameters to be ignored. (It's a POST request, so all parameters are passed via POST body.)
+### SUCCESS: Trying SecMethodCombination[GHTTT] with an unknown RSA client key (a random one, that has never been published in the Registry). Expecting to receive a valid HTTP 401 or HTTP 403 error response.
+### SUCCESS: Trying SecMethodCombination[GHTTT] with a known keyId, but invalid signature. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
+### SUCCESS: Trying SecMethodCombination[GHTTT] with missing headers that were supposed to be signed. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
+### SUCCESS: Trying SecMethodCombination[GHTTT] with Original-Date (instead of Date). Expecting to receive a valid HTTP 200 response.
+### SUCCESS: Trying SecMethodCombination[GHTTT] with unsigned (request-target) header. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
+### SUCCESS: Trying SecMethodCombination[GHTTT] with unsigned host header. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
+### SUCCESS: Trying SecMethodCombination[GHTTT] with unsigned date header. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
+### SUCCESS: Trying SecMethodCombination[GHTTT] with unsigned digest header. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
+### SUCCESS: Trying SecMethodCombination[GHTTT] with unsigned x-request-id header. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
+### SUCCESS: Trying SecMethodCombination[GHTTT] with some extra unknown, but properly signed headers. Expecting to receive a valid HTTP 200 response.
+### SUCCESS: Trying SecMethodCombination[GHTTT] signed with a server key, instead of a client key. Expecting to receive a valid HTTP 403 error response.
+### SUCCESS: Trying SecMethodCombination[GHTTT] with an unsynchronized clock (Original-Date 20 minutes in the past). Expecting to receive a valid HTTP 400 error response.
+### SUCCESS: Trying SecMethodCombination[GHTTT] with non-canonical X-Request-ID. Expecting to receive a valid HTTP 400 error response.
+### SUCCESS: Trying SecMethodCombination[GHTTT] GET request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.
+### SUCCESS: Trying SecMethodCombination[PHTTT] with an unknown RSA client key (a random one, that has never been published in the Registry). Expecting to receive a valid HTTP 401 or HTTP 403 error response.
+### SUCCESS: Trying SecMethodCombination[PHTTT] with a known keyId, but invalid signature. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
+### SUCCESS: Trying SecMethodCombination[PHTTT] with missing headers that were supposed to be signed. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
+### SUCCESS: Trying SecMethodCombination[PHTTT] with Original-Date (instead of Date). Expecting to receive a valid HTTP 200 response.
+### SUCCESS: Trying SecMethodCombination[PHTTT] with unsigned (request-target) header. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
+### SUCCESS: Trying SecMethodCombination[PHTTT] with unsigned host header. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
+### SUCCESS: Trying SecMethodCombination[PHTTT] with unsigned date header. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
+### SUCCESS: Trying SecMethodCombination[PHTTT] with unsigned digest header. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
+### SUCCESS: Trying SecMethodCombination[PHTTT] with unsigned x-request-id header. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
+### SUCCESS: Trying SecMethodCombination[PHTTT] with some extra unknown, but properly signed headers. Expecting to receive a valid HTTP 200 response.
+### SUCCESS: Trying SecMethodCombination[PHTTT] signed with a server key, instead of a client key. Expecting to receive a valid HTTP 403 error response.
+### SUCCESS: Trying SecMethodCombination[PHTTT] with an unsynchronized clock (Original-Date 20 minutes in the past). Expecting to receive a valid HTTP 400 error response.
+### SUCCESS: Trying SecMethodCombination[PHTTT] with non-canonical X-Request-ID. Expecting to receive a valid HTTP 400 error response.
+### SUCCESS: Trying SecMethodCombination[PHTTT] with an invalid Digest. Expecting to receive a valid HTTP 400 error response.
+### SUCCESS: Trying SecMethodCombination[PHTTT] with multiple Digests (one of which is SHA-256). Expecting to receive a valid HTTP 200 response.
+### SUCCESS: Trying SecMethodCombination[PHTTT] with "SHA" request digest. This algorithm is deprecated, so we are expecting to receive a valid HTTP 400 response.
+### SUCCESS: Trying SecMethodCombination[PHTTT] with "shA-256" request digest (mixed case). Digest specs require clients to accept that. Expecting to receive a valid HTTP 200 response.
+### SUCCESS: Trying SecMethodCombination[-HTTT] with a PUT request. Expecting to receive a valid HTTP 405 error response.
+### SUCCESS: Trying SecMethodCombination[-HTTT] with a DELETE request. Expecting to receive a valid HTTP 405 error response.
+### SUCCESS: Trying SecMethodCombination[PHTTT] POST request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.
+### SUCCESS: Trying SecMethodCombination[PHTTT] POST request with a list of echo values [a, b, a], plus an additional GET echo=c&echo=c parameters. Expecting the GET parameters to be ignored. (It's a POST request, so all parameters are passed via POST body.)
+### SUCCESS: Trying SecMethodCombination[GHHTT] with an unknown RSA client key (a random one, that has never been published in the Registry). Expecting to receive a valid HTTP 401 or HTTP 403 error response.
+### SUCCESS: Trying SecMethodCombination[GHHTT] with a known keyId, but invalid signature. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
+### SUCCESS: Trying SecMethodCombination[GHHTT] with missing headers that were supposed to be signed. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
+### SUCCESS: Trying SecMethodCombination[GHHTT] with Original-Date (instead of Date). Expecting to receive a valid HTTP 200 response.
+### SUCCESS: Trying SecMethodCombination[GHHTT] with unsigned (request-target) header. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
+### SUCCESS: Trying SecMethodCombination[GHHTT] with unsigned host header. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
+### SUCCESS: Trying SecMethodCombination[GHHTT] with unsigned date header. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
+### SUCCESS: Trying SecMethodCombination[GHHTT] with unsigned digest header. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
+### SUCCESS: Trying SecMethodCombination[GHHTT] with unsigned x-request-id header. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
+### SUCCESS: Trying SecMethodCombination[GHHTT] with some extra unknown, but properly signed headers. Expecting to receive a valid HTTP 200 response.
+### SUCCESS: Trying SecMethodCombination[GHHTT] signed with a server key, instead of a client key. Expecting to receive a valid HTTP 403 error response.
+### SUCCESS: Trying SecMethodCombination[GHHTT] with an unsynchronized clock (Original-Date 20 minutes in the past). Expecting to receive a valid HTTP 400 error response.
+### SUCCESS: Trying SecMethodCombination[GHHTT] with non-canonical X-Request-ID. Expecting to receive a valid HTTP 400 error response.
+### SUCCESS: Trying SecMethodCombination[GHHTT] with no valid algorithm in Accept-Signature header. Expecting to receive unsigned response.
+### SUCCESS: Trying SecMethodCombination[GHHTT] with multiple algorithms in Accept-Signature header (one of which is rsa-sha256). Expecting to receive a signed response.
+### SUCCESS: Trying SecMethodCombination[GHHTT] GET request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.
+### SUCCESS: Trying SecMethodCombination[PHHTT] with an unknown RSA client key (a random one, that has never been published in the Registry). Expecting to receive a valid HTTP 401 or HTTP 403 error response.
+### SUCCESS: Trying SecMethodCombination[PHHTT] with a known keyId, but invalid signature. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
+### SUCCESS: Trying SecMethodCombination[PHHTT] with missing headers that were supposed to be signed. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
+### SUCCESS: Trying SecMethodCombination[PHHTT] with Original-Date (instead of Date). Expecting to receive a valid HTTP 200 response.
+### SUCCESS: Trying SecMethodCombination[PHHTT] with unsigned (request-target) header. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
+### SUCCESS: Trying SecMethodCombination[PHHTT] with unsigned host header. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
+### SUCCESS: Trying SecMethodCombination[PHHTT] with unsigned date header. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
+### SUCCESS: Trying SecMethodCombination[PHHTT] with unsigned digest header. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
+### SUCCESS: Trying SecMethodCombination[PHHTT] with unsigned x-request-id header. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
+### SUCCESS: Trying SecMethodCombination[PHHTT] with some extra unknown, but properly signed headers. Expecting to receive a valid HTTP 200 response.
+### SUCCESS: Trying SecMethodCombination[PHHTT] signed with a server key, instead of a client key. Expecting to receive a valid HTTP 403 error response.
+### SUCCESS: Trying SecMethodCombination[PHHTT] with an unsynchronized clock (Original-Date 20 minutes in the past). Expecting to receive a valid HTTP 400 error response.
+### SUCCESS: Trying SecMethodCombination[PHHTT] with non-canonical X-Request-ID. Expecting to receive a valid HTTP 400 error response.
+### SUCCESS: Trying SecMethodCombination[PHHTT] with an invalid Digest. Expecting to receive a valid HTTP 400 error response.
+### SUCCESS: Trying SecMethodCombination[PHHTT] with multiple Digests (one of which is SHA-256). Expecting to receive a valid HTTP 200 response.
+### SUCCESS: Trying SecMethodCombination[PHHTT] with "SHA" request digest. This algorithm is deprecated, so we are expecting to receive a valid HTTP 400 response.
+### SUCCESS: Trying SecMethodCombination[PHHTT] with "shA-256" request digest (mixed case). Digest specs require clients to accept that. Expecting to receive a valid HTTP 200 response.
+### SUCCESS: Trying SecMethodCombination[PHHTT] with no valid algorithm in Accept-Signature header. Expecting to receive unsigned response.
+### SUCCESS: Trying SecMethodCombination[PHHTT] with multiple algorithms in Accept-Signature header (one of which is rsa-sha256). Expecting to receive a signed response.
+### SUCCESS: Trying SecMethodCombination[-HHTT] with a PUT request. Expecting to receive a valid HTTP 405 error response.
+### SUCCESS: Trying SecMethodCombination[-HHTT] with a DELETE request. Expecting to receive a valid HTTP 405 error response.
+### SUCCESS: Trying SecMethodCombination[PHHTT] POST request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.
+### SUCCESS: Trying SecMethodCombination[PHHTT] POST request with a list of echo values [a, b, a], plus an additional GET echo=c&echo=c parameters. Expecting the GET parameters to be ignored. (It's a POST request, so all parameters are passed via POST body.)

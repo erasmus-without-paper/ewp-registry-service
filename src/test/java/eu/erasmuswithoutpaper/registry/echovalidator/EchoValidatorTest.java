@@ -135,8 +135,8 @@ public class EchoValidatorTest extends WRTest {
       this.internet.addFakeInternetService(service);
       String out = this.getValidatorReport(echoUrlHTTT);
       assertThat(out)
-          .contains("FAILURE: Trying SecMethodCombination[HTTT] with an invalid Digest.");
-      assertThat(out).contains("WARNING: Trying SecMethodCombination[HTTT] with \"SHA\" "
+          .contains("FAILURE: Trying SecMethodCombination[PHTTT] with an invalid Digest.");
+      assertThat(out).contains("WARNING: Trying SecMethodCombination[PHTTT] with \"SHA\" "
           + "request digest. This algorithm is deprecated, so we are expecting to "
           + "receive a valid HTTP 400 response");
       this.internet.removeFakeInternetService(service);
@@ -154,9 +154,9 @@ public class EchoValidatorTest extends WRTest {
       service = new ServiceHTTTInvalid11(echoUrlHTTT, this.client);
       this.internet.addFakeInternetService(service);
       String out = this.getValidatorReport(echoUrlHTTT);
-      assertThat(out).containsOnlyOnce("WARNING");
+      assertThat(out).doesNotContain("FAILURE");
       assertThat(out)
-          .contains("WARNING: Trying SecMethodCombination[HTTT] with non-canonical X-Request-ID");
+          .contains("WARNING: Trying SecMethodCombination[PHTTT] with non-canonical X-Request-ID");
       this.internet.removeFakeInternetService(service);
 
     } finally {
@@ -173,7 +173,7 @@ public class EchoValidatorTest extends WRTest {
       this.internet.addFakeInternetService(service);
       String out = this.getValidatorReport(echoUrlHTTT);
       assertThat(out).containsOnlyOnce("FAILURE");
-      assertThat(out).contains("FAILURE: Trying SecMethodCombination[HTTT] POST request with "
+      assertThat(out).contains("FAILURE: Trying SecMethodCombination[PHTTT] POST request with "
           + "a list of echo values [a, b, a], plus an additional GET echo=c&echo=c parameters");
       assertThat(out).contains("We expected the response to contain the following echo values: "
           + "[a, b, a], but the following values were found instead: [c, c, a, b, a]");
@@ -192,10 +192,8 @@ public class EchoValidatorTest extends WRTest {
       service = new ServiceHTTTInvalid2(echoUrlHTTT, this.client);
       this.internet.addFakeInternetService(service);
       String out = this.getValidatorReport(echoUrlHTTT);
-      // We expect only a single test to fail here.
-      assertThat(out).containsOnlyOnce("FAILURE");
       assertThat(out).contains(
-          "### FAILURE: Trying SecMethodCombination[HTTT] with Original-Date (instead of Date). "
+          "### FAILURE: Trying SecMethodCombination[PHTTT] with Original-Date (instead of Date). "
               + "Expecting to receive a valid HTTP 200 response.\n\n"
               + "HTTP 200 expected, but HTTP 400 received.\n"
               + "This endpoint requires your request to include the \"Date\" header.");
@@ -214,9 +212,8 @@ public class EchoValidatorTest extends WRTest {
       service = new ServiceHTTTInvalid3(echoUrlHTTT, this.client);
       this.internet.addFakeInternetService(service);
       String out = this.getValidatorReport(echoUrlHTTT);
-      assertThat(out).containsOnlyOnce("FAILURE");
       assertThat(out).contains(
-          "### FAILURE: Trying SecMethodCombination[HTTT] with unsigned x-request-id header. "
+          "### FAILURE: Trying SecMethodCombination[PHTTT] with unsigned x-request-id header. "
               + "Expecting to receive a valid HTTP 400 or HTTP 401 error response.\n\n"
               + "HTTP 400 or HTTP 401 expected, but HTTP 200 received.");
       this.internet.removeFakeInternetService(service);
@@ -235,7 +232,7 @@ public class EchoValidatorTest extends WRTest {
       this.internet.addFakeInternetService(service);
       String out = this.getValidatorReport(echoUrlHTTT);
       assertThat(out).contains(
-          "FAILURE: Trying SecMethodCombination[HTTT] with some extra unknown, but properly signed headers");
+          "FAILURE: Trying SecMethodCombination[PHTTT] with some extra unknown, but properly signed headers");
       this.internet.removeFakeInternetService(service);
 
     } finally {
@@ -253,7 +250,7 @@ public class EchoValidatorTest extends WRTest {
       String out = this.getValidatorReport(echoUrlHTTT);
       assertThat(out).doesNotContain("FAILURE");
       assertThat(out).doesNotContain("ERROR");
-      assertThat(out).containsOnlyOnce("WARNING");
+      assertThat(out).contains("WARNING");
       assertThat(out).contains(
           "It is RECOMMENDED for HTTP 401 responses to contain a proper Want-Digest header");
       this.internet.removeFakeInternetService(service);
@@ -273,7 +270,7 @@ public class EchoValidatorTest extends WRTest {
       String out = this.getValidatorReport(echoUrlHTTT);
       assertThat(out).doesNotContain("FAILURE");
       assertThat(out).doesNotContain("ERROR");
-      assertThat(out).containsOnlyOnce("WARNING");
+      assertThat(out).contains("WARNING");
       assertThat(out).contains("If you want to include the \"headers\" property in your "
           + "WWW-Authenticate header, then it should contain at least all required values");
       this.internet.removeFakeInternetService(service);
@@ -291,9 +288,8 @@ public class EchoValidatorTest extends WRTest {
       service = new ServiceHTTTInvalid7(echoUrlHTTT, this.client);
       this.internet.addFakeInternetService(service);
       String out = this.getValidatorReport(echoUrlHTTT);
-      assertThat(out).containsOnlyOnce("FAILURE");
       assertThat(out).contains(
-          "FAILURE: Trying SecMethodCombination[HTTT] signed with a server key, instead of a client key. "
+          "FAILURE: Trying SecMethodCombination[PHTTT] signed with a server key, instead of a client key. "
               + "Expecting to receive a valid HTTP 403 error response");
       this.internet.removeFakeInternetService(service);
 
@@ -311,9 +307,8 @@ public class EchoValidatorTest extends WRTest {
       this.internet.addFakeInternetService(service);
       String out = this.getValidatorReport(echoUrlHTTT);
       assertThat(out).doesNotContain("FAILURE");
-      assertThat(out).containsOnlyOnce("WARNING");
       assertThat(out)
-          .contains("WARNING: Trying SecMethodCombination[HTTT] with an unsynchronized clock");
+          .contains("WARNING: Trying SecMethodCombination[PHTTT] with an unsynchronized clock");
       this.internet.removeFakeInternetService(service);
 
     } finally {
@@ -329,9 +324,10 @@ public class EchoValidatorTest extends WRTest {
       service = new ServiceHTTTInvalid9(echoUrlHTTT, this.client);
       this.internet.addFakeInternetService(service);
       String out = this.getValidatorReport(echoUrlHTTT);
-      assertThat(out).contains("FAILURE: Trying SecMethodCombination[HTTT] with a known keyId, but "
-          + "invalid signature");
-      assertThat(out).contains("FAILURE: Trying SecMethodCombination[HTTT] with missing headers "
+      assertThat(out)
+          .contains("FAILURE: Trying SecMethodCombination[PHTTT] with a known keyId, but "
+              + "invalid signature");
+      assertThat(out).contains("FAILURE: Trying SecMethodCombination[PHTTT] with missing headers "
           + "that were supposed to be signed");
       this.internet.removeFakeInternetService(service);
 
@@ -607,8 +603,7 @@ public class EchoValidatorTest extends WRTest {
       service = new ServiceMTTTInvalid1(echoUrlMTTT, this.client);
       this.internet.addFakeInternetService(service);
       String out = this.getValidatorReport(echoUrlMTTT);
-      assertThat(out).containsOnlyOnce("FAILURE");
-      assertThat(out).contains("FAILURE: Trying SecMethodCombination[ATTT]");
+      assertThat(out).contains("FAILURE: Trying SecMethodCombination[PATTT]");
       this.internet.removeFakeInternetService(service);
     } finally {
       this.internet.clearAll();
