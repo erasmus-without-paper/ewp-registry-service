@@ -2,6 +2,8 @@ package eu.erasmuswithoutpaper.registry.echovalidator;
 
 import java.util.LinkedHashMap;
 
+import org.w3c.dom.Element;
+
 /**
  * Represents a single combination of all four types of v2 security methods, all of which are known
  * and can be validated by our validator.
@@ -29,14 +31,19 @@ public class SecMethodsCombination {
   }
 
   private final String httpmethod;
+  private final String url;
+  private final Element apiEntry;
+
   private final SecMethod cliauth;
   private final SecMethod srvauth;
   private final SecMethod reqencr;
   private final SecMethod resencr;
 
-  SecMethodsCombination(String httpmethod, SecMethod cliauth, SecMethod srvauth, SecMethod reqencr,
-      SecMethod resencr) {
+  SecMethodsCombination(String httpmethod, String url, Element apiEntry, SecMethod cliauth,
+      SecMethod srvauth, SecMethod reqencr, SecMethod resencr) {
     this.httpmethod = httpmethod;
+    this.url = url;
+    this.apiEntry = apiEntry;
     this.cliauth = cliauth;
     this.srvauth = srvauth;
     this.reqencr = reqencr;
@@ -57,6 +64,10 @@ public class SecMethodsCombination {
       default:
         return "-";
     }
+  }
+
+  Element getApiEntry() {
+    return this.apiEntry;
   }
 
   SecMethod getCliAuth() {
@@ -84,29 +95,37 @@ public class SecMethodsCombination {
     return this.srvauth;
   }
 
+  String getUrl() {
+    return this.url;
+  }
 
   SecMethodsCombination withChangedCliAuth(SecMethod cliAuthMethod) {
-    return new SecMethodsCombination(this.getHttpMethod(), cliAuthMethod, this.getSrvAuth(),
-        this.getReqEncr(), this.getResEncr());
+    return new SecMethodsCombination(this.getHttpMethod(), this.getUrl(), this.getApiEntry(),
+        cliAuthMethod, this.getSrvAuth(), this.getReqEncr(), this.getResEncr());
   }
 
   SecMethodsCombination withChangedHttpMethod(String httpMethod) {
-    return new SecMethodsCombination(httpMethod, this.getCliAuth(), this.getSrvAuth(),
-        this.getReqEncr(), this.getResEncr());
+    return new SecMethodsCombination(httpMethod, this.getUrl(), this.getApiEntry(),
+        this.getCliAuth(), this.getSrvAuth(), this.getReqEncr(), this.getResEncr());
   }
 
   SecMethodsCombination withChangedReqEncr(SecMethod reqEncrMethod) {
-    return new SecMethodsCombination(this.getHttpMethod(), this.getCliAuth(), this.getSrvAuth(),
-        reqEncrMethod, this.getResEncr());
+    return new SecMethodsCombination(this.getHttpMethod(), this.getUrl(), this.getApiEntry(),
+        this.getCliAuth(), this.getSrvAuth(), reqEncrMethod, this.getResEncr());
   }
 
   SecMethodsCombination withChangedResEncr(SecMethod resEncrMethod) {
-    return new SecMethodsCombination(this.getHttpMethod(), this.getCliAuth(), this.getSrvAuth(),
-        this.getReqEncr(), resEncrMethod);
+    return new SecMethodsCombination(this.getHttpMethod(), this.getUrl(), this.getApiEntry(),
+        this.getCliAuth(), this.getSrvAuth(), this.getReqEncr(), resEncrMethod);
   }
 
   SecMethodsCombination withChangedSrvAuth(SecMethod srvAuthMethod) {
-    return new SecMethodsCombination(this.getHttpMethod(), this.getCliAuth(), srvAuthMethod,
-        this.getReqEncr(), this.getResEncr());
+    return new SecMethodsCombination(this.getHttpMethod(), this.getUrl(), this.getApiEntry(),
+        this.getCliAuth(), srvAuthMethod, this.getReqEncr(), this.getResEncr());
+  }
+
+  SecMethodsCombination withChangedUrl(String url) {
+    return new SecMethodsCombination(this.getHttpMethod(), url, this.getApiEntry(),
+        this.getCliAuth(), this.getSrvAuth(), this.getReqEncr(), this.getResEncr());
   }
 }
