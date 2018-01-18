@@ -5,12 +5,12 @@ package eu.erasmuswithoutpaper.registry.internet.sec;
  * server's signature doesn't match what the authorizer expects).
  */
 @SuppressWarnings("serial")
-public class CouldNotAuthorize extends Exception {
+public class InvalidResponseError extends Exception {
 
   /**
    * @param message The message describing what went wrong during the authorization process.
    */
-  public CouldNotAuthorize(String message) {
+  public InvalidResponseError(String message) {
     super(message);
   }
 }

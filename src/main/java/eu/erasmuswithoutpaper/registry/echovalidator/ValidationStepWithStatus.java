@@ -1,5 +1,6 @@
 package eu.erasmuswithoutpaper.registry.echovalidator;
 
+import java.util.List;
 import java.util.Optional;
 
 import eu.erasmuswithoutpaper.registry.internet.Request;
@@ -18,11 +19,6 @@ public interface ValidationStepWithStatus {
   }
 
   /**
-   * @return Optional request, as sent to the server.
-   */
-  Optional<Request> getClientRequest();
-
-  /**
    * @return The message to be displayed as the result of the validation step.
    */
   String getMessage();
@@ -33,14 +29,24 @@ public interface ValidationStepWithStatus {
   String getName();
 
   /**
-   * @return Optional error message, as parsed from {@link #getServerResponse()}.
+   * @return List of request building snapshots. The first one contains only the body, then it's
+   *         encoded (possibly multiple times, with each encoding taking one snapshot), and then
+   *         it's signed. The last of these snapshots contains the request which has been ultimately
+   *         sent to the server.
    */
-  Optional<String> getServerDeveloperErrorMessage();
+  List<Request> getRequestSnapshots();
 
   /**
-   * @return Optional response, as returned by server.
+   * @return List of response decoding snapshots. The first one contains the response exactly as
+   *         received from server. Then, signatures are verified and stripped. Then the response is
+   *         decoded (possibly multiple times).
    */
-  Optional<Response> getServerResponse();
+  List<Response> getResponseSnapshots();
+
+  /**
+   * @return Optional error message, as parsed from the last of the {@link #getResponseSnapshots()}.
+   */
+  Optional<String> getServerDeveloperErrorMessage();
 
   /**
    * @return Status of this validation step.

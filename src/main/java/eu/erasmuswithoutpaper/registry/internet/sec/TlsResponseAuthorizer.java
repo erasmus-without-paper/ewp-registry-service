@@ -12,7 +12,7 @@ import eu.erasmuswithoutpaper.registry.internet.Response;
 public class TlsResponseAuthorizer extends CommonResponseAuthorizer {
 
   @Override
-  public EwpServer authorize(Request request, Response response) throws CouldNotAuthorize {
+  public EwpServer authorize(Request request, Response response) throws InvalidResponseError {
     URL url = this.parseUrl(request);
     this.verifyProtocol(url);
     this.verifyRequestId(request, response);

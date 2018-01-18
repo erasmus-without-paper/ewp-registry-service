@@ -69,6 +69,7 @@ public class EwpHttpSigRequestSigner implements RequestSigner {
     this.addMissingHeaders(request);
     this.includeDigestHeader(request);
     this.includeAuthorizationHeader(request);
+    request.addProcessingNoticeHtml("Request has been signed with HttpSig.");
   }
 
   private boolean shouldOverrideExistingAuthorization() {

@@ -2,9 +2,12 @@ package eu.erasmuswithoutpaper.registry.common;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
@@ -103,6 +106,17 @@ public class Utils {
     }
     // Seems valid.
     return null;
+  }
+
+  /**
+   * Format a HTTP header name.
+   *
+   * @param headerName Header name, e.g. "content-type".
+   * @return Pretty version, e.g. "Content-Type".
+   */
+  public static String formatHeaderName(String headerName) {
+    return Arrays.asList(headerName.split("-")).stream().map(s -> upperFirstLatter(s))
+        .collect(Collectors.joining("-"));
   }
 
   /**
@@ -213,6 +227,14 @@ public class Utils {
       return URLEncoder.encode(str, "UTF-8");
     } catch (UnsupportedEncodingException e) {
       throw new RuntimeException(e);
+    }
+  }
+
+  private static String upperFirstLatter(String word) {
+    if (word.length() == 0) {
+      return word;
+    } else {
+      return Character.toUpperCase(word.charAt(0)) + word.substring(1).toLowerCase(Locale.US);
     }
   }
 

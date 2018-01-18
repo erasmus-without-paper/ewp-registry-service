@@ -2,6 +2,7 @@ package eu.erasmuswithoutpaper.registry.internet.sec;
 
 import java.security.interfaces.RSAPublicKey;
 
+import eu.erasmuswithoutpaper.registry.common.Utils;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.rsaaes.EwpRsaAes128GcmEncoder;
 
@@ -10,7 +11,10 @@ import eu.erasmuswithoutpaper.rsaaes.EwpRsaAes128GcmEncoder;
  */
 public class EwpRsaAesRequestEncoder implements RequestCodingEncoder {
 
-  private final EwpRsaAes128GcmEncoder encoder;
+  /**
+   * Encoder used for encrypting.
+   */
+  protected final EwpRsaAes128GcmEncoder encoder;
 
   /**
    * @param recipientPublicKey Recipient's public key to use for encryption.
@@ -21,8 +25,10 @@ public class EwpRsaAesRequestEncoder implements RequestCodingEncoder {
 
   @Override
   public void encode(Request request) {
-    this.addContentEncoding(request, "ewp-rsa-aes128gcm");
+    this.addContentEncoding(request, this.getContentEncoding());
     this.updateRequestBody(request);
+    request.addProcessingNoticeHtml("Successfully applied the <code>"
+        + Utils.escapeHtml(this.getContentEncoding()) + "</code> Content-Encoding.");
   }
 
   @Override

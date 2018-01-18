@@ -381,8 +381,18 @@ public class UiController {
         worstStatus = testResult.getStatus();
       }
       testObj.addProperty("message", testResult.getMessage());
-      testObj.add("clientRequest", this.formatClientRequestObject(testResult));
-      testObj.add("serverResponse", this.formatServerResponseObject(testResult));
+
+      JsonArray requestSnapshots = this.formatRequestSnapshots(testResult);
+      testObj.add("requestSnapshots", requestSnapshots);
+      JsonArray responseSnapshots = this.formatResponseSnapshots(testResult);
+      testObj.add("responseSnapshots", responseSnapshots);
+
+      // WRCLEANIT: Temporary. For backward compatibility. Use snapshots instead.
+      testObj.add("clientRequest",
+          (requestSnapshots.size() > 0) ? requestSnapshots.get(requestSnapshots.size() - 1) : null);
+      testObj.add("serverResponse",
+          (responseSnapshots.size() > 0) ? responseSnapshots.get(0) : null);
+
       testsArray.add(testObj);
     }
     responseObj.addProperty("success", worstStatus.equals(Status.SUCCESS));
@@ -476,11 +486,7 @@ public class UiController {
     }
   }
 
-  private JsonElement formatClientRequestObject(ValidationStepWithStatus testResult) {
-    if (!testResult.getClientRequest().isPresent()) {
-      return null;
-    }
-    Request request = testResult.getClientRequest().get();
+  private JsonElement formatRequestSnapshot(Request request) {
     JsonObject result = new JsonObject();
     if (request.getBody().isPresent()) {
       byte[] body = request.getBody().get();
@@ -513,34 +519,57 @@ public class UiController {
     } else {
       result.add("clientCertFingerprint", JsonNull.INSTANCE);
     }
+    JsonArray noticesHtml = new JsonArray();
+    for (String noticeHtml : request.getProcessingNoticesHtml()) {
+      noticesHtml.add(noticeHtml);
+    }
+    result.add("processingNoticesHtml", noticesHtml);
     return result;
   }
 
-  private JsonObject formatServerResponseObject(ValidationStepWithStatus testResult) {
-    if (!testResult.getServerResponse().isPresent()) {
-      return null;
+  private JsonArray formatRequestSnapshots(ValidationStepWithStatus testResult) {
+    JsonArray results = new JsonArray();
+    for (Request snapshot : testResult.getRequestSnapshots()) {
+      results.add(this.formatRequestSnapshot(snapshot));
     }
-    Response response = testResult.getServerResponse().get();
+    return results;
+  }
+
+  private JsonObject formatResponseSnapshot(Response response) {
     JsonObject result = new JsonObject();
     result.addProperty("status", response.getStatus());
     result.addProperty("rawBodyBase64", Base64.encode(response.getBody()));
     BuildParams params = new BuildParams(response.getBody());
     params.setMakingPretty(true);
     BuildResult buildResult = this.docBuilder.build(params);
-    result.addProperty("prettyXml", buildResult.getPrettyXml().orElse(null));
     if (buildResult.getDocument().isPresent()) {
       Match root = $(buildResult.getDocument().get()).namespaces(KnownNamespace.prefixMap());
       result.addProperty("developerMessage",
           root.xpath("/ewp:error-response/ewp:developer-message").text());
+      result.addProperty("prettyXml", buildResult.getPrettyXml().orElse(null));
     } else {
       result.add("developerMessage", JsonNull.INSTANCE);
+      result.addProperty("prettyXml", (String) null);
     }
     JsonObject headers = new JsonObject();
     for (Entry<String, String> entry : response.getHeaders().entrySet()) {
       headers.addProperty(entry.getKey(), entry.getValue());
     }
     result.add("headers", headers);
+    JsonArray noticesHtml = new JsonArray();
+    for (String noticeHtml : response.getProcessingNoticesHtml()) {
+      noticesHtml.add(noticeHtml);
+    }
+    result.add("processingNoticesHtml", noticesHtml);
     return result;
+  }
+
+  private JsonArray formatResponseSnapshots(ValidationStepWithStatus testResult) {
+    JsonArray results = new JsonArray();
+    for (Response snapshot : testResult.getResponseSnapshots()) {
+      results.add(this.formatResponseSnapshot(snapshot));
+    }
+    return results;
   }
 
   private String getCoverageMatrixHtml() throws CatalogueNotFound {

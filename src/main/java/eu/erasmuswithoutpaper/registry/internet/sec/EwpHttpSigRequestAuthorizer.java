@@ -54,8 +54,11 @@ public class EwpHttpSigRequestAuthorizer implements RequestAuthorizer {
     this.verifyRequestIdHeader(request);
     this.verifySignature(request, clientKey, authz);
     this.verifyDigestHeader(request);
+    EwpClientWithRsaKey clientId = new EwpClientWithRsaKey(clientKey);
+    request.addProcessingNoticeHtml(
+        "Request has been successfully authenticated with HttpSig. Client identified: " + clientId);
     this.removeUnsignedHeaders(request, authz);
-    return new EwpClientWithRsaKey(clientKey);
+    return clientId;
   }
 
   /**
@@ -145,12 +148,19 @@ public class EwpHttpSigRequestAuthorizer implements RequestAuthorizer {
         .collect(Collectors.toList());
     Set<String> signedKeys =
         authz.getHeaders().stream().map(s -> s.toLowerCase(Locale.US)).collect(Collectors.toSet());
+    List<String> removedHeaders = new ArrayList<>();
     for (String key : keys) {
       if (!signedKeys.contains(key)) {
         request.removeHeader(key);
-        request.addProcessingWarning(key + " header was removed during the authorization process, "
-            + "because it has not been signed with HTTP Signature.");
+        removedHeaders.add(key);
       }
+    }
+    if (removedHeaders.size() > 0) {
+      request.addProcessingNoticeHtml("The following headers were removed, "
+          + "because they weren't covered by HTTP Signature: <code>"
+          + removedHeaders.stream().map(s -> Utils.escapeHtml(Utils.formatHeaderName(s)))
+              .collect(Collectors.joining("</code>, <code>"))
+          + "</code>.");
     }
   }
 

@@ -59,6 +59,7 @@ public class EwpHttpSigResponseSigner extends CommonResponseSigner {
     this.includeXRequestIdHeader(request, response);
     this.includeXRequestSignature(request, response);
     this.includeSignatureHeader(request, response);
+    request.addProcessingNoticeHtml("Response has been signed with HttpSig.");
   }
 
   /**

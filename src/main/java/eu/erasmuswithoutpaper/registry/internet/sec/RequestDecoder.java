@@ -3,7 +3,7 @@ package eu.erasmuswithoutpaper.registry.internet.sec;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 
 /**
- * An encoder for {@link Request}s.
+ * A decoder for {@link Request}s.
  *
  * <p>
  * This interface says nothing about the type of encoding.

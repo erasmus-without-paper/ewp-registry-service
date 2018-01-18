@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import eu.erasmuswithoutpaper.registry.common.Utils;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.rsaaes.BadEwpRsaAesBody;
 import eu.erasmuswithoutpaper.rsaaes.EwpRsaAes128GcmDecoder;
@@ -33,6 +34,8 @@ public class EwpRsaAesRequestDecoder implements RequestCodingDecoder {
   public void decode(Request request) throws Http4xx {
     this.updateBody(request);
     this.popContentEncodingAndExpect(request, this.getContentEncoding());
+    request.addProcessingNoticeHtml("Successfully stripped the <code>"
+        + Utils.escapeHtml(this.getContentEncoding()) + "</code> Content-Encoding.");
   }
 
   @Override

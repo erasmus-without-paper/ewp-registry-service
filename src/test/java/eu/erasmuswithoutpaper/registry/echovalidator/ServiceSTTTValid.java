@@ -28,7 +28,8 @@ public class ServiceSTTTValid extends AbstractEchoV2Service {
   }
 
   @Override
-  public Response handleInternetRequest2(Request request) throws IOException {
+  public Response handleInternetRequest2(Request request)
+      throws IOException, ErrorResponseException {
     if (!request.getUrl().startsWith(this.myEndpoint)) {
       return null;
     }

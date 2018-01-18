@@ -32,7 +32,11 @@ public class EwpCertificateRequestAuthorizer implements RequestAuthorizer {
       throw new Http4xx(403,
           "Unknown client certificate (could not find it amongst " + "registered EWP members).");
     }
-    return new EwpClientWithCertificate(cert);
+    EwpClientWithCertificate clientId = new EwpClientWithCertificate(cert);
+    request.addProcessingNoticeHtml(
+        "Request has been successfully authenticated with TLS certificate. Client identified: "
+            + clientId);
+    return clientId;
   }
 
 }

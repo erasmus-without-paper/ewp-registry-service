@@ -14,9 +14,13 @@ import eu.erasmuswithoutpaper.registry.sourceprovider.ManifestSource;
 import eu.erasmuswithoutpaper.registry.sourceprovider.TestManifestSourceProvider;
 import eu.erasmuswithoutpaper.registry.updater.RegistryUpdater;
 import eu.erasmuswithoutpaper.registry.web.SelfManifestProvider;
+import eu.erasmuswithoutpaper.registry.web.UiController;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
@@ -38,6 +42,7 @@ public class EchoValidatorTest extends WRTest {
   private static String echoUrlMHTT;
   private static String echoUrlMMTT;
   private static String echoUrlSTET;
+  private static String echoUrlSTTE;
   private static boolean needsReinit;
 
   /**
@@ -59,11 +64,15 @@ public class EchoValidatorTest extends WRTest {
     echoUrlMHTT = "https://university.example.com/echo/MHTT/";
     echoUrlMMTT = "https://university.example.com/echo/MMTT/";
     echoUrlSTET = "https://university.example.com/echo/STET/";
+    echoUrlSTTE = "https://university.example.com/echo/STTE/";
     needsReinit = true;
   }
 
   @Autowired
   private FakeInternet internet;
+
+  @Autowired
+  private UiController uiController;
 
   @Autowired
   private EchoValidator validator;
@@ -685,6 +694,78 @@ public class EchoValidatorTest extends WRTest {
   }
 
   @Test
+  public void testAgainstServiceSTTEInvalid1() {
+    try {
+      FakeInternetService service;
+
+      service = new ServiceSTTEInvalid1(echoUrlSTTE, this.client);
+      this.internet.addFakeInternetService(service);
+      String out = this.getValidatorReport(echoUrlSTTE);
+      assertThat(out).doesNotContain("FAILURE");
+      assertThat(out).doesNotContain("ERROR");
+      assertThat(out).contains("WARNING: Querying for supported security methods");
+      assertThat(out).containsPattern("WARNING: Trying SecMethodCombination....... with \"gzip\"");
+      assertThat(out).contains("Your response was first encrypted, and gzipped later");
+      assertThat(out).containsOnlyOnce("NOTICE");
+
+    } finally {
+      this.internet.clearAll();
+    }
+  }
+
+  @Test
+  public void testAgainstServiceSTTEInvalid2() {
+    try {
+      FakeInternetService service;
+
+      service = new ServiceSTTEInvalid2(echoUrlSTTE, this.client);
+      this.internet.addFakeInternetService(service);
+      String out = this.getValidatorReport(echoUrlSTTE);
+      assertThat(out).contains("FAILURE");
+      assertThat(out).contains("The response was (successfully) encoded with the 'gzip' "
+          + "coding, but the client didn't declare this encoding as acceptable");
+
+    } finally {
+      this.internet.clearAll();
+    }
+  }
+
+  @Test
+  public void testAgainstServiceSTTEInvalid3() {
+    try {
+      FakeInternetService service;
+
+      service = new ServiceSTTEInvalid3(echoUrlSTTE, this.client);
+      this.internet.addFakeInternetService(service);
+      String out = this.getValidatorReport(echoUrlSTTE);
+      assertThat(out).contains("FAILURE");
+      assertThat(out).contains("Expecting the response to be encoded with ewp-rsa-aes128gcm");
+
+    } finally {
+      this.internet.clearAll();
+    }
+  }
+
+  @Test
+  public void testAgainstServiceSTTEValid() {
+    try {
+      FakeInternetService service;
+
+      service = new ServiceSTTEValid(echoUrlSTTE, this.client);
+      this.internet.addFakeInternetService(service);
+      String out = this.getValidatorReport(echoUrlSTTE);
+      assertThat(out).doesNotContain("FAILURE");
+      assertThat(out).doesNotContain("ERROR");
+      assertThat(out).containsOnlyOnce("WARNING");
+      assertThat(out).contains("WARNING: Querying for supported security methods");
+      assertThat(out).containsOnlyOnce("NOTICE");
+
+    } finally {
+      this.internet.clearAll();
+    }
+  }
+
+  @Test
   public void testAgainstServiceSTTTInvalid1() {
     try {
       FakeInternetService service;
@@ -844,5 +925,13 @@ public class EchoValidatorTest extends WRTest {
       }
     }
     return sb.toString();
+  }
+
+  private String getValidatorReportJson(String url) {
+    ResponseEntity<String> result = this.uiController.validateEcho(url);
+    assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(result.getHeaders().getContentType())
+        .isEqualByComparingTo(MediaType.APPLICATION_JSON_UTF8);
+    return result.getBody();
   }
 }

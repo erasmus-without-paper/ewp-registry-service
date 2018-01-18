@@ -4,6 +4,8 @@ import static org.joox.JOOX.$;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import eu.erasmuswithoutpaper.registry.internet.Request;
@@ -58,13 +60,8 @@ abstract class InlineValidationStep implements ValidationStepWithStatus {
 
   private Status status = Status.PENDING;
   private String message = null;
-  protected Request request = null;
-  private Response serverResponse = null;
-
-  @Override
-  public Optional<Request> getClientRequest() {
-    return Optional.ofNullable(this.request);
-  }
+  private final List<Request> requestSnapshots = new ArrayList<>();
+  private final List<Response> responseSnapshots = new ArrayList<>();
 
   @Override
   public String getMessage() {
@@ -76,16 +73,27 @@ abstract class InlineValidationStep implements ValidationStepWithStatus {
   }
 
   @Override
+  public List<Request> getRequestSnapshots() {
+    return this.requestSnapshots;
+  }
+
+  @Override
+  public List<Response> getResponseSnapshots() {
+    return this.responseSnapshots;
+  }
+
+  @Override
   public Optional<String> getServerDeveloperErrorMessage() {
-    if (!this.getServerResponse().isPresent()) {
+    List<Response> snapshots = this.getResponseSnapshots();
+    if (snapshots.size() == 0) {
       return Optional.empty();
     }
-
     Document document;
     try {
-      document = $(new ByteArrayInputStream(this.getServerResponse().get().getBody())).document();
+      document =
+          $(new ByteArrayInputStream(snapshots.get(snapshots.size() - 1).getBody())).document();
     } catch (SAXException | IOException e) {
-      return Optional.of("Error while parsing XML response: " + e.getMessage());
+      return Optional.empty();
     }
     Match root = $(document);
     if (root.find("developer-message").isNotEmpty()) {
@@ -96,13 +104,26 @@ abstract class InlineValidationStep implements ValidationStepWithStatus {
   }
 
   @Override
-  public Optional<Response> getServerResponse() {
-    return Optional.ofNullable(this.serverResponse);
-  }
-
-  @Override
   public Status getStatus() {
     return this.status;
+  }
+
+  protected void addRequestSnapshot(Request request) {
+    if ((this.requestSnapshots.size() > 0)
+        && (request.equals(this.requestSnapshots.get(this.requestSnapshots.size() - 1)))) {
+      // Adding the same snapshot twice. Skip it.
+      return;
+    }
+    this.requestSnapshots.add(new Request(request));
+  }
+
+  protected void addResponseSnapshot(Response response) {
+    if ((this.responseSnapshots.size() > 0)
+        && (response.equals(this.responseSnapshots.get(this.responseSnapshots.size() - 1)))) {
+      // Adding the same snapshot twice. Skip it.
+      return;
+    }
+    this.responseSnapshots.add(new Response(response));
   }
 
   /**
@@ -117,10 +138,6 @@ abstract class InlineValidationStep implements ValidationStepWithStatus {
 
   protected void setMessage(String message) {
     this.message = message;
-  }
-
-  protected void setServerResponse(Response response) {
-    this.serverResponse = response;
   }
 
   protected void setStatus(Status status) {
@@ -140,7 +157,7 @@ abstract class InlineValidationStep implements ValidationStepWithStatus {
         this.setStatus(Status.SUCCESS);
       }
       if (response.isPresent()) {
-        this.setServerResponse(response.get());
+        this.addResponseSnapshot(response.get());
       }
     } catch (RuntimeException e) {
       this.setStatus(Status.ERROR);
@@ -149,7 +166,7 @@ abstract class InlineValidationStep implements ValidationStepWithStatus {
       this.setStatus(e.getStatus());
       this.setMessage(e.getMessage());
       if (e.getAttachedServerResponse().isPresent()) {
-        this.setServerResponse(e.getAttachedServerResponse().get());
+        this.addResponseSnapshot(e.getAttachedServerResponse().get());
       }
     }
     return this.getStatus();

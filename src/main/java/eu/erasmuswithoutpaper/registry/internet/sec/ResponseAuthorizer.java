@@ -27,8 +27,8 @@ public interface ResponseAuthorizer {
    * @param response The {@link Response} to be authorized.
    * @return {@link EwpServer} of the server which has signed the response (depending on the
    *         particular implementation, this may be a very specific {@link EwpServer} subclass).
-   * @throws CouldNotAuthorize When the response cannot be properly authorized (e.g. the server's
+   * @throws InvalidResponseError When the response cannot be properly authorized (e.g. the server's
    *         signature doesn't match what we expect).
    */
-  EwpServer authorize(Request request, Response response) throws CouldNotAuthorize;
+  EwpServer authorize(Request request, Response response) throws InvalidResponseError;
 }

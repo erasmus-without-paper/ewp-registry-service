@@ -1,6 +1,7 @@
 package eu.erasmuswithoutpaper.registry.internet;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +17,7 @@ public class Response {
   private final int status;
   private byte[] body;
   private final HeaderMap headers;
-  private final List<String> processingWarnings;
+  private final List<String> processingNoticesHtml;
 
   /**
    * Create a new response, without and headers.
@@ -42,15 +43,61 @@ public class Response {
     for (Entry<String, String> entry : initialHeaders.entrySet()) {
       this.putHeader(entry.getKey(), entry.getValue());
     }
-    this.processingWarnings = new ArrayList<>();
+    this.processingNoticesHtml = new ArrayList<>();
   }
 
   /**
-   * @param message Warning to be added to the list of warnings returned by
-   *        {@link #getProcessingWarnings()}.
+   * Make a snapshot copy of some other response.
+   *
+   * @param other Other response to copy values from.
    */
-  public void addProcessingWarning(String message) {
-    this.processingWarnings.add(message);
+  public Response(Response other) {
+    this.status = other.status;
+    this.body = other.body.clone();
+    this.headers = new HeaderMap(other.headers);
+    this.processingNoticesHtml = new ArrayList<>(other.processingNoticesHtml);
+  }
+
+  /**
+   * @param message Notice to be added to {@link #getProcessingNoticesHtml()}.
+   */
+  public void addProcessingNoticeHtml(String message) {
+    this.processingNoticesHtml.add(message);
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    Response other = (Response) obj;
+    if (!Arrays.equals(this.body, other.body)) {
+      return false;
+    }
+    if (this.headers == null) {
+      if (other.headers != null) {
+        return false;
+      }
+    } else if (!this.headers.equals(other.headers)) {
+      return false;
+    }
+    if (this.processingNoticesHtml == null) {
+      if (other.processingNoticesHtml != null) {
+        return false;
+      }
+    } else if (!this.processingNoticesHtml.equals(other.processingNoticesHtml)) {
+      return false;
+    }
+    if (this.status != other.status) {
+      return false;
+    }
+    return true;
   }
 
   /**
@@ -78,12 +125,12 @@ public class Response {
   }
 
   /**
-   * @return The list of warnings, which should be visible to the user debugging their requests and
+   * @return The list of notices, which should be visible to the user debugging their requests and
    *         responses. For example, it may say that some headers have been removed during the
    *         authorization process, because they were not signed.
    */
-  public List<String> getProcessingWarnings() {
-    return Collections.unmodifiableList(this.processingWarnings);
+  public List<String> getProcessingNoticesHtml() {
+    return Collections.unmodifiableList(this.processingNoticesHtml);
   }
 
   /**
@@ -91,6 +138,18 @@ public class Response {
    */
   public int getStatus() {
     return this.status;
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + Arrays.hashCode(this.body);
+    result = prime * result + ((this.headers == null) ? 0 : this.headers.hashCode());
+    result = prime * result
+        + ((this.processingNoticesHtml == null) ? 0 : this.processingNoticesHtml.hashCode());
+    result = prime * result + this.status;
+    return result;
   }
 
   /**

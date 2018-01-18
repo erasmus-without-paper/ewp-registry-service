@@ -19,6 +19,13 @@ import org.xml.sax.SAXException;
  */
 public class UtilsTest extends WRTest {
 
+  public void testHeaderNameFormatter() {
+    assertThat(Utils.formatHeaderName("abc-def--XYZZ")).isEqualTo("Abc-Def--Xyzz");
+    assertThat(Utils.formatHeaderName("---")).isEqualTo("---");
+    assertThat(Utils.formatHeaderName("Abc")).isEqualTo("Abc");
+    assertThat(Utils.formatHeaderName("")).isEqualTo("");
+  }
+
   /**
    * Test the {@link Utils#rewritePrefixes(org.w3c.dom.Element)} method.
    */

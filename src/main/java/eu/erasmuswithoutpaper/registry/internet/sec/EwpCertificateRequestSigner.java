@@ -27,6 +27,7 @@ public class EwpCertificateRequestSigner implements RequestSigner {
   @Override
   public void sign(Request request) {
     request.setClientCertificate(this.clientCert, this.clientKeyPair);
+    request.addProcessingNoticeHtml("Request has been signed with TLS certificate.");
   }
 
 }

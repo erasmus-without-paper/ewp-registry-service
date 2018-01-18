@@ -2,6 +2,7 @@ package eu.erasmuswithoutpaper.registry.echovalidator;
 
 import java.security.KeyPair;
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -26,8 +27,8 @@ public class ServiceMMTTValid extends ServiceMHTTValid {
       // No such header. Per spec, that's not an error.
       return false;
     }
-    Set<String> algorithms = Arrays.asList(value.split(",")).stream().map(String::trim)
-        .map(String::toLowerCase).collect(Collectors.toSet());
+    Set<String> algorithms = Arrays.asList(value.split(",")).stream()
+        .map(s -> s.trim().toLowerCase(Locale.US)).collect(Collectors.toSet());
     return algorithms.contains("rsa-sha256");
   }
 }

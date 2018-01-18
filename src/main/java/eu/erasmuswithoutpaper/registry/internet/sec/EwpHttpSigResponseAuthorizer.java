@@ -60,7 +60,7 @@ public class EwpHttpSigResponseAuthorizer extends CommonResponseAuthorizer {
   }
 
   @Override
-  public EwpServer authorize(Request request, Response response) throws CouldNotAuthorize {
+  public EwpServer authorize(Request request, Response response) throws InvalidResponseError {
     this.verifyRequestId(request, response);
     Authorization authz = this.parseSignatureHeader(response);
     this.verifySignatureAlgorithm(authz);
@@ -70,8 +70,12 @@ public class EwpHttpSigResponseAuthorizer extends CommonResponseAuthorizer {
     RSAPublicKey serverKey = this.lookupServerKey(authz.getKeyId());
     this.verifySignature(serverKey, request, response, authz);
     this.verifyDigest(response);
+    EwpServerWithRsaKey serverId = new EwpServerWithRsaKey(serverKey);
+    request.addProcessingNoticeHtml(
+        "Response has been successfully authenticated with HttpSig. Server identified: "
+            + serverId);
     this.removeUnsignedHeaders(response, authz);
-    return new EwpServerWithRsaKey(serverKey);
+    return serverId;
   }
 
   /**
@@ -79,17 +83,17 @@ public class EwpHttpSigResponseAuthorizer extends CommonResponseAuthorizer {
    *
    * @param keyId SHA-256 hex fingerprint of the public key.
    * @return The matched {@link RSAPublicKey} as found in the Registry Service.
-   * @throws CouldNotAuthorize If the key cannot be found, or the {@link #matchedApiEntry} is not
+   * @throws InvalidResponseError If the key cannot be found, or the {@link #matchedApiEntry} is not
    *         covered by this key.
    */
-  protected RSAPublicKey lookupServerKey(String keyId) throws CouldNotAuthorize {
+  protected RSAPublicKey lookupServerKey(String keyId) throws InvalidResponseError {
     RSAPublicKey serverKey = this.regClient.findRsaPublicKey(keyId);
     if (serverKey == null) {
-      throw new CouldNotAuthorize("The keyId extracted from the response's Signature header "
+      throw new InvalidResponseError("The keyId extracted from the response's Signature header "
           + "doesn't match any of the keys published in the Registry");
     }
     if (!this.regClient.isApiCoveredByServerKey(this.matchedApiEntry, serverKey)) {
-      throw new CouldNotAuthorize("The keyId extracted from the response's Signature header "
+      throw new InvalidResponseError("The keyId extracted from the response's Signature header "
           + "has been found in the Registry, but it doesn't cover the Echo API "
           + "endpoint which has generated the response. Make sure that you have "
           + "included your key in a proper manifest section.");
@@ -121,12 +125,12 @@ public class EwpHttpSigResponseAuthorizer extends CommonResponseAuthorizer {
    * @param response The response to process.
    * @return The parsed header value. This comes in the {@link Authorization} format, for
    *         compatibility with the library we use.
-   * @throws CouldNotAuthorize If the header is missing, or could not be parsed.
+   * @throws InvalidResponseError If the header is missing, or could not be parsed.
    */
-  protected Authorization parseSignatureHeader(Response response) throws CouldNotAuthorize {
+  protected Authorization parseSignatureHeader(Response response) throws InvalidResponseError {
     String sigHeader = response.getHeader("Signature");
     if (sigHeader == null) {
-      throw new CouldNotAuthorize("Expecting the response to contain the Signature header");
+      throw new InvalidResponseError("Expecting the response to contain the Signature header");
     }
     /*
      * Our library parses only the Authorization header (not the Signature header), so we will
@@ -134,7 +138,7 @@ public class EwpHttpSigResponseAuthorizer extends CommonResponseAuthorizer {
      */
     Authorization authz = Authorization.parse("Signature " + sigHeader);
     if (authz == null) {
-      throw new CouldNotAuthorize(
+      throw new InvalidResponseError(
           "Could not parse response's Signature header, make sure it's in a proper format");
     }
     return authz;
@@ -151,12 +155,19 @@ public class EwpHttpSigResponseAuthorizer extends CommonResponseAuthorizer {
         .collect(Collectors.toList());
     Set<String> signedKeys =
         authz.getHeaders().stream().map(s -> s.toLowerCase(Locale.US)).collect(Collectors.toSet());
+    List<String> removedHeaders = new ArrayList<>();
     for (String key : keys) {
       if (!signedKeys.contains(key)) {
         response.removeHeader(key);
-        response.addProcessingWarning(key + " header was removed during the authorization process, "
-            + "because it has not been signed with HTTP Signature.");
+        removedHeaders.add(key);
       }
+    }
+    if (removedHeaders.size() > 0) {
+      response.addProcessingNoticeHtml("The following headers were removed, "
+          + "because they weren't covered by HTTP Signature: <code>"
+          + removedHeaders.stream().map(s -> Utils.escapeHtml(Utils.formatHeaderName(s)))
+              .collect(Collectors.joining("</code>, <code>"))
+          + "</code>.");
     }
   }
 
@@ -165,10 +176,10 @@ public class EwpHttpSigResponseAuthorizer extends CommonResponseAuthorizer {
    * specs.
    *
    * @param response The response to process.
-   * @throws CouldNotAuthorize If headers are missing, or the values don't meet the spec's
+   * @throws InvalidResponseError If headers are missing, or the values don't meet the spec's
    *         requirements.
    */
-  protected void verifyDates(Response response) throws CouldNotAuthorize {
+  protected void verifyDates(Response response) throws InvalidResponseError {
     List<String> dateHeadersToVerify = new ArrayList<>();
     if (response.getHeader("Date") != null) {
       dateHeadersToVerify.add("Date");
@@ -177,13 +188,13 @@ public class EwpHttpSigResponseAuthorizer extends CommonResponseAuthorizer {
       dateHeadersToVerify.add("Original-Date");
     }
     if (dateHeadersToVerify.size() == 0) {
-      throw new CouldNotAuthorize("Expecting the response to contain the \"Date\" "
+      throw new InvalidResponseError("Expecting the response to contain the \"Date\" "
           + "header or the \"Original-Date\" (or both).");
     }
     for (String headerName : dateHeadersToVerify) {
       String errorMessage = Utils.findErrorsInHttpSigDateHeader(response.getHeader(headerName));
       if (errorMessage != null) {
-        throw new CouldNotAuthorize("The value of response's \"" + headerName
+        throw new InvalidResponseError("The value of response's \"" + headerName
             + "\" header failed verification: " + errorMessage);
       }
     }
@@ -193,32 +204,32 @@ public class EwpHttpSigResponseAuthorizer extends CommonResponseAuthorizer {
    * Verify the response's digest.
    *
    * @param response The response to process.
-   * @throws CouldNotAuthorize If the Digest header is missing, invalid or it doesn't meet the
+   * @throws InvalidResponseError If the Digest header is missing, invalid or it doesn't meet the
    *         spec's criteria.
    */
-  protected void verifyDigest(Response response) throws CouldNotAuthorize {
+  protected void verifyDigest(Response response) throws InvalidResponseError {
     String digestHeader = response.getHeader("Digest");
     if (digestHeader == null) {
-      throw new CouldNotAuthorize("Missing response header: Digest");
+      throw new InvalidResponseError("Missing response header: Digest");
     }
     String expectedSha256Digest = Utils.computeDigestBase64(response.getBody());
     Map<String, String> attrs = this.parseDigestHeaderValue(digestHeader);
     if (!attrs.containsKey("SHA-256")) {
-      throw new CouldNotAuthorize("Missing SHA-256 digest in Digest header");
+      throw new InvalidResponseError("Missing SHA-256 digest in Digest header");
     }
     String got = attrs.get("SHA-256");
     if (!got.equals(expectedSha256Digest)) {
-      throw new CouldNotAuthorize(
+      throw new InvalidResponseError(
           "Response SHA-256 digest mismatch. Expected: " + expectedSha256Digest);
     }
   }
 
   @Override
-  protected void verifyRequestId(Request request, Response response) throws CouldNotAuthorize {
+  protected void verifyRequestId(Request request, Response response) throws InvalidResponseError {
     super.verifyRequestId(request, response);
     if ((request.getHeader("X-Request-Id") != null)
         && (response.getHeader("X-Request-Id") == null)) {
-      throw new CouldNotAuthorize("HTTP Signature Server Authentication requires the server to "
+      throw new InvalidResponseError("HTTP Signature Server Authentication requires the server to "
           + "include the correlated (and signed) X-Request-Id, whenever it has been included "
           + "in the request.");
     }
@@ -230,24 +241,25 @@ public class EwpHttpSigResponseAuthorizer extends CommonResponseAuthorizer {
    *
    * @param request The request for which the response was received for.
    * @param response The response to verify.
-   * @throws CouldNotAuthorize If something was wrong with the X-Request-Signature header (e.g. it
-   *         was missing when it should have been present). Consult the specs for details.
+   * @throws InvalidResponseError If something was wrong with the X-Request-Signature header (e.g.
+   *         it was missing when it should have been present). Consult the specs for details.
    */
   protected void verifyRequestSignatureMatches(Request request, Response response)
-      throws CouldNotAuthorize {
+      throws InvalidResponseError {
     String reqAuthHeader = request.getHeader("Authorization");
     Authorization reqAuthz = Authorization.parse(reqAuthHeader);
     if (response.getHeader("X-Request-Signature") != null) {
       if (reqAuthz == null) {
-        throw new CouldNotAuthorize("X-Request-Signature response header should be present only "
+        throw new InvalidResponseError("X-Request-Signature response header should be present only "
             + "when HTTP Signature Client Authentication has been used in the request.");
       }
       if (!response.getHeader("X-Request-Signature").equals(reqAuthz.getSignature())) {
-        throw new CouldNotAuthorize("X-Request-Signature response header doesn't match the actual "
-            + "HTTP Signature of the orginal request");
+        throw new InvalidResponseError(
+            "X-Request-Signature response header doesn't match the actual "
+                + "HTTP Signature of the orginal request");
       }
     } else if (reqAuthz != null) {
-      throw new CouldNotAuthorize("Missing X-Request-Signature response header.");
+      throw new InvalidResponseError("Missing X-Request-Signature response header.");
     }
   }
 
@@ -257,10 +269,10 @@ public class EwpHttpSigResponseAuthorizer extends CommonResponseAuthorizer {
    * @param response The response from which the {@link Authorization} headers has been extracted.
    * @param authz The {@link Authorization} container which describes which headers which the
    *        Signature covers.
-   * @throws CouldNotAuthorize If some of the required headers are not covered by the Signature.
+   * @throws InvalidResponseError If some of the required headers are not covered by the Signature.
    */
   protected void verifyRequiredHeadersAreSigned(Response response, Authorization authz)
-      throws CouldNotAuthorize {
+      throws InvalidResponseError {
     Set<String> signedHeaders = new HashSet<>(authz.getHeaders());
     List<String> headersThatShouldBeSigned = Lists.newArrayList("digest");
     if (response.getHeader("X-Request-Id") != null) {
@@ -271,15 +283,16 @@ public class EwpHttpSigResponseAuthorizer extends CommonResponseAuthorizer {
     }
     for (String headerName : headersThatShouldBeSigned) {
       if (!signedHeaders.contains(headerName)) {
-        throw new CouldNotAuthorize("Expecting the response's Signature to cover the \""
+        throw new InvalidResponseError("Expecting the response's Signature to cover the \""
             + headerName + "\" header, but it doesn't.");
       }
     }
     if (signedHeaders.contains("date") || signedHeaders.contains("original-date")) {
       // Okay!
     } else {
-      throw new CouldNotAuthorize("Expecting the response's Signature to cover the \"date\" header "
-          + "or the \"original-date\" header (or both), but it doesn't cover any of them.");
+      throw new InvalidResponseError(
+          "Expecting the response's Signature to cover the \"date\" header "
+              + "or the \"original-date\" header (or both), but it doesn't cover any of them.");
     }
   }
 
@@ -291,10 +304,10 @@ public class EwpHttpSigResponseAuthorizer extends CommonResponseAuthorizer {
    * @param response The response to process.
    * @param authz The {@link Authorization} container which represents the response's parsed
    *        <code>Signature</code> header.
-   * @throws CouldNotAuthorize If the signature turned out to be invalid.
+   * @throws InvalidResponseError If the signature turned out to be invalid.
    */
   protected void verifySignature(RSAPublicKey serverKey, Request request, Response response,
-      Authorization authz) throws CouldNotAuthorize {
+      Authorization authz) throws InvalidResponseError {
     DefaultKeychain keychain = new DefaultKeychain();
     keychain.add(new MyHttpSigRsaPublicKey(serverKey));
     DefaultVerifier verifier = new DefaultVerifier(keychain);
@@ -310,7 +323,8 @@ public class EwpHttpSigResponseAuthorizer extends CommonResponseAuthorizer {
         Lists.newArrayList(Algorithm.RSA_SHA256));
     VerifyResult verifyResult = verifier.verifyWithResult(challenge, rcb.build(), authz);
     if (!verifyResult.equals(VerifyResult.SUCCESS)) {
-      throw new CouldNotAuthorize("Invalid HTTP Signature in response: " + verifyResult.toString());
+      throw new InvalidResponseError(
+          "Invalid HTTP Signature in response: " + verifyResult.toString());
     }
   }
 
@@ -319,12 +333,12 @@ public class EwpHttpSigResponseAuthorizer extends CommonResponseAuthorizer {
    *
    * @param authz The {@link Authorization} container with the parsed values of the
    *        <code>Signature</code> header.
-   * @throws CouldNotAuthorize If the signing algorithm cannot be trusted, or otherwise does not
+   * @throws InvalidResponseError If the signing algorithm cannot be trusted, or otherwise does not
    *         conform to the specs.
    */
-  protected void verifySignatureAlgorithm(Authorization authz) throws CouldNotAuthorize {
+  protected void verifySignatureAlgorithm(Authorization authz) throws InvalidResponseError {
     if (!authz.getAlgorithm().equals(Algorithm.RSA_SHA256)) {
-      throw new CouldNotAuthorize(
+      throw new InvalidResponseError(
           "Expecting the response's Signature to use the rsa-sha256 algorithm, " + "but "
               + authz.getAlgorithm().getName() + " found instead.");
     }
