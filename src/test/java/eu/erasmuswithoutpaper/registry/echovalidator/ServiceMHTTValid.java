@@ -12,15 +12,12 @@ import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 public class ServiceMHTTValid extends ServiceMTTTValid {
 
-  protected final String myKeyId;
   protected final KeyPair myKeyPair;
-  private EwpHttpSigResponseSigner mySignerCache;
-  private TlsResponseSigner myTlsSignerCache;
+  protected EwpHttpSigResponseSigner mySignerCache;
+  protected TlsResponseSigner myTlsSignerCache;
 
-  public ServiceMHTTValid(String url, RegistryClient registryClient, String myKeyId,
-      KeyPair myKeyPair) {
+  public ServiceMHTTValid(String url, RegistryClient registryClient, KeyPair myKeyPair) {
     super(url, registryClient);
-    this.myKeyId = myKeyId;
     this.myKeyPair = myKeyPair;
   }
 
@@ -56,7 +53,7 @@ public class ServiceMHTTValid extends ServiceMTTTValid {
 
   protected EwpHttpSigResponseSigner getHttpSigSigner() {
     if (this.mySignerCache == null) {
-      this.mySignerCache = new EwpHttpSigResponseSigner(this.myKeyId, this.myKeyPair);
+      this.mySignerCache = new EwpHttpSigResponseSigner(this.myKeyPair);
     }
     return this.mySignerCache;
   }

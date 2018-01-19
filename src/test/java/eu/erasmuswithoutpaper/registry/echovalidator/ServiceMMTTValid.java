@@ -11,9 +11,8 @@ import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 public class ServiceMMTTValid extends ServiceMHTTValid {
 
-  public ServiceMMTTValid(String url, RegistryClient registryClient, String myKeyId,
-      KeyPair myKeyPair) {
-    super(url, registryClient, myKeyId, myKeyPair);
+  public ServiceMMTTValid(String url, RegistryClient registryClient, KeyPair myKeyPair) {
+    super(url, registryClient, myKeyPair);
   }
 
   @Override

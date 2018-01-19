@@ -21,6 +21,7 @@ import net.adamcin.httpsig.api.DefaultKeychain;
 import net.adamcin.httpsig.api.Key;
 import net.adamcin.httpsig.api.RequestContent;
 import net.adamcin.httpsig.api.Signer;
+import org.apache.commons.codec.digest.DigestUtils;
 
 /**
  * {@link ResponseSigner}, which signs the responses with HTTP Signatures.
@@ -40,15 +41,13 @@ public class EwpHttpSigResponseSigner extends CommonResponseSigner {
     return result.trim();
   }
 
-  private final String keyId;
   private final KeyPair keyPair;
+  private String keyIdCache = null;
 
   /**
-   * @param keyId The SHA-256 fingerprint of the {@link KeyPair} used for signing.
    * @param keyPair {@link KeyPair} to be used for signing.
    */
-  public EwpHttpSigResponseSigner(String keyId, KeyPair keyPair) {
-    this.keyId = keyId;
+  public EwpHttpSigResponseSigner(KeyPair keyPair) {
     this.keyPair = keyPair;
   }
 
@@ -84,6 +83,16 @@ public class EwpHttpSigResponseSigner extends CommonResponseSigner {
     result.add("(request-target)");
     result.addAll(response.getHeaders().keySet());
     return result;
+  }
+
+  /**
+   * @return The keyId to be used in the Signature header.
+   */
+  protected String getKeyId() {
+    if (this.keyIdCache == null) {
+      this.keyIdCache = DigestUtils.sha256Hex(this.keyPair.getPublic().getEncoded());
+    }
+    return this.keyIdCache;
   }
 
   /**
@@ -135,7 +144,7 @@ public class EwpHttpSigResponseSigner extends CommonResponseSigner {
       return;
     }
     DefaultKeychain keychain = new DefaultKeychain();
-    Key kckey = new MyHttpSigRsaKeyPair(this.keyId, this.keyPair);
+    Key kckey = new MyHttpSigRsaKeyPair(this.getKeyId(), this.keyPair);
     keychain.add(kckey);
     Signer signer = new Signer(keychain);
     List<String> headersSigned = new ArrayList<>(this.getHeadersToSign(request, response));

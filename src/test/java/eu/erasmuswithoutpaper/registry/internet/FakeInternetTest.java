@@ -63,13 +63,18 @@ public class FakeInternetTest extends WRTest {
     private final List<String> myHeaders;
 
     public TestResponseSigner(KeyPair keyPair, String... headers) {
-      super("Test", keyPair);
+      super(keyPair);
       this.myHeaders = Arrays.asList(headers);
     }
 
     @Override
     protected List<String> getHeadersToSign(Request request, Response response) {
       return this.myHeaders;
+    }
+
+    @Override
+    protected String getKeyId() {
+      return "Test";
     }
 
     @Override

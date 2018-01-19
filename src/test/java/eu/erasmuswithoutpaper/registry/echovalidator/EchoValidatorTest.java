@@ -9,6 +9,7 @@ import eu.erasmuswithoutpaper.registry.WRTest;
 import eu.erasmuswithoutpaper.registry.echovalidator.ValidationStepWithStatus.Status;
 import eu.erasmuswithoutpaper.registry.internet.FakeInternet;
 import eu.erasmuswithoutpaper.registry.internet.FakeInternetService;
+import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigResponseSigner;
 import eu.erasmuswithoutpaper.registry.repository.ManifestRepositoryImpl;
 import eu.erasmuswithoutpaper.registry.sourceprovider.ManifestSource;
 import eu.erasmuswithoutpaper.registry.sourceprovider.TestManifestSourceProvider;
@@ -49,8 +50,6 @@ public class EchoValidatorTest extends WRTest {
    * KeyPair to be used for signing responses of our test services.
    */
   private static KeyPair myKeyPair;
-
-  private static String myKeyId;
 
   @BeforeClass
   public static void setUpClass() {
@@ -109,7 +108,6 @@ public class EchoValidatorTest extends WRTest {
 
       String echoManifest = this.getFileAsString("echovalidator/manifest.xml");
       myKeyPair = this.validator.generateKeyPair();
-      myKeyId = DigestUtils.sha256Hex(myKeyPair.getPublic().getEncoded());
       echoManifest = echoManifest.replace("SERVER-KEY-PLACEHOLDER",
           Base64.encode(myKeyPair.getPublic().getEncoded()));
       this.internet.putURL(echoManifestUrl, echoManifest);
@@ -369,7 +367,7 @@ public class EchoValidatorTest extends WRTest {
     try {
       FakeInternetService service;
 
-      service = new ServiceMHTTValid(echoUrlMHTT, this.client, myKeyId, myKeyPair);
+      service = new ServiceMHTTValid(echoUrlMHTT, this.client, myKeyPair);
       this.internet.addFakeInternetService(service);
       String out = this.getValidatorReport(echoUrlMHTT);
       assertThat(out).doesNotContain("FAILURE");
@@ -390,7 +388,7 @@ public class EchoValidatorTest extends WRTest {
     try {
       FakeInternetService service;
 
-      service = new ServiceMMTTInvalid1(echoUrlMMTT, this.client, myKeyId, myKeyPair);
+      service = new ServiceMMTTInvalid1(echoUrlMMTT, this.client, myKeyPair);
       this.internet.addFakeInternetService(service);
       String out = this.getValidatorReport(echoUrlMMTT);
       assertThat(out).contains("FAILURE");
@@ -408,7 +406,7 @@ public class EchoValidatorTest extends WRTest {
     try {
       FakeInternetService service;
 
-      service = new ServiceMMTTInvalid2(echoUrlMMTT, this.client, myKeyId, myKeyPair);
+      service = new ServiceMMTTInvalid2(echoUrlMMTT, this.client, myKeyPair);
       this.internet.addFakeInternetService(service);
       String out = this.getValidatorReport(echoUrlMMTT);
       assertThat(out).contains("FAILURE");
@@ -425,7 +423,7 @@ public class EchoValidatorTest extends WRTest {
     try {
       FakeInternetService service;
 
-      service = new ServiceMMTTInvalid3(echoUrlMMTT, this.client, myKeyId, myKeyPair);
+      service = new ServiceMMTTInvalid3(echoUrlMMTT, this.client, myKeyPair);
       this.internet.addFakeInternetService(service);
       String out = this.getValidatorReport(echoUrlMMTT);
       assertThat(out).contains("FAILURE");
@@ -442,7 +440,7 @@ public class EchoValidatorTest extends WRTest {
     try {
       FakeInternetService service;
 
-      service = new ServiceMMTTInvalid4(echoUrlMMTT, this.client, myKeyId, myKeyPair);
+      service = new ServiceMMTTInvalid4(echoUrlMMTT, this.client, myKeyPair);
       this.internet.addFakeInternetService(service);
       String out = this.getValidatorReport(echoUrlMMTT);
       assertThat(out).contains("FAILURE");
@@ -459,7 +457,7 @@ public class EchoValidatorTest extends WRTest {
     try {
       FakeInternetService service;
 
-      service = new ServiceMMTTInvalid5(echoUrlMMTT, this.client, myKeyId, myKeyPair);
+      service = new ServiceMMTTInvalid5(echoUrlMMTT, this.client, myKeyPair);
       this.internet.addFakeInternetService(service);
       String out = this.getValidatorReport(echoUrlMMTT);
       assertThat(out).contains("FAILURE");
@@ -477,7 +475,7 @@ public class EchoValidatorTest extends WRTest {
     try {
       FakeInternetService service;
 
-      service = new ServiceMMTTInvalid6(echoUrlMMTT, this.client, myKeyId, myKeyPair);
+      service = new ServiceMMTTInvalid6(echoUrlMMTT, this.client, myKeyPair);
       this.internet.addFakeInternetService(service);
       String out = this.getValidatorReport(echoUrlMMTT);
       assertThat(out).contains("FAILURE");
@@ -494,7 +492,7 @@ public class EchoValidatorTest extends WRTest {
     try {
       FakeInternetService service;
 
-      service = new ServiceMMTTInvalid7(echoUrlMMTT, this.client, myKeyId, myKeyPair);
+      service = new ServiceMMTTInvalid7(echoUrlMMTT, this.client, myKeyPair);
       this.internet.addFakeInternetService(service);
       String out = this.getValidatorReport(echoUrlMMTT);
       assertThat(out).contains("FAILURE");
@@ -512,7 +510,7 @@ public class EchoValidatorTest extends WRTest {
     try {
       FakeInternetService service;
 
-      service = new ServiceMMTTInvalid8(echoUrlMMTT, this.client, myKeyId, myKeyPair);
+      service = new ServiceMMTTInvalid8(echoUrlMMTT, this.client, myKeyPair);
       this.internet.addFakeInternetService(service);
       String out = this.getValidatorReport(echoUrlMMTT);
       assertThat(out).contains("FAILURE");
@@ -530,7 +528,7 @@ public class EchoValidatorTest extends WRTest {
     try {
       FakeInternetService service;
 
-      service = new ServiceMMTTInvalid9(echoUrlMMTT, this.client, myKeyId, myKeyPair);
+      service = new ServiceMMTTInvalid9(echoUrlMMTT, this.client, myKeyPair);
       this.internet.addFakeInternetService(service);
       String out = this.getValidatorReport(echoUrlMMTT);
       assertThat(out).contains("FAILURE");
@@ -549,7 +547,7 @@ public class EchoValidatorTest extends WRTest {
     try {
       FakeInternetService service;
 
-      service = new ServiceMMTTValid(echoUrlMMTT, this.client, myKeyId, myKeyPair);
+      service = new ServiceMMTTValid(echoUrlMMTT, this.client, myKeyPair);
       this.internet.addFakeInternetService(service);
       String out = this.getValidatorReport(echoUrlMMTT);
       assertThat(out).isEqualTo(this.getFileAsString("echovalidator/ServiceMMTTValid.txt"));
@@ -571,7 +569,7 @@ public class EchoValidatorTest extends WRTest {
     try {
       FakeInternetService service;
 
-      service = new ServiceMMTTValid2(echoUrlMMTT, this.client, myKeyId, myKeyPair);
+      service = new ServiceMMTTValid2(echoUrlMMTT, this.client, myKeyPair);
       this.internet.addFakeInternetService(service);
       String out = this.getValidatorReport(echoUrlMMTT);
       assertThat(out).doesNotContain("FAILURE");
@@ -593,7 +591,20 @@ public class EchoValidatorTest extends WRTest {
 
       KeyPair otherKeyPair = this.validator.getClientRsaKeyPairInUse();
       String keyId = DigestUtils.sha256Hex(otherKeyPair.getPublic().getEncoded());
-      service = new ServiceMMTTValid(echoUrlMMTT, this.client, keyId, otherKeyPair);
+      service = new ServiceMMTTValid(echoUrlMMTT, this.client, otherKeyPair) {
+        @Override
+        protected EwpHttpSigResponseSigner getHttpSigSigner() {
+          if (this.mySignerCache == null) {
+            this.mySignerCache = new EwpHttpSigResponseSigner(this.myKeyPair) {
+              @Override
+              protected String getKeyId() {
+                return keyId;
+              }
+            };
+          }
+          return this.mySignerCache;
+        }
+      };
       this.internet.addFakeInternetService(service);
       String out = this.getValidatorReport(echoUrlMMTT);
       assertThat(out).contains("FAILURE");

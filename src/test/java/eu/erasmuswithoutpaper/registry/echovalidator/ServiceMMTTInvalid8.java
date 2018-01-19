@@ -13,14 +13,13 @@ import eu.erasmuswithoutpaper.registryclient.RegistryClient;
  */
 public class ServiceMMTTInvalid8 extends ServiceMMTTValid {
 
-  public ServiceMMTTInvalid8(String url, RegistryClient registryClient, String myKeyId,
-      KeyPair myKeyPair) {
-    super(url, registryClient, myKeyId, myKeyPair);
+  public ServiceMMTTInvalid8(String url, RegistryClient registryClient, KeyPair myKeyPair) {
+    super(url, registryClient, myKeyPair);
   }
 
   @Override
   protected EwpHttpSigResponseSigner getHttpSigSigner() {
-    return new EwpHttpSigResponseSigner(this.myKeyId, this.myKeyPair) {
+    return new EwpHttpSigResponseSigner(this.myKeyPair) {
       @Override
       protected List<String> getHeadersToSign(Request request, Response response) {
         List<String> result = super.getHeadersToSign(request, response);

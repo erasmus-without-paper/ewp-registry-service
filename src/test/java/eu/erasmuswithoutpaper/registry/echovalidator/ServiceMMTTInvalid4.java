@@ -13,9 +13,8 @@ import eu.erasmuswithoutpaper.registryclient.RegistryClient;
  */
 public class ServiceMMTTInvalid4 extends ServiceMMTTValid {
 
-  public ServiceMMTTInvalid4(String url, RegistryClient registryClient, String myKeyId,
-      KeyPair myKeyPair) {
-    super(url, registryClient, myKeyId, myKeyPair);
+  public ServiceMMTTInvalid4(String url, RegistryClient registryClient, KeyPair myKeyPair) {
+    super(url, registryClient, myKeyPair);
   }
 
   @Override

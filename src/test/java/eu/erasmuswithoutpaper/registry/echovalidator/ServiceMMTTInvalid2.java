@@ -12,14 +12,13 @@ import eu.erasmuswithoutpaper.registryclient.RegistryClient;
  */
 public class ServiceMMTTInvalid2 extends ServiceMMTTValid {
 
-  public ServiceMMTTInvalid2(String url, RegistryClient registryClient, String myKeyId,
-      KeyPair myKeyPair) {
-    super(url, registryClient, myKeyId, myKeyPair);
+  public ServiceMMTTInvalid2(String url, RegistryClient registryClient, KeyPair myKeyPair) {
+    super(url, registryClient, myKeyPair);
   }
 
   @Override
   protected EwpHttpSigResponseSigner getHttpSigSigner() {
-    return new EwpHttpSigResponseSigner(this.myKeyId, this.myKeyPair) {
+    return new EwpHttpSigResponseSigner(this.myKeyPair) {
       @Override
       protected ZonedDateTime getCurrentTime() {
         return ZonedDateTime.now(ZoneId.of("UTC")).minusMinutes(10);
