@@ -16,7 +16,7 @@ import eu.erasmuswithoutpaper.rsaaes.EwpRsaAes128GcmEncoder;
 /**
  * This encoder handles the ewp-rsa-aes128gcm response encoding.
  */
-public class EwpRsaAesResponseEncoder implements ResponseCodingEncoder {
+public class EwpRsaAesResponseEncoder extends CommonResponseEncoder {
 
   /**
    * Thrown when the key received in the Accept-Response-Encryption-Key header is invalid.
@@ -64,8 +64,8 @@ public class EwpRsaAesResponseEncoder implements ResponseCodingEncoder {
 
   @Override
   public void encode(Request request, Response response) throws Http4xx {
-    this.addContentEncoding(response, this.getContentEncoding());
     this.updateResponseBody(request, response);
+    this.appendContentEncoding(response, this.getContentEncoding());
     response.addProcessingNoticeHtml("Successfully applied the <code>"
         + Utils.escapeHtml(this.getContentEncoding()) + "</code> Content-Encoding.");
   }
@@ -73,23 +73,6 @@ public class EwpRsaAesResponseEncoder implements ResponseCodingEncoder {
   @Override
   public String getContentEncoding() {
     return "ewp-rsa-aes128gcm";
-  }
-
-  /**
-   * Append a new coding to the Content-Encoding header.
-   *
-   * @param response The response to process.
-   * @param coding The coding name to append.
-   */
-  protected void addContentEncoding(Response response, String coding) {
-    String value = response.getHeader("Content-Encoding");
-    if (value != null) {
-      value += ", ";
-    } else {
-      value = "";
-    }
-    value += coding;
-    response.putHeader("Content-Encoding", value);
   }
 
   /**

@@ -1,15 +1,14 @@
 package eu.erasmuswithoutpaper.registry.echovalidator;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.interfaces.RSAPublicKey;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.zip.GZIPOutputStream;
 
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registry.internet.sec.EwpRsaAesResponseEncoder;
+import eu.erasmuswithoutpaper.registry.internet.sec.GzipResponseEncoder;
 import eu.erasmuswithoutpaper.registry.internet.sec.Http4xx;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
@@ -76,22 +75,7 @@ public class ServiceSTTEValid extends ServiceSTTTValid {
   }
 
   protected void applyGzip(Response response) {
-    try {
-      ByteArrayOutputStream output = new ByteArrayOutputStream();
-      GZIPOutputStream gzip = new GZIPOutputStream(output);
-      gzip.write(response.getBody());
-      gzip.close();
-      response.setBody(output.toByteArray());
-      String v = response.getHeader("Content-Encoding");
-      if (v == null) {
-        v = "";
-      } else {
-        v += ", ";
-      }
-      response.putHeader("Content-Encoding", v + "gzip");
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
+    new GzipResponseEncoder().encode(response);
   }
 
   protected List<String> getAcceptableCodings(Request request) {

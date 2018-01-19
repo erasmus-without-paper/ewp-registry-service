@@ -73,6 +73,15 @@ abstract public class AbstractEchoService implements FakeInternetService {
     return new Response(status, sb.toString().getBytes(StandardCharsets.UTF_8));
   }
 
+  /**
+   * @param request The request for which a response is to be generated
+   * @return Either <code>null</code> or {@link Response} object. If this service doesn't cover this
+   *         particular request (for example the request is for a different domain), then
+   *         <code>null</code> should be returned.
+   * @throws IOException
+   * @throws ErrorResponseException This can be thrown instead of returning the error response (a
+   *         shortcut).
+   */
   abstract protected Response handleInternetRequest2(Request request)
       throws IOException, ErrorResponseException;
 }

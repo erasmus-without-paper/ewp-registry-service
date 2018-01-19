@@ -1,6 +1,8 @@
 package eu.erasmuswithoutpaper.registry.internet.sec;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.Map;
 
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
 import eu.erasmuswithoutpaper.registry.internet.HeaderMap;
@@ -21,8 +23,7 @@ public class Http4xx extends Exception {
 
   /**
    * @param statusCode HTTP status code to be returned to the client.
-   * @param developerMessage The message describing the error which the client seems to be have
-   *        made.
+   * @param developerMessage The message describing the error which the client seems to have made.
    */
   public Http4xx(int statusCode, String developerMessage) {
     super("HTTP " + statusCode + ": " + developerMessage);
@@ -45,6 +46,21 @@ public class Http4xx extends Exception {
     sb.append("</error-response>");
     byte[] body = sb.toString().getBytes(StandardCharsets.UTF_8);
     return new Response(this.statusCode, body, new HeaderMap(this.headers));
+  }
+
+  /**
+   * @return Unmodifiable map of error response headers (added via
+   *         {@link #putEwpErrorResponseHeader(String, String)}).
+   */
+  public Map<String, String> getHeaders() {
+    return Collections.unmodifiableMap(this.headers);
+  }
+
+  /**
+   * @return HTTP status code for the error response.
+   */
+  public int getStatusCode() {
+    return this.statusCode;
   }
 
   /**

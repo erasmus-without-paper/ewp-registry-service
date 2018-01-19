@@ -387,12 +387,6 @@ public class UiController {
       JsonArray responseSnapshots = this.formatResponseSnapshots(testResult);
       testObj.add("responseSnapshots", responseSnapshots);
 
-      // WRCLEANIT: Temporary. For backward compatibility. Use snapshots instead.
-      testObj.add("clientRequest",
-          (requestSnapshots.size() > 0) ? requestSnapshots.get(requestSnapshots.size() - 1) : null);
-      testObj.add("serverResponse",
-          (responseSnapshots.size() > 0) ? responseSnapshots.get(0) : null);
-
       testsArray.add(testObj);
     }
     responseObj.addProperty("success", worstStatus.equals(Status.SUCCESS));

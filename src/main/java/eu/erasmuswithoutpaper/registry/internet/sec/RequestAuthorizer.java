@@ -29,6 +29,10 @@ public interface RequestAuthorizer {
    * @throws Http4xx If the request was not properly authorized - either the client didn't try to
    *         authenticate himself with the expected authentication method, or he tried, but didn't
    *         authenticate himself properly.
+   * @throws UnmatchedRequestAuthorizationMethod This special subclass of {@link Http4xx} is thrown
+   *         when the authorizer believes that the client is not trying to use the authorization
+   *         method supported by this authorizer (and it might be a good idea to try other
+   *         authorizers, if applicable).
    */
-  EwpClient authorize(Request request) throws Http4xx;
+  EwpClient authorize(Request request) throws Http4xx, UnmatchedRequestAuthorizationMethod;
 }

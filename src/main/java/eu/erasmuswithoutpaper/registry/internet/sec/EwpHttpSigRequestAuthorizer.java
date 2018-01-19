@@ -111,8 +111,8 @@ public class EwpHttpSigRequestAuthorizer implements RequestAuthorizer {
    *         request with a HTTP Signature.
    */
   protected Http4xx newHttpSig401() {
-    Http4xx error =
-        new Http4xx(401, "This endpoint requires HTTP Signature Authorization, as specified here: "
+    Http4xx error = new UnmatchedRequestAuthorizationMethod(401,
+        "This endpoint requires HTTP Signature Authorization, as specified here: "
             + "https://github.com/erasmus-without-paper/ewp-specs-sec-cliauth-httpsig");
     error.putEwpErrorResponseHeader("WWW-Authenticate", "Signature realm=\"EWP\"");
     error.putEwpErrorResponseHeader("Want-Digest", "SHA-256");
@@ -196,8 +196,8 @@ public class EwpHttpSigRequestAuthorizer implements RequestAuthorizer {
       dateHeadersToVerify.add("Original-Date");
     }
     if (dateHeadersToVerify.size() == 0) {
-      throw new Http4xx(400, "This endpoint requires your request to include the \"Date\" "
-          + "header or the \"Original-Date\" (or both).");
+      throw new Http4xx(400, "EWP's HTTP Signature specs require your request to include the "
+          + "\"Date\" header or the \"Original-Date\" (or both).");
     }
     for (String headerName : dateHeadersToVerify) {
       String errorMessage = this.findErrorsInDateHeader(request.getHeader(headerName));

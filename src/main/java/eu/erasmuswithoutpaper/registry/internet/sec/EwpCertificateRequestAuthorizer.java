@@ -25,7 +25,8 @@ public class EwpCertificateRequestAuthorizer implements RequestAuthorizer {
   @Override
   public EwpClientWithCertificate authorize(Request request) throws Http4xx {
     if (!request.getClientCertificate().isPresent()) {
-      throw new Http4xx(403, "Expecting client certificate to be used for TLS transport.");
+      throw new UnmatchedRequestAuthorizationMethod(403,
+          "Expecting client certificate to be used for TLS transport.");
     }
     X509Certificate cert = request.getClientCertificate().get();
     if (!this.registryClient.isCertificateKnown(cert)) {
