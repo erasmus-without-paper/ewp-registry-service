@@ -6,12 +6,18 @@ import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import eu.erasmuswithoutpaper.registry.common.Utils;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
+import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 import eu.erasmuswithoutpaper.rsaaes.EwpRsaAes128GcmEncoder;
+
+import com.google.common.collect.Lists;
+import net.adamcin.httpsig.api.Authorization;
 
 /**
  * This encoder handles the ewp-rsa-aes128gcm response encoding.
@@ -25,41 +31,15 @@ public class EwpRsaAesResponseEncoder extends CommonResponseEncoder {
   protected static class InvalidKeyHeader extends Exception {
   }
 
-  /**
-   * The default key to use when no other key is found in the Accept-Response-Encryption-Key header.
-   */
-  protected final Optional<RSAPublicKey> defaultKey;
+  private final RegistryClient registryClient;
 
   /**
-   * The message to include in the thrown {@link Http4xx} exceptions, in case when
-   * Accept-Response-Encryption-Key header is missing. This message is provided whenever
-   * {@link #defaultKey} is not.
+   * @param registryClient Needed to fetch the actual public key from Authorization header's keyId
+   *        (in case when the request is using HTTP Signatures for authentication, it doesn't need
+   *        to provide the explicit key in Accept-Response-Encryption-Key header).
    */
-  protected final Optional<String> whereDidWeLook;
-
-  /**
-   * Initialize the encoder with a default key.
-   *
-   * @param defaultKey The default key to use for encryption. This key MAY still get overridden by
-   *        the Accept-Response-Encryption-Key header.
-   */
-  public EwpRsaAesResponseEncoder(RSAPublicKey defaultKey) {
-    this.defaultKey = Optional.of(defaultKey);
-    this.whereDidWeLook = Optional.empty();
-  }
-
-  /**
-   * Initialize the encoder without a default key. (In this case, the request will need to contain
-   * the Accept-Response-Encryption-Key header.)
-   *
-   * @param whereDidWeLook The message explaining where did the caller look for the default key, why
-   *        couldn't he find it, etc. This message will be included in {@link Http4xx} errors thrown
-   *        by {@link #encode(Request, Response)}, if the request doesn't contain a proper
-   *        Accept-Response-Encryption-Key header.
-   */
-  public EwpRsaAesResponseEncoder(String whereDidWeLook) {
-    this.defaultKey = Optional.empty();
-    this.whereDidWeLook = Optional.of(whereDidWeLook);
+  public EwpRsaAesResponseEncoder(RegistryClient registryClient) {
+    this.registryClient = registryClient;
   }
 
   @Override
@@ -116,6 +96,53 @@ public class EwpRsaAesResponseEncoder extends CommonResponseEncoder {
   }
 
   /**
+   * Try to extract the encryption key from the HTTP Signature's Authorization header.
+   *
+   * @param request The request to extract from.
+   * @return The {@link RSAPublicKey}, if present in the Authorization header.
+   * @throws Http4xx If the authorization header was present, but its keyId identified an unknown
+   *         key. This is probably unintended client error.
+   */
+  protected Optional<RSAPublicKey> extractKeyFromAuthorizationHeader(Request request)
+      throws Http4xx {
+    Authorization authz = Authorization.parse(request.getHeader("Authorization"));
+    if (authz == null) {
+      return Optional.empty();
+    }
+    String keyId = authz.getKeyId();
+    RSAPublicKey key = this.registryClient.findRsaPublicKey(keyId);
+    if (key == null) {
+      throw new Http4xx(400,
+          "Could not find the key body for keyId used in the Authorization header "
+              + "(our registry client doesn't recognize it). "
+              + "We cannot use it for encryption.");
+    }
+    return Optional.of(key);
+  }
+
+  /**
+   * Determine the best encryption key for the request.
+   *
+   * @param request The request to process.
+   * @return The best encryption key to use, or an empty optional if no encryption key could have
+   *         been determined.
+   * @throws Http4xx If there was something wrong with the request, and the caller should be
+   *         notified about it (e.g. the caller tried to attach the encryption key, but has done so
+   *         in invalid way).
+   */
+  protected Optional<RSAPublicKey> extractKeyFromRequest(Request request) throws Http4xx {
+    Optional<RSAPublicKey> keyFromAccept = this.extractKeyFromAcceptHeader(request);
+    if (keyFromAccept.isPresent()) {
+      return keyFromAccept;
+    }
+    Optional<RSAPublicKey> keyFromAuth = this.extractKeyFromAuthorizationHeader(request);
+    if (keyFromAuth.isPresent()) {
+      return keyFromAuth;
+    }
+    return Optional.empty();
+  }
+
+  /**
    * Get a proper {@link EwpRsaAes128GcmEncoder} for the given request.
    *
    * @param request The request to extract encoder-related information from.
@@ -123,17 +150,23 @@ public class EwpRsaAesResponseEncoder extends CommonResponseEncoder {
    * @throws Http4xx If the request didn't contain enough information to construct a proper encoder.
    */
   protected EwpRsaAes128GcmEncoder getEncoderForRequest(Request request) throws Http4xx {
-    Optional<RSAPublicKey> keyFromHeader = this.extractKeyFromAcceptHeader(request);
-    if (keyFromHeader.isPresent()) {
-      return new EwpRsaAes128GcmEncoder(keyFromHeader.get());
-    } else if (this.defaultKey.isPresent()) {
-      return new EwpRsaAes128GcmEncoder(this.defaultKey.get());
-    } else {
-      throw new Http4xx(400,
-          "Could not determine the target encryption key. "
-              + "The Accept-Response-Encryption-Key header was not provided, and the "
-              + "default key could not be determined. " + this.whereDidWeLook.get());
+    Optional<RSAPublicKey> encryptionKey = this.extractKeyFromRequest(request);
+    if (encryptionKey.isPresent()) {
+      return new EwpRsaAes128GcmEncoder(encryptionKey.get());
     }
+    throw new Http4xx(400,
+        "Could not determine the target encryption key. "
+            + "We have looked in the following places: "
+            + this.getKeyExtractionSources().stream().collect(Collectors.joining(", ")) + ".");
+  }
+
+  /**
+   * @return That's simply a list of messages stating where has the
+   *         {@link #extractKeyFromRequest(Request)} searched the keys for.
+   */
+  protected List<String> getKeyExtractionSources() {
+    return Lists.newArrayList("Accept-Response-Encryption-Key header",
+        "HTTPSIG's Authorization header");
   }
 
   /**

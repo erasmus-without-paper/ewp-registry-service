@@ -1,7 +1,6 @@
 package eu.erasmuswithoutpaper.registry.echovalidator;
 
 import java.io.IOException;
-import java.security.interfaces.RSAPublicKey;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,8 +10,6 @@ import eu.erasmuswithoutpaper.registry.internet.sec.EwpRsaAesResponseEncoder;
 import eu.erasmuswithoutpaper.registry.internet.sec.GzipResponseEncoder;
 import eu.erasmuswithoutpaper.registry.internet.sec.Http4xx;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
-
-import net.adamcin.httpsig.api.Authorization;
 
 public class ServiceSTTEValid extends ServiceSTTTValid {
 
@@ -70,7 +67,7 @@ public class ServiceSTTEValid extends ServiceSTTTValid {
   protected void applyEwpEncryption(Request request, Response response) throws Http4xx {
     // Check for encryption key
 
-    EwpRsaAesResponseEncoder encoder = this.getEwpRsaAesResponseEncoder(request);
+    EwpRsaAesResponseEncoder encoder = this.getEwpRsaAesResponseEncoder();
     encoder.encode(request, response);
   }
 
@@ -116,21 +113,7 @@ public class ServiceSTTEValid extends ServiceSTTTValid {
     return codings;
   }
 
-  protected EwpRsaAesResponseEncoder getEwpRsaAesResponseEncoder(Request request) {
-    Authorization authz = Authorization.parse(request.getHeader("Authorization"));
-    if (authz == null) {
-      return new EwpRsaAesResponseEncoder("We have tried to extract a key from the "
-          + "Authorization header, but have failed to do that.");
-    } else {
-      String keyId = authz.getKeyId();
-      RSAPublicKey key = this.registryClient.findRsaPublicKey(keyId);
-      if (key != null) {
-        return new EwpRsaAesResponseEncoder(key);
-      } else {
-        return new EwpRsaAesResponseEncoder("We have tried to extract a key from the "
-            + "Authorization header, but it contained a keyId which is unknown to "
-            + "the Registry Service.");
-      }
-    }
+  protected EwpRsaAesResponseEncoder getEwpRsaAesResponseEncoder() {
+    return new EwpRsaAesResponseEncoder(this.registryClient);
   }
 }
