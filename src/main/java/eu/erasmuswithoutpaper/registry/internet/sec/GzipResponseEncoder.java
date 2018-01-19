@@ -36,6 +36,11 @@ public class GzipResponseEncoder extends CommonResponseEncoder {
     return "gzip";
   }
 
+  @Override
+  public String toString() {
+    return "Gzip Response Encoder";
+  }
+
   /**
    * Gzip response body.
    *

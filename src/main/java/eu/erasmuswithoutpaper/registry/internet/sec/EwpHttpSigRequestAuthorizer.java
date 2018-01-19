@@ -61,6 +61,11 @@ public class EwpHttpSigRequestAuthorizer implements RequestAuthorizer {
     return clientId;
   }
 
+  @Override
+  public String toString() {
+    return "EWP HTTP Signature Request Authorizer";
+  }
+
   /**
    * @param url The URL to extract the host from. It MUST be a valid URL.
    * @return The host part of the URL.
@@ -148,6 +153,7 @@ public class EwpHttpSigRequestAuthorizer implements RequestAuthorizer {
         .collect(Collectors.toList());
     Set<String> signedKeys =
         authz.getHeaders().stream().map(s -> s.toLowerCase(Locale.US)).collect(Collectors.toSet());
+    signedKeys.add("authorization"); // Not really signed, but trusted nonetheless.
     List<String> removedHeaders = new ArrayList<>();
     for (String key : keys) {
       if (!signedKeys.contains(key)) {
@@ -328,5 +334,4 @@ public class EwpHttpSigRequestAuthorizer implements RequestAuthorizer {
       throw new Http4xx(400, "Invalid HTTP Signature: " + verifyResult.toString());
     }
   }
-
 }

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import eu.erasmuswithoutpaper.registry.common.Utils;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registry.internet.sec.EwpRsaAesResponseEncoder;
@@ -45,7 +46,7 @@ public class ServiceSTTEValid extends ServiceSTTTValid {
   }
 
   private boolean wasEwpEncryptionRequested(Request request) {
-    for (String coding : this.getAcceptableCodings(request)) {
+    for (String coding : Utils.extractAcceptableCodings(request.getHeader("Accept-Encoding"))) {
       if (coding.equalsIgnoreCase("ewp-rsa-aes128gcm")) {
         return true;
       }
@@ -75,33 +76,10 @@ public class ServiceSTTEValid extends ServiceSTTTValid {
     new GzipResponseEncoder().encode(response);
   }
 
-  protected List<String> getAcceptableCodings(Request request) {
-    List<String> result = new ArrayList<>();
-    String headerValue = request.getHeader("Accept-Encoding");
-    if (headerValue == null) {
-      return result;
-    }
-    String[] codings = headerValue.split(" *, *");
-    for (String entry : codings) {
-      String[] params = entry.split(" *; *");
-      String coding = params[0];
-      boolean acceptable = true;
-      for (int i = 1; i < params.length; i++) {
-        if (params[i].equals("q=0")) {
-          acceptable = false;
-        }
-      }
-      if (acceptable) {
-        result.add(coding);
-      }
-    }
-    return result;
-  }
-
   protected List<String> getCodingsToApply(Request request) {
     List<String> codings = new ArrayList<>();
     boolean acceptGzip = false;
-    for (String coding : this.getAcceptableCodings(request)) {
+    for (String coding : Utils.extractAcceptableCodings(request.getHeader("Accept-Encoding"))) {
       if (coding.equalsIgnoreCase("gzip")) {
         acceptGzip = true;
       }

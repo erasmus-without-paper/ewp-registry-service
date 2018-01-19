@@ -78,6 +78,11 @@ public class EwpHttpSigResponseAuthorizer extends CommonResponseAuthorizer {
     return serverId;
   }
 
+  @Override
+  public String toString() {
+    return "EWP HTTP Signature Response Authorizer";
+  }
+
   /**
    * Find a server key for the given keyId.
    *

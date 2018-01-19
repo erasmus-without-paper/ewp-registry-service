@@ -40,4 +40,9 @@ public class EwpCertificateRequestAuthorizer implements RequestAuthorizer {
     return clientId;
   }
 
+  @Override
+  public String toString() {
+    return "EWP TLS Client Certificate Request Authorizer";
+  }
+
 }

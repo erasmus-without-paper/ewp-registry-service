@@ -28,6 +28,11 @@ public class GzipResponseDecoder extends CommonResponseDecoder {
     return "gzip";
   }
 
+  @Override
+  public String toString() {
+    return "Gzip Response Decoder";
+  }
+
   /**
    * Decompress given response's body.
    *
@@ -42,5 +47,4 @@ public class GzipResponseDecoder extends CommonResponseDecoder {
     }
     response.setBody(out.toByteArray());
   }
-
 }

@@ -32,6 +32,7 @@ public class EwpRsaAesRequestDecoder implements RequestCodingDecoder {
 
   @Override
   public void decode(Request request) throws Http4xx {
+    this.verifyHttpMethod(request);
     this.updateBody(request);
     this.popContentEncodingAndExpect(request, this.getContentEncoding());
     request.addProcessingNoticeHtml("Successfully stripped the <code>"
@@ -41,6 +42,11 @@ public class EwpRsaAesRequestDecoder implements RequestCodingDecoder {
   @Override
   public String getContentEncoding() {
     return "ewp-rsa-aes128gcm";
+  }
+
+  @Override
+  public String toString() {
+    return "ewp-rsa-aes128gcm Request Decoder";
   }
 
   /**
@@ -72,12 +78,12 @@ public class EwpRsaAesRequestDecoder implements RequestCodingDecoder {
    *         <code>null</code> if the request has no encodings left.
    */
   protected String peekContentEncoding(Request request) {
-    String value = request.getHeader("Content-Encoding");
-    if (value == null) {
+    List<String> codings = Utils.commaSeparatedTokens(request.getHeader("Content-Encoding"));
+    if (codings.size() == 0) {
       return null;
+    } else {
+      return codings.get(codings.size() - 1);
     }
-    String[] items = value.split(", *");
-    return items[items.length - 1];
   }
 
   /**
@@ -88,7 +94,7 @@ public class EwpRsaAesRequestDecoder implements RequestCodingDecoder {
    */
   protected void popContentEncoding(Request request) {
     ArrayList<String> items =
-        new ArrayList<>(Arrays.asList(request.getHeader("Content-Encoding").split(", *")));
+        new ArrayList<>(Utils.commaSeparatedTokens(request.getHeader("Content-Encoding")));
     items.remove(items.size() - 1);
     request.putHeader("Content-Encoding", items.stream().collect(Collectors.joining(", ")));
   }
@@ -143,5 +149,19 @@ public class EwpRsaAesRequestDecoder implements RequestCodingDecoder {
       throw new RuntimeException(e);
     }
     request.setBody(body);
+  }
+
+  /**
+   * Verify that the request is using a compatible HTTP method.
+   *
+   * @param request The request to be verified.
+   * @throws Http4xx If the request was made with the GET HTTP method (which is invalid for
+   *         ewp-rsa-aes128gcm Content-Encoding, because it GET requests shouldn't contain a body).
+   */
+  protected void verifyHttpMethod(Request request) throws Http4xx {
+    if (request.getMethod().equals("GET")) {
+      throw new Http4xx(405,
+          "ewp-rsa-aes128gcm Content-Encoding requires POST requests to be used.");
+    }
   }
 }

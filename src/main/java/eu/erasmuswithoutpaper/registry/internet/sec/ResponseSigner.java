@@ -24,4 +24,16 @@ public interface ResponseSigner {
    *         invalid.
    */
   void sign(Request request, Response response) throws Http4xx;
+
+  /**
+   * Check if the client has explicitly requested this signing method to be used for signing the
+   * response for his request.
+   *
+   * @param request The client's request.
+   * @return True, if the client has requested that the response should be signed with the algorithm
+   *         provided by this {@link ResponseSigner}. In this context, "signing" may refer to any
+   *         form of server authentication (depending on the {@link ResponseSigner} implementation,
+   *         this might be, for example, using a proper TLS Server Certificate).
+   */
+  boolean wasRequestedFor(Request request);
 }

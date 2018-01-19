@@ -19,6 +19,30 @@ import org.xml.sax.SAXException;
  */
 public class UtilsTest extends WRTest {
 
+  @Test
+  public void testExtractAcceptableCodings() {
+    assertThat(Utils.extractAcceptableCodings(null)).containsExactlyInAnyOrder("identity");
+    assertThat(Utils.extractAcceptableCodings("")).containsExactlyInAnyOrder("identity");
+    assertThat(Utils.extractAcceptableCodings("xyz")).containsExactlyInAnyOrder("xyz", "identity");
+    assertThat(Utils.extractAcceptableCodings("xyz;q=0")).containsExactlyInAnyOrder("identity");
+    assertThat(Utils.extractAcceptableCodings("identity;q=0")).containsExactlyInAnyOrder();
+    assertThat(Utils.extractAcceptableCodings("XYZ, identity; q=0"))
+        .containsExactlyInAnyOrder("xyz");
+    assertThat(Utils.extractAcceptableCodings("xyz ; q=1.0, identity ; q=0"))
+        .containsExactlyInAnyOrder("xyz");
+    assertThat(Utils.extractAcceptableCodings("xyz;q=0.5, identity;q=0"))
+        .containsExactlyInAnyOrder("xyz");
+    assertThat(Utils.extractAcceptableCodings("compress, GZip"))
+        .containsExactlyInAnyOrder("compress", "gzip", "identity");
+    assertThat(Utils.extractAcceptableCodings("compress;q=0.5, gzip;q=1.0"))
+        .containsExactlyInAnyOrder("compress", "gzip", "identity");
+    assertThat(Utils.extractAcceptableCodings("gzip;q=1.0, identity; q=0.5, *;q=0"))
+        .containsExactlyInAnyOrder("gzip", "identity");
+    assertThat(Utils.extractAcceptableCodings("ewp-rsa-aes128gcm, *;q=0"))
+        .containsExactlyInAnyOrder("ewp-rsa-aes128gcm");
+  }
+
+  @Test
   public void testHeaderNameFormatter() {
     assertThat(Utils.formatHeaderName("abc-def--XYZZ")).isEqualTo("Abc-Def--Xyzz");
     assertThat(Utils.formatHeaderName("---")).isEqualTo("---");

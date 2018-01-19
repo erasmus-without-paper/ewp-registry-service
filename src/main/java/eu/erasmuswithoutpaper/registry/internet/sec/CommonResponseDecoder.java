@@ -1,9 +1,10 @@
 package eu.erasmuswithoutpaper.registry.internet.sec;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
+import eu.erasmuswithoutpaper.registry.common.Utils;
 import eu.erasmuswithoutpaper.registry.internet.Response;
 
 /**
@@ -20,12 +21,12 @@ public abstract class CommonResponseDecoder implements ResponseCodingDecoder {
    *         <code>null</code> if the request has no encodings left.
    */
   protected String peekContentEncoding(Response response) {
-    String value = response.getHeader("Content-Encoding");
-    if (value == null) {
+    List<String> codings = Utils.commaSeparatedTokens(response.getHeader("Content-Encoding"));
+    if (codings.size() == 0) {
       return null;
+    } else {
+      return codings.get(codings.size() - 1);
     }
-    String[] items = value.split(", *");
-    return items[items.length - 1];
   }
 
   /**
@@ -36,7 +37,7 @@ public abstract class CommonResponseDecoder implements ResponseCodingDecoder {
    */
   protected void popContentEncoding(Response response) {
     ArrayList<String> items =
-        new ArrayList<>(Arrays.asList(response.getHeader("Content-Encoding").split(", *")));
+        new ArrayList<>(Utils.commaSeparatedTokens(response.getHeader("Content-Encoding")));
     items.remove(items.size() - 1);
     response.putHeader("Content-Encoding", items.stream().collect(Collectors.joining(", ")));
   }

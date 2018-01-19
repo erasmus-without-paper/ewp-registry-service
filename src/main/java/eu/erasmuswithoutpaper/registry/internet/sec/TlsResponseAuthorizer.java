@@ -18,4 +18,9 @@ public class TlsResponseAuthorizer extends CommonResponseAuthorizer {
     this.verifyRequestId(request, response);
     return new EwpServerWithCertificate(url.getHost());
   }
+
+  @Override
+  public String toString() {
+    return "Regular TLS Response Authorizer";
+  }
 }

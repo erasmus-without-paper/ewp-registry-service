@@ -19,13 +19,13 @@ import org.apache.commons.codec.digest.DigestUtils;
  */
 public class EwpRsaAesResponseDecoder extends CommonResponseDecoder {
 
-  private final List<KeyPair> serverKeys;
+  private final List<KeyPair> knownKeys;
 
   /**
-   * @param serverKeys The list {@link KeyPair}s to try decrypting with.
+   * @param knownKeys The list {@link KeyPair}s to try decrypting with.
    */
-  public EwpRsaAesResponseDecoder(List<KeyPair> serverKeys) {
-    this.serverKeys = serverKeys;
+  public EwpRsaAesResponseDecoder(List<KeyPair> knownKeys) {
+    this.knownKeys = knownKeys;
   }
 
   @Override
@@ -41,6 +41,11 @@ public class EwpRsaAesResponseDecoder extends CommonResponseDecoder {
     return "ewp-rsa-aes128gcm";
   }
 
+  @Override
+  public String toString() {
+    return "ewp-rsa-aes128gcm Response Decoder";
+  }
+
   /**
    * Choose a proper decryption key for the given encrypted body.
    *
@@ -53,7 +58,7 @@ public class EwpRsaAesResponseDecoder extends CommonResponseDecoder {
   protected KeyPair chooseKey(byte[] ewpRsaAesBody) throws BadEwpRsaAesBody {
     byte[] recipientFingerprint =
         EwpRsaAes128GcmDecoder.extractRecipientPublicKeySha256(ewpRsaAesBody);
-    for (KeyPair keyPair : this.serverKeys) {
+    for (KeyPair keyPair : this.knownKeys) {
       byte[] keyFingerprint = DigestUtils.sha256(keyPair.getPublic().getEncoded());
       if (Arrays.equals(keyFingerprint, recipientFingerprint)) {
         return keyPair;

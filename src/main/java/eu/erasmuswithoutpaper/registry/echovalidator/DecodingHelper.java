@@ -1,19 +1,22 @@
 package eu.erasmuswithoutpaper.registry.echovalidator;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import eu.erasmuswithoutpaper.registry.common.Utils;
 import eu.erasmuswithoutpaper.registry.echovalidator.InlineValidationStep.Failure;
 import eu.erasmuswithoutpaper.registry.echovalidator.ValidationStepWithStatus.Status;
 import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registry.internet.sec.InvalidResponseError;
 import eu.erasmuswithoutpaper.registry.internet.sec.ResponseCodingDecoder;
+
+import com.google.common.collect.Lists;
 
 class DecodingHelper {
 
@@ -33,18 +36,7 @@ class DecodingHelper {
   }
 
   private List<String> getOrderedCodings(Response response) {
-    List<String> result = new ArrayList<>();
-    String value = response.getHeader("Content-Encoding");
-    if (value == null) {
-      return result;
-    }
-    String[] items = value.split(", *");
-    for (int i = items.length - 1; i >= 0; i--) {
-      if (items[i].length() > 0) {
-        result.add(items[i]);
-      }
-    }
-    return result;
+    return Lists.reverse(Utils.commaSeparatedTokens(response.getHeader("Content-Encoding")));
   }
 
   void addDecoder(ResponseCodingDecoder decoder) {
@@ -57,7 +49,8 @@ class DecodingHelper {
   }
 
   void decode(InlineValidationStep step, Response response) throws Failure {
-    Set<String> unsatisfied = new HashSet<>(this.requiredCodings);
+    Set<String> unsatisfied = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+    unsatisfied.addAll(this.requiredCodings);
     for (String coding : this.getOrderedCodings(response)) {
       try {
         ResponseCodingDecoder decoder = this.getDecoder(coding);
@@ -85,8 +78,8 @@ class DecodingHelper {
     }
   }
 
-  void setAcceptableCodings(Collection<String> acceptableCodings) {
-    this.acceptableCodings = new HashSet<>(acceptableCodings);
+  void setAcceptEncodingHeader(String acceptEncodingHeader) {
+    this.acceptableCodings = Utils.extractAcceptableCodings(acceptEncodingHeader);
   }
 
   void setRequiredCodings(Collection<String> requiredCodings) {

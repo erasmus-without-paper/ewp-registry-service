@@ -44,6 +44,7 @@ public class EchoValidatorTest extends WRTest {
   private static String echoUrlMMTT;
   private static String echoUrlSTET;
   private static String echoUrlSTTE;
+  private static String echoUrlMMMM;
   private static boolean needsReinit;
 
   /**
@@ -64,6 +65,7 @@ public class EchoValidatorTest extends WRTest {
     echoUrlMMTT = "https://university.example.com/echo/MMTT/";
     echoUrlSTET = "https://university.example.com/echo/STET/";
     echoUrlSTTE = "https://university.example.com/echo/STTE/";
+    echoUrlMMMM = "https://university.example.com/echo/MMMM/";
     needsReinit = true;
   }
 
@@ -384,6 +386,24 @@ public class EchoValidatorTest extends WRTest {
   }
 
   @Test
+  public void testAgainstServiceMMMMValid() {
+    try {
+      FakeInternetService service;
+
+      service = new ServiceMMMMValid(echoUrlMMMM, this.client, Lists.newArrayList(myKeyPair));
+      this.internet.addFakeInternetService(service);
+      String out = this.getValidatorReport(echoUrlMMMM);
+      assertThat(out).doesNotContain("FAILURE");
+      assertThat(out).doesNotContain("ERROR");
+      assertThat(out).doesNotContain("WARNING");
+      assertThat(out).containsOnlyOnce("NOTICE");
+
+    } finally {
+      this.internet.clearAll();
+    }
+  }
+
+  @Test
   public void testAgainstServiceMMTTInvalid1() {
     try {
       FakeInternetService service;
@@ -523,6 +543,7 @@ public class EchoValidatorTest extends WRTest {
     }
   }
 
+
   @Test
   public void testAgainstServiceMMTTInvalid9() {
     try {
@@ -540,7 +561,6 @@ public class EchoValidatorTest extends WRTest {
       this.internet.clearAll();
     }
   }
-
 
   @Test
   public void testAgainstServiceMMTTValid() {
@@ -657,7 +677,8 @@ public class EchoValidatorTest extends WRTest {
       this.internet.addFakeInternetService(service);
       String out = this.getValidatorReport(echoUrlSTET);
       assertThat(out).containsOnlyOnce("FAILURE");
-      assertThat(out).contains("FAILURE: Trying SecMethodCombination[PSTET] with GET request");
+      assertThat(out).contains("Trying SecMethodCombination[GSTET] - this is invalid, "
+          + "because GET requests are not supported by ewp-rsa-aes128gcm encryption.");
       assertThat(out).contains("HTTP 405 expected, but HTTP 200 received.");
 
     } finally {

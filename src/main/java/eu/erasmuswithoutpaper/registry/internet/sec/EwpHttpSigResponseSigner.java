@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import eu.erasmuswithoutpaper.registry.common.Utils;
 import eu.erasmuswithoutpaper.registry.internet.Request;
@@ -59,6 +61,18 @@ public class EwpHttpSigResponseSigner extends CommonResponseSigner {
     this.includeXRequestSignature(request, response);
     this.includeSignatureHeader(request, response);
     request.addProcessingNoticeHtml("Response has been signed with HttpSig.");
+  }
+
+  @Override
+  public String toString() {
+    return "EWP HTTP Signature Response Signer";
+  }
+
+  @Override
+  public boolean wasRequestedFor(Request request) {
+    Set<String> signatureMethods = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+    signatureMethods.addAll(Utils.commaSeparatedTokens(request.getHeader("Accept-Signature")));
+    return signatureMethods.contains("rsa-sha256");
   }
 
   /**

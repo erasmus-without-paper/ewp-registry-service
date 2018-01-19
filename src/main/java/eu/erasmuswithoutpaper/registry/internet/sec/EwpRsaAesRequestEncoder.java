@@ -36,6 +36,11 @@ public class EwpRsaAesRequestEncoder implements RequestCodingEncoder {
     return "ewp-rsa-aes128gcm";
   }
 
+  @Override
+  public String toString() {
+    return "ewp-rsa-aes128gcm Request Encoder";
+  }
+
   /**
    * Append a new coding to the request's Content-Encoding header.
    *

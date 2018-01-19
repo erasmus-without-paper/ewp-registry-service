@@ -18,12 +18,15 @@ import java.util.Base64;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Random;
+import java.util.Set;
 import java.util.stream.Collectors;
 
+import eu.erasmuswithoutpaper.registry.common.Utils;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildError;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildParams;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildResult;
@@ -138,6 +141,8 @@ class EchoValidationSuite {
 
   private EwpHttpSigResponseAuthorizer resAuthorizerHttpSig;
 
+  private Set<SecMethod> allSecMethodsSupportedCache = null;
+
   EchoValidationSuite(EchoValidator echoValidator, EwpDocBuilder docBuilder, Internet internet,
       String urlStr, RegistryClient regClient) {
     this.parentEchoValidator = echoValidator;
@@ -154,7 +159,8 @@ class EchoValidationSuite {
         new EwpHttpSigRequestSigner(this.parentEchoValidator.getClientRsaKeyPairInUse());
     this.resDecoderHelper = new DecodingHelper();
     this.resDecoderHelper.addDecoder(new EwpRsaAesResponseDecoder(
-        Lists.newArrayList(this.parentEchoValidator.getClientRsaKeyPairInUse())));
+        Lists.newArrayList(this.parentEchoValidator.getClientRsaKeyPairInUse(),
+            this.parentEchoValidator.getServerRsaKeyPairInUse())));
     this.resDecoderHelper.addDecoder(new GzipResponseDecoder());
   }
 
@@ -217,8 +223,9 @@ class EchoValidationSuite {
         // Replace the previously set Authorization header with a different one.
         RequestSigner badSigner = new EwpHttpSigRequestSigner(otherKeyPair);
         badSigner.sign(request);
-        return Optional.of(EchoValidationSuite.this.makeRequestAndExpectError(this, combination,
-            request, Lists.newArrayList(401, 403)));
+        return Optional.of(EchoValidationSuite.this.makeRequestAndExpectError(this,
+            combination.withChangedResEncr(SecMethod.RESENCR_TLS), request,
+            Lists.newArrayList(401, 403)));
       }
     });
 
@@ -657,8 +664,9 @@ class EchoValidationSuite {
 
       @Override
       public String getName() {
-        return "Trying " + combination + " with GET request (which is not valid for "
-            + "ewp-rsa-aes128gcm encryption). Expecting HTTP 405 error response.";
+        return "Trying " + combination.withChangedHttpMethod("GET")
+            + " - this is invalid, because GET requests are not supported by "
+            + "ewp-rsa-aes128gcm encryption. Expecting HTTP 405 error response.";
       }
 
       @Override
@@ -713,26 +721,46 @@ class EchoValidationSuite {
 
   private void checkEdgeCasesForxxxE(SecMethodsCombination combination) throws SuiteBroken {
 
-    this.addAndRun(false, new InlineValidationStep() {
+    boolean encryptionRequired = !this.endpointSupports(SecMethod.RESENCR_TLS);
+    boolean noAuth = combination.getCliAuth().equals(SecMethod.CLIAUTH_NONE);
 
-      @Override
-      public String getName() {
-        return "Trying " + combination + " with a invalid Accept-Encoding header. "
-            + "Expecting unencrypted HTTP 400 error response.";
-      }
+    if (!noAuth) {
+      this.addAndRun(false, new InlineValidationStep() {
 
-      @Override
-      protected Optional<Response> innerRun() throws Failure {
+        @Override
+        public String getName() {
+          StringBuilder sb = new StringBuilder();
+          sb.append("Trying " + combination + " with an invalid Accept-Encoding header. ");
+          if (encryptionRequired) {
+            sb.append("Your endpoint requires encryption, so we're expecting ");
+            sb.append("unencrypted HTTP 406 error response.");
+          } else {
+            sb.append("Your endpoint does not require encryption, so we're expecting ");
+            sb.append("a valid unencrypted HTTP 200 response.");
+          }
+          return sb.toString();
+        }
 
-        Request request =
-            EchoValidationSuite.this.createValidRequestForCombination(this, combination);
-        request.putHeader("Accept-Encoding", "invalid-coding");
-        EchoValidationSuite.this.getRequestSignerForCombination(this, request, combination)
-            .sign(request);
-        return Optional.of(EchoValidationSuite.this.makeRequestAndExpectError(this,
-            combination.withChangedResEncr(SecMethod.RESENCR_TLS), request, 406));
-      }
-    });
+        @Override
+        protected Optional<Response> innerRun() throws Failure {
+
+          Request request =
+              EchoValidationSuite.this.createValidRequestForCombination(this, combination);
+          request.putHeader("Accept-Encoding", "invalid-coding");
+          EchoValidationSuite.this.getRequestSignerForCombination(this, request, combination)
+              .sign(request);
+          if (encryptionRequired) {
+            return Optional.of(EchoValidationSuite.this.makeRequestAndExpectError(this,
+                combination.withChangedResEncr(SecMethod.RESENCR_TLS), request, 406));
+          } else {
+            return Optional.of(EchoValidationSuite.this.makeRequestAndExpectHttp200(this,
+                combination.withChangedResEncr(SecMethod.RESENCR_TLS), request,
+                EchoValidationSuite.this.parentEchoValidator.getCoveredHeiIDs(),
+                Collections.<String>emptyList()));
+          }
+        }
+      });
+    }
 
     if (combination.getCliAuth().equals(SecMethod.CLIAUTH_HTTPSIG)) {
       this.addAndRun(false, new InlineValidationStep() {
@@ -848,30 +876,27 @@ class EchoValidationSuite {
         return "Trying " + combination + " with \"gzip\" in Accept-Encoding. "
             + "Expecting a valid encrypted (and possibly gzipped) response.";
       }
+      // WRTODO: test gzip on unencrypted responses
 
       @Override
       protected Optional<Response> innerRun() throws Failure {
 
         Request request =
             EchoValidationSuite.this.createValidRequestForCombination(this, combination);
-        if (!"ewp-rsa-aes128gcm, *;q=0".equals(request.getHeader("Accept-Encoding"))) {
+        if (!"ewp-rsa-aes128gcm, identity;q=0.1".equals(request.getHeader("Accept-Encoding"))) {
           // Sanity check failed. The rest of this test expects that Accept-Encoding
           // is equal to the value stated above. You might need to rewrite it.
           throw new RuntimeException(
               "Unexpected Accept-Encoding in request: " + request.getHeader("Accept-Encoding"));
         }
         // Allow the response to be gzipped.
-        request.putHeader("Accept-Encoding", "gzip, ewp-rsa-aes128gcm, *;q=0");
+        request.putHeader("Accept-Encoding", "gzip, ewp-rsa-aes128gcm, identity;q=0.1");
         EchoValidationSuite.this.getRequestSignerForCombination(this, request, combination)
             .sign(request);
         Response response = EchoValidationSuite.this.makeRequest(this, request);
         int ewpIndex = -1;
         int gzipIndex = -1;
-        List<String> codings = new ArrayList<>();
-        String value = response.getHeader("Content-Encoding");
-        if (value != null) {
-          codings.addAll(Arrays.asList(value.split(", *")));
-        }
+        List<String> codings = Utils.commaSeparatedTokens(response.getHeader("Content-Encoding"));
         for (int i = 0; i < codings.size(); i++) {
           if (codings.get(i).equalsIgnoreCase("gzip")) {
             gzipIndex = i;
@@ -970,11 +995,9 @@ class EchoValidationSuite {
     // Decode.
 
     if (request.getHeader("Accept-Encoding") != null) {
-      this.resDecoderHelper
-          .setAcceptableCodings(Arrays.asList(request.getHeader("Accept-Encoding").split(", *"))
-              .stream().map(s -> s.toLowerCase(Locale.US)).collect(Collectors.toSet()));
+      this.resDecoderHelper.setAcceptEncodingHeader(request.getHeader("Accept-Encoding"));
     } else {
-      this.resDecoderHelper.setAcceptableCodings(Lists.newArrayList());
+      this.resDecoderHelper.setAcceptEncodingHeader(null);
     }
     if (combination.getResEncr().equals(SecMethod.RESENCR_EWP)) {
       this.resDecoderHelper.setRequiredCodings(Lists.newArrayList("ewp-rsa-aes128gcm"));
@@ -984,6 +1007,11 @@ class EchoValidationSuite {
     this.resDecoderHelper.decode(step, response);
 
     return notices;
+  }
+
+  private boolean endpointSupports(SecMethod secMethod) {
+    Set<SecMethod> set = this.getAllSecMethodsSupportedByEndpoint();
+    return set.contains(secMethod);
   }
 
   private void expectError(InlineValidationStep step, SecMethodsCombination combination,
@@ -1140,6 +1168,19 @@ class EchoValidationSuite {
       sb.append("(Line " + errors.get(i).getLineNumber() + ") " + errors.get(i).getMessage());
     }
     return sb.toString();
+  }
+
+  private Set<SecMethod> getAllSecMethodsSupportedByEndpoint() {
+    if (this.allSecMethodsSupportedCache == null) {
+      this.allSecMethodsSupportedCache = new HashSet<>();
+      for (SecMethodsCombination combination : this.combinationsToValidate) {
+        this.allSecMethodsSupportedCache.add(combination.getCliAuth());
+        this.allSecMethodsSupportedCache.add(combination.getSrvAuth());
+        this.allSecMethodsSupportedCache.add(combination.getReqEncr());
+        this.allSecMethodsSupportedCache.add(combination.getResEncr());
+      }
+    }
+    return Collections.unmodifiableSet(this.allSecMethodsSupportedCache);
   }
 
   private EwpHttpSigResponseAuthorizer getEwpHttpSigResponseAuthorizer() {
@@ -1420,7 +1461,7 @@ class EchoValidationSuite {
     if (combination.getResEncr().equals(SecMethod.RESENCR_TLS)) {
       // pass
     } else if (combination.getResEncr().equals(SecMethod.RESENCR_EWP)) {
-      request.putHeader("Accept-Encoding", "ewp-rsa-aes128gcm, *;q=0");
+      request.putHeader("Accept-Encoding", "ewp-rsa-aes128gcm, identity;q=0.1");
       if (!combination.getCliAuth().equals(SecMethod.CLIAUTH_HTTPSIG)) {
         request.putHeader("Accept-Response-Encryption-Key", Base64.getEncoder()
             .encodeToString(this.parentEchoValidator.getClientRsaPublicKeyInUse().getEncoded()));

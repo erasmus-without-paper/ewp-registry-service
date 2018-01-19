@@ -30,4 +30,8 @@ public class EwpCertificateRequestSigner implements RequestSigner {
     request.addProcessingNoticeHtml("Request has been signed with TLS certificate.");
   }
 
+  @Override
+  public String toString() {
+    return "EWP TLS Client Certificate Request Signer";
+  }
 }

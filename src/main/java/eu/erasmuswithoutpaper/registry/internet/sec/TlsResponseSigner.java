@@ -17,6 +17,20 @@ public class TlsResponseSigner extends CommonResponseSigner {
     this.verifyScheme(request);
   }
 
+  @Override
+  public String toString() {
+    return "Regular TLS Response Signer";
+  }
+
+  @Override
+  public boolean wasRequestedFor(Request request) {
+    /*
+     * We can safely assume, that if the client is making the request over HTTPS, then he is
+     * requesting the server to authenticate itself properly using TLS certificate.
+     */
+    return request.getUrl().toLowerCase(Locale.US).startsWith("https://");
+  }
+
   /**
    * Verify if the response is being transmitted via TLS.
    *

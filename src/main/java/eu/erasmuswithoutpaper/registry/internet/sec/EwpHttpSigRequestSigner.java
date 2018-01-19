@@ -72,6 +72,11 @@ public class EwpHttpSigRequestSigner implements RequestSigner {
     request.addProcessingNoticeHtml("Request has been signed with HttpSig.");
   }
 
+  @Override
+  public String toString() {
+    return "EWP HTTP Signature Request Signer";
+  }
+
   private boolean shouldOverrideExistingAuthorization() {
     return true;
   }

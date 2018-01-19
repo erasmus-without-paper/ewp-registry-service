@@ -20,7 +20,24 @@ public class ServiceSTETValid extends AbstractEchoV2Service {
 
   public ServiceSTETValid(String url, RegistryClient registryClient, List<KeyPair> serverKeys) {
     super(url, registryClient, serverKeys);
-    this.myDecoder = new EwpRsaAesRequestDecoder(this.serverKeys);
+    this.myDecoder = new EwpRsaAesRequestDecoder(this.serverKeys) {
+      @Override
+      protected void verifyHttpMethod(Request request) throws Http4xx {
+        // Check methods
+
+        boolean methodMatched = false;
+        for (String method : ServiceSTETValid.this.getAcceptableMethods()) {
+          if (request.getMethod().equals(method)) {
+            methodMatched = true;
+            break;
+          }
+        }
+        if (!methodMatched) {
+          throw new Http4xx(405, "This endpoint accepts the following methods: "
+              + Arrays.toString(ServiceSTETValid.this.getAcceptableMethods()));
+        }
+      };
+    };
   }
 
   @Override
@@ -34,20 +51,6 @@ public class ServiceSTETValid extends AbstractEchoV2Service {
     X509Certificate cert = request.getClientCertificate().get();
     if (!this.registryClient.isCertificateKnown(cert)) {
       return this.createErrorResponse(request, 403, "Unknown client certificate.");
-    }
-
-    // Check methods
-
-    boolean methodMatched = false;
-    for (String method : this.getAcceptableMethods()) {
-      if (request.getMethod().equals(method)) {
-        methodMatched = true;
-        break;
-      }
-    }
-    if (!methodMatched) {
-      return this.createErrorResponse(request, 405, "This endpoint accepts the following methods: "
-          + Arrays.toString(this.getAcceptableMethods()));
     }
 
     // Decode the body. (Expect it to be encoded in ewp-rsa-aes128gcm.)

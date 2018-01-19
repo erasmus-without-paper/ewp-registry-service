@@ -17,14 +17,12 @@ public class InternetTestHelpers {
         URL url;
         url = new URL(request.getUrl());
         query = url.getQuery();
-      } else if (request.getMethod().equals("POST")) {
+      } else {
         if (request.getBody().isPresent()) {
           query = new String(request.getBody().get(), StandardCharsets.UTF_8);
         } else {
           query = null;
         }
-      } else {
-        throw new RuntimeException("Unsupported method - cannot extract params");
       }
       return extractParamsFromQueryString(query, paramName);
     } catch (MalformedURLException e) {

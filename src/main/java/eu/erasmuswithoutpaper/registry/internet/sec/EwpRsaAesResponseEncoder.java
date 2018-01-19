@@ -55,6 +55,11 @@ public class EwpRsaAesResponseEncoder extends CommonResponseEncoder {
     return "ewp-rsa-aes128gcm";
   }
 
+  @Override
+  public String toString() {
+    return "ewp-rsa-aes128gcm Response Encoder";
+  }
+
   /**
    * Decode {@link RSAPublicKey} from given base64-encoded value.
    *
@@ -179,5 +184,4 @@ public class EwpRsaAesResponseEncoder extends CommonResponseEncoder {
   protected void updateResponseBody(Request request, Response response) throws Http4xx {
     response.setBody(this.getEncoderForRequest(request).encode(response.getBody()));
   }
-
 }

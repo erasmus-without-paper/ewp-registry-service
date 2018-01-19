@@ -2,11 +2,15 @@ package eu.erasmuswithoutpaper.registry.common;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.xml.XMLConstants;
@@ -40,6 +44,23 @@ public class Utils {
 
   private static final String[] ORDINAL_SUFFIXES =
       { "th", "st", "nd", "rd", "th", "th", "th", "th", "th", "th" };
+
+  /**
+   * Convert a comma-separated string to a list of tokens. Tokens are trimmed, and empty ones are
+   * skipped.
+   *
+   * @param value The comma-separated string to split.
+   * @return The list of non-empty, trimmed tokens.
+   */
+  public static List<String> commaSeparatedTokens(String value) {
+    if (value == null) {
+      return new ArrayList<>();
+    } else {
+      return Arrays.asList(value.split(",")).stream().map(s -> s.trim()).filter(s -> s.length() > 0)
+          .collect(Collectors.toList());
+    }
+  }
+
 
   /**
    * @param input Data to compute digest of.
@@ -79,6 +100,46 @@ public class Utils {
   }
 
   /**
+   * Extract all acceptable codings from the given value of the Accept-Encoding header.
+   *
+   * @param acceptEncodingHeader A string formatted in the same way as specified for the HTTP
+   *        Accept-Encoding header.
+   * @return The set of lowercase coding identifiers extracted. This will include "identity" unless
+   *         it has been explicitly forbidden.
+   */
+  public static Set<String> extractAcceptableCodings(String acceptEncodingHeader) {
+    Set<String> result = new LinkedHashSet<>();
+    result.add("identity");
+    boolean identityExplicitlyAdded = false;
+    if (acceptEncodingHeader == null) {
+      return result;
+    }
+    List<String> items = commaSeparatedTokens(acceptEncodingHeader).stream()
+        .map(s -> s.toLowerCase()).collect(Collectors.toList());
+    for (String entry : items) {
+      List<String> params = Arrays.asList(entry.split(";")).stream().map(s -> s.trim())
+          .filter(s -> s.length() > 0).collect(Collectors.toList());
+      String coding = params.get(0);
+      boolean acceptable = !params.contains("q=0");
+      if (coding.equals("*")) {
+        if ((!acceptable) && (!identityExplicitlyAdded)) {
+          result.remove("identity");
+        }
+      } else {
+        if (acceptable) {
+          result.add(coding);
+          if (coding.equals("identity")) {
+            identityExplicitlyAdded = true;
+          }
+        } else {
+          result.remove(coding);
+        }
+      }
+    }
+    return result;
+  }
+
+  /**
    * Validate the Date header for HTTP Signature usage.
    *
    * <p>
@@ -115,7 +176,7 @@ public class Utils {
    * @return Pretty version, e.g. "Content-Type".
    */
   public static String formatHeaderName(String headerName) {
-    return Arrays.asList(headerName.split("-")).stream().map(s -> upperFirstLatter(s))
+    return Arrays.asList(headerName.split("-", -1)).stream().map(s -> upperFirstLatter(s))
         .collect(Collectors.joining("-"));
   }
 
@@ -237,5 +298,4 @@ public class Utils {
       return Character.toUpperCase(word.charAt(0)) + word.substring(1).toLowerCase(Locale.US);
     }
   }
-
 }
