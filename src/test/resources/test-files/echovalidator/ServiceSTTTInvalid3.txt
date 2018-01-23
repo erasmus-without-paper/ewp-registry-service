@@ -19,52 +19,52 @@ Notices:
 
 
 
-### FAILURE: Trying SecMethodCombination[GATTT] (no client authentication). Expecting a valid HTTP 401 or HTTP 403 error response.
+### FAILURE: Trying Combination[GATTT] (no client authentication). Expecting a valid HTTP 401 or HTTP 403 error response.
 
 HTTP 401 or HTTP 403 expected, but HTTP 500 received.
 Expecting client certificate.
 
 
 
-### FAILURE: Trying SecMethodCombination[PATTT] (no client authentication). Expecting a valid HTTP 401 or HTTP 403 error response.
+### FAILURE: Trying Combination[PATTT] (no client authentication). Expecting a valid HTTP 401 or HTTP 403 error response.
 
 HTTP 401 or HTTP 403 expected, but HTTP 500 received.
 Expecting client certificate.
 
 
 
-### FAILURE: Trying SecMethodCombination[GSTTT] with an unknown TLS client certificate (a random one, that has never been published in the Registry). Expecting to receive a valid HTTP 401 or HTTP 403 error response.
+### FAILURE: Trying Combination[GSTTT] with an unknown TLS client certificate (a random one, that has never been published in the Registry). Expecting to receive a valid HTTP 401 or HTTP 403 error response.
 
 HTTP 401 or HTTP 403 expected, but HTTP 500 received.
 Unknown client certificate.
 
 
-### SUCCESS: Trying SecMethodCombination[GSTTT] GET request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.
+### SUCCESS: Trying Combination[GSTTT] GET request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.
 
-### FAILURE: Trying SecMethodCombination[PSTTT] with an unknown TLS client certificate (a random one, that has never been published in the Registry). Expecting to receive a valid HTTP 401 or HTTP 403 error response.
+### FAILURE: Trying Combination[PSTTT] with an unknown TLS client certificate (a random one, that has never been published in the Registry). Expecting to receive a valid HTTP 401 or HTTP 403 error response.
 
 HTTP 401 or HTTP 403 expected, but HTTP 500 received.
 Unknown client certificate.
 
 
 
-### FAILURE: Trying SecMethodCombination[-STTT] with a PUT request. Expecting to receive a valid HTTP 405 error response.
+### FAILURE: Trying Combination[-STTT] with a PUT request. Expecting to receive a valid HTTP 405 error response.
 
 HTTP 405 expected, but HTTP 500 received.
 We expect GETs and POSTs only
 
 
 
-### FAILURE: Trying SecMethodCombination[-STTT] with a DELETE request. Expecting to receive a valid HTTP 405 error response.
+### FAILURE: Trying Combination[-STTT] with a DELETE request. Expecting to receive a valid HTTP 405 error response.
 
 HTTP 405 expected, but HTTP 500 received.
 We expect GETs and POSTs only
 
 
-### SUCCESS: Trying SecMethodCombination[PSTTT] POST request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.
-### SUCCESS: Trying SecMethodCombination[PSTTT] POST request with a list of echo values [a, b, a], plus an additional GET echo=c&echo=c parameters. Expecting the GET parameters to be ignored. (It's a POST request, so all parameters are passed via POST body.)
+### SUCCESS: Trying Combination[PSTTT] POST request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.
+### SUCCESS: Trying Combination[PSTTT] POST request with a list of echo values [a, b, a], plus an additional GET echo=c&echo=c parameters. Expecting the GET parameters to be ignored. (It's a POST request, so all parameters are passed via POST body.)
 
-### NOTICE: Trying SecMethodCombination[PSTTT] with additional "gzip" added in Accept-Encoding. Expecting the same response, but preferably gzipped.
+### NOTICE: Trying Combination[PSTTT] with additional "gzip" added in Accept-Encoding. Expecting the same response, but preferably gzipped.
 
 The client explicitly accepted gzip, but the server didn't compress its response. That's not an error, but it might be useful to support gzip encoding to save bandwidth.
 

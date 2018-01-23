@@ -8,7 +8,7 @@ import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 /**
  * Internal "fake" implementation of a valid [SH]TTT Echo API endpoint (and endpoint which supports
- * both STTT and HTTT security combinations).
+ * both STTT and HTTT combinations).
  */
 public class ServiceMTTTValid extends AbstractEchoV2Service {
 

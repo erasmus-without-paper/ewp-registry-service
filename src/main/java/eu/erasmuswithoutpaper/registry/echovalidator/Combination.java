@@ -5,13 +5,14 @@ import java.util.LinkedHashMap;
 import org.w3c.dom.Element;
 
 /**
- * Represents a single combination of all four types of v2 security methods, all of which are known
- * and can be validated by our validator.
+ * Represents a single combination of different methods in which a single endpoints can be tested.
+ * These methods are generally non-overlapping, so putting them in such combinations seems a good
+ * human-readable approach to be used by the validator.
  */
 public class Combination {
 
   /**
-   * @return An ordered map of "SecMethodCombination" codes mapped to their short names.
+   * @return An ordered map of {@link CombEntry} codes mapped to their short names.
    */
   public static LinkedHashMap<String, String> getCombinationLegend() {
     LinkedHashMap<String, String> options = new LinkedHashMap<>();
@@ -52,7 +53,7 @@ public class Combination {
 
   @Override
   public String toString() {
-    return "SecMethodCombination[" + this.getFiveLetterCode() + "]";
+    return "Combination[" + this.getFiveLetterCode() + "]";
   }
 
   private String getHttpMethodCode() {

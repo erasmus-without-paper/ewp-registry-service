@@ -11,52 +11,52 @@ Our client credentials are quite fresh. This means that many Echo APIs will (cor
 Version 1 of Echo API is deprecated. You should implement Version 2 instead.
 
 
-### SUCCESS: Trying SecMethodCombination[GATTT] (no client authentication). Expecting a valid HTTP 401 or HTTP 403 error response.
-### SUCCESS: Trying SecMethodCombination[PATTT] (no client authentication). Expecting a valid HTTP 401 or HTTP 403 error response.
+### SUCCESS: Trying Combination[GATTT] (no client authentication). Expecting a valid HTTP 401 or HTTP 403 error response.
+### SUCCESS: Trying Combination[PATTT] (no client authentication). Expecting a valid HTTP 401 or HTTP 403 error response.
 
-### FAILURE: Trying SecMethodCombination[GSTTT] with an unknown TLS client certificate (a random one, that has never been published in the Registry). Expecting to receive a valid HTTP 401 or HTTP 403 error response.
-
-HTTP 401 or HTTP 403 expected, but HTTP 200 received.
-
-
-
-### FAILURE: Trying SecMethodCombination[GSTTT] GET request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.
-
-The response has proper HTTP status and it passed the schema validation. However, the set of returned hei-ids doesn't match what we expect. It should contain the following: [hei01.developers.erasmuswithoutpaper.eu, hei02.developers.erasmuswithoutpaper.eu]
-
-
-
-### FAILURE: Trying SecMethodCombination[PSTTT] with an unknown TLS client certificate (a random one, that has never been published in the Registry). Expecting to receive a valid HTTP 401 or HTTP 403 error response.
+### FAILURE: Trying Combination[GSTTT] with an unknown TLS client certificate (a random one, that has never been published in the Registry). Expecting to receive a valid HTTP 401 or HTTP 403 error response.
 
 HTTP 401 or HTTP 403 expected, but HTTP 200 received.
 
 
 
-### FAILURE: Trying SecMethodCombination[-STTT] with a PUT request. Expecting to receive a valid HTTP 405 error response.
-
-HTTP 405 expected, but HTTP 200 received.
-
-
-
-### FAILURE: Trying SecMethodCombination[-STTT] with a DELETE request. Expecting to receive a valid HTTP 405 error response.
-
-HTTP 405 expected, but HTTP 200 received.
-
-
-
-### FAILURE: Trying SecMethodCombination[PSTTT] POST request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.
+### FAILURE: Trying Combination[GSTTT] GET request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.
 
 The response has proper HTTP status and it passed the schema validation. However, the set of returned hei-ids doesn't match what we expect. It should contain the following: [hei01.developers.erasmuswithoutpaper.eu, hei02.developers.erasmuswithoutpaper.eu]
 
 
 
-### FAILURE: Trying SecMethodCombination[PSTTT] POST request with a list of echo values [a, b, a], plus an additional GET echo=c&echo=c parameters. Expecting the GET parameters to be ignored. (It's a POST request, so all parameters are passed via POST body.)
+### FAILURE: Trying Combination[PSTTT] with an unknown TLS client certificate (a random one, that has never been published in the Registry). Expecting to receive a valid HTTP 401 or HTTP 403 error response.
+
+HTTP 401 or HTTP 403 expected, but HTTP 200 received.
+
+
+
+### FAILURE: Trying Combination[-STTT] with a PUT request. Expecting to receive a valid HTTP 405 error response.
+
+HTTP 405 expected, but HTTP 200 received.
+
+
+
+### FAILURE: Trying Combination[-STTT] with a DELETE request. Expecting to receive a valid HTTP 405 error response.
+
+HTTP 405 expected, but HTTP 200 received.
+
+
+
+### FAILURE: Trying Combination[PSTTT] POST request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.
 
 The response has proper HTTP status and it passed the schema validation. However, the set of returned hei-ids doesn't match what we expect. It should contain the following: [hei01.developers.erasmuswithoutpaper.eu, hei02.developers.erasmuswithoutpaper.eu]
 
 
 
-### FAILURE: Trying SecMethodCombination[PSTTT] with additional "gzip" added in Accept-Encoding. Expecting the same response, but preferably gzipped.
+### FAILURE: Trying Combination[PSTTT] POST request with a list of echo values [a, b, a], plus an additional GET echo=c&echo=c parameters. Expecting the GET parameters to be ignored. (It's a POST request, so all parameters are passed via POST body.)
+
+The response has proper HTTP status and it passed the schema validation. However, the set of returned hei-ids doesn't match what we expect. It should contain the following: [hei01.developers.erasmuswithoutpaper.eu, hei02.developers.erasmuswithoutpaper.eu]
+
+
+
+### FAILURE: Trying Combination[PSTTT] with additional "gzip" added in Accept-Encoding. Expecting the same response, but preferably gzipped.
 
 The response has proper HTTP status and it passed the schema validation. However, the set of returned hei-ids doesn't match what we expect. It should contain the following: [hei01.developers.erasmuswithoutpaper.eu, hei02.developers.erasmuswithoutpaper.eu]
 

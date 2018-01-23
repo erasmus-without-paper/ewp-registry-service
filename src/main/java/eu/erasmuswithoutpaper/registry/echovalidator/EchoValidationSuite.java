@@ -142,7 +142,7 @@ class EchoValidationSuite {
 
   private EwpHttpSigResponseAuthorizer resAuthorizerHttpSig;
 
-  private Set<CombEntry> allSecMethodsSupportedCache = null;
+  private Set<CombEntry> allCombEntriesCache = null;
 
   EchoValidationSuite(EchoValidator echoValidator, EwpDocBuilder docBuilder, Internet internet,
       String urlStr, RegistryClient regClient) {
@@ -1032,9 +1032,9 @@ class EchoValidationSuite {
     return notices;
   }
 
-  private boolean endpointSupports(CombEntry secMethod) {
-    Set<CombEntry> set = this.getAllSecMethodsSupportedByEndpoint();
-    return set.contains(secMethod);
+  private boolean endpointSupports(CombEntry combEntry) {
+    Set<CombEntry> set = this.getAllCombEntriesSupportedByEndpoint();
+    return set.contains(combEntry);
   }
 
   private void expectError(InlineValidationStep step, Combination combination, Request request,
@@ -1193,17 +1193,17 @@ class EchoValidationSuite {
     return sb.toString();
   }
 
-  private Set<CombEntry> getAllSecMethodsSupportedByEndpoint() {
-    if (this.allSecMethodsSupportedCache == null) {
-      this.allSecMethodsSupportedCache = new HashSet<>();
+  private Set<CombEntry> getAllCombEntriesSupportedByEndpoint() {
+    if (this.allCombEntriesCache == null) {
+      this.allCombEntriesCache = new HashSet<>();
       for (Combination combination : this.combinationsToValidate) {
-        this.allSecMethodsSupportedCache.add(combination.getCliAuth());
-        this.allSecMethodsSupportedCache.add(combination.getSrvAuth());
-        this.allSecMethodsSupportedCache.add(combination.getReqEncr());
-        this.allSecMethodsSupportedCache.add(combination.getResEncr());
+        this.allCombEntriesCache.add(combination.getCliAuth());
+        this.allCombEntriesCache.add(combination.getSrvAuth());
+        this.allCombEntriesCache.add(combination.getReqEncr());
+        this.allCombEntriesCache.add(combination.getResEncr());
       }
     }
-    return Collections.unmodifiableSet(this.allSecMethodsSupportedCache);
+    return Collections.unmodifiableSet(this.allCombEntriesCache);
   }
 
   private EwpHttpSigResponseAuthorizer getEwpHttpSigResponseAuthorizer() {
@@ -1302,16 +1302,7 @@ class EchoValidationSuite {
     return lst.get(index);
   }
 
-  private void validateResponseCommonsForxHxx(Combination combination, // NOPMD
-      Request request, Response response) throws Failure {
-    try {
-      this.getEwpHttpSigResponseAuthorizer().authorize(request, response);
-    } catch (InvalidResponseError e) {
-      throw new Failure(e.getMessage(), Status.FAILURE, response);
-    }
-  }
-
-  private void validateSecMethodCombination(Combination combination) throws SuiteBroken {
+  private void validateCombination(Combination combination) throws SuiteBroken {
 
     /* Try to "break" specific security method implementations. */
 
@@ -1505,6 +1496,15 @@ class EchoValidationSuite {
     }
   }
 
+  private void validateResponseCommonsForxHxx(Combination combination, // NOPMD
+      Request request, Response response) throws Failure {
+    try {
+      this.getEwpHttpSigResponseAuthorizer().authorize(request, response);
+    } catch (InvalidResponseError e) {
+      throw new Failure(e.getMessage(), Status.FAILURE, response);
+    }
+  }
+
   protected Request createValidRequestForCombination(InlineValidationStep step,
       Combination combination) {
     return this.createValidRequestForCombination(step, combination, (byte[]) null);
@@ -1680,16 +1680,16 @@ class EchoValidationSuite {
       if (this.echoApiVersionDetected == 1) {
 
         // GATTT, PATTT, GSTTT, PSTTT
-        this.validateSecMethodCombination(new Combination("GET", this.urlToBeValidated,
+        this.validateCombination(new Combination("GET", this.urlToBeValidated, this.matchedApiEntry,
+            CombEntry.CLIAUTH_NONE, CombEntry.SRVAUTH_TLSCERT, CombEntry.REQENCR_TLS,
+            CombEntry.RESENCR_TLS));
+        this.validateCombination(new Combination("POST", this.urlToBeValidated,
             this.matchedApiEntry, CombEntry.CLIAUTH_NONE, CombEntry.SRVAUTH_TLSCERT,
             CombEntry.REQENCR_TLS, CombEntry.RESENCR_TLS));
-        this.validateSecMethodCombination(new Combination("POST", this.urlToBeValidated,
-            this.matchedApiEntry, CombEntry.CLIAUTH_NONE, CombEntry.SRVAUTH_TLSCERT,
-            CombEntry.REQENCR_TLS, CombEntry.RESENCR_TLS));
-        this.validateSecMethodCombination(new Combination("GET", this.urlToBeValidated,
-            this.matchedApiEntry, CombEntry.CLIAUTH_TLSCERT_SELFSIGNED, CombEntry.SRVAUTH_TLSCERT,
-            CombEntry.REQENCR_TLS, CombEntry.RESENCR_TLS));
-        this.validateSecMethodCombination(new Combination("POST", this.urlToBeValidated,
+        this.validateCombination(new Combination("GET", this.urlToBeValidated, this.matchedApiEntry,
+            CombEntry.CLIAUTH_TLSCERT_SELFSIGNED, CombEntry.SRVAUTH_TLSCERT, CombEntry.REQENCR_TLS,
+            CombEntry.RESENCR_TLS));
+        this.validateCombination(new Combination("POST", this.urlToBeValidated,
             this.matchedApiEntry, CombEntry.CLIAUTH_TLSCERT_SELFSIGNED, CombEntry.SRVAUTH_TLSCERT,
             CombEntry.REQENCR_TLS, CombEntry.RESENCR_TLS));
 
@@ -1868,7 +1868,7 @@ class EchoValidationSuite {
         });
 
         for (Combination combination : this.combinationsToValidate) {
-          this.validateSecMethodCombination(combination);
+          this.validateCombination(combination);
         }
       }
 

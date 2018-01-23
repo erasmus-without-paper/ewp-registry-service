@@ -362,7 +362,8 @@ public class UiController {
         (validationStarted.getTime() - clientKeysRegenerated.getTime()) / 1000);
     info.addProperty("registryManifestBody", this.selfManifestProvider.getManifest());
     JsonArray combinations = new JsonArray();
-    info.add("secMethodCombinations", combinations);
+    info.add("Combinations", combinations); // WRCLEANIT: backward compatibility
+    info.add("combinations", combinations);
     for (Entry<String, String> entry : Combination.getCombinationLegend().entrySet()) {
       JsonObject desc = new JsonObject();
       desc.addProperty("code", entry.getKey());
