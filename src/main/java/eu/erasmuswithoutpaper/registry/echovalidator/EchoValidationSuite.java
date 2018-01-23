@@ -755,6 +755,34 @@ class EchoValidationSuite {
             request, acceptableResponses));
       }
     });
+
+    if (!this.endpointSupports(CombEntry.REQENCR_TLS)) {
+
+      // This endpoint explicitly requires all requests to be encrypted.
+
+      this.addAndRun(false, new InlineValidationStep() {
+
+        @Override
+        public String getName() {
+          return "Trying " + combination + " without encryption. Your endpoint "
+              + "explicitly requires all requests to be encrypted, so we're expecting "
+              + "HTTP 415 error response.";
+        }
+
+        @Override
+        protected Optional<Response> innerRun() throws Failure {
+          Request request = EchoValidationSuite.this.createValidRequestForCombination(this,
+              combination.withChangedReqEncr(CombEntry.REQENCR_TLS));
+          List<Integer> acceptableResponses = Lists.newArrayList(415);
+          if (combination.getCliAuth().equals(CombEntry.CLIAUTH_NONE)) {
+            acceptableResponses.add(403);
+            acceptableResponses.add(401);
+          }
+          return Optional.of(EchoValidationSuite.this.makeRequestAndExpectError(this, combination,
+              request, acceptableResponses));
+        }
+      });
+    }
   }
 
 

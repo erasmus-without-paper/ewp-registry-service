@@ -33,8 +33,9 @@ public class EwpRsaAesRequestDecoder implements RequestCodingDecoder {
   @Override
   public void decode(Request request) throws Http4xx {
     this.verifyHttpMethod(request);
+    this.peekContentEncodingAndExpect(request, this.getContentEncoding());
     this.updateBody(request);
-    this.popContentEncodingAndExpect(request, this.getContentEncoding());
+    this.popContentEncoding(request);
     request.addProcessingNoticeHtml("Successfully stripped the <code>"
         + Utils.escapeHtml(this.getContentEncoding()) + "</code> Content-Encoding.");
   }
@@ -87,6 +88,27 @@ public class EwpRsaAesRequestDecoder implements RequestCodingDecoder {
   }
 
   /**
+   * Peek at the "outermost" Content-Encoding and verify that it matches what we expect.
+   *
+   * @param request The request to process.
+   * @param expectedCoding The value of the coding we expect to find at the outermost
+   *        Content-Encoding.
+   * @throws Http4xx If the request's outermost coding didn't match what we expect.
+   */
+  protected void peekContentEncodingAndExpect(Request request, String expectedCoding)
+      throws Http4xx {
+    String actualCoding = this.peekContentEncoding(request);
+    if (actualCoding == null) {
+      throw new Http4xx(415,
+          "Expecting Content-Encoding to be " + expectedCoding + ", but no encoding found.");
+    }
+    if (!actualCoding.equalsIgnoreCase(expectedCoding)) {
+      throw new Http4xx(415, "Expecting Content-Encoding to be " + expectedCoding + ", but "
+          + actualCoding + " found instead.");
+    }
+  }
+
+  /**
    * Remove the "outermost" Content-Encoding.
    *
    * @param request The request to remove the Content-Encoding from. It MUST have at least one
@@ -97,29 +119,6 @@ public class EwpRsaAesRequestDecoder implements RequestCodingDecoder {
         new ArrayList<>(Utils.commaSeparatedTokens(request.getHeader("Content-Encoding")));
     items.remove(items.size() - 1);
     request.putHeader("Content-Encoding", items.stream().collect(Collectors.joining(", ")));
-  }
-
-  /**
-   * Take the "outermost" Content-Encoding, verify that it matches what we expect, <b>and remove
-   * it</b>.
-   *
-   * @param request The request to process.
-   * @param expectedCoding The value of the coding we expect to find at the outermost
-   *        Content-Encoding.
-   * @throws Http4xx If the request's outermost coding didn't match what we expect.
-   */
-  protected void popContentEncodingAndExpect(Request request, String expectedCoding)
-      throws Http4xx {
-    String actualCoding = this.peekContentEncoding(request);
-    if (actualCoding == null) {
-      throw new Http4xx(400,
-          "Expecting Content-Encoding to be " + expectedCoding + ", but no encoding found.");
-    }
-    if (!actualCoding.equalsIgnoreCase(expectedCoding)) {
-      throw new Http4xx(400, "Expecting Content-Encoding to be " + expectedCoding + ", but "
-          + actualCoding + " found instead.");
-    }
-    this.popContentEncoding(request);
   }
 
   /**
