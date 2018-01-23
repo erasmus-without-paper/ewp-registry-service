@@ -27,8 +27,8 @@ import eu.erasmuswithoutpaper.registry.documentbuilder.BuildParams;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildResult;
 import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
+import eu.erasmuswithoutpaper.registry.echovalidator.Combination;
 import eu.erasmuswithoutpaper.registry.echovalidator.EchoValidator;
-import eu.erasmuswithoutpaper.registry.echovalidator.SecMethodsCombination;
 import eu.erasmuswithoutpaper.registry.echovalidator.ValidationStepWithStatus;
 import eu.erasmuswithoutpaper.registry.echovalidator.ValidationStepWithStatus.Status;
 import eu.erasmuswithoutpaper.registry.internet.Request;
@@ -363,7 +363,7 @@ public class UiController {
     info.addProperty("registryManifestBody", this.selfManifestProvider.getManifest());
     JsonArray combinations = new JsonArray();
     info.add("secMethodCombinations", combinations);
-    for (Entry<String, String> entry : SecMethodsCombination.getCombinationLegend().entrySet()) {
+    for (Entry<String, String> entry : Combination.getCombinationLegend().entrySet()) {
       JsonObject desc = new JsonObject();
       desc.addProperty("code", entry.getKey());
       desc.addProperty("name", entry.getValue());

@@ -1,6 +1,6 @@
 package eu.erasmuswithoutpaper.registry.echovalidator;
 
-enum SecMethod {
+enum CombEntry {
 
   CLIAUTH_NONE('A'), CLIAUTH_TLSCERT_SELFSIGNED('S'), CLIAUTH_HTTPSIG('H'),
 
@@ -12,7 +12,7 @@ enum SecMethod {
 
   private final char code;
 
-  private SecMethod(char code) {
+  private CombEntry(char code) {
     this.code = code;
   }
 

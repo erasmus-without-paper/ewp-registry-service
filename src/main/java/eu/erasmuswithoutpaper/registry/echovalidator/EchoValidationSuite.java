@@ -130,7 +130,7 @@ class EchoValidationSuite {
   private final List<ValidationStepWithStatus> steps;
   private int echoApiVersionDetected = 0;
   private Element matchedApiEntry;
-  private List<SecMethodsCombination> combinationsToValidate;
+  private List<Combination> combinationsToValidate;
 
   private final EwpDocBuilder docBuilder;
   private final Internet internet;
@@ -142,7 +142,7 @@ class EchoValidationSuite {
 
   private EwpHttpSigResponseAuthorizer resAuthorizerHttpSig;
 
-  private Set<SecMethod> allSecMethodsSupportedCache = null;
+  private Set<CombEntry> allSecMethodsSupportedCache = null;
 
   EchoValidationSuite(EchoValidator echoValidator, EwpDocBuilder docBuilder, Internet internet,
       String urlStr, RegistryClient regClient) {
@@ -182,8 +182,8 @@ class EchoValidationSuite {
     }
   }
 
-  private void checkEdgeCasesForAxxx(SecMethodsCombination combination) throws SuiteBroken {
-    assert combination.getCliAuth().equals(SecMethod.CLIAUTH_NONE);
+  private void checkEdgeCasesForAxxx(Combination combination) throws SuiteBroken {
+    assert combination.getCliAuth().equals(CombEntry.CLIAUTH_NONE);
 
     this.addAndRun(false, new InlineValidationStep() {
 
@@ -203,8 +203,8 @@ class EchoValidationSuite {
     });
   }
 
-  private void checkEdgeCasesForHxxx(SecMethodsCombination combination) throws SuiteBroken {
-    assert combination.getCliAuth().equals(SecMethod.CLIAUTH_HTTPSIG);
+  private void checkEdgeCasesForHxxx(Combination combination) throws SuiteBroken {
+    assert combination.getCliAuth().equals(CombEntry.CLIAUTH_HTTPSIG);
 
     this.addAndRun(false, new InlineValidationStep() {
 
@@ -225,7 +225,7 @@ class EchoValidationSuite {
         RequestSigner badSigner = new EwpHttpSigRequestSigner(otherKeyPair);
         badSigner.sign(request);
         return Optional.of(EchoValidationSuite.this.makeRequestAndExpectError(this,
-            combination.withChangedResEncr(SecMethod.RESENCR_TLS), request,
+            combination.withChangedResEncr(CombEntry.RESENCR_TLS), request,
             Lists.newArrayList(401, 403)));
       }
     });
@@ -573,8 +573,8 @@ class EchoValidationSuite {
     }
   }
 
-  private void checkEdgeCasesForSxxx(SecMethodsCombination combination) throws SuiteBroken {
-    assert combination.getCliAuth().equals(SecMethod.CLIAUTH_TLSCERT_SELFSIGNED);
+  private void checkEdgeCasesForSxxx(Combination combination) throws SuiteBroken {
+    assert combination.getCliAuth().equals(CombEntry.CLIAUTH_TLSCERT_SELFSIGNED);
 
     this.addAndRun(false, new InlineValidationStep() {
 
@@ -605,7 +605,7 @@ class EchoValidationSuite {
     });
   }
 
-  private void checkEdgeCasesForxHxx(SecMethodsCombination combination) throws SuiteBroken {
+  private void checkEdgeCasesForxHxx(Combination combination) throws SuiteBroken {
 
     this.addAndRun(false, new InlineValidationStep() {
 
@@ -622,9 +622,8 @@ class EchoValidationSuite {
         request.putHeader("Accept-Signature", "unknown-algorithm");
         EchoValidationSuite.this.getRequestSignerForCombination(this, request, combination)
             .sign(request);
-        SecMethodsCombination relaxedCombination =
-            combination.withChangedSrvAuth(SecMethod.SRVAUTH_TLSCERT);
-        if (combination.getCliAuth().equals(SecMethod.CLIAUTH_NONE)) {
+        Combination relaxedCombination = combination.withChangedSrvAuth(CombEntry.SRVAUTH_TLSCERT);
+        if (combination.getCliAuth().equals(CombEntry.CLIAUTH_NONE)) {
           return Optional.of(EchoValidationSuite.this.makeRequestAndExpectError(this,
               relaxedCombination, request, Lists.newArrayList(401, 403)));
         } else {
@@ -651,7 +650,7 @@ class EchoValidationSuite {
         request.putHeader("Accept-Signature", "rsa-sha256, unknown-algorithm");
         EchoValidationSuite.this.getRequestSignerForCombination(this, request, combination)
             .sign(request);
-        if (combination.getCliAuth().equals(SecMethod.CLIAUTH_NONE)) {
+        if (combination.getCliAuth().equals(CombEntry.CLIAUTH_NONE)) {
           return Optional.of(EchoValidationSuite.this.makeRequestAndExpectError(this, combination,
               request, Lists.newArrayList(401, 403)));
         } else {
@@ -662,7 +661,7 @@ class EchoValidationSuite {
       }
     });
 
-    if (!combination.getCliAuth().equals(SecMethod.CLIAUTH_HTTPSIG)) {
+    if (!combination.getCliAuth().equals(CombEntry.CLIAUTH_HTTPSIG)) {
       this.addAndRun(false, new InlineValidationStep() {
 
         @Override
@@ -679,7 +678,7 @@ class EchoValidationSuite {
           request.putHeader("X-Request-Id", UUID.randomUUID().toString());
           EchoValidationSuite.this.getRequestSignerForCombination(this, request, combination)
               .sign(request);
-          if (combination.getCliAuth().equals(SecMethod.CLIAUTH_NONE)) {
+          if (combination.getCliAuth().equals(CombEntry.CLIAUTH_NONE)) {
             return Optional.of(EchoValidationSuite.this.makeRequestAndExpectError(this, combination,
                 request, Lists.newArrayList(401, 403)));
           } else {
@@ -694,7 +693,7 @@ class EchoValidationSuite {
 
   }
 
-  private void checkEdgeCasesForxxEx(SecMethodsCombination combination) throws SuiteBroken {
+  private void checkEdgeCasesForxxEx(Combination combination) throws SuiteBroken {
 
     if (!combination.getHttpMethod().equals("POST")) {
       throw new RuntimeException();
@@ -719,7 +718,7 @@ class EchoValidationSuite {
         EchoValidationSuite.this.getRequestSignerForCombination(this, request, combination)
             .sign(request);
         List<Integer> acceptableResponses = Lists.newArrayList(405);
-        if (combination.getCliAuth().equals(SecMethod.CLIAUTH_NONE)) {
+        if (combination.getCliAuth().equals(CombEntry.CLIAUTH_NONE)) {
           acceptableResponses.add(403);
           acceptableResponses.add(401);
         }
@@ -748,7 +747,7 @@ class EchoValidationSuite {
         EchoValidationSuite.this.getRequestSignerForCombination(this, request, combination)
             .sign(request);
         List<Integer> acceptableResponses = Lists.newArrayList(400);
-        if (combination.getCliAuth().equals(SecMethod.CLIAUTH_NONE)) {
+        if (combination.getCliAuth().equals(CombEntry.CLIAUTH_NONE)) {
           acceptableResponses.add(403);
           acceptableResponses.add(401);
         }
@@ -759,10 +758,10 @@ class EchoValidationSuite {
   }
 
 
-  private void checkEdgeCasesForxxxE(SecMethodsCombination combination) throws SuiteBroken {
+  private void checkEdgeCasesForxxxE(Combination combination) throws SuiteBroken {
 
-    boolean encryptionRequired = !this.endpointSupports(SecMethod.RESENCR_TLS);
-    boolean noAuth = combination.getCliAuth().equals(SecMethod.CLIAUTH_NONE);
+    boolean encryptionRequired = !this.endpointSupports(CombEntry.RESENCR_TLS);
+    boolean noAuth = combination.getCliAuth().equals(CombEntry.CLIAUTH_NONE);
 
     if (!noAuth) {
       this.addAndRun(false, new InlineValidationStep() {
@@ -791,10 +790,10 @@ class EchoValidationSuite {
               .sign(request);
           if (encryptionRequired) {
             return Optional.of(EchoValidationSuite.this.makeRequestAndExpectError(this,
-                combination.withChangedResEncr(SecMethod.RESENCR_TLS), request, 406));
+                combination.withChangedResEncr(CombEntry.RESENCR_TLS), request, 406));
           } else {
             return Optional.of(EchoValidationSuite.this.makeRequestAndExpectHttp200(this,
-                combination.withChangedResEncr(SecMethod.RESENCR_TLS), request,
+                combination.withChangedResEncr(CombEntry.RESENCR_TLS), request,
                 EchoValidationSuite.this.parentEchoValidator.getCoveredHeiIDs(),
                 Collections.<String>emptyList()));
           }
@@ -842,7 +841,7 @@ class EchoValidationSuite {
             EchoValidationSuite.this.getRequestSignerForCombination(this, request, combination)
                 .sign(request);
             return Optional.of(EchoValidationSuite.this.makeRequestAndExpectHttp200(this,
-                combination.withChangedResEncr(SecMethod.RESENCR_TLS), request,
+                combination.withChangedResEncr(CombEntry.RESENCR_TLS), request,
                 EchoValidationSuite.this.parentEchoValidator.getCoveredHeiIDs(),
                 Collections.<String>emptyList()));
           }
@@ -850,7 +849,7 @@ class EchoValidationSuite {
       }
     }
 
-    if (combination.getCliAuth().equals(SecMethod.CLIAUTH_HTTPSIG)) {
+    if (combination.getCliAuth().equals(CombEntry.CLIAUTH_HTTPSIG)) {
       this.addAndRun(false, new InlineValidationStep() {
 
         @Override
@@ -961,7 +960,7 @@ class EchoValidationSuite {
    * Helper method for creating simple request method validation steps (e.g. run a PUT request and
    * expect error, run a POST and expect success).
    */
-  private InlineValidationStep createHttpMethodValidationStep(SecMethodsCombination combination,
+  private InlineValidationStep createHttpMethodValidationStep(Combination combination,
       boolean expectSuccess) {
     return new InlineValidationStep() {
 
@@ -995,7 +994,7 @@ class EchoValidationSuite {
   }
 
   private List<String> decodeAndValidateResponseCommons(InlineValidationStep step,
-      SecMethodsCombination combination, Request request, Response response) throws Failure {
+      Combination combination, Request request, Response response) throws Failure {
 
     try {
       new TlsResponseAuthorizer().authorize(request, response);
@@ -1005,13 +1004,13 @@ class EchoValidationSuite {
     step.addResponseSnapshot(response);
 
     List<String> notices = new ArrayList<>();
-    if (combination.getSrvAuth().equals(SecMethod.SRVAUTH_TLSCERT)) {
+    if (combination.getSrvAuth().equals(CombEntry.SRVAUTH_TLSCERT)) {
       if (response.getHeader("Signature") != null) {
         notices.add("Response contains the Signature header, even though the client "
             + "didn't ask for it. In general, there's nothing wrong with that, but "
             + "you might want to tweak your implementation to save some computing time.");
       }
-    } else if (combination.getSrvAuth().equals(SecMethod.SRVAUTH_HTTPSIG)) {
+    } else if (combination.getSrvAuth().equals(CombEntry.SRVAUTH_HTTPSIG)) {
       this.validateResponseCommonsForxHxx(combination, request, response);
     }
     step.addResponseSnapshot(response);
@@ -1023,7 +1022,7 @@ class EchoValidationSuite {
     } else {
       this.resDecoderHelper.setAcceptEncodingHeader(null);
     }
-    if (combination.getResEncr().equals(SecMethod.RESENCR_EWP)) {
+    if (combination.getResEncr().equals(CombEntry.RESENCR_EWP)) {
       this.resDecoderHelper.setRequiredCodings(Lists.newArrayList("ewp-rsa-aes128gcm"));
     } else {
       this.resDecoderHelper.setRequiredCodings(Lists.newArrayList());
@@ -1033,13 +1032,13 @@ class EchoValidationSuite {
     return notices;
   }
 
-  private boolean endpointSupports(SecMethod secMethod) {
-    Set<SecMethod> set = this.getAllSecMethodsSupportedByEndpoint();
+  private boolean endpointSupports(CombEntry secMethod) {
+    Set<CombEntry> set = this.getAllSecMethodsSupportedByEndpoint();
     return set.contains(secMethod);
   }
 
-  private void expectError(InlineValidationStep step, SecMethodsCombination combination,
-      Request request, Response response, List<Integer> statuses) throws Failure {
+  private void expectError(InlineValidationStep step, Combination combination, Request request,
+      Response response, List<Integer> statuses) throws Failure {
     final List<String> notices =
         this.decodeAndValidateResponseCommons(step, combination, request, response);
     if (!statuses.contains(response.getStatus())) {
@@ -1112,9 +1111,9 @@ class EchoValidationSuite {
     }
   }
 
-  private void expectHttp200(InlineValidationStep step, SecMethodsCombination combination,
-      Request request, Response response, List<String> heiIdsExpected,
-      List<String> echoValuesExpected) throws Failure {
+  private void expectHttp200(InlineValidationStep step, Combination combination, Request request,
+      Response response, List<String> heiIdsExpected, List<String> echoValuesExpected)
+      throws Failure {
     final List<String> notices =
         this.decodeAndValidateResponseCommons(step, combination, request, response);
     if (response.getStatus() != 200) {
@@ -1194,10 +1193,10 @@ class EchoValidationSuite {
     return sb.toString();
   }
 
-  private Set<SecMethod> getAllSecMethodsSupportedByEndpoint() {
+  private Set<CombEntry> getAllSecMethodsSupportedByEndpoint() {
     if (this.allSecMethodsSupportedCache == null) {
       this.allSecMethodsSupportedCache = new HashSet<>();
-      for (SecMethodsCombination combination : this.combinationsToValidate) {
+      for (Combination combination : this.combinationsToValidate) {
         this.allSecMethodsSupportedCache.add(combination.getCliAuth());
         this.allSecMethodsSupportedCache.add(combination.getSrvAuth());
         this.allSecMethodsSupportedCache.add(combination.getReqEncr());
@@ -1216,11 +1215,11 @@ class EchoValidationSuite {
   }
 
   private RequestEncoder getRequestEncoderForCombination(InlineValidationStep step, Request request,
-      SecMethodsCombination combination) {
+      Combination combination) {
     step.addRequestSnapshot(request);
-    if (combination.getReqEncr().equals(SecMethod.REQENCR_TLS)) {
+    if (combination.getReqEncr().equals(CombEntry.REQENCR_TLS)) {
       return new NoopRequestEncoder();
-    } else if (combination.getReqEncr().equals(SecMethod.REQENCR_EWP)) {
+    } else if (combination.getReqEncr().equals(CombEntry.REQENCR_EWP)) {
       if (combination.getHttpMethod().equals("GET")) {
         // Invalid.
         throw new RuntimeException();
@@ -1234,13 +1233,13 @@ class EchoValidationSuite {
   }
 
   private RequestSigner getRequestSignerForCombination(InlineValidationStep step, Request request,
-      SecMethodsCombination combination) {
+      Combination combination) {
     step.addRequestSnapshot(request);
-    if (combination.getCliAuth().equals(SecMethod.CLIAUTH_NONE)) {
+    if (combination.getCliAuth().equals(CombEntry.CLIAUTH_NONE)) {
       return this.reqSignerAnon;
-    } else if (combination.getCliAuth().equals(SecMethod.CLIAUTH_HTTPSIG)) {
+    } else if (combination.getCliAuth().equals(CombEntry.CLIAUTH_HTTPSIG)) {
       return this.reqSignerHttpSig;
-    } else if (combination.getCliAuth().equals(SecMethod.CLIAUTH_TLSCERT_SELFSIGNED)) {
+    } else if (combination.getCliAuth().equals(CombEntry.CLIAUTH_TLSCERT_SELFSIGNED)) {
       return this.reqSignerCert;
     } else {
       throw new RuntimeException();
@@ -1261,8 +1260,8 @@ class EchoValidationSuite {
     }
   }
 
-  private Response makeRequestAndExpectError(InlineValidationStep step,
-      SecMethodsCombination combination, Request request, int status) throws Failure {
+  private Response makeRequestAndExpectError(InlineValidationStep step, Combination combination,
+      Request request, int status) throws Failure {
     return this.makeRequestAndExpectError(step, combination, request, Lists.newArrayList(status));
   }
 
@@ -1274,8 +1273,8 @@ class EchoValidationSuite {
    * @throws Failure If HTTP status differs from expected, or if the response body doesn't contain a
    *         proper error response.
    */
-  private Response makeRequestAndExpectError(InlineValidationStep step,
-      SecMethodsCombination combination, Request request, List<Integer> statuses) throws Failure {
+  private Response makeRequestAndExpectError(InlineValidationStep step, Combination combination,
+      Request request, List<Integer> statuses) throws Failure {
     Response response = this.makeRequest(step, request);
     this.expectError(step, combination, request, response, statuses);
     return response;
@@ -1289,9 +1288,9 @@ class EchoValidationSuite {
    * @param echoValuesExpected The expected contents of the echo list.
    * @throws Failure If some expectations are not met.
    */
-  private Response makeRequestAndExpectHttp200(InlineValidationStep step,
-      SecMethodsCombination combination, Request request, List<String> heiIdsExpected,
-      List<String> echoValuesExpected) throws Failure {
+  private Response makeRequestAndExpectHttp200(InlineValidationStep step, Combination combination,
+      Request request, List<String> heiIdsExpected, List<String> echoValuesExpected)
+      throws Failure {
     Response response = this.makeRequest(step, request);
     this.expectHttp200(step, combination, request, response, heiIdsExpected, echoValuesExpected);
     return response;
@@ -1303,7 +1302,7 @@ class EchoValidationSuite {
     return lst.get(index);
   }
 
-  private void validateResponseCommonsForxHxx(SecMethodsCombination combination, // NOPMD
+  private void validateResponseCommonsForxHxx(Combination combination, // NOPMD
       Request request, Response response) throws Failure {
     try {
       this.getEwpHttpSigResponseAuthorizer().authorize(request, response);
@@ -1312,46 +1311,46 @@ class EchoValidationSuite {
     }
   }
 
-  private void validateSecMethodCombination(SecMethodsCombination combination) throws SuiteBroken {
+  private void validateSecMethodCombination(Combination combination) throws SuiteBroken {
 
     /* Try to "break" specific security method implementations. */
 
-    if (combination.getCliAuth().equals(SecMethod.CLIAUTH_NONE)) {
+    if (combination.getCliAuth().equals(CombEntry.CLIAUTH_NONE)) {
       this.checkEdgeCasesForAxxx(combination);
-    } else if (combination.getCliAuth().equals(SecMethod.CLIAUTH_TLSCERT_SELFSIGNED)) {
+    } else if (combination.getCliAuth().equals(CombEntry.CLIAUTH_TLSCERT_SELFSIGNED)) {
       this.checkEdgeCasesForSxxx(combination);
-    } else if (combination.getCliAuth().equals(SecMethod.CLIAUTH_HTTPSIG)) {
+    } else if (combination.getCliAuth().equals(CombEntry.CLIAUTH_HTTPSIG)) {
       this.checkEdgeCasesForHxxx(combination);
     } else {
       // Shouldn't happen.
       throw new RuntimeException("Unsupported combination");
     }
-    if (combination.getSrvAuth().equals(SecMethod.SRVAUTH_TLSCERT)) {
+    if (combination.getSrvAuth().equals(CombEntry.SRVAUTH_TLSCERT)) {
       // Not much to validate.
-    } else if (combination.getSrvAuth().equals(SecMethod.SRVAUTH_HTTPSIG)) {
+    } else if (combination.getSrvAuth().equals(CombEntry.SRVAUTH_HTTPSIG)) {
       this.checkEdgeCasesForxHxx(combination);
     } else {
       // Shouldn't happen.
       throw new RuntimeException("Unsupported combination");
     }
-    if (combination.getReqEncr().equals(SecMethod.REQENCR_TLS)) {
+    if (combination.getReqEncr().equals(CombEntry.REQENCR_TLS)) {
       // Not much to test against.
-    } else if (combination.getReqEncr().equals(SecMethod.REQENCR_EWP)) {
+    } else if (combination.getReqEncr().equals(CombEntry.REQENCR_EWP)) {
       this.checkEdgeCasesForxxEx(combination);
     } else {
       // Shouldn't happen.
       throw new RuntimeException("Unsupported combination");
     }
-    if (combination.getResEncr().equals(SecMethod.RESENCR_TLS)) {
+    if (combination.getResEncr().equals(CombEntry.RESENCR_TLS)) {
       // Not much to test against.
-    } else if (combination.getResEncr().equals(SecMethod.RESENCR_EWP)) {
+    } else if (combination.getResEncr().equals(CombEntry.RESENCR_EWP)) {
       this.checkEdgeCasesForxxxE(combination);
     } else {
       // Shouldn't happen.
       throw new RuntimeException("Unsupported combination");
     }
 
-    if (!combination.getCliAuth().equals(SecMethod.CLIAUTH_NONE)) {
+    if (!combination.getCliAuth().equals(CombEntry.CLIAUTH_NONE)) {
       if (combination.getHttpMethod().equals("POST")) {
         this.addAndRun(false,
             this.createHttpMethodValidationStep(combination.withChangedHttpMethod("PUT"), false));
@@ -1476,7 +1475,7 @@ class EchoValidationSuite {
                 encryptionIndex = i;
               }
             }
-            if (combination.getCliAuth().equals(SecMethod.CLIAUTH_NONE)) {
+            if (combination.getCliAuth().equals(CombEntry.CLIAUTH_NONE)) {
               EchoValidationSuite.this.expectError(this, combination, request, response,
                   Lists.newArrayList(401, 403));
             } else {
@@ -1507,12 +1506,12 @@ class EchoValidationSuite {
   }
 
   protected Request createValidRequestForCombination(InlineValidationStep step,
-      SecMethodsCombination combination) {
+      Combination combination) {
     return this.createValidRequestForCombination(step, combination, (byte[]) null);
   }
 
   protected Request createValidRequestForCombination(InlineValidationStep step,
-      SecMethodsCombination combination, byte[] body) {
+      Combination combination, byte[] body) {
 
     Request request = new Request(combination.getHttpMethod(), combination.getUrl());
     if (body != null) {
@@ -1530,9 +1529,9 @@ class EchoValidationSuite {
 
     // srvauth
 
-    if (combination.getSrvAuth().equals(SecMethod.SRVAUTH_TLSCERT)) {
+    if (combination.getSrvAuth().equals(CombEntry.SRVAUTH_TLSCERT)) {
       // pass
-    } else if (combination.getSrvAuth().equals(SecMethod.SRVAUTH_HTTPSIG)) {
+    } else if (combination.getSrvAuth().equals(CombEntry.SRVAUTH_HTTPSIG)) {
       request.putHeader("Want-Digest", "SHA-256");
       request.putHeader("Accept-Signature", "rsa-sha256");
     } else {
@@ -1541,11 +1540,11 @@ class EchoValidationSuite {
 
     // resencr
 
-    if (combination.getResEncr().equals(SecMethod.RESENCR_TLS)) {
+    if (combination.getResEncr().equals(CombEntry.RESENCR_TLS)) {
       // pass
-    } else if (combination.getResEncr().equals(SecMethod.RESENCR_EWP)) {
+    } else if (combination.getResEncr().equals(CombEntry.RESENCR_EWP)) {
       request.putHeader("Accept-Encoding", "ewp-rsa-aes128gcm, identity;q=0.1");
-      if (!combination.getCliAuth().equals(SecMethod.CLIAUTH_HTTPSIG)) {
+      if (!combination.getCliAuth().equals(CombEntry.CLIAUTH_HTTPSIG)) {
         request.putHeader("Accept-Response-Encryption-Key", Base64.getEncoder()
             .encodeToString(this.parentEchoValidator.getClientRsaPublicKeyInUse().getEncoded()));
       }
@@ -1562,7 +1561,7 @@ class EchoValidationSuite {
   }
 
   protected Request createValidRequestForCombination(InlineValidationStep step,
-      SecMethodsCombination combination, String body) {
+      Combination combination, String body) {
     if (body == null) {
       return this.createValidRequestForCombination(step, combination);
     } else {
@@ -1681,18 +1680,18 @@ class EchoValidationSuite {
       if (this.echoApiVersionDetected == 1) {
 
         // GATTT, PATTT, GSTTT, PSTTT
-        this.validateSecMethodCombination(new SecMethodsCombination("GET", this.urlToBeValidated,
-            this.matchedApiEntry, SecMethod.CLIAUTH_NONE, SecMethod.SRVAUTH_TLSCERT,
-            SecMethod.REQENCR_TLS, SecMethod.RESENCR_TLS));
-        this.validateSecMethodCombination(new SecMethodsCombination("POST", this.urlToBeValidated,
-            this.matchedApiEntry, SecMethod.CLIAUTH_NONE, SecMethod.SRVAUTH_TLSCERT,
-            SecMethod.REQENCR_TLS, SecMethod.RESENCR_TLS));
-        this.validateSecMethodCombination(new SecMethodsCombination("GET", this.urlToBeValidated,
-            this.matchedApiEntry, SecMethod.CLIAUTH_TLSCERT_SELFSIGNED, SecMethod.SRVAUTH_TLSCERT,
-            SecMethod.REQENCR_TLS, SecMethod.RESENCR_TLS));
-        this.validateSecMethodCombination(new SecMethodsCombination("POST", this.urlToBeValidated,
-            this.matchedApiEntry, SecMethod.CLIAUTH_TLSCERT_SELFSIGNED, SecMethod.SRVAUTH_TLSCERT,
-            SecMethod.REQENCR_TLS, SecMethod.RESENCR_TLS));
+        this.validateSecMethodCombination(new Combination("GET", this.urlToBeValidated,
+            this.matchedApiEntry, CombEntry.CLIAUTH_NONE, CombEntry.SRVAUTH_TLSCERT,
+            CombEntry.REQENCR_TLS, CombEntry.RESENCR_TLS));
+        this.validateSecMethodCombination(new Combination("POST", this.urlToBeValidated,
+            this.matchedApiEntry, CombEntry.CLIAUTH_NONE, CombEntry.SRVAUTH_TLSCERT,
+            CombEntry.REQENCR_TLS, CombEntry.RESENCR_TLS));
+        this.validateSecMethodCombination(new Combination("GET", this.urlToBeValidated,
+            this.matchedApiEntry, CombEntry.CLIAUTH_TLSCERT_SELFSIGNED, CombEntry.SRVAUTH_TLSCERT,
+            CombEntry.REQENCR_TLS, CombEntry.RESENCR_TLS));
+        this.validateSecMethodCombination(new Combination("POST", this.urlToBeValidated,
+            this.matchedApiEntry, CombEntry.CLIAUTH_TLSCERT_SELFSIGNED, CombEntry.SRVAUTH_TLSCERT,
+            CombEntry.REQENCR_TLS, CombEntry.RESENCR_TLS));
 
       } else if (this.echoApiVersionDetected == 2) {
 
@@ -1722,15 +1721,15 @@ class EchoValidationSuite {
 
             // cliauth
 
-            List<SecMethod> cliAuthMethodsToValidate = new ArrayList<>();
+            List<CombEntry> cliAuthMethodsToValidate = new ArrayList<>();
             if (sec.supportsCliAuthNone()) {
               warnings.add("Anonymous Client Authentication SHOULD NOT be enabled for Echo API.");
             }
             // Even though, we will still run some tests on it.
-            cliAuthMethodsToValidate.add(SecMethod.CLIAUTH_NONE);
+            cliAuthMethodsToValidate.add(CombEntry.CLIAUTH_NONE);
             if (sec.supportsCliAuthTlsCert()) {
               if (sec.supportsCliAuthTlsCertSelfSigned()) {
-                cliAuthMethodsToValidate.add(SecMethod.CLIAUTH_TLSCERT_SELFSIGNED);
+                cliAuthMethodsToValidate.add(CombEntry.CLIAUTH_TLSCERT_SELFSIGNED);
               } else {
                 notices.add("Echo API Validator is able to validate TLS Client Authentication "
                     + "ONLY with a self-signed client certificate. You Echo API endpoint declares "
@@ -1743,7 +1742,7 @@ class EchoValidationSuite {
                   + "supporting it for some time (until all clients begin to support HTTPSIG).");
             }
             if (sec.supportsCliAuthHttpSig()) {
-              cliAuthMethodsToValidate.add(SecMethod.CLIAUTH_HTTPSIG);
+              cliAuthMethodsToValidate.add(CombEntry.CLIAUTH_HTTPSIG);
             } else {
               warnings.add("It is RECOMMENDED for all EWP server endpoints to support HTTP "
                   + "Signature Client Authentication. Your endpoint doesn't.");
@@ -1755,12 +1754,12 @@ class EchoValidationSuite {
 
             // srvauth
 
-            List<SecMethod> srvAuthMethodsToValidate = new ArrayList<>();
+            List<CombEntry> srvAuthMethodsToValidate = new ArrayList<>();
             if (sec.supportsSrvAuthTlsCert()) {
-              srvAuthMethodsToValidate.add(SecMethod.SRVAUTH_TLSCERT);
+              srvAuthMethodsToValidate.add(CombEntry.SRVAUTH_TLSCERT);
             }
             if (sec.supportsSrvAuthHttpSig()) {
-              srvAuthMethodsToValidate.add(SecMethod.SRVAUTH_HTTPSIG);
+              srvAuthMethodsToValidate.add(CombEntry.SRVAUTH_HTTPSIG);
               if (!sec.supportsSrvAuthTlsCert()) {
                 warnings.add("Server which support HTTP Signature Server Authentication "
                     + "SHOULD also support TLS Server Certificate Authentication");
@@ -1776,12 +1775,12 @@ class EchoValidationSuite {
 
             // reqencr
 
-            List<SecMethod> reqEncrMethodsToValidate = new ArrayList<>();
+            List<CombEntry> reqEncrMethodsToValidate = new ArrayList<>();
             if (sec.supportsReqEncrTls()) {
-              reqEncrMethodsToValidate.add(SecMethod.REQENCR_TLS);
+              reqEncrMethodsToValidate.add(CombEntry.REQENCR_TLS);
             }
             if (sec.supportsReqEncrEwp()) {
-              reqEncrMethodsToValidate.add(SecMethod.REQENCR_EWP);
+              reqEncrMethodsToValidate.add(CombEntry.REQENCR_EWP);
             }
             if (reqEncrMethodsToValidate.size() == 0) {
               errors.add("Your Echo API does not support ANY of the request encryption "
@@ -1790,12 +1789,12 @@ class EchoValidationSuite {
 
             // resencr
 
-            List<SecMethod> resEncrMethodsToValidate = new ArrayList<>();
+            List<CombEntry> resEncrMethodsToValidate = new ArrayList<>();
             if (sec.supportsResEncrTls()) {
-              resEncrMethodsToValidate.add(SecMethod.RESENCR_TLS);
+              resEncrMethodsToValidate.add(CombEntry.RESENCR_TLS);
             }
             if (sec.supportsResEncrEwp()) {
-              resEncrMethodsToValidate.add(SecMethod.RESENCR_EWP);
+              resEncrMethodsToValidate.add(CombEntry.RESENCR_EWP);
             }
             if (resEncrMethodsToValidate.size() == 0) {
               errors.add("Your Echo API does not support ANY of the response encryption "
@@ -1805,22 +1804,22 @@ class EchoValidationSuite {
             // Generate all possible combinations of validatable security methods.
 
             EchoValidationSuite.this.combinationsToValidate = new ArrayList<>();
-            for (SecMethod cliauth : cliAuthMethodsToValidate) {
-              for (SecMethod srvauth : srvAuthMethodsToValidate) {
-                for (SecMethod reqencr : reqEncrMethodsToValidate) {
-                  for (SecMethod resencr : resEncrMethodsToValidate) {
+            for (CombEntry cliauth : cliAuthMethodsToValidate) {
+              for (CombEntry srvauth : srvAuthMethodsToValidate) {
+                for (CombEntry reqencr : reqEncrMethodsToValidate) {
+                  for (CombEntry resencr : resEncrMethodsToValidate) {
                     boolean supportsGetRequests = true;
-                    if (reqencr.equals(SecMethod.REQENCR_EWP)) {
+                    if (reqencr.equals(CombEntry.REQENCR_EWP)) {
                       supportsGetRequests = false;
                     }
                     if (supportsGetRequests) {
-                      EchoValidationSuite.this.combinationsToValidate.add(new SecMethodsCombination(
-                          "GET", EchoValidationSuite.this.urlToBeValidated,
-                          EchoValidationSuite.this.matchedApiEntry, cliauth, srvauth, reqencr,
-                          resencr));
+                      EchoValidationSuite.this.combinationsToValidate
+                          .add(new Combination("GET", EchoValidationSuite.this.urlToBeValidated,
+                              EchoValidationSuite.this.matchedApiEntry, cliauth, srvauth, reqencr,
+                              resencr));
                     }
-                    EchoValidationSuite.this.combinationsToValidate.add(
-                        new SecMethodsCombination("POST", EchoValidationSuite.this.urlToBeValidated,
+                    EchoValidationSuite.this.combinationsToValidate
+                        .add(new Combination("POST", EchoValidationSuite.this.urlToBeValidated,
                             EchoValidationSuite.this.matchedApiEntry, cliauth, srvauth, reqencr,
                             resencr));
                   }
@@ -1868,7 +1867,7 @@ class EchoValidationSuite {
           }
         });
 
-        for (SecMethodsCombination combination : this.combinationsToValidate) {
+        for (Combination combination : this.combinationsToValidate) {
           this.validateSecMethodCombination(combination);
         }
       }
