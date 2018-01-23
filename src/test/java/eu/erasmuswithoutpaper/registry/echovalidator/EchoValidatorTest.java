@@ -576,7 +576,9 @@ public class EchoValidatorTest extends WRTest {
       assertThat(out).doesNotContain("WARNING");
       assertThat(out).doesNotContain(
           "Response contains the Signature header, even though the client didn't ask for it");
-      assertThat(out).containsOnlyOnce("NOTICE");
+      // The number of notices, except the ones warning about not supporting gzip, is 1.
+      assertThat(StringUtils.countMatches(out, "NOTICE")
+          - StringUtils.countMatches(out, "server didn't compress its response")).isEqualTo(1);
       this.internet.removeFakeInternetService(service);
 
     } finally {
@@ -736,7 +738,8 @@ public class EchoValidatorTest extends WRTest {
       assertThat(out).doesNotContain("FAILURE");
       assertThat(out).doesNotContain("ERROR");
       assertThat(out).contains("WARNING: Querying for supported security methods");
-      assertThat(out).containsPattern("WARNING: Trying SecMethodCombination....... with \"gzip\"");
+      assertThat(out)
+          .containsPattern("WARNING: Trying SecMethodCombination....... with additional \"gzip\"");
       assertThat(out).contains("Your response was first encrypted, and gzipped later");
       assertThat(out).containsOnlyOnce("NOTICE");
 

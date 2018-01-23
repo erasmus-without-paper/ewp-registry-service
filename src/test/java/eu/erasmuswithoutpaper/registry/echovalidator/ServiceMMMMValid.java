@@ -84,7 +84,6 @@ public class ServiceMMMMValid extends AbstractEchoV2Service {
     if (!request.getUrl().startsWith(this.myEndpoint)) {
       return null;
     }
-    // WRTODO: Split this into methods
 
     /* Authorize and decode the request. Create valid response. */
 
@@ -122,9 +121,17 @@ public class ServiceMMMMValid extends AbstractEchoV2Service {
     } catch (Http4xx e) {
       /*
        * Problems with signing the response. Replace the previous response (which might have already
-       * contained some other error response) with this one. WRTODO: Should we try to encode it?
+       * contained some other error response) with this one. We will also TRY to encode it...
        */
       response = e.generateEwpErrorResponse();
+      try {
+        this.getResponseEncoder().encode(request, response);
+      } catch (Http4xx e2) {
+        /*
+         * So, we have problems with both signing AND encoding. We will ignore this second one, and
+         * return the (unencoded) error message about the signing problem.
+         */
+      }
     }
     return response;
   }

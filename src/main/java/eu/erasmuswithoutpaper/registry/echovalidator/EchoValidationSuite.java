@@ -869,67 +869,6 @@ class EchoValidationSuite {
 
     }
 
-    this.addAndRun(false, new InlineValidationStep() {
-
-      @Override
-      public String getName() {
-        return "Trying " + combination + " with \"gzip\" in Accept-Encoding. "
-            + "Expecting a valid encrypted (and possibly gzipped) response.";
-      }
-      // WRTODO: test gzip on unencrypted responses
-
-      @Override
-      protected Optional<Response> innerRun() throws Failure {
-
-        Request request =
-            EchoValidationSuite.this.createValidRequestForCombination(this, combination);
-        if (!"ewp-rsa-aes128gcm, identity;q=0.1".equals(request.getHeader("Accept-Encoding"))) {
-          // Sanity check failed. The rest of this test expects that Accept-Encoding
-          // is equal to the value stated above. You might need to rewrite it.
-          throw new RuntimeException(
-              "Unexpected Accept-Encoding in request: " + request.getHeader("Accept-Encoding"));
-        }
-        // Allow the response to be gzipped.
-        request.putHeader("Accept-Encoding", "gzip, ewp-rsa-aes128gcm, identity;q=0.1");
-        EchoValidationSuite.this.getRequestSignerForCombination(this, request, combination)
-            .sign(request);
-        Response response = EchoValidationSuite.this.makeRequest(this, request);
-        int ewpIndex = -1;
-        int gzipIndex = -1;
-        List<String> codings = Utils.commaSeparatedTokens(response.getHeader("Content-Encoding"));
-        for (int i = 0; i < codings.size(); i++) {
-          if (codings.get(i).equalsIgnoreCase("gzip")) {
-            gzipIndex = i;
-          } else if (codings.get(i).equalsIgnoreCase("ewp-rsa-aes128gcm")) {
-            ewpIndex = i;
-          }
-        }
-        if (combination.getCliAuth().equals(SecMethod.CLIAUTH_NONE)) {
-          EchoValidationSuite.this.expectError(this, combination, request, response,
-              Lists.newArrayList(401, 403));
-        } else {
-          EchoValidationSuite.this.expectHttp200(this, combination, request, response,
-              EchoValidationSuite.this.parentEchoValidator.getCoveredHeiIDs(),
-              Collections.<String>emptyList());
-        }
-        if (ewpIndex == -1) {
-          throw new Failure("Expecting the response to be encrypted.", Status.FAILURE, response);
-        }
-        if (gzipIndex == -1) {
-          throw new Failure(
-              "The response was properly encrypted, but it wasn't gzipped. "
-                  + "It might be useful to support gzip encoding to save bandwidth.",
-              Status.NOTICE, response);
-        }
-        if (gzipIndex > ewpIndex) {
-          throw new Failure("The response was valid, but the order of its encodings was \"weird\". "
-              + "Your response was first encrypted, and gzipped later. "
-              + "(Gzipping encrypted content doesn't work well.)", Status.WARNING, response);
-        }
-        return Optional.of(response);
-      }
-    });
-
     // WRTODO: more tests are needed here!
   }
 
@@ -1418,6 +1357,64 @@ class EchoValidationSuite {
                 .of(EchoValidationSuite.this.makeRequestAndExpectHttp200(this, combination, request,
                     EchoValidationSuite.this.parentEchoValidator.getCoveredHeiIDs(),
                     expectedEchoValues));
+          }
+        });
+
+        this.addAndRun(false, new InlineValidationStep() {
+
+          @Override
+          public String getName() {
+            return "Trying " + combination + " with additional \"gzip\" added in "
+                + "Accept-Encoding. Expecting the same response, but preferably gzipped.";
+          }
+          // WRTODO: test gzip on unencrypted responses
+
+          @Override
+          protected Optional<Response> innerRun() throws Failure {
+
+            Request request =
+                EchoValidationSuite.this.createValidRequestForCombination(this, combination);
+            // Allow the response to be gzipped.
+            String prev = request.getHeader("Accept-Encoding");
+            request.putHeader("Accept-Encoding", "gzip" + ((prev != null) ? ", " + prev : ""));
+            EchoValidationSuite.this.getRequestSignerForCombination(this, request, combination)
+                .sign(request);
+            Response response = EchoValidationSuite.this.makeRequest(this, request);
+            int encryptionIndex = -1;
+            int gzipIndex = -1;
+            List<String> codings =
+                Utils.commaSeparatedTokens(response.getHeader("Content-Encoding"));
+            for (int i = 0; i < codings.size(); i++) {
+              if (codings.get(i).equalsIgnoreCase("gzip")) {
+                gzipIndex = i;
+              } else if (codings.get(i).equalsIgnoreCase("ewp-rsa-aes128gcm")) {
+                encryptionIndex = i;
+              }
+            }
+            if (combination.getCliAuth().equals(SecMethod.CLIAUTH_NONE)) {
+              EchoValidationSuite.this.expectError(this, combination, request, response,
+                  Lists.newArrayList(401, 403));
+            } else {
+              EchoValidationSuite.this.expectHttp200(this, combination, request, response,
+                  EchoValidationSuite.this.parentEchoValidator.getCoveredHeiIDs(),
+                  Collections.<String>emptyList());
+            }
+            if (gzipIndex == -1) {
+              throw new Failure(
+                  "The client explicitly accepted gzip, but the server didn't compress "
+                      + "its response. That's not an error, but it might be useful to "
+                      + "support gzip encoding to save bandwidth.",
+                  Status.NOTICE, response);
+            }
+            if ((encryptionIndex != -1) && (gzipIndex > encryptionIndex)) {
+              throw new Failure(
+                  "The response was valid, but the order of its encodings was \"weird\". "
+                      + "Your response was first encrypted, and gzipped later. "
+                      + "(Gzipping encrypted content doesn't work well, you should "
+                      + "switch the order of your encoders)",
+                  Status.WARNING, response);
+            }
+            return Optional.of(response);
           }
         });
       }
