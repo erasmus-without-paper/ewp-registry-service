@@ -24,6 +24,7 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import eu.erasmuswithoutpaper.registry.common.Utils;
@@ -555,9 +556,18 @@ class EchoValidationSuite {
                 }
               };
           mySigner.sign(request);
-          return Optional.of(EchoValidationSuite.this.makeRequestAndExpectHttp200(this, combination,
-              request, EchoValidationSuite.this.parentEchoValidator.getCoveredHeiIDs(),
-              Lists.newArrayList("b", "b")));
+          try {
+            return Optional
+                .of(EchoValidationSuite.this.makeRequestAndExpectHttp200(this, combination, request,
+                    EchoValidationSuite.this.parentEchoValidator.getCoveredHeiIDs(),
+                    Lists.newArrayList("b", "b")));
+          } catch (Failure f) {
+            if (f.getStatus().equals(Status.FAILURE)) {
+              throw f.withChangedStatus(Status.WARNING);
+            } else {
+              throw f;
+            }
+          }
         }
       });
     }
@@ -651,6 +661,36 @@ class EchoValidationSuite {
         }
       }
     });
+
+    if (!combination.getCliAuth().equals(SecMethod.CLIAUTH_HTTPSIG)) {
+      this.addAndRun(false, new InlineValidationStep() {
+
+        @Override
+        public String getName() {
+          return "Trying " + combination + " with X-Request-Id header. This header "
+              + "is not required to be present in this request in this combination, "
+              + "but we're still expecting the server to include its copy in the response.";
+        }
+
+        @Override
+        protected Optional<Response> innerRun() throws Failure {
+          Request request =
+              EchoValidationSuite.this.createValidRequestForCombination(this, combination);
+          request.putHeader("X-Request-Id", UUID.randomUUID().toString());
+          EchoValidationSuite.this.getRequestSignerForCombination(this, request, combination)
+              .sign(request);
+          if (combination.getCliAuth().equals(SecMethod.CLIAUTH_NONE)) {
+            return Optional.of(EchoValidationSuite.this.makeRequestAndExpectError(this, combination,
+                request, Lists.newArrayList(401, 403)));
+          } else {
+            return Optional
+                .of(EchoValidationSuite.this.makeRequestAndExpectHttp200(this, combination, request,
+                    EchoValidationSuite.this.parentEchoValidator.getCoveredHeiIDs(),
+                    Lists.newArrayList()));
+          }
+        }
+      });
+    }
 
   }
 
@@ -760,6 +800,54 @@ class EchoValidationSuite {
           }
         }
       });
+
+      this.addAndRun(false, new InlineValidationStep() {
+
+        @Override
+        public String getName() {
+          return "Trying " + combination + " with Accept-Encoding header formatted in a "
+              + "different way. This formatting is still valid (per RFC), so we are expecting "
+              + "a valid encrypted HTTP 200 response.";
+        }
+
+        @Override
+        protected Optional<Response> innerRun() throws Failure {
+
+          Request request =
+              EchoValidationSuite.this.createValidRequestForCombination(this, combination);
+          request.putHeader("Accept-Encoding", " ewp-rsa-AES128GCM ; q=1 , *;q=0");
+          EchoValidationSuite.this.getRequestSignerForCombination(this, request, combination)
+              .sign(request);
+          return Optional.of(EchoValidationSuite.this.makeRequestAndExpectHttp200(this, combination,
+              request, EchoValidationSuite.this.parentEchoValidator.getCoveredHeiIDs(),
+              Collections.<String>emptyList()));
+        }
+      });
+
+      if (!encryptionRequired) {
+        this.addAndRun(false, new InlineValidationStep() {
+
+          @Override
+          public String getName() {
+            return "Trying " + combination + " with explicitly forbidden ewp-rsa-aes128gcm in "
+                + "its Accept-Encoding header. Expecting unencrypted response.";
+          }
+
+          @Override
+          protected Optional<Response> innerRun() throws Failure {
+
+            Request request =
+                EchoValidationSuite.this.createValidRequestForCombination(this, combination);
+            request.putHeader("Accept-Encoding", " ewp-rsa-aes128gcm;q=0, identity;q=1");
+            EchoValidationSuite.this.getRequestSignerForCombination(this, request, combination)
+                .sign(request);
+            return Optional.of(EchoValidationSuite.this.makeRequestAndExpectHttp200(this,
+                combination.withChangedResEncr(SecMethod.RESENCR_TLS), request,
+                EchoValidationSuite.this.parentEchoValidator.getCoveredHeiIDs(),
+                Collections.<String>emptyList()));
+          }
+        });
+      }
     }
 
     if (combination.getCliAuth().equals(SecMethod.CLIAUTH_HTTPSIG)) {
@@ -866,10 +954,7 @@ class EchoValidationSuite {
           return Optional.of(response);
         }
       });
-
     }
-
-    // WRTODO: more tests are needed here!
   }
 
   /**
@@ -1448,6 +1533,7 @@ class EchoValidationSuite {
     if (combination.getSrvAuth().equals(SecMethod.SRVAUTH_TLSCERT)) {
       // pass
     } else if (combination.getSrvAuth().equals(SecMethod.SRVAUTH_HTTPSIG)) {
+      request.putHeader("Want-Digest", "SHA-256");
       request.putHeader("Accept-Signature", "rsa-sha256");
     } else {
       throw new RuntimeException("Not supported");

@@ -35,7 +35,7 @@ import org.w3c.dom.Element;
  * only for making requests at this single API endpoint.
  * </p>
  */
-public class EwpHttpSigResponseAuthorizer extends CommonResponseAuthorizer {
+public class EwpHttpSigResponseAuthorizer extends TlsResponseAuthorizer {
 
   /**
    * The Registry Client used for validating server keys.
@@ -61,6 +61,7 @@ public class EwpHttpSigResponseAuthorizer extends CommonResponseAuthorizer {
 
   @Override
   public EwpServer authorize(Request request, Response response) throws InvalidResponseError {
+    super.authorize(request, response);
     this.verifyRequestId(request, response);
     Authorization authz = this.parseSignatureHeader(response);
     this.verifySignatureAlgorithm(authz);

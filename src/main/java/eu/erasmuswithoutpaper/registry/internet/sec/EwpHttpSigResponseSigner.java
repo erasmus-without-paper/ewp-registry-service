@@ -28,7 +28,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 /**
  * {@link ResponseSigner}, which signs the responses with HTTP Signatures.
  */
-public class EwpHttpSigResponseSigner extends CommonResponseSigner {
+public class EwpHttpSigResponseSigner extends TlsResponseSigner {
 
   private static String getSignatureFromAuthorization(String authz) {
     // We need this helper because the library we use wasn't optimized for
@@ -54,7 +54,8 @@ public class EwpHttpSigResponseSigner extends CommonResponseSigner {
   }
 
   @Override
-  public void sign(Request request, Response response) {
+  public void sign(Request request, Response response) throws Http4xx {
+    super.sign(request, response);
     this.includeDateHeaders(response);
     this.includeDigestHeader(response);
     this.includeXRequestIdHeader(request, response);

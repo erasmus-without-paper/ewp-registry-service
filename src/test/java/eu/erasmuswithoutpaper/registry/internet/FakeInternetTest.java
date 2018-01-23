@@ -21,6 +21,7 @@ import eu.erasmuswithoutpaper.registry.WRTest;
 import eu.erasmuswithoutpaper.registry.internet.FakeInternet.MultipleHandlersConflict;
 import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigRequestSigner;
 import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigResponseSigner;
+import eu.erasmuswithoutpaper.registry.internet.sec.Http4xx;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -253,7 +254,11 @@ public class FakeInternetTest extends WRTest {
         + "6hbgEKTwblDHYGEtbGmtdHgVCk9SuS13F0hZ8FD0k/5OxEPXe5WozsbM=\","
         + "headers=\"date\",algorithm=\"rsa-sha256\"");
     TestResponseSigner resSigner1 = new TestResponseSigner(myKeyPair);
-    resSigner1.sign(request, response);
+    try {
+      resSigner1.sign(request, response);
+    } catch (Http4xx e) {
+      throw new RuntimeException(e);
+    }
     assertThat(response.getHeader("Signature")).isEqualTo(
         "keyId=\"Test\"," + "signature=\"SjWJWbWN7i0wzBvtPl8rbASWz5xQW6mcJmn+ibttBqtifLN7Sazz"
             + "6m79cNfwwb8DMJ5cou1s7uEGKKCs+FLEEaDV5lp7q25WqS+lavg7T8hc0GppauB"
@@ -285,7 +290,11 @@ public class FakeInternetTest extends WRTest {
         + "algorithm=\"rsa-sha256\"");
     TestResponseSigner resSigner3 = new TestResponseSigner(myKeyPair, "(request-target)", "host",
         "date", "content-type", "digest", "content-length");
-    resSigner3.sign(request, response);
+    try {
+      resSigner3.sign(request, response);
+    } catch (Http4xx e) {
+      throw new RuntimeException(e);
+    }
     assertThat(response.getHeader("Signature")).isEqualTo(
         "keyId=\"Test\"," + "signature=\"vSdrb+dS3EceC9bcwHSo4MlyKS59iFIrhgYkz8+oVLEEzmYZZvRs"
             + "8rgOp+63LEM3v+MFHB32NfpB2bEKBIvB1q52LaEUHFv120V01IL+TAD48XaERZF"

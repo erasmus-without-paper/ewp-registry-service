@@ -35,7 +35,11 @@ public class ServiceMHTTValid extends ServiceMTTTValid {
       response = e.response;
     }
     if (this.decideIfWeWantToSign(request)) {
-      this.getHttpSigSigner().sign(request, response);
+      try {
+        this.getHttpSigSigner().sign(request, response);
+      } catch (Http4xx e) {
+        return e.generateEwpErrorResponse();
+      }
     } else {
       try {
         this.getTlsSigner().sign(request, response);

@@ -39,7 +39,8 @@ public class MultipleCodingsRequestDecoder implements RequestDecoder {
     for (String coding : codings) {
       RequestCodingDecoder decoder = this.decoders.get(coding);
       if (decoder == null) {
-        throw new Http4xx(400, "Unsupported request Content-Encoding: " + coding);
+        throw new Http4xx(415,
+            "Could decode your request. Unsupported Content-Encoding: " + coding);
       }
       decoder.decode(request);
     }

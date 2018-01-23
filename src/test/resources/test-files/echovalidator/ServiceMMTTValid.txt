@@ -12,9 +12,11 @@ Our client credentials are quite fresh. This means that many Echo APIs will (cor
 ### SUCCESS: Trying SecMethodCombination[GAHTT] (no client authentication). Expecting a valid HTTP 401 or HTTP 403 error response.
 ### SUCCESS: Trying SecMethodCombination[GAHTT] with no valid algorithm in Accept-Signature header. Expecting to receive unsigned response.
 ### SUCCESS: Trying SecMethodCombination[GAHTT] with multiple algorithms in Accept-Signature header (one of which is rsa-sha256). Expecting to receive a signed response.
+### SUCCESS: Trying SecMethodCombination[GAHTT] with X-Request-Id header. This header is not required to be present in this request in this combination, but we're still expecting the server to include its copy in the response.
 ### SUCCESS: Trying SecMethodCombination[PAHTT] (no client authentication). Expecting a valid HTTP 401 or HTTP 403 error response.
 ### SUCCESS: Trying SecMethodCombination[PAHTT] with no valid algorithm in Accept-Signature header. Expecting to receive unsigned response.
 ### SUCCESS: Trying SecMethodCombination[PAHTT] with multiple algorithms in Accept-Signature header (one of which is rsa-sha256). Expecting to receive a signed response.
+### SUCCESS: Trying SecMethodCombination[PAHTT] with X-Request-Id header. This header is not required to be present in this request in this combination, but we're still expecting the server to include its copy in the response.
 ### SUCCESS: Trying SecMethodCombination[GSTTT] with an unknown TLS client certificate (a random one, that has never been published in the Registry). Expecting to receive a valid HTTP 401 or HTTP 403 error response.
 ### SUCCESS: Trying SecMethodCombination[GSTTT] GET request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.
 ### SUCCESS: Trying SecMethodCombination[PSTTT] with an unknown TLS client certificate (a random one, that has never been published in the Registry). Expecting to receive a valid HTTP 401 or HTTP 403 error response.
@@ -31,10 +33,12 @@ The client explicitly accepted gzip, but the server didn't compress its response
 ### SUCCESS: Trying SecMethodCombination[GSHTT] with an unknown TLS client certificate (a random one, that has never been published in the Registry). Expecting to receive a valid HTTP 401 or HTTP 403 error response.
 ### SUCCESS: Trying SecMethodCombination[GSHTT] with no valid algorithm in Accept-Signature header. Expecting to receive unsigned response.
 ### SUCCESS: Trying SecMethodCombination[GSHTT] with multiple algorithms in Accept-Signature header (one of which is rsa-sha256). Expecting to receive a signed response.
+### SUCCESS: Trying SecMethodCombination[GSHTT] with X-Request-Id header. This header is not required to be present in this request in this combination, but we're still expecting the server to include its copy in the response.
 ### SUCCESS: Trying SecMethodCombination[GSHTT] GET request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.
 ### SUCCESS: Trying SecMethodCombination[PSHTT] with an unknown TLS client certificate (a random one, that has never been published in the Registry). Expecting to receive a valid HTTP 401 or HTTP 403 error response.
 ### SUCCESS: Trying SecMethodCombination[PSHTT] with no valid algorithm in Accept-Signature header. Expecting to receive unsigned response.
 ### SUCCESS: Trying SecMethodCombination[PSHTT] with multiple algorithms in Accept-Signature header (one of which is rsa-sha256). Expecting to receive a signed response.
+### SUCCESS: Trying SecMethodCombination[PSHTT] with X-Request-Id header. This header is not required to be present in this request in this combination, but we're still expecting the server to include its copy in the response.
 ### SUCCESS: Trying SecMethodCombination[-SHTT] with a PUT request. Expecting to receive a valid HTTP 405 error response.
 ### SUCCESS: Trying SecMethodCombination[-SHTT] with a DELETE request. Expecting to receive a valid HTTP 405 error response.
 ### SUCCESS: Trying SecMethodCombination[PSHTT] POST request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.

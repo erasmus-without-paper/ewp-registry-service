@@ -63,7 +63,7 @@ class DecodingHelper {
       if (!this.acceptableCodings.contains(coding)) {
         throw new Failure("The response was (successfully) encoded with the '" + coding
             + "' coding, but the client didn't declare this encoding as acceptable "
-            + "(it wasn't listed in the Accept-Encoding header).", Status.FAILURE, response);
+            + "(it wasn't allowed in the Accept-Encoding header).", Status.FAILURE, response);
       }
     }
     if (this.getOrderedCodings(response).size() > 0) {
