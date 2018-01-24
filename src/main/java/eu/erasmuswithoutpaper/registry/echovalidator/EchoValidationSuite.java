@@ -1764,10 +1764,6 @@ class EchoValidationSuite {
                     + "that it does not support self-signed Client Certificates. Therefore, TLS "
                     + "Client Authentication tests will be skipped.");
               }
-            } else {
-              notices.add("This endpoint does not support TLS Certificate Client Authentication. "
-                  + "It is not required to support it, but it might be a good idea to keep "
-                  + "supporting it for some time (until all clients begin to support HTTPSIG).");
             }
             if (sec.supportsCliAuthHttpSig()) {
               cliAuthMethodsToValidate.add(CombEntry.CLIAUTH_HTTPSIG);

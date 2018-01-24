@@ -10,7 +10,6 @@ Our client credentials are quite fresh. This means that many Echo APIs will (cor
 ### NOTICE: Querying for supported security methods. Validating http-security integrity.
 
 Notices:
-- This endpoint does not support TLS Certificate Client Authentication. It is not required to support it, but it might be a good idea to keep supporting it for some time (until all clients begin to support HTTPSIG).
 - It is RECOMMENDED for all servers to support HTTP Signature Server Authentication.
 
 
