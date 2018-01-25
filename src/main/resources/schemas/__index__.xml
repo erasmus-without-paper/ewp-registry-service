@@ -16,19 +16,19 @@
         uri="ewp-specs-sec-cliauth-tlscert-v1.1.0/security-entries.xsd" />
     <uri
         name="https://github.com/erasmus-without-paper/ewp-specs-sec-cliauth-httpsig/tree/stable-v1"
-        uri="ewp-specs-sec-cliauth-httpsig-v1.0.0/security-entries.xsd" />
+        uri="ewp-specs-sec-cliauth-httpsig-v1.0.1/security-entries.xsd" />
     <uri
         name="https://github.com/erasmus-without-paper/ewp-specs-sec-srvauth-tlscert/tree/stable-v1"
         uri="ewp-specs-sec-srvauth-tlscert-v1.1.0/security-entries.xsd" />
     <uri
         name="https://github.com/erasmus-without-paper/ewp-specs-sec-srvauth-httpsig/tree/stable-v1"
-        uri="ewp-specs-sec-srvauth-httpsig-v1.0.0/security-entries.xsd" />
+        uri="ewp-specs-sec-srvauth-httpsig-v1.0.1/security-entries.xsd" />
     <uri
         name="https://github.com/erasmus-without-paper/ewp-specs-sec-reqencr-tls/tree/stable-v1"
         uri="ewp-specs-sec-reqencr-tls-v1.1.0/security-entries.xsd" />
     <uri
         name="https://github.com/erasmus-without-paper/ewp-specs-sec-reqencr-rsa-aes128gcm/tree/stable-v1"
-        uri="ewp-specs-sec-reqencr-rsa-aes128gcm-v0.3.0/security-entries.xsd" />
+        uri="ewp-specs-sec-reqencr-rsa-aes128gcm-v0.4.0/security-entries.xsd" />
     <uri
         name="https://github.com/erasmus-without-paper/ewp-specs-sec-resencr-tls/tree/stable-v1"
         uri="ewp-specs-sec-resencr-tls-v1.1.0/security-entries.xsd" />
@@ -37,10 +37,10 @@
         uri="ewp-specs-sec-resencr-rsa-aes128gcm-v0.3.0/security-entries.xsd" />
     <uri
         name="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/blob/stable-v5/manifest-entry.xsd"
-        uri="ewp-specs-api-discovery-v5.0.0-rc2/manifest-entry.xsd" />
+        uri="ewp-specs-api-discovery-v5.0.0/manifest-entry.xsd" />
     <uri
         name="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/tree/stable-v5"
-        uri="ewp-specs-api-discovery-v5.0.0-rc2/manifest.xsd" />
+        uri="ewp-specs-api-discovery-v5.0.0/manifest.xsd" />
     <uri
         name="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/blob/stable-v4/manifest-entry.xsd"
         uri="ewp-specs-api-discovery-v4.1.1/manifest-entry.xsd" />
