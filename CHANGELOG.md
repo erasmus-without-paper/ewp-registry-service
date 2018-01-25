@@ -9,6 +9,21 @@ validator - but these changes are currently not mentioned in this changelog, to
 avoid clutter.
 
 
+1.6.0
+-----
+
+*Released on 2018-01-25*
+
+ * Added support for
+   [Discovery Manifest API v5](https://github.com/erasmus-without-paper/ewp-specs-api-discovery/tree/stable-v5).
+   Previous versions of manifest files (v4) are also still imported.
+ * Updated XSDs and XMLs.
+ * Refreshed docker dependencies.
+ * Many changes in Echo Validator (e.g. validating encryption specs).
+ * Many small fixes on the HEI/API coverage page.
+ * Small changes in design.
+
+
 1.5.0
 -----
 
