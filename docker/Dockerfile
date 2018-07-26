@@ -1,8 +1,5 @@
 FROM openjdk:8-jre
 
-MAINTAINER Wojciech Rygielski
-ENV REFRESHED_AT 2018-01-24
-
 RUN \
     apt-get update && \
     apt-get install -y \
