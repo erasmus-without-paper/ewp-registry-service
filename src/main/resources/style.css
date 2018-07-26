@@ -99,7 +99,8 @@ a:hover {
     grid-template-areas:
         "logo      site-name site-name site-name"
         "site-desc site-desc site-desc site-desc"
-        "details   details   divider   uptime   ";
+        "details   details   divider   uptime   "
+        "footer    footer    footer    footer   ";
     grid-template-rows: auto auto auto;
     grid-template-columns: 268px auto 3px 263px;
     max-width: 920px;
@@ -243,7 +244,15 @@ a:hover {
     background: #93898c;
 }
 
-
+.ewp-header__footer {
+    grid-area: footer;
+}
+.ewp-footer {
+    text-align: right;
+    opacity: 0.5;
+    font-style: italic;
+    margin-right: 20px;
+}
 
 
 .ewp-section-title {

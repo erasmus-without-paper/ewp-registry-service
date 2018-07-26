@@ -45,6 +45,7 @@ import eu.erasmuswithoutpaper.registry.updater.UptimeChecker;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.http.HttpHeaders;
@@ -214,10 +215,12 @@ public class UiController {
 
   /**
    * @param response Needed to add some custom headers.
+   * @param adminEmails Admin emails to display on page.
    * @return A welcome page.
    */
   @RequestMapping(value = "/", method = RequestMethod.GET)
-  public ModelAndView index(HttpServletResponse response) {
+  public ModelAndView index(HttpServletResponse response,
+                            @Value("${app.admin-emails}") List<String> adminEmails) {
 
     ModelAndView mav = new ModelAndView();
     this.initializeMavCommons(mav);
@@ -231,6 +234,7 @@ public class UiController {
     mav.addObject("uptime30", this.uptimeChecker.getLast30DaysUptimeRatio());
     mav.addObject("uptime365", this.uptimeChecker.getLast365DaysUptimeRatio());
     mav.addObject("artifactVersion", this.getClass().getPackage().getImplementationVersion());
+    mav.addObject("adminEmails", adminEmails);
 
     return mav;
   }
