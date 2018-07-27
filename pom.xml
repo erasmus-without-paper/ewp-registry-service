@@ -265,7 +265,7 @@
                 <artifactId>docker-maven-plugin</artifactId>
                 <version>1.0.0</version>
                 <configuration>
-                    <imageName>wrygiel/ewp-registry-service</imageName>
+                    <imageName>docker.usos.edu.pl:5000/ewp-registry-service</imageName>
                     <dockerDirectory>docker</dockerDirectory>
                     <resources>
                         <resource>

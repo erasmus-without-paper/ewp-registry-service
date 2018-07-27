@@ -18,10 +18,10 @@ Running from a Docker Image
 
 ### Pull the image
 
-Currently, we are pushing out latest builds to [this Docker Hub repository][docker-repo].
+Currently, we are pushing out latest builds to a private Docker registry.
 
 ```sh
-docker pull wrygiel/ewp-registry-service
+docker pull docker.usos.edu.pl:5000/ewp-registry-service
 ```
 
 (You will need to repeat this step whenever you want to upgrade too.)
@@ -70,7 +70,7 @@ to work along with the JGit library we use in the app itself):
 
 ```sh
 docker run --rm -it --entrypoint=bash -v /var/ewp-registry-service:/root \
-    wrygiel/ewp-registry-service
+    docker.usos.edu.pl:5000/ewp-registry-service
 ```
 
 You will need to either create an empty Git repository (`git init repo`), or
@@ -141,7 +141,7 @@ In development, you may start it directly:
 
 ```sh
 docker run --rm -it -v /var/ewp-registry-service:/root -p 80:8080 \
-    wrygiel/ewp-registry-service
+    docker.usos.edu.pl:5000/ewp-registry-service
 ```
 
 
@@ -208,4 +208,3 @@ our releases:
 [props]: https://github.com/erasmus-without-paper/ewp-registry-service/blob/master/src/main/resources/application.properties
 [devel-props]: https://github.com/erasmus-without-paper/ewp-registry-service/blob/master/src/main/resources/application-development.properties
 [spring-config]: http://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-external-config.html
-[docker-repo]: https://hub.docker.com/r/wrygiel/ewp-registry-service/
