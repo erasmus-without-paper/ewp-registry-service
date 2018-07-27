@@ -8,6 +8,14 @@ the *unofficial* services - such as the document validator, or Echo API
 validator - but these changes are currently not mentioned in this changelog, to
 avoid clutter.
 
+1.6.1
+-----
+
+*Released on 2018-06-27*
+
+ * Removed unnecessary parts from Dockerfile.
+ * Added maintainer's email address on index page.
+ * Changed Docker registry to private.
 
 1.6.0
 -----
