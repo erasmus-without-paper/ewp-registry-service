@@ -44,7 +44,7 @@ class OtherApisCell extends CoverageMatrixCell {
     if (!this.unmatched.isEmpty()) {
       StringBuilder sb = new StringBuilder();
       sb.append("<a href='#").append(HtmlUtils.htmlEscape(this.getFootnoteId())).append("'>");
-      sb.append('+').append(this.unmatched.size()).append(" unknown APIs");
+      sb.append('+').append(this.unmatched.size()).append(" other APIs");
       sb.append("</a>");
       ContentLine line = new ContentLine();
       line.setContent(sb.toString());
@@ -68,7 +68,7 @@ class OtherApisCell extends CoverageMatrixCell {
     sb.append("<p id='").append(HtmlUtils.htmlEscape(this.getFootnoteId())).append("'>");
     sb.append("<code class='ewpst__bordered-code'>");
     sb.append(HtmlUtils.htmlEscape(this.hei.getId())).append("</code>");
-    sb.append(" implements the following unknown APIs:</p>");
+    sb.append(" implements the following APIs:</p>");
     sb.append("<ul>");
     for (Element apiEntry : this.unmatched) {
       sb.append("<li><code>");
