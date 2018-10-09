@@ -20,10 +20,8 @@ class OMobilityUpdateTypesContentLine extends ContentLine {
         .size() > 0;
     boolean ut2 =
         entry.xpath("om1:supported-update-types/om1:update-components-studied-v1").size() > 0;
-    boolean ut3 = entry.xpath("om1:supported-update-types/om1:update-statuses-v1").size() > 0;
     items.add(ut1);
     items.add(ut2);
-    items.add(ut3);
 
     StringBuilder sb = new StringBuilder();
     for (Boolean item : items) {
@@ -51,7 +49,5 @@ class OMobilityUpdateTypesContentLine extends ContentLine {
         + (ut1 ? "YES" : "NO"));
     this.addTooltipLine(
         "update-components-studied-v1 (remote editing of LA drafts) - " + (ut2 ? "YES" : "NO"));
-    this.addTooltipLine(
-        "update-statuses-v1 (e.g. accepting nominations) - " + (ut3 ? "YES" : "NO"));
   }
 }
