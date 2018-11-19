@@ -27,10 +27,6 @@ import eu.erasmuswithoutpaper.registry.documentbuilder.BuildParams;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildResult;
 import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
-import eu.erasmuswithoutpaper.registry.echovalidator.Combination;
-import eu.erasmuswithoutpaper.registry.echovalidator.EchoValidator;
-import eu.erasmuswithoutpaper.registry.echovalidator.ValidationStepWithStatus;
-import eu.erasmuswithoutpaper.registry.echovalidator.ValidationStepWithStatus.Status;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registry.notifier.NotifierService;
@@ -42,6 +38,12 @@ import eu.erasmuswithoutpaper.registry.updater.ManifestUpdateStatus;
 import eu.erasmuswithoutpaper.registry.updater.ManifestUpdateStatusRepository;
 import eu.erasmuswithoutpaper.registry.updater.RegistryUpdater;
 import eu.erasmuswithoutpaper.registry.updater.UptimeChecker;
+import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
+import eu.erasmuswithoutpaper.registry.validators.Combination;
+import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus;
+import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus.Status;
+import eu.erasmuswithoutpaper.registry.validators.echovalidator.EchoValidator;
+import eu.erasmuswithoutpaper.registry.validators.institutionsvalidator.InstitutionsValidator;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,6 +90,7 @@ public class UiController {
   private final UptimeChecker uptimeChecker;
   private final EwpDocBuilder docBuilder;
   private final EchoValidator echoTester;
+  private final InstitutionsValidator institutionsTester;
   private final SelfManifestProvider selfManifestProvider;
   private final ResourceLoader resLoader;
   private final CoverageMatrixGenerator matrixGenerator;
@@ -121,7 +124,7 @@ public class UiController {
       RegistryUpdater updater, NotifierService notifier, UptimeChecker uptimeChecker,
       EwpDocBuilder docBuilder, EchoValidator echoTester, SelfManifestProvider selfManifestProvider,
       ResourceLoader resLoader, CoverageMatrixGenerator matrixGenerator, RegistryClient regClient,
-      CatalogueDependantCache catcache) {
+      CatalogueDependantCache catcache, InstitutionsValidator institutionsTester) {
     this.taskExecutor = taskExecutor;
     this.manifestStatusRepo = manifestUpdateStatuses;
     this.sourceProvider = sourceProvider;
@@ -135,6 +138,7 @@ public class UiController {
     this.matrixGenerator = matrixGenerator;
     this.regClient = regClient;
     this.catcache = catcache;
+    this.institutionsTester = institutionsTester;
   }
 
   /**
@@ -336,6 +340,22 @@ public class UiController {
   }
 
   /**
+   * Run validation tests on the Institutions API served at the given URL.
+   *
+   * <p>
+   * This is not part of the API and MAY be removed later on.
+   * </p>
+   *
+   * @param url The URL at which the Institutions API is being served.
+   * @return An undocumented JSON object with the results of the validation (not guaranteed to stay
+   *         backward compatible).
+   */
+  @RequestMapping(path = "/validate-institutions", params = "url", method = RequestMethod.POST)
+  public ResponseEntity<String> validateInstitutions(@RequestParam String url) {
+    return validateApi(url, this.institutionsTester);
+  }
+
+  /**
    * Run validation tests on the Echo API served at the given URL.
    *
    * <p>
@@ -348,7 +368,21 @@ public class UiController {
    */
   @RequestMapping(path = "/validate-echo", params = "url", method = RequestMethod.POST)
   public ResponseEntity<String> validateEcho(@RequestParam String url) {
+    return validateApi(url, this.echoTester);
+  }
 
+  /**
+   * Run validation on one of APIs served at the given URL.
+   *
+   * <p>
+   * This is not part of the API and MAY be removed later on.
+   * </p>
+   *
+   * @param url The URL at which the API is being served.
+   * @return An undocumented JSON object with the results of the validation (not guaranteed to stay
+   *         backward compatible).
+   */
+  private ResponseEntity<String> validateApi(String url, ApiValidator tester) {
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
     headers.setCacheControl("max-age=0, must-revalidate");
@@ -377,7 +411,7 @@ public class UiController {
 
     JsonArray testsArray = new JsonArray();
     Status worstStatus = Status.SUCCESS;
-    List<ValidationStepWithStatus> testResults = this.echoTester.runTests(url);
+    List<ValidationStepWithStatus> testResults = tester.runTests(url);
     for (ValidationStepWithStatus testResult : testResults) {
       JsonObject testObj = new JsonObject();
       testObj.addProperty("name", testResult.getName());
@@ -401,6 +435,7 @@ public class UiController {
     String json = gson.toJson(responseObj);
     return new ResponseEntity<String>(json, headers, HttpStatus.OK);
   }
+
 
   /**
    * Validate a supplied XML document against all known EWP schemas.

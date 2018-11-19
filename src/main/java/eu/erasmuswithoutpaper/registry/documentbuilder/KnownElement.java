@@ -194,6 +194,15 @@ public class KnownElement {
       new KnownElement(KnownNamespace.RESPONSE_ECHO_V2, "response", "Echo API Response");
 
   /**
+   * The root of the Institutions API v2 response.
+   */
+  public static final KnownElement RESPONSE_INSTITUTIONS_V2 =
+      new KnownElement(KnownNamespace.RESPONSE_INSTITUTIONS_V2,
+          "institutions-response",
+          "Institutions API Response"
+      );
+
+  /**
    * Support declaration for Anonymous Client Authentication.
    */
   public static final KnownElement SECENTRY_CLIAUTH_NONE_V1 =

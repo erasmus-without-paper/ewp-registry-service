@@ -1,16 +1,21 @@
 package eu.erasmuswithoutpaper.registry.internet;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URLEncodedUtils;
+
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class InternetTestHelpers {
 
-  public static List<String> extractParams(Request request, String paramName) {
+  private static String getQuery(Request request) {
     try {
       String query;
       if (request.getMethod().equals("GET")) {
@@ -24,10 +29,27 @@ public class InternetTestHelpers {
           query = null;
         }
       }
-      return extractParamsFromQueryString(query, paramName);
+      return query;
     } catch (MalformedURLException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  public static Map<String, List<String>> extractAllParams(Request request) {
+    List<NameValuePair> params = URLEncodedUtils.parse(getQuery(request), StandardCharsets.UTF_8);
+    Map<String, List<String>> result = new HashMap<>();
+    for (NameValuePair nvp : params) {
+      if (!result.containsKey(nvp.getName())) {
+        result.put(nvp.getName(), new ArrayList<>());
+      }
+      result.get(nvp.getName()).add(nvp.getValue());
+    }
+    return result;
+  }
+
+  public static List<String> extractParams(Request request, String paramName) {
+    String query = getQuery(request);
+    return extractParamsFromQueryString(query, paramName);
   }
 
   public static List<String> extractParamsFromQueryString(String query, String paramName) {

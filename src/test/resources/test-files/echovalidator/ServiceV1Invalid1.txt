@@ -8,7 +8,7 @@ Our client credentials are quite fresh. This means that many Echo APIs will (cor
 
 ### WARNING: Verifying if the URL is properly registered.
 
-Version 1 of Echo API is deprecated. You should implement Version 2 instead.
+Version 1.0.0 of the API is deprecated. You should implement new version.
 
 
 ### SUCCESS: Trying Combination[GATTT] (no client authentication). Expecting a valid HTTP 401 or HTTP 403 error response.

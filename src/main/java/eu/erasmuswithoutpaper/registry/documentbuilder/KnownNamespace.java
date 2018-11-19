@@ -71,6 +71,14 @@ public class KnownNamespace {
 
   /**
    * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-institutions/blob/stable-v2/manifest-entry.xsd'>
+   * here</a>.
+   */
+  public static final KnownNamespace RESPONSE_INSTITUTIONS_V2 = new KnownNamespace("inr2",
+          "api-institutions/tree/stable-v2", "api-institutions/stable-v2/response.xsd", false);
+
+  /**
+   * As described <a href=
    * 'https://github.com/erasmus-without-paper/ewp-specs-api-discovery/blob/stable-v4/manifest-entry.xsd'>
    * here</a>.
    */

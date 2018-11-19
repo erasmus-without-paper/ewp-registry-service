@@ -12,7 +12,7 @@ import eu.erasmuswithoutpaper.registry.Application;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildParams;
 import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
-import eu.erasmuswithoutpaper.registry.echovalidator.EchoValidator;
+import eu.erasmuswithoutpaper.registry.validators.ValidatorKeyStore;
 import eu.erasmuswithoutpaper.registry.xmlformatter.XmlFormatter;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,29 +57,31 @@ public class SelfManifestProvider {
    * @param formatter Needed to format the end document as XML.
    * @param adminEmails A list of email addresses, separated by commas. These addresses will be
    *        included in the <code>ewp:admin-email</code> elements in the generated manifest file.
-   * @param echoTester Needed, because we need to publish its client credentials in our manifest.
+   * @param validatorKeyStore Source of public keys and certificates used by validators to be
+   *                         published in our manifest.
    */
   @Autowired
   public SelfManifestProvider(ResourceLoader res, EwpDocBuilder docBuilder, XmlFormatter formatter,
-      @Value("${app.admin-emails}") List<String> adminEmails, EchoValidator echoTester) {
+      @Value("${app.admin-emails}") List<String> adminEmails, ValidatorKeyStore validatorKeyStore) {
     this.res = res;
     this.docBuilder = docBuilder;
     this.formatter = formatter;
     this.adminEmails = adminEmails;
     try {
       this.echoTesterCertEncoded =
-          new String(Base64.encodeBase64(echoTester.getTlsClientCertificateInUse().getEncoded()),
+          new String(
+              Base64.encodeBase64(validatorKeyStore.getTlsClientCertificateInUse().getEncoded()),
               StandardCharsets.US_ASCII);
     } catch (CertificateEncodingException e) {
       throw new RuntimeException(e);
     }
     this.echoTesterClientRsaPublicKeyEncoded =
-        new String(Base64.encodeBase64(echoTester.getClientRsaPublicKeyInUse().getEncoded()),
+        new String(Base64.encodeBase64(validatorKeyStore.getClientRsaPublicKeyInUse().getEncoded()),
             StandardCharsets.US_ASCII);
     this.echoTesterServerRsaPublicKeyEncoded =
-        new String(Base64.encodeBase64(echoTester.getServerRsaPublicKeyInUse().getEncoded()),
+        new String(Base64.encodeBase64(validatorKeyStore.getServerRsaPublicKeyInUse().getEncoded()),
             StandardCharsets.US_ASCII);
-    this.echoTesterHeiIDs = echoTester.getCoveredHeiIDs();
+    this.echoTesterHeiIDs = validatorKeyStore.getCoveredHeiIDs();
   }
 
   /**
