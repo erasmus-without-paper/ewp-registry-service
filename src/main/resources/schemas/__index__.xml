@@ -206,4 +206,22 @@
     <uri
         name="https://github.com/erasmus-without-paper/ewp-specs-types-person-id/tree/stable-v1"
         uri="ewp-specs-types-person-id-v0.1.1/schema.xsd" />
+    <uri
+        name="https://github.com/erasmus-without-paper/ewp-specs-api-mt-projects/blob/v0.1.0/manifest-entry.xsd"
+        uri="ewp-specs-api-mt-projects-v0.1.0/manifest-entry.xsd" />
+    <uri
+        name="https://github.com/erasmus-without-paper/ewp-specs-api-mt-projects/tree/v0.1.0"
+        uri="ewp-specs-api-mt-projects-v0.1.0/response.xsd" />
+    <uri
+        name="https://github.com/erasmus-without-paper/ewp-specs-api-mt-institutions/blob/v0.1.0/manifest-entry.xsd"
+        uri="ewp-specs-api-mt-institutions-v0.1.0/manifest-entry.xsd" />
+    <uri
+        name="https://github.com/erasmus-without-paper/ewp-specs-api-mt-institutions/tree/v0.1.0"
+        uri="ewp-specs-api-mt-institutions-v0.1.0/response.xsd" />
+    <uri
+        name="https://github.com/erasmus-without-paper/ewp-specs-api-mt-dictionaries/blob/v0.1.0/manifest-entry.xsd"
+        uri="ewp-specs-api-mt-dictionaries-v0.1.0/manifest-entry.xsd" />
+    <uri
+        name="https://github.com/erasmus-without-paper/ewp-specs-api-mt-dictionaries/tree/v0.1.0"
+        uri="ewp-specs-api-mt-dictionaries-v0.1.0/response.xsd" />
 </catalog>
