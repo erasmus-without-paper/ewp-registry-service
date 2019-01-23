@@ -49,8 +49,7 @@ import eu.erasmuswithoutpaper.registry.validators.SemanticVersion;
 import eu.erasmuswithoutpaper.registry.validators.SemanticVersion.InvalidVersionString;
 import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus;
 import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus.Status;
-import eu.erasmuswithoutpaper.registry.validators.echovalidator.EchoValidator;
-import eu.erasmuswithoutpaper.registry.validators.institutionsvalidator.InstitutionsValidator;
+import eu.erasmuswithoutpaper.registry.validators.ValidatorKeyStore;
 import eu.erasmuswithoutpaper.registry.validators.web.ManifestApiEntry;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
@@ -98,14 +97,13 @@ public class UiController {
   private final NotifierService notifier;
   private final UptimeChecker uptimeChecker;
   private final EwpDocBuilder docBuilder;
-  private final EchoValidator echoTester;
-  private final InstitutionsValidator institutionsTester;
   private final SelfManifestProvider selfManifestProvider;
   private final ResourceLoader resLoader;
   private final CoverageMatrixGenerator matrixGenerator;
   private final RegistryClient regClient;
   private final CatalogueDependantCache catcache;
   private final ApiValidatorsManager apiValidatorsManager;
+  private final ValidatorKeyStore validatorKeyStore;
 
   private byte[] cachedCss;
   private String cachedCssFingerprint;
@@ -130,8 +128,6 @@ public class UiController {
    *     needed to display current uptime stats.
    * @param docBuilder
    *     needed to support online document validation service.
-   * @param echoTester
-   *     needed to support online Echo API validation service.
    * @param selfManifestProvider
    *     needed in Echo Validator responses.
    * @param resLoader
@@ -144,16 +140,19 @@ public class UiController {
    *     needed for caching the result of {@link CoverageMatrixGenerator}.
    * @param apiValidatorsManager
    *     needed to check if there are some tests for given api and version.
+   * @param validatorKeyStore
+   *     KeyStore providing credentials.
    */
   @Autowired
   public UiController(TaskExecutor taskExecutor,
       ManifestUpdateStatusRepository manifestUpdateStatuses, ManifestRepository manifestRepository,
       ManifestSourceProvider sourceProvider, RegistryUpdater updater, NotifierService notifier,
-      UptimeChecker uptimeChecker, EwpDocBuilder docBuilder, EchoValidator echoTester,
+      UptimeChecker uptimeChecker, EwpDocBuilder docBuilder,
       SelfManifestProvider selfManifestProvider, ResourceLoader resLoader,
       CoverageMatrixGenerator matrixGenerator, RegistryClient regClient,
-      CatalogueDependantCache catcache, InstitutionsValidator institutionsTester,
-      ApiValidatorsManager apiValidatorsManager) {
+      CatalogueDependantCache catcache,
+      ApiValidatorsManager apiValidatorsManager,
+      ValidatorKeyStore validatorKeyStore) {
     this.taskExecutor = taskExecutor;
     this.manifestStatusRepo = manifestUpdateStatuses;
     this.manifestRepository = manifestRepository;
@@ -162,14 +161,13 @@ public class UiController {
     this.notifier = notifier;
     this.uptimeChecker = uptimeChecker;
     this.docBuilder = docBuilder;
-    this.echoTester = echoTester;
     this.selfManifestProvider = selfManifestProvider;
     this.resLoader = resLoader;
     this.matrixGenerator = matrixGenerator;
     this.regClient = regClient;
     this.catcache = catcache;
-    this.institutionsTester = institutionsTester;
     this.apiValidatorsManager = apiValidatorsManager;
+    this.validatorKeyStore = validatorKeyStore;
   }
 
   /**
@@ -416,7 +414,7 @@ public class UiController {
    */
   @RequestMapping(path = "/validate-institutions", params = "url", method = RequestMethod.POST)
   public ResponseEntity<String> validateInstitutions(@RequestParam String url) {
-    return validateApi(url, this.institutionsTester);
+    return validateApi(url, this.apiValidatorsManager.getApiValidator("institutions"));
   }
 
   /**
@@ -433,7 +431,7 @@ public class UiController {
    */
   @RequestMapping(path = "/validate-echo", params = "url", method = RequestMethod.POST)
   public ResponseEntity<String> validateEcho(@RequestParam String url) {
-    return validateApi(url, this.echoTester);
+    return validateApi(url, this.apiValidatorsManager.getApiValidator("echo"));
   }
 
   /**
@@ -461,7 +459,7 @@ public class UiController {
     DateFormat isoDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
     Date validationStarted = new Date();
     info.addProperty("validationStarted", isoDateFormat.format(validationStarted));
-    Date clientKeysRegenerated = this.echoTester.getCredentialsGenerationDate();
+    Date clientKeysRegenerated = this.validatorKeyStore.getCredentialsGenerationDate();
     info.addProperty("clientKeysRegenerated", isoDateFormat.format(clientKeysRegenerated));
     info.addProperty(
         "clientKeysAgeWhenValidationStartedInSeconds",
@@ -720,6 +718,7 @@ public class UiController {
    * @param name Name of the API being tested.
    * @param version Version of the API being tested.
    * @param security Security ddescription to be tested.
+   * @return HTML with validation results.
    */
   @RequestMapping(path = "/validateApi", method = RequestMethod.POST)
   public ModelAndView validateApiVersion(@RequestParam String url, @RequestParam String name,
@@ -732,7 +731,7 @@ public class UiController {
     DateFormat isoDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
     Date validationStarted = new Date();
     info.put("validationStarted", isoDateFormat.format(validationStarted));
-    Date clientKeysRegenerated = this.echoTester.getCredentialsGenerationDate();
+    Date clientKeysRegenerated = this.validatorKeyStore.getCredentialsGenerationDate();
     info.put("clientKeysRegenerated", isoDateFormat.format(clientKeysRegenerated));
     info.put(
         "clientKeysAgeWhenValidationStartedInSeconds",

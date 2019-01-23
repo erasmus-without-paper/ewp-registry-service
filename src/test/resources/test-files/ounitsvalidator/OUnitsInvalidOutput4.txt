@@ -1,0 +1,76 @@
+
+### NOTICE: Check if our client credentials have been served long enough.
+
+Our client credentials are quite fresh. This means that many APIs will (correctly) return error responses in places where we expect HTTP 200. This notice will disappear once our credentials are 10 minutes old.
+
+
+### SUCCESS: Verifying the format of the URL. Expecting a valid HTTPS-scheme URL.
+### SUCCESS: Verifying if the URL is properly registered.
+
+### NOTICE: Querying for supported security methods. Validating http-security integrity.
+
+Notices:
+- You may consider allowing this API to by accessed by anonymous clients.
+- It is RECOMMENDED for all servers to support HTTP Signature Server Authentication.
+
+
+
+
+### SUCCESS: Get hei-ids covered by host managing this url.
+### SUCCESS: Use institutions API to obtain list of OUnits for one of covered HEI IDs.
+### SUCCESS: Request for one of known OUnit IDs, expect 200 OK.
+### SUCCESS: Request for one of known OUnit Codes, expect 200 OK.
+### SUCCESS: Request one unknown ounit_id, expect 200 and empty response.
+### SUCCESS: Request one known and one unknown Ounit ID, expect 200 and only one Ounit in response.
+### SUCCESS: Request one known and one unknown OUnit Code, expect 200 and only one OUnit in response.
+### SUCCESS: Request without HEI IDs and OUnit Ids, expect 400.
+### SUCCESS: Request without HEI IDs, expect 400.
+### SUCCESS: Request without OUnit IDs and codes, expect 400.
+### SUCCESS: Request for one of known OUnit IDs with unknown HEI ID, expect 400.
+### SUCCESS: Request for one of known OUnit Codes with unknown HEI ID, expect 400.
+### SUCCESS: Request more than <max-ounit-ids> known OUnit IDs, expect 400.
+### SUCCESS: Request more than <max-ounit-codes> known OUnit Codes, expect 400.
+### SUCCESS: Request more than <max-ounit-ids> unknown OUnit IDs, expect 400.
+### SUCCESS: Request more than <max-ounit-codes> unknown OUnit Codes, expect 400.
+### SUCCESS: Request exactly <max-ounit-ids> known OUnit IDs, expect 200 and <max-ounit-ids> OUnit IDs in response.
+### SUCCESS: Request exactly <max-ounit-codes> known OUnit Codes, expect 200 and <max-ounit-codes> OUnit Codes in response.
+### SUCCESS: Request with single incorrect parameter, expect 400.
+
+### FAILURE: Request with additional parameter, expect 200 and one OUnit in response.
+
+HTTP 200 expected, but HTTP 400 received.
+Unknown parameter
+
+
+### SUCCESS: Request with correct ounit_id and correct ounit_code, expect 400.
+### SUCCESS: Request with correct hei_id twice, expect 400.
+### SUCCESS: Request with correct hei_id and incorrect hei_id, expect 400.
+### SUCCESS: Trying Combination[-HTTT] with a PUT request. Expecting to receive a valid HTTP 405 error response.
+### SUCCESS: Trying Combination[-HTTT] with a DELETE request. Expecting to receive a valid HTTP 405 error response.
+### SUCCESS: Request for one of known OUnit IDs, expect 200 OK.
+### SUCCESS: Request for one of known OUnit Codes, expect 200 OK.
+### SUCCESS: Request one unknown ounit_id, expect 200 and empty response.
+### SUCCESS: Request one known and one unknown Ounit ID, expect 200 and only one Ounit in response.
+### SUCCESS: Request one known and one unknown OUnit Code, expect 200 and only one OUnit in response.
+### SUCCESS: Request without HEI IDs and OUnit Ids, expect 400.
+### SUCCESS: Request without HEI IDs, expect 400.
+### SUCCESS: Request without OUnit IDs and codes, expect 400.
+### SUCCESS: Request for one of known OUnit IDs with unknown HEI ID, expect 400.
+### SUCCESS: Request for one of known OUnit Codes with unknown HEI ID, expect 400.
+### SUCCESS: Request more than <max-ounit-ids> known OUnit IDs, expect 400.
+### SUCCESS: Request more than <max-ounit-codes> known OUnit Codes, expect 400.
+### SUCCESS: Request more than <max-ounit-ids> unknown OUnit IDs, expect 400.
+### SUCCESS: Request more than <max-ounit-codes> unknown OUnit Codes, expect 400.
+### SUCCESS: Request exactly <max-ounit-ids> known OUnit IDs, expect 200 and <max-ounit-ids> OUnit IDs in response.
+### SUCCESS: Request exactly <max-ounit-codes> known OUnit Codes, expect 200 and <max-ounit-codes> OUnit Codes in response.
+### SUCCESS: Request with single incorrect parameter, expect 400.
+
+### FAILURE: Request with additional parameter, expect 200 and one OUnit in response.
+
+HTTP 200 expected, but HTTP 400 received.
+Unknown parameter
+
+
+### SUCCESS: Request with correct ounit_id and correct ounit_code, expect 400.
+### SUCCESS: Request with correct hei_id twice, expect 400.
+### SUCCESS: Request with correct hei_id and incorrect hei_id, expect 400.

@@ -79,6 +79,14 @@ public class KnownNamespace {
 
   /**
    * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-ounits/blob/stable-v2/manifest-entry.xsd'>
+   * here</a>.
+   */
+  public static final KnownNamespace RESPONSE_OUNITS_V2 = new KnownNamespace("our2",
+      "api-ounits/tree/stable-v2", "api-ounits/stable-v2/response.xsd", false);
+
+  /**
+   * As described <a href=
    * 'https://github.com/erasmus-without-paper/ewp-specs-api-discovery/blob/stable-v4/manifest-entry.xsd'>
    * here</a>.
    */
@@ -141,7 +149,7 @@ public class KnownNamespace {
 
   /**
    * As described <a href=
-   * 'https://github.com/erasmus-without-paper/ewp-specs-api-institutions/blob/stable-v1/manifest-entry.xsd'>
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-ounits/blob/stable-v1/manifest-entry.xsd'>
    * here</a>.
    */
   public static final KnownNamespace APIENTRY_OUNITS_V1 =
@@ -150,7 +158,7 @@ public class KnownNamespace {
 
   /**
    * As described <a href=
-   * 'https://github.com/erasmus-without-paper/ewp-specs-api-institutions/blob/stable-v2/manifest-entry.xsd'>
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-ounits/blob/stable-v2/manifest-entry.xsd'>
    * here</a>.
    */
   public static final KnownNamespace APIENTRY_OUNITS_V2 =

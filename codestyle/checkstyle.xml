@@ -18,6 +18,10 @@ https://google-styleguide.googlecode.com/svn-history/r130/trunk/javaguide.html
             <property name="eachLine" value="true"/>
         </module>
 
+    <module name="SuppressionFilter">
+        <property name="file" value="codestyle/checkstyle_suppressions.xml"/>
+    </module>
+
     <module name="TreeWalker">
         <module name="OuterTypeFilename"/>
         <module name="IllegalTokenText">

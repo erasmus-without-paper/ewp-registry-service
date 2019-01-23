@@ -54,7 +54,9 @@ public class ManifestApiEntry {
    *
    * @param manifest
    *     contents of a v5 manifest
-   * @return List of ManifestApiEntrys, one for each API implemented in the manifest.
+   * @param manager
+   *     ApiValidatorsManager that is queried for available tests.
+   * @return List of ManifestApiEntries, one for each API implemented in the manifest.
    */
   public static List<ManifestApiEntry> parseManifest(String manifest,
       ApiValidatorsManager manager) {

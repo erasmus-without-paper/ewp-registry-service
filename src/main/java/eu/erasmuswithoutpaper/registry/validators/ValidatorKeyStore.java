@@ -170,6 +170,7 @@ public class ValidatorKeyStore {
 
   /**
    * Generates RSA KeyPair.
+   * @return Generated KeyPair.
    */
   public KeyPair generateKeyPair() {
     KeyPairGenerator generator;

@@ -17,6 +17,9 @@ public class SemanticVersion implements Comparable<SemanticVersion> {
 
   /**
    * Creates Semantic Version.
+   * @param major Major number.
+   * @param minor Minor number.
+   * @param patch Patch number.
    */
   public SemanticVersion(int major, int minor, int patch) {
     this.major = major;
@@ -27,6 +30,10 @@ public class SemanticVersion implements Comparable<SemanticVersion> {
 
   /**
    * Creates Semantic Version with release candidate.
+   * @param major Major number.
+   * @param minor Minor number.
+   * @param patch Patch number.
+   * @param releaseCandidate Release Candidate number.
    */
   public SemanticVersion(int major, int minor, int patch, int releaseCandidate) {
     this.major = major;
@@ -73,11 +80,11 @@ public class SemanticVersion implements Comparable<SemanticVersion> {
    * Check if this version is compatible with other. Version is compatible with other version if:
    * <ul>
    * <li>this.major == other major, and</li>
-   * <li>this.minor > other.minor, or</li>
-   * <ul>
+   * <li>this.minor {@literal >} other.minor, or</li>
+   * <li><ul>
    * <li>this.minor == other.minor and</li>
-   * <li>this.patch >= other.patch.</li>
-   * </ul>
+   * <li>this.patch {@literal >}= other.patch.</li>
+   * </ul></li>
    * </ul>
    * If this or other version is a release candidate only exact match is consider compatible.
    *

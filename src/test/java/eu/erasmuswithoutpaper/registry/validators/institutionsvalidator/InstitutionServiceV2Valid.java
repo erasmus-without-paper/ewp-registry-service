@@ -1,6 +1,5 @@
 package eu.erasmuswithoutpaper.registry.validators.institutionsvalidator;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -19,7 +18,7 @@ import eu.erasmuswithoutpaper.registry.validators.types.InstitutionsResponse;
 import eu.erasmuswithoutpaper.registry.validators.types.StringWithOptionalLang;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
-public class InstitutionServiceV2Valid extends AbstractInstitutionV2Service {
+public class InstitutionServiceV2Valid extends AbstractInstitutionService {
 
   protected final int max_hei_ids = 2;
   private final EwpHttpSigRequestAuthorizer myAuthorizer;
@@ -123,8 +122,7 @@ public class InstitutionServiceV2Valid extends AbstractInstitutionV2Service {
   }
 
   @Override
-  public Response handleInternetRequest2(Request request) throws IOException {
-
+  public Response handleInstitutionsInternetRequest(Request request) {
     if (!request.getUrl().startsWith(this.myEndpoint)) {
       return null;
     }
@@ -135,7 +133,7 @@ public class InstitutionServiceV2Valid extends AbstractInstitutionV2Service {
       List<String> heis = ExtractParams();
       CheckHeis(heis);
       List<InstitutionsResponse.Hei> heis_data = ProcessHeis(heis);
-      return createInstitutionsResponse(this.currentRequest, heis_data);
+      return createInstitutionsResponse(heis_data);
     } catch (ErrorResponseException e) {
       return e.response;
     }
@@ -201,7 +199,8 @@ public class InstitutionServiceV2Valid extends AbstractInstitutionV2Service {
   }
 
   protected void CheckRequestMethod() throws ErrorResponseException {
-    if (!(this.currentRequest.getMethod().equals("GET") || this.currentRequest.getMethod().equals("POST"))) {
+    if (!(this.currentRequest.getMethod().equals("GET")
+        || this.currentRequest.getMethod().equals("POST"))) {
       throw new ErrorResponseException(
           this.createErrorResponse(this.currentRequest, 405, "We expect GETs and POSTs only"));
     }

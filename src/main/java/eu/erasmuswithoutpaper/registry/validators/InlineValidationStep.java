@@ -37,6 +37,9 @@ public abstract class InlineValidationStep implements ValidationStepWithStatus {
 
     /**
      * Create a Failure with certain message and status for given response.
+     * @param message Cause of this failure.
+     * @param status Severity of this failure.
+     * @param serverResponse Response that caused failure.
      */
     public Failure(String message, Status status, Response serverResponse) {
       super(message);

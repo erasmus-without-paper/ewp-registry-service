@@ -30,8 +30,14 @@ public class Combination {
   private final HttpSecurityDescription securityDescription;
 
   /**
-   * Describes HTTP method, security methods used to authenticate user and server and encryption
-   * methods.
+   * Creates Combination from HTTP Method, url and entries of security description.
+   * @param httpmethod HTTP Method used to perform request.
+   * @param url URL to perform request to.
+   * @param apiEntry Manifest API Entry related to url.
+   * @param cliauth Client authentication method.
+   * @param srvauth Server authentication method.
+   * @param reqencr Request encryption method.
+   * @param resencr Response encryption method.
    */
   public Combination(String httpmethod, String url, Element apiEntry, CombEntry cliauth,
       CombEntry srvauth, CombEntry reqencr, CombEntry resencr) {
@@ -39,6 +45,21 @@ public class Combination {
     this.url = url;
     this.apiEntry = apiEntry;
     this.securityDescription = new HttpSecurityDescription(cliauth, srvauth, reqencr, resencr);
+  }
+
+  /**
+   * Creates Combination from HTTP Method, url and security description.
+   * @param httpmethod HTTP Method used to perform request.
+   * @param url URL to perform request to.
+   * @param apiEntry Manifest API Entry related to url.
+   * @param securityDescription Security methods to be used.
+   */
+  public Combination(String httpmethod, String url, Element apiEntry,
+      HttpSecurityDescription securityDescription) {
+    this.httpmethod = httpmethod;
+    this.url = url;
+    this.apiEntry = apiEntry;
+    this.securityDescription = securityDescription;
   }
 
   public static LinkedHashMap<String, String> getCombinationLegend() {
@@ -97,34 +118,70 @@ public class Combination {
     return this.url;
   }
 
+  /**
+   * Obtain copy of this object with changed client authentication method.
+   *
+   * @param cliAuthMethod client authentication method
+   *
+   * @return Combination with changed parameter.
+   */
   public Combination withChangedCliAuth(CombEntry cliAuthMethod) {
     return new Combination(this.getHttpMethod(), this.getUrl(), this.getApiEntry(), cliAuthMethod,
         this.getSrvAuth(), this.getReqEncr(), this.getResEncr());
   }
 
+  /**
+   * Obtain copy of this object with changed http method.
+   *
+   * @param httpMethod http method
+   * @return Combination with changed parameter.
+   */
   public Combination withChangedHttpMethod(String httpMethod) {
     return new Combination(httpMethod, this.getUrl(), this.getApiEntry(), this.getCliAuth(),
         this.getSrvAuth(), this.getReqEncr(), this.getResEncr());
   }
 
+  /**
+   * Obtain copy of this object with changed request encryption method.
+   *
+   * @param reqEncrMethod response encryption method.
+   * @return Combination with changed parameter.
+   */
   public Combination withChangedReqEncr(CombEntry reqEncrMethod) {
     return new Combination(this.getHttpMethod(), this.getUrl(), this.getApiEntry(),
         this.getCliAuth(), this.getSrvAuth(), reqEncrMethod, this.getResEncr());
   }
 
+  /**
+   * Obtain copy of this object with changed response encryption method.
+   *
+   * @param resEncrMethod response encryption method.
+   * @return Combination with changed parameter.
+   */
   public Combination withChangedResEncr(CombEntry resEncrMethod) {
     return new Combination(this.getHttpMethod(), this.getUrl(), this.getApiEntry(),
         this.getCliAuth(), this.getSrvAuth(), this.getReqEncr(), resEncrMethod);
   }
 
+  /**
+   * Obtain copy of this object with changed server authentication method.
+   *
+   * @param srvAuthMethod server authentication method.
+   * @return Combination with changed parameter.
+   */
   public Combination withChangedSrvAuth(CombEntry srvAuthMethod) {
     return new Combination(this.getHttpMethod(), this.getUrl(), this.getApiEntry(),
         this.getCliAuth(), srvAuthMethod, this.getReqEncr(), this.getResEncr());
   }
 
+  /**
+   * Obtain copy of this object with changed url.
+   *
+   * @param url url to use.
+   * @return Combination with changed parameter.
+   */
   public Combination withChangedUrl(String url) {
     return new Combination(this.getHttpMethod(), url, this.getApiEntry(), this.getCliAuth(),
         this.getSrvAuth(), this.getReqEncr(), this.getResEncr());
   }
-
 }

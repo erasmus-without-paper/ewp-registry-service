@@ -3,6 +3,8 @@ package eu.erasmuswithoutpaper.registry.validators;
 import java.util.LinkedHashMap;
 import java.util.Objects;
 
+import eu.erasmuswithoutpaper.registry.validators.echovalidator.HttpSecuritySettings;
+
 /**
  * Describes HTTP method, security methods used to authenticate user and server and encryption
  * methods.
@@ -31,6 +33,10 @@ public class HttpSecurityDescription {
 
   /**
    * Creates security description with given possibilities.
+   * @param cliauth Client authentication method.
+   * @param srvauth Server authentication method.
+   * @param reqencr Request encryption method.
+   * @param resencr Response encryption method.
    */
   public HttpSecurityDescription(CombEntry cliauth, CombEntry srvauth, CombEntry reqencr,
       CombEntry resencr) {
@@ -183,6 +189,47 @@ public class HttpSecurityDescription {
         + "\n" + getExplanationPart(reqencr.getCode(), 2)
         + "\n" + getExplanationPart(resencr.getCode(), 3);
 
+  }
+
+  /**
+   * Checks is this security description is compatible with security settings provided in parameter.
+   * @param httpSecurity HttpSecuritySettings to be compared against.
+   * @return True, if httpSecurity supports methods described by this object.
+   */
+  public boolean isCompatible(HttpSecuritySettings httpSecurity) {
+    if (this.cliauth == CombEntry.CLIAUTH_NONE && !httpSecurity.supportsCliAuthNone()) {
+      return false;
+    }
+    if (this.cliauth == CombEntry.CLIAUTH_TLSCERT_SELFSIGNED
+        && !httpSecurity.supportsCliAuthTlsCertSelfSigned()) {
+      return false;
+    }
+    if (this.cliauth == CombEntry.CLIAUTH_HTTPSIG && !httpSecurity.supportsCliAuthHttpSig()) {
+      return false;
+    }
+
+    if (this.srvauth == CombEntry.SRVAUTH_TLSCERT && !httpSecurity.supportsSrvAuthTlsCert()) {
+      return false;
+    }
+    if (this.srvauth == CombEntry.SRVAUTH_TLSCERT && !httpSecurity.supportsSrvAuthTlsCert()) {
+      return false;
+    }
+
+    if (this.reqencr == CombEntry.REQENCR_EWP && !httpSecurity.supportsReqEncrEwp()) {
+      return false;
+    }
+    if (this.reqencr == CombEntry.REQENCR_TLS && !httpSecurity.supportsReqEncrTls()) {
+      return false;
+    }
+
+    if (this.resencr == CombEntry.RESENCR_EWP && !httpSecurity.supportsResEncrEwp()) {
+      return false;
+    }
+    if (this.resencr == CombEntry.RESENCR_TLS && !httpSecurity.supportsResEncrTls()) {
+      return false;
+    }
+
+    return true;
   }
 
   public static class InvalidDescriptionString extends Exception {}

@@ -138,6 +138,18 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
   }
 
   /**
+   * Add a new setup step and run it. Setup steps are required to finish without failure.
+   *
+   * @param step
+   *     Setup step to be added and run.
+   * @throws SuiteBroken
+   *     If setup step fails.
+   */
+  protected void setup(InlineValidationStep step) throws SuiteBroken {
+    addAndRun(true, step);
+  }
+
+  /**
    * Add a new step (to the public list of steps been run) and run it.
    *
    * @param requireSuccess
@@ -282,6 +294,11 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
   /**
    * Helper method for creating simple request method validation steps (e.g. run a PUT request and
    * expect error, run a POST and expect success).
+   *
+   * @param combination
+   *     combination to test with.
+   * @return ValidationStep
+   *     performing simple request with selected method.
    */
   protected InlineValidationStep createHttpMethodValidationStep(Combination combination) {
     return new InlineValidationStep() {
@@ -432,10 +449,16 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
   }
 
   /**
-   * Make the request and check if the response contains a valid error of expected type.
+   * Check if the response contains a valid error of expected type.
    *
+   * @param step
+   *     validation step associated with this response.
+   * @param combination
+   *     combination with which request was made.
    * @param request
-   *     The request to be made.
+   *     The request that triggered the response.
+   * @param response
+   *     Response to be tested.
    * @param statuses
    *     Expected HTTP response statuses (any of those).
    * @throws Failure
@@ -544,26 +567,24 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
     }
   }
 
-  protected NodeList selectFromDocument(Element rootElement, String selector) {
+  protected List<String> selectFromDocument(Element rootElement, String selector) {
     if (rootElement == null) {
-      return null;
+      return new ArrayList<>();
     }
     try {
       XPathFactory xpathFactory = XPathFactory.newInstance();
       XPath xpath = xpathFactory.newXPath();
-      return (NodeList) xpath.evaluate(selector, rootElement, XPathConstants.NODESET);
+      NodeList nodeList = (NodeList) xpath.evaluate(selector, rootElement, XPathConstants.NODESET);
+      return getTextFromNodeList(nodeList);
     } catch (XPathExpressionException e) {
-      return null;
+      return new ArrayList<>();
     }
   }
 
-  protected List<String> nodeListToText(NodeList nl) {
-    if (nl == null) {
-      return new ArrayList<>();
-    }
+  private List<String> getTextFromNodeList(NodeList nodeList) {
     ArrayList<String> ret = new ArrayList<>();
-    for (int i = 0; i < nl.getLength(); i++) {
-      ret.add(nl.item(i).getTextContent());
+    for (int i = 0; i < nodeList.getLength(); i++) {
+      ret.add(nodeList.item(i).getTextContent());
     }
     return ret;
   }

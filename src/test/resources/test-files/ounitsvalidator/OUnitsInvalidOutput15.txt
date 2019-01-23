@@ -1,0 +1,26 @@
+
+### NOTICE: Check if our client credentials have been served long enough.
+
+Our client credentials are quite fresh. This means that many APIs will (correctly) return error responses in places where we expect HTTP 200. This notice will disappear once our credentials are 10 minutes old.
+
+
+### SUCCESS: Verifying the format of the URL. Expecting a valid HTTPS-scheme URL.
+### SUCCESS: Verifying if the URL is properly registered.
+
+### NOTICE: Querying for supported security methods. Validating http-security integrity.
+
+Notices:
+- You may consider allowing this API to by accessed by anonymous clients.
+- It is RECOMMENDED for all servers to support HTTP Signature Server Authentication.
+
+
+
+
+### SUCCESS: Get hei-ids covered by host managing this url.
+### SUCCESS: Use institutions API to obtain list of OUnits for one of covered HEI IDs.
+
+### FAILURE: Request for one of known OUnit IDs, expect 200 OK.
+
+The response has proper HTTP status and it passed the schema validation. However, the set of returned hei-ids doesn't match what we expect. It contains <ounit-id>invalid-id</ounit-id>, but it shouldn't. It should contain the following: [ounit-1]
+
+

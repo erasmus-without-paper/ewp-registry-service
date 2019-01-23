@@ -250,6 +250,9 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <excludePackageNames>eu.erasmuswithoutpaper.registry.validators.types</excludePackageNames>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -312,9 +315,9 @@
                     <rulesets>
                         <ruleset>codestyle/pmd-ruleset.xml</ruleset>
                     </rulesets>
-                      <excludeRoots>
+                    <excludeRoots>
                         <excludeRoot>target/generated-sources/jaxb</excludeRoot>
-                      </excludeRoots>
+                    </excludeRoots>
                 </configuration>
                 <executions>
                     <execution>
@@ -352,6 +355,7 @@
                     <packageName>eu.erasmuswithoutpaper.registry.validators.types</packageName>
                     <sources>
                         <source>src/main/resources/schemas/ewp-specs-api-institutions-v2.1.0/response.xsd</source>
+                        <source>src/main/resources/schemas/ewp-specs-api-ounits-v2.1.0/response.xsd</source>
                     </sources>
                 </configuration>
             </plugin>

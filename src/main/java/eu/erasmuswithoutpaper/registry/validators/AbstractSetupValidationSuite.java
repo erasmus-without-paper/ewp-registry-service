@@ -73,7 +73,7 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
     return new ArrayList<>();
   }
 
-  protected void runApiSpecificTests(HttpSecurityDescription security) {
+  protected void runApiSpecificTests(HttpSecurityDescription security) throws SuiteBroken {
     //intentionally left empty
   }
 

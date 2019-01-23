@@ -203,6 +203,15 @@ public class KnownElement {
       );
 
   /**
+   * The root of the Organizational Units API v2 response.
+   */
+  public static final KnownElement RESPONSE_OUNITS_V2 =
+      new KnownElement(KnownNamespace.RESPONSE_OUNITS_V2,
+          "ounits-response",
+          "Organizational Units API Response"
+      );
+
+  /**
    * Support declaration for Anonymous Client Authentication.
    */
   public static final KnownElement SECENTRY_CLIAUTH_NONE_V1 =

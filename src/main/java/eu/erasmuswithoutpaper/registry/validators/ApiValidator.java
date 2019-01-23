@@ -136,6 +136,8 @@ public abstract class ApiValidator<S extends SuiteState> {
   /**
    * Generate a certificate for given KeyPair.
    *
+   * @param keyPair
+   *     keyPair to use.
    * @return Certificate
    */
   public X509Certificate generateCertificate(KeyPair keyPair) {
@@ -144,6 +146,8 @@ public abstract class ApiValidator<S extends SuiteState> {
 
   /**
    * Generates RSA KeyPair.
+   *
+   * @return generated KeyPair.
    */
   public KeyPair generateKeyPair() {
     return validatorKeyStore.generateKeyPair();

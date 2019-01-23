@@ -50,6 +50,9 @@ public class DecodingHelper {
 
   /**
    * Decodes a response.
+   * @param step Validation step related to this operation.
+   * @param response Response to decode.
+   * @throws Failure When response cannot be decoded.
    */
   public void decode(InlineValidationStep step, Response response) throws Failure {
     Set<String> unsatisfied = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
