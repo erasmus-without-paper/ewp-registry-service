@@ -12,15 +12,11 @@ import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigRequestAuthorizer;
 import eu.erasmuswithoutpaper.registry.internet.sec.Http4xx;
-import eu.erasmuswithoutpaper.registry.validators.EWPCountryCode;
-import eu.erasmuswithoutpaper.registry.validators.EWPEither;
-import eu.erasmuswithoutpaper.registry.validators.EWPFlexibleAddress;
-import eu.erasmuswithoutpaper.registry.validators.EWPHTTPWithOptionalLang;
-import eu.erasmuswithoutpaper.registry.validators.EWPStringWithOptionalLang;
-import eu.erasmuswithoutpaper.registry.validators.EWPUrlHTTP;
-import eu.erasmuswithoutpaper.registry.validators.EWPUrlHTTPS;
 import eu.erasmuswithoutpaper.registry.validators.ValidatorKeyStore;
-import eu.erasmuswithoutpaper.registry.validators.XMLSchemaRef;
+import eu.erasmuswithoutpaper.registry.validators.types.FlexibleAddress;
+import eu.erasmuswithoutpaper.registry.validators.types.HTTPWithOptionalLang;
+import eu.erasmuswithoutpaper.registry.validators.types.InstitutionsResponse;
+import eu.erasmuswithoutpaper.registry.validators.types.StringWithOptionalLang;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 public class InstitutionServiceV2Valid extends AbstractInstitutionV2Service {
@@ -29,61 +25,64 @@ public class InstitutionServiceV2Valid extends AbstractInstitutionV2Service {
   private final EwpHttpSigRequestAuthorizer myAuthorizer;
   private final List<String> coveredHeiIds;
   protected Request currentRequest;
-  protected Map<String, HEIData> coveredHeis = new HashMap<>();
-  protected List<HEIData> coveredHeisList = new ArrayList<>();
+  protected Map<String, InstitutionsResponse.Hei> coveredHeis = new HashMap<>();
+  protected List<InstitutionsResponse.Hei> coveredHeisList = new ArrayList<>();
 
-  public InstitutionServiceV2Valid(String url, RegistryClient registryClient,
-      ValidatorKeyStore validatorKeyStore) {
-    super(url, registryClient);
-    this.myAuthorizer = new EwpHttpSigRequestAuthorizer(this.registryClient);
-    coveredHeiIds = validatorKeyStore.getCoveredHeiIDs();
-
-    //Create fake HEIs
-    HEIData d1 = createFakeHeiData(coveredHeiIds.get(0));
-    addHei(d1);
-
-    HEIData d2 = createFakeHeiData(coveredHeiIds.get(1));
-    d2.mobility_factsheet_url = Arrays
-        .asList(new EWPHTTPWithOptionalLang(new EWPUrlHTTP("https://test.1")),
-            new EWPHTTPWithOptionalLang(new EWPUrlHTTP("https://test.2/en"), "EN"));
-    addHei(d2);
-  }
-
-  private void addHei(HEIData data) {
-    coveredHeis.put(data.hei_id, data);
+  private void addHei(InstitutionsResponse.Hei data) {
+    coveredHeis.put(data.getHeiId(), data);
     coveredHeisList.add(data);
   }
 
-  protected HEIData createFakeHeiData(String heiid) {
-    HEIData data = new HEIData();
-    data.hei_id = heiid;
-    data.name = new EWPStringWithOptionalLang("Test1", "EN");
-    data.name_ = Arrays.asList(new EWPStringWithOptionalLang("Test2"),
-        new EWPStringWithOptionalLang("Test3", "PL"));
-    data.abbreviation = "TST";
-    data.contact = null;
-    data.logo_url = new EWPUrlHTTPS("https://logo.url");
-    data.mailing_address = new XMLSchemaRef<>(new EWPFlexibleAddress(), "a");
+  protected InstitutionsResponse.Hei createFakeHeiData(String heiid) {
+    InstitutionsResponse.Hei data = new InstitutionsResponse.Hei();
+    data.setHeiId(heiid);
 
-    EWPFlexibleAddress.AdvancedAddress adr = new EWPFlexibleAddress.AdvancedAddress();
-    adr.buildingName = "bn1";
-    adr.buildingNumber = "bnum2";
-    adr.deliveryPointCode = Arrays.asList("dpc1", "dpc2");
-    adr.floor = "1";
-    adr.postBoxOffice = "bo1";
-    adr.streetName = "street1";
-    adr.unit = "unit";
-    data.mailing_address.elem.address = EWPEither.fromRight(adr);
-    data.mailing_address.elem.country = new EWPCountryCode("PL");
-    data.mailing_address.elem.locality = "locality";
-    data.mailing_address.elem.postalCode = "postal code";
-    data.mailing_address.elem.recipientName = Arrays.asList("name1", "name2");
-    data.mailing_address.elem.region = "reg1";
-    data.mobility_factsheet_url =
-        Arrays.asList(new EWPHTTPWithOptionalLang(new EWPUrlHTTP("https://test.1")));
-    data.ounit_id = GetCoveredOUnits();
-    data.root_ounit_id = GetRootOUnit();
-    data.website_url = new EWPHTTPWithOptionalLang(new EWPUrlHTTP("https://www.test.pl"), "PL");
+    StringWithOptionalLang stringWithOptionalLang1 = new StringWithOptionalLang();
+    stringWithOptionalLang1.setValue("Test1");
+    stringWithOptionalLang1.setLang("EN");
+    data.getName().add(stringWithOptionalLang1);
+
+    StringWithOptionalLang stringWithOptionalLang2 = new StringWithOptionalLang();
+    stringWithOptionalLang2.setValue("Test2");
+    data.getName().add(stringWithOptionalLang2);
+
+    StringWithOptionalLang stringWithOptionalLang3 = new StringWithOptionalLang();
+    stringWithOptionalLang3.setValue("Test1");
+    stringWithOptionalLang1.setLang("EN");
+    data.getName().add(stringWithOptionalLang1);
+
+    data.setAbbreviation("TST");
+    data.setLogoUrl("https://logo.url");
+
+    FlexibleAddress flexibleAddress = new FlexibleAddress();
+    flexibleAddress.setCountry("PL");
+    flexibleAddress.setLocality("locality");
+    flexibleAddress.setPostalCode("postal code");
+    flexibleAddress.getRecipientName().add("name1");
+    flexibleAddress.getRecipientName().add("name2");
+    flexibleAddress.setRegion("reg1");
+
+    flexibleAddress.setBuildingName("bn1");
+    flexibleAddress.setBuildingNumber("42");
+    flexibleAddress.getDeliveryPointCode().add("dpc1");
+    flexibleAddress.getDeliveryPointCode().add("dpc2");
+    flexibleAddress.setFloor("1");
+    flexibleAddress.setPostOfficeBox("bo1");
+    flexibleAddress.setStreetName("street1");
+    flexibleAddress.setUnit("unit");
+    data.setMailingAddress(flexibleAddress);
+
+    HTTPWithOptionalLang httpWithOptionalLang1 = new HTTPWithOptionalLang();
+    httpWithOptionalLang1.setValue("https://test.1");
+    data.getMobilityFactsheetUrl().add(httpWithOptionalLang1);
+
+    data.getOunitId().addAll(GetCoveredOUnits());
+    data.setRootOunitId(GetRootOUnit());
+
+    HTTPWithOptionalLang httpWithOptionalLang2 = new HTTPWithOptionalLang();
+    httpWithOptionalLang2.setValue("https://test.1");
+    httpWithOptionalLang2.setLang("PL");
+    data.getWebsiteUrl().add(httpWithOptionalLang2);
     return data;
   }
 
@@ -99,6 +98,30 @@ public class InstitutionServiceV2Valid extends AbstractInstitutionV2Service {
     return coveredHeiIds;
   }
 
+  public InstitutionServiceV2Valid(String url, RegistryClient registryClient,
+    ValidatorKeyStore validatorKeyStore) {
+    super(url, registryClient);
+    this.myAuthorizer = new EwpHttpSigRequestAuthorizer(this.registryClient);
+    coveredHeiIds = validatorKeyStore.getCoveredHeiIDs();
+
+    //Create fake HEIs
+    InstitutionsResponse.Hei d1 = createFakeHeiData(coveredHeiIds.get(0));
+    addHei(d1);
+
+    InstitutionsResponse.Hei d2 = createFakeHeiData(coveredHeiIds.get(1));
+    d2.getMobilityFactsheetUrl().clear();
+
+    HTTPWithOptionalLang httpWithOptionalLang1 = new HTTPWithOptionalLang();
+    httpWithOptionalLang1.setValue("https://test.1");
+    d2.getMobilityFactsheetUrl().add(httpWithOptionalLang1);
+
+    HTTPWithOptionalLang httpWithOptionalLang2 = new HTTPWithOptionalLang();
+    httpWithOptionalLang2.setValue("https://test.1/en");
+    httpWithOptionalLang2.setLang("EN");
+    d2.getMobilityFactsheetUrl().add(httpWithOptionalLang2);
+    addHei(d2);
+  }
+
   @Override
   public Response handleInternetRequest2(Request request) throws IOException {
 
@@ -111,7 +134,7 @@ public class InstitutionServiceV2Valid extends AbstractInstitutionV2Service {
       CheckRequestMethod();
       List<String> heis = ExtractParams();
       CheckHeis(heis);
-      List<HEIData> heis_data = ProcessHeis(heis);
+      List<InstitutionsResponse.Hei> heis_data = ProcessHeis(heis);
       return createInstitutionsResponse(this.currentRequest, heis_data);
     } catch (ErrorResponseException e) {
       return e.response;
@@ -153,8 +176,8 @@ public class InstitutionServiceV2Valid extends AbstractInstitutionV2Service {
   }
 
   protected void CheckParamsEncoding() throws ErrorResponseException {
-    if (this.currentRequest.getMethod().equals("POST") && !this.currentRequest
-        .getHeader("content-type").equals("application/x-www-form-urlencoded")) {
+    if (this.currentRequest.getMethod().equals("POST")
+        && !this.currentRequest.getHeader("content-type").equals("application/x-www-form-urlencoded")) {
       throw new ErrorResponseException(
           createErrorResponse(this.currentRequest, 415, "Unsupported content-type"));
     }
@@ -178,24 +201,25 @@ public class InstitutionServiceV2Valid extends AbstractInstitutionV2Service {
   }
 
   protected void CheckRequestMethod() throws ErrorResponseException {
-    if (!(this.currentRequest.getMethod().equals("GET") || this.currentRequest.getMethod()
-        .equals("POST"))) {
+    if (!(this.currentRequest.getMethod().equals("GET") || this.currentRequest.getMethod().equals("POST"))) {
       throw new ErrorResponseException(
           this.createErrorResponse(this.currentRequest, 405, "We expect GETs and POSTs only"));
     }
   }
 
-  protected void ProcessCoveredHei(String hei, List<HEIData> heis) throws ErrorResponseException {
+  protected void ProcessCoveredHei(String hei, List<InstitutionsResponse.Hei> heis)
+      throws ErrorResponseException {
     heis.add(coveredHeis.get(hei));
   }
 
-  protected void ProcessNotCoveredHei(String hei, List<HEIData> heis)
+  protected void ProcessNotCoveredHei(String hei, List<InstitutionsResponse.Hei> heis)
       throws ErrorResponseException {
     //Ignore
   }
 
-  protected List<HEIData> ProcessHeis(List<String> heis) throws ErrorResponseException {
-    List<HEIData> ret = new ArrayList<>();
+  protected List<InstitutionsResponse.Hei> ProcessHeis(List<String> heis)
+      throws ErrorResponseException {
+    List<InstitutionsResponse.Hei> ret = new ArrayList<>();
     for (String hei : heis) {
       if (coveredHeis.containsKey(hei)) {
         ProcessCoveredHei(hei, ret);

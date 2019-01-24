@@ -1,8 +1,8 @@
 package eu.erasmuswithoutpaper.registry.validators.institutionsvalidator;
 
-import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
+import eu.erasmuswithoutpaper.registry.validators.types.InstitutionsResponse;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 import java.util.List;
@@ -18,12 +18,8 @@ public abstract class AbstractInstitutionV2Service extends AbstractInstitutionSe
     }
 
     protected Response createInstitutionsResponse(
-            Request _request,
-            List<HEIData> _heis) {
-        return createInstitutionsResponse(
-            _request,
-            KnownNamespace.RESPONSE_INSTITUTIONS_V2.getNamespaceUri(),
-            _heis
-        );
+            Request request,
+            List<InstitutionsResponse.Hei> heis) {
+        return super.createInstitutionsResponse(request, heis);
     }
 }

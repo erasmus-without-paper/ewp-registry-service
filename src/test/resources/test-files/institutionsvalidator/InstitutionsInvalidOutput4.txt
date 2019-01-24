@@ -29,7 +29,7 @@ Notices:
 ### FAILURE: Request with additional parameter, expect 200 and one hei_id response.
 
 HTTP 200 expected, but HTTP 400 received.
-Expected only "hei_id" parameters
+Expected only hei_id parameters
 
 
 ### SUCCESS: Trying Combination[-HTTT] with a PUT request. Expecting to receive a valid HTTP 405 error response.
@@ -47,6 +47,6 @@ Expected only "hei_id" parameters
 ### FAILURE: Request with additional parameter, expect 200 and one hei_id response.
 
 HTTP 200 expected, but HTTP 400 received.
-Expected only "hei_id" parameters
+Expected only hei_id parameters
 
 

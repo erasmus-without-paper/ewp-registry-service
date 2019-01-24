@@ -13,6 +13,7 @@ import eu.erasmuswithoutpaper.registry.sourceprovider.TestManifestSourceProvider
 import eu.erasmuswithoutpaper.registry.updater.RegistryUpdater;
 import eu.erasmuswithoutpaper.registry.validators.SemanticVersion;
 import eu.erasmuswithoutpaper.registry.validators.ValidatorKeyStore;
+import eu.erasmuswithoutpaper.registry.validators.types.InstitutionsResponse;
 import eu.erasmuswithoutpaper.registry.web.SelfManifestProvider;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 import org.apache.xerces.impl.dv.util.Base64;
@@ -182,7 +183,7 @@ public class InstitutionValidatorTest extends AbstractApiTest {
           protected void ExtractParamsMultipleParams(Map<String, List<String>> params)
               throws ErrorResponseException {
             throw new ErrorResponseException(
-                createErrorResponse(this.currentRequest, 400, "Expected only \"hei_id\" parameters")
+                createErrorResponse(this.currentRequest, 400, "Expected only hei_id parameters")
             );
           }
         },
@@ -249,7 +250,7 @@ public class InstitutionValidatorTest extends AbstractApiTest {
     serviceTest(
         new InstitutionServiceV2Valid(url, this.client, validatorKeyStore) {
           @Override
-          protected void ProcessNotCoveredHei(String hei, List<HEIData> heis)
+          protected void ProcessNotCoveredHei(String hei, List<InstitutionsResponse.Hei> heis)
               throws ErrorResponseException {
             heis.add(createFakeHeiData(hei));
           }
@@ -267,7 +268,7 @@ public class InstitutionValidatorTest extends AbstractApiTest {
     serviceTest(
         new InstitutionServiceV2Valid(url, this.client, validatorKeyStore) {
           @Override
-          protected void ProcessNotCoveredHei(String hei, List<HEIData> heis)
+          protected void ProcessNotCoveredHei(String hei, List<InstitutionsResponse.Hei> heis)
               throws ErrorResponseException {
             throw new ErrorResponseException(
                 this.createErrorResponse(this.currentRequest, 400, "Unknown HEI ID encountered")
