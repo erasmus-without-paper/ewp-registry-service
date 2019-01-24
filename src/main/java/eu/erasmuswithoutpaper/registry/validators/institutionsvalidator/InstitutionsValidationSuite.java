@@ -192,13 +192,13 @@ class InstitutionsValidationSuite extends AbstractValidationSuite {
 
     testParameters200(combination,
         "Request for one of known HEI IDs, expect 200 OK.",
-        Arrays.asList(new Parameter("hei-id", heis.get(0))),
+        Arrays.asList(new Parameter("hei_id", heis.get(0))),
         new InstitutionsVerifier(Collections.singletonList(heis.get(0)))
     );
 
     testParameters200(combination,
         "Request one unknown HEI ID, expect 200 and empty response.",
-        Collections.singletonList(new Parameter("hei-id", fakeHeiId)),
+        Collections.singletonList(new Parameter("hei_id", fakeHeiId)),
         new InstitutionsVerifier(new ArrayList<>())
     );
 
@@ -206,8 +206,8 @@ class InstitutionsValidationSuite extends AbstractValidationSuite {
       testParameters200(combination,
           "Request one known and one unknown HEI ID, expect 200 and only one HEI in response.",
           Arrays.asList(
-              new Parameter("hei-id", heis.get(0)),
-              new Parameter("hei-id", fakeHeiId)
+              new Parameter("hei_id", heis.get(0)),
+              new Parameter("hei_id", fakeHeiId)
           ),
           new InstitutionsVerifier(Collections.singletonList(heis.get(0)))
       );
@@ -221,34 +221,34 @@ class InstitutionsValidationSuite extends AbstractValidationSuite {
 
     testParametersError(combination,
         "Request more than <max-hei-ids> known HEIs, expect 400.",
-        Collections.nCopies(maxHeiIds + 1, new Parameter("hei-id", heis.get(0))),
+        Collections.nCopies(maxHeiIds + 1, new Parameter("hei_id", heis.get(0))),
         400
     );
 
     testParametersError(combination,
         "Request more than <max-hei-ids> unknown HEI IDs, expect 400.",
-        Collections.nCopies(maxHeiIds + 1, new Parameter("hei-id", fakeHeiId)),
+        Collections.nCopies(maxHeiIds + 1, new Parameter("hei_id", fakeHeiId)),
         400
     );
 
     testParameters200(combination,
         "Request exactly <max-hei-ids> known HEI IDs, "
             + "expect 200 and <max-hei-ids> HEI IDs in response.",
-        Collections.nCopies(maxHeiIds, new Parameter("hei-id", heis.get(0))),
+        Collections.nCopies(maxHeiIds, new Parameter("hei_id", heis.get(0))),
         new InstitutionsVerifier(Collections.nCopies(maxHeiIds, heis.get(0)))
     );
 
     testParametersError(combination,
         "Request with single incorrect parameter, expect 400.",
-        Arrays.asList(new Parameter("hei-id-param", heis.get(0))),
+        Arrays.asList(new Parameter("hei_id_param", heis.get(0))),
         400
     );
 
     testParametersError(combination,
         "Request with additional parameter, expect 400.",
         Arrays.asList(
-            new Parameter("hei-id", heis.get(0)),
-            new Parameter("hei-id-param", heis.get(0))
+            new Parameter("hei_id", heis.get(0)),
+            new Parameter("hei_id_param", heis.get(0))
         ),
         400
     );

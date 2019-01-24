@@ -150,13 +150,13 @@ public class InstitutionServiceV2Valid extends AbstractInstitutionV2Service {
     if (params.size() == 0) {
       ExtractParamsNoParams(params);
     }
-    if (params.size() == 1 && !params.containsKey("hei-id")) {
+    if (params.size() == 1 && !params.containsKey("hei_id")) {
       ExtractParamsNoHeiIds(params);
     }
     if (params.size() > 1) {
       ExtractParamsMultipleParams(params);
     }
-    List<String> ret = params.get("hei-id");
+    List<String> ret = params.get("hei_id");
     if (ret != null) {
       return ret;
     }
@@ -175,14 +175,14 @@ public class InstitutionServiceV2Valid extends AbstractInstitutionV2Service {
   protected void ExtractParamsMultipleParams(Map<String, List<String>> params)
       throws ErrorResponseException {
     throw new ErrorResponseException(
-      createErrorResponse(this.currentRequest, 400, "Expected only \"hei-id\" parameters")
+      createErrorResponse(this.currentRequest, 400, "Expected only \"hei_id\" parameters")
     );
   }
 
   protected void ExtractParamsNoHeiIds(Map<String, List<String>> params)
       throws ErrorResponseException {
     throw new ErrorResponseException(
-      createErrorResponse(this.currentRequest, 400, "Expected \"hei-id\" parameters")
+      createErrorResponse(this.currentRequest, 400, "Expected \"hei_id\" parameters")
     );
   }
 
