@@ -20,6 +20,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.security.KeyPair;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -101,7 +103,6 @@ public class InstitutionValidatorTest extends AbstractApiTest {
       assertThat(this.getValidatorReport(url))
         .isEqualTo(this.getFileAsString(filename));
       this.internet.removeFakeInternetService(service);
-
     } finally {
       this.internet.clearAll();
     }
@@ -171,7 +172,7 @@ public class InstitutionValidatorTest extends AbstractApiTest {
   }
 
   /**
-   * Ignores parameters that aren't 'hei-id'
+   * Returns 400 if passed parameters other than "hei_id"
    */
   @Test
   public void testAgainstInstitutionsInvalid4() {
@@ -181,7 +182,9 @@ public class InstitutionValidatorTest extends AbstractApiTest {
           @Override
           protected void ExtractParamsMultipleParams(Map<String, List<String>> params)
               throws ErrorResponseException {
-            //Ignore unknown parameters.
+            throw new ErrorResponseException(
+                createErrorResponse(this.currentRequest, 400, "Expected only \"hei_id\" parameters")
+            );
           }
         },
         url, "institutionsvalidator/InstitutionsInvalidOutput4.txt"

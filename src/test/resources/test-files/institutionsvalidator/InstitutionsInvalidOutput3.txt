@@ -37,7 +37,7 @@ Exceeded max-hei-ids parameter
 
 
 ### SUCCESS: Request with single incorrect parameter, expect 400.
-### SUCCESS: Request with additional parameter, expect 400.
+### SUCCESS: Request with additional parameter, expect 200 and one hei_id response.
 ### SUCCESS: Trying Combination[-HTTT] with a PUT request. Expecting to receive a valid HTTP 405 error response.
 ### SUCCESS: Trying Combination[-HTTT] with a DELETE request. Expecting to receive a valid HTTP 405 error response.
 ### SUCCESS: Check if this host covers any institution.
@@ -61,4 +61,4 @@ Exceeded max-hei-ids parameter
 
 
 ### SUCCESS: Request with single incorrect parameter, expect 400.
-### SUCCESS: Request with additional parameter, expect 400.
+### SUCCESS: Request with additional parameter, expect 200 and one hei_id response.

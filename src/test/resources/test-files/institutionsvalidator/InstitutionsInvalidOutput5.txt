@@ -25,7 +25,7 @@ Notices:
 ### SUCCESS: Request more than <max-hei-ids> unknown HEI IDs, expect 400.
 ### SUCCESS: Request exactly <max-hei-ids> known HEI IDs, expect 200 and <max-hei-ids> HEI IDs in response.
 ### SUCCESS: Request with single incorrect parameter, expect 400.
-### SUCCESS: Request with additional parameter, expect 400.
+### SUCCESS: Request with additional parameter, expect 200 and one hei_id response.
 
 ### WARNING: Trying Combination[-HTTT] with a PUT request. Expecting to receive a valid HTTP 405 error response.
 
@@ -49,4 +49,4 @@ No parameters provided
 ### SUCCESS: Request more than <max-hei-ids> unknown HEI IDs, expect 400.
 ### SUCCESS: Request exactly <max-hei-ids> known HEI IDs, expect 200 and <max-hei-ids> HEI IDs in response.
 ### SUCCESS: Request with single incorrect parameter, expect 400.
-### SUCCESS: Request with additional parameter, expect 400.
+### SUCCESS: Request with additional parameter, expect 200 and one hei_id response.

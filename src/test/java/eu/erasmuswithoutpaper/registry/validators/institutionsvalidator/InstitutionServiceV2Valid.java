@@ -174,9 +174,7 @@ public class InstitutionServiceV2Valid extends AbstractInstitutionV2Service {
 
   protected void ExtractParamsMultipleParams(Map<String, List<String>> params)
       throws ErrorResponseException {
-    throw new ErrorResponseException(
-      createErrorResponse(this.currentRequest, 400, "Expected only \"hei_id\" parameters")
-    );
+    //Ignore unknown parameters
   }
 
   protected void ExtractParamsNoHeiIds(Map<String, List<String>> params)

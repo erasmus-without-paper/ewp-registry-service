@@ -26,9 +26,10 @@ Notices:
 ### SUCCESS: Request exactly <max-hei-ids> known HEI IDs, expect 200 and <max-hei-ids> HEI IDs in response.
 ### SUCCESS: Request with single incorrect parameter, expect 400.
 
-### FAILURE: Request with additional parameter, expect 400.
+### FAILURE: Request with additional parameter, expect 200 and one hei_id response.
 
-HTTP 400 expected, but HTTP 200 received.
+HTTP 200 expected, but HTTP 400 received.
+Expected only "hei_id" parameters
 
 
 ### SUCCESS: Trying Combination[-HTTT] with a PUT request. Expecting to receive a valid HTTP 405 error response.
@@ -43,8 +44,9 @@ HTTP 400 expected, but HTTP 200 received.
 ### SUCCESS: Request exactly <max-hei-ids> known HEI IDs, expect 200 and <max-hei-ids> HEI IDs in response.
 ### SUCCESS: Request with single incorrect parameter, expect 400.
 
-### FAILURE: Request with additional parameter, expect 400.
+### FAILURE: Request with additional parameter, expect 200 and one hei_id response.
 
-HTTP 400 expected, but HTTP 200 received.
+HTTP 200 expected, but HTTP 400 received.
+Expected only "hei_id" parameters
 
 

@@ -244,13 +244,13 @@ class InstitutionsValidationSuite extends AbstractValidationSuite {
         400
     );
 
-    testParametersError(combination,
-        "Request with additional parameter, expect 400.",
+    testParameters200(combination,
+        "Request with additional parameter, expect 200 and one hei_id response.",
         Arrays.asList(
             new Parameter("hei_id", heis.get(0)),
             new Parameter("hei_id_param", heis.get(0))
         ),
-        400
+        new InstitutionsVerifier(Collections.singletonList(heis.get(0)))
     );
   }
 
