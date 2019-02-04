@@ -1,7 +1,5 @@
 package eu.erasmuswithoutpaper.registry.validators;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.List;
 
 import eu.erasmuswithoutpaper.registry.WRTest;
@@ -9,15 +7,12 @@ import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus.Statu
 import eu.erasmuswithoutpaper.registry.web.UiController;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 
-public abstract class AbstractApiTest extends WRTest {
+public abstract class AbstractApiTest<StateType extends SuiteState> extends WRTest {
   @Autowired
   protected UiController uiController;
 
-  abstract protected ApiValidator GetValidator();
+  protected abstract ApiValidator<StateType> GetValidator();
 
   /**
    * Run the validator and create a formatted report of its results.
@@ -57,13 +52,5 @@ public abstract class AbstractApiTest extends WRTest {
       }
     }
     return sb.toString();
-  }
-
-  protected String getValidatorReportJson(String url) {
-    ResponseEntity<String> result = this.uiController.validateEcho(url);
-    assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(result.getHeaders().getContentType())
-        .isEqualByComparingTo(MediaType.APPLICATION_JSON_UTF8);
-    return result.getBody();
   }
 }

@@ -38,13 +38,13 @@ import eu.erasmuswithoutpaper.registry.validators.CombEntry;
 import eu.erasmuswithoutpaper.registry.validators.Combination;
 import eu.erasmuswithoutpaper.registry.validators.InlineValidationStep;
 import eu.erasmuswithoutpaper.registry.validators.InlineValidationStep.Failure;
-import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus;
 import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus.Status;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 import eu.erasmuswithoutpaper.rsaaes.BadEwpRsaAesBody;
 import eu.erasmuswithoutpaper.rsaaes.EwpRsaAes128GcmDecoder;
 
 import com.google.common.collect.Lists;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import net.adamcin.httpsig.api.Authorization;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.joox.Match;
@@ -53,15 +53,17 @@ import org.joox.Match;
  * Describes the set of test/steps to be run on an Echo API implementation in order to properly
  * validate it.
  */
-abstract class EchoValidationSuiteBase extends AbstractValidationSuite {
+abstract class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSuiteState> {
   private Set<CombEntry> allCombEntriesCache = null;
 
-  EchoValidationSuiteBase(ApiValidator echoValidator, EwpDocBuilder docBuilder, Internet internet,
-      String urlStr, RegistryClient regClient, ManifestRepository repo) {
-    super(echoValidator, docBuilder, internet, urlStr, regClient, repo);
+  EchoValidationSuiteCommon(ApiValidator<EchoSuiteState> echoValidator, EwpDocBuilder docBuilder,
+      Internet internet, String urlStr, RegistryClient regClient, ManifestRepository repo,
+      EchoSuiteState state) {
+    super(echoValidator, docBuilder, internet, urlStr, regClient, repo, state);
   }
 
-  private void checkEdgeCasesForAxxx(Combination combination) throws SuiteBroken {
+  private void checkEdgeCasesForAxxx(Combination combination)
+      throws SuiteBroken {
     assert combination.getCliAuth().equals(CombEntry.CLIAUTH_NONE);
 
     this.addAndRun(false, new InlineValidationStep() {
@@ -75,14 +77,15 @@ abstract class EchoValidationSuiteBase extends AbstractValidationSuite {
       @Override
       protected Optional<Response> innerRun() throws Failure {
         Request request =
-            EchoValidationSuiteBase.this.createValidRequestForCombination(this, combination);
-        return Optional.of(EchoValidationSuiteBase.this
+            EchoValidationSuiteCommon.this.createValidRequestForCombination(this, combination);
+        return Optional.of(EchoValidationSuiteCommon.this
             .makeRequestAndExpectError(this, combination, request, Lists.newArrayList(401, 403)));
       }
     });
   }
 
-  private void checkEdgeCasesForHxxx(Combination combination) throws SuiteBroken {
+  private void checkEdgeCasesForHxxx(Combination combination)
+      throws SuiteBroken {
     assert combination.getCliAuth().equals(CombEntry.CLIAUTH_HTTPSIG);
 
     this.addAndRun(false, new InlineValidationStep() {
@@ -97,15 +100,16 @@ abstract class EchoValidationSuiteBase extends AbstractValidationSuite {
       @Override
       protected Optional<Response> innerRun() throws Failure {
         Request request =
-            EchoValidationSuiteBase.this.createValidRequestForCombination(this, combination);
+            EchoValidationSuiteCommon.this.createValidRequestForCombination(this, combination);
         KeyPair otherKeyPair =
-            EchoValidationSuiteBase.this.parentValidator.getUnregisteredKeyPair();
+            EchoValidationSuiteCommon.this.parentValidator.getUnregisteredKeyPair();
         // Replace the previously set Authorization header with a different one.
         RequestSigner badSigner = new EwpHttpSigRequestSigner(otherKeyPair);
         badSigner.sign(request);
-        return Optional.of(EchoValidationSuiteBase.this
+        return Optional.of(EchoValidationSuiteCommon.this
             .makeRequestAndExpectError(this, combination.withChangedResEncr(CombEntry.RESENCR_TLS),
-                request, Lists.newArrayList(401, 403)));
+                request, Lists.newArrayList(401, 403)
+            ));
       }
     });
 
@@ -120,12 +124,12 @@ abstract class EchoValidationSuiteBase extends AbstractValidationSuite {
       @Override
       protected Optional<Response> innerRun() throws Failure {
         Request request =
-            EchoValidationSuiteBase.this.createValidRequestForCombination(this, combination);
-        EchoValidationSuiteBase.this.createValidRequestForCombination(this, combination);
+            EchoValidationSuiteCommon.this.createValidRequestForCombination(this, combination);
+        EchoValidationSuiteCommon.this.createValidRequestForCombination(this, combination);
         // Leave keyId as is, but use a new random key for signature generation.
         String previousKeyId = Authorization.parse(request.getHeader("Authorization")).getKeyId();
         KeyPair otherKeyPair =
-            EchoValidationSuiteBase.this.parentValidator.getUnregisteredKeyPair();
+            EchoValidationSuiteCommon.this.parentValidator.getUnregisteredKeyPair();
         RequestSigner mySigner = new EwpHttpSigRequestSigner(otherKeyPair) {
           @Override
           public String getKeyId() {
@@ -134,7 +138,7 @@ abstract class EchoValidationSuiteBase extends AbstractValidationSuite {
         };
         // Replace the previously set Authorization header with a different one.
         mySigner.sign(request);
-        return Optional.of(EchoValidationSuiteBase.this
+        return Optional.of(EchoValidationSuiteCommon.this
             .makeRequestAndExpectError(this, combination, request, Lists.newArrayList(400, 401)));
       }
     });
@@ -150,11 +154,11 @@ abstract class EchoValidationSuiteBase extends AbstractValidationSuite {
       @Override
       protected Optional<Response> innerRun() throws Failure {
         Request request =
-            EchoValidationSuiteBase.this.createValidRequestForCombination(this, combination);
+            EchoValidationSuiteCommon.this.createValidRequestForCombination(this, combination);
         request.putHeader("missing-header-that-should-exist", "Temporarilly exists");
-        EchoValidationSuiteBase.this.reqSignerHttpSig.sign(request);
+        EchoValidationSuiteCommon.this.reqSignerHttpSig.sign(request);
         request.removeHeader("missing-header-that-should-exist");
-        return Optional.of(EchoValidationSuiteBase.this
+        return Optional.of(EchoValidationSuiteCommon.this
             .makeRequestAndExpectError(this, combination, request, Lists.newArrayList(400, 401)));
       }
     });
@@ -170,15 +174,16 @@ abstract class EchoValidationSuiteBase extends AbstractValidationSuite {
       @Override
       protected Optional<Response> innerRun() throws Failure {
         Request request =
-            EchoValidationSuiteBase.this.createValidRequestForCombination(this, combination);
+            EchoValidationSuiteCommon.this.createValidRequestForCombination(this, combination);
         String value = request.getHeader("Date");
         request.removeHeader("Date");
         request.putHeader("Original-Date", value);
-        EchoValidationSuiteBase.this.reqSignerHttpSig.sign(request);
-        return Optional.of(EchoValidationSuiteBase.this
+        EchoValidationSuiteCommon.this.reqSignerHttpSig.sign(request);
+        return Optional.of(EchoValidationSuiteCommon.this
             .makeRequestAndExpectHttp200(this, combination, request,
-                EchoValidationSuiteBase.this.parentValidator.getCoveredHeiIDs(),
-                Lists.newArrayList()));
+                EchoValidationSuiteCommon.this.parentValidator.getCoveredHeiIDs(),
+                Lists.newArrayList()
+            ));
       }
     });
 
@@ -196,18 +201,18 @@ abstract class EchoValidationSuiteBase extends AbstractValidationSuite {
         @Override
         protected Optional<Response> innerRun() throws Failure {
           Request request =
-              EchoValidationSuiteBase.this.createValidRequestForCombination(this, combination);
+              EchoValidationSuiteCommon.this.createValidRequestForCombination(this, combination);
           List<String> headersToSign = new ArrayList<>(stdHeaders);
           headersToSign.remove(headerToSkip);
           RequestSigner mySigner = new EwpHttpSigRequestSigner(
-              EchoValidationSuiteBase.this.reqSignerHttpSig.getKeyPair()) {
+              EchoValidationSuiteCommon.this.reqSignerHttpSig.getKeyPair()) {
             @Override
             protected List<String> getHeadersToSign(Request request) {
               return headersToSign;
             }
           };
           mySigner.sign(request);
-          return Optional.of(EchoValidationSuiteBase.this
+          return Optional.of(EchoValidationSuiteCommon.this
               .makeRequestAndExpectError(this, combination, request, Lists.newArrayList(400, 401)));
         }
       });
@@ -224,13 +229,14 @@ abstract class EchoValidationSuiteBase extends AbstractValidationSuite {
       @Override
       protected Optional<Response> innerRun() throws Failure {
         Request request =
-            EchoValidationSuiteBase.this.createValidRequestForCombination(this, combination);
+            EchoValidationSuiteCommon.this.createValidRequestForCombination(this, combination);
         request.putHeader("Some-Custom-Header", "Value");
-        EchoValidationSuiteBase.this.reqSignerHttpSig.sign(request);
-        return Optional.of(EchoValidationSuiteBase.this
+        EchoValidationSuiteCommon.this.reqSignerHttpSig.sign(request);
+        return Optional.of(EchoValidationSuiteCommon.this
             .makeRequestAndExpectHttp200(this, combination, request,
-                EchoValidationSuiteBase.this.parentValidator.getCoveredHeiIDs(),
-                Lists.newArrayList()));
+                EchoValidationSuiteCommon.this.parentValidator.getCoveredHeiIDs(),
+                Lists.newArrayList()
+            ));
       }
     });
 
@@ -245,11 +251,11 @@ abstract class EchoValidationSuiteBase extends AbstractValidationSuite {
       @Override
       protected Optional<Response> innerRun() throws Failure {
         Request request =
-            EchoValidationSuiteBase.this.createValidRequestForCombination(this, combination);
-        KeyPair keyPair = EchoValidationSuiteBase.this.parentValidator.getServerRsaKeyPairInUse();
+            EchoValidationSuiteCommon.this.createValidRequestForCombination(this, combination);
+        KeyPair keyPair = EchoValidationSuiteCommon.this.parentValidator.getServerRsaKeyPairInUse();
         RequestSigner badSigner = new EwpHttpSigRequestSigner(keyPair);
         badSigner.sign(request);
-        return Optional.of(EchoValidationSuiteBase.this
+        return Optional.of(EchoValidationSuiteCommon.this
             .makeRequestAndExpectError(this, combination, request, 403));
       }
     });
@@ -266,7 +272,7 @@ abstract class EchoValidationSuiteBase extends AbstractValidationSuite {
       @Override
       protected Optional<Response> innerRun() throws Failure {
         Request request =
-            EchoValidationSuiteBase.this.createValidRequestForCombination(this, combination);
+            EchoValidationSuiteCommon.this.createValidRequestForCombination(this, combination);
         ZonedDateTime dateTime = ZonedDateTime.now(ZoneId.of("UTC"));
         dateTime = dateTime.minusMinutes(20);
         String date = DateTimeFormatter.RFC_1123_DATE_TIME.format(dateTime);
@@ -277,7 +283,7 @@ abstract class EchoValidationSuiteBase extends AbstractValidationSuite {
         headers.add("original-date");
         headers.remove("date");
         RequestSigner mySigner = new EwpHttpSigRequestSigner(
-            EchoValidationSuiteBase.this.reqSignerHttpSig.getKeyPair()) {
+            EchoValidationSuiteCommon.this.reqSignerHttpSig.getKeyPair()) {
           @Override
           protected List<String> getHeadersToSign(Request request) {
             return headers;
@@ -285,7 +291,7 @@ abstract class EchoValidationSuiteBase extends AbstractValidationSuite {
         };
         mySigner.sign(request);
         try {
-          return Optional.of(EchoValidationSuiteBase.this
+          return Optional.of(EchoValidationSuiteCommon.this
               .makeRequestAndExpectError(this, combination, request, 400));
         } catch (Failure f) {
           if (f.getAttachedServerResponse().isPresent()
@@ -309,18 +315,21 @@ abstract class EchoValidationSuiteBase extends AbstractValidationSuite {
       @Override
       protected Optional<Response> innerRun() throws Failure {
         Request request =
-            EchoValidationSuiteBase.this.createValidRequestForCombination(this, combination);
-        request.putHeader("X-Request-Id",
-            request.getHeader("X-Request-Id").replaceAll("-", "").toUpperCase(Locale.US));
-        EchoValidationSuiteBase.this.reqSignerHttpSig.sign(request);
+            EchoValidationSuiteCommon.this.createValidRequestForCombination(this, combination);
+        request.putHeader(
+            "X-Request-Id",
+            request.getHeader("X-Request-Id").replaceAll("-", "").toUpperCase(Locale.US)
+        );
+        EchoValidationSuiteCommon.this.reqSignerHttpSig.sign(request);
         try {
-          return Optional.of(EchoValidationSuiteBase.this
+          return Optional.of(EchoValidationSuiteCommon.this
               .makeRequestAndExpectError(this, combination, request, 400));
         } catch (Failure f) {
           // We don't want this to be a FAILURE. WARNING is enough.
           if (f.getStatus().equals(Status.FAILURE)) {
             throw new Failure(f.getMessage(), Status.WARNING,
-                f.getAttachedServerResponse().orElse(null));
+                f.getAttachedServerResponse().orElse(null)
+            );
           } else {
             throw f;
           }
@@ -340,12 +349,12 @@ abstract class EchoValidationSuiteBase extends AbstractValidationSuite {
 
         @Override
         protected Optional<Response> innerRun() throws Failure {
-          Request request = EchoValidationSuiteBase.this
+          Request request = EchoValidationSuiteCommon.this
               .createValidRequestForCombination(this, combination, "echo=a&echo=b&echo=a");
           // Change the body after digest and signature were generated. This should invalidate
           // the digest.
           request.setBody("something-else".getBytes(StandardCharsets.UTF_8));
-          return Optional.of(EchoValidationSuiteBase.this
+          return Optional.of(EchoValidationSuiteCommon.this
               .makeRequestAndExpectError(this, combination, request, 400));
         }
       });
@@ -360,23 +369,26 @@ abstract class EchoValidationSuiteBase extends AbstractValidationSuite {
 
         @Override
         protected Optional<Response> innerRun() throws Failure {
-          Request request = EchoValidationSuiteBase.this
+          Request request = EchoValidationSuiteCommon.this
               .createValidRequestForCombination(this, combination, "echo=b&echo=b");
           // Override the Digest and Authorization with the output of a custom signer.
           RequestSigner mySigner = new EwpHttpSigRequestSigner(
-              EchoValidationSuiteBase.this.reqSignerHttpSig.getKeyPair()) {
+              EchoValidationSuiteCommon.this.reqSignerHttpSig.getKeyPair()) {
             @Override
             protected void includeDigestHeader(Request request) {
               super.includeDigestHeader(request);
-              request.putHeader("Digest",
-                  request.getHeader("Digest") + ", Unknown-Digest-Algorithm=SomeValue");
+              request.putHeader(
+                  "Digest",
+                  request.getHeader("Digest") + ", Unknown-Digest-Algorithm=SomeValue"
+              );
             }
           };
           mySigner.sign(request);
-          return Optional.of(EchoValidationSuiteBase.this
+          return Optional.of(EchoValidationSuiteCommon.this
               .makeRequestAndExpectHttp200(this, combination, request,
-                  EchoValidationSuiteBase.this.parentValidator.getCoveredHeiIDs(),
-                  Lists.newArrayList("b", "b")));
+                  EchoValidationSuiteCommon.this.parentValidator.getCoveredHeiIDs(),
+                  Lists.newArrayList("b", "b")
+              ));
         }
       });
 
@@ -391,10 +403,10 @@ abstract class EchoValidationSuiteBase extends AbstractValidationSuite {
 
         @Override
         protected Optional<Response> innerRun() throws Failure {
-          Request request = EchoValidationSuiteBase.this
+          Request request = EchoValidationSuiteCommon.this
               .createValidRequestForCombination(this, combination, "echo=b&echo=b");
           RequestSigner badSigner = new EwpHttpSigRequestSigner(
-              EchoValidationSuiteBase.this.reqSignerHttpSig.getKeyPair()) {
+              EchoValidationSuiteCommon.this.reqSignerHttpSig.getKeyPair()) {
             @Override
             protected void includeDigestHeader(Request request) {
               request.putHeader("Digest", "SHA=" + Base64.getEncoder()
@@ -403,7 +415,7 @@ abstract class EchoValidationSuiteBase extends AbstractValidationSuite {
           };
           badSigner.sign(request);
           try {
-            return Optional.of(EchoValidationSuiteBase.this
+            return Optional.of(EchoValidationSuiteCommon.this
                 .makeRequestAndExpectError(this, combination, request, 400));
           } catch (Failure f) {
             if (f.getAttachedServerResponse().isPresent()
@@ -427,10 +439,10 @@ abstract class EchoValidationSuiteBase extends AbstractValidationSuite {
 
         @Override
         protected Optional<Response> innerRun() throws Failure {
-          Request request = EchoValidationSuiteBase.this
+          Request request = EchoValidationSuiteCommon.this
               .createValidRequestForCombination(this, combination, "echo=b&echo=b");
           RequestSigner mySigner = new EwpHttpSigRequestSigner(
-              EchoValidationSuiteBase.this.reqSignerHttpSig.getKeyPair()) {
+              EchoValidationSuiteCommon.this.reqSignerHttpSig.getKeyPair()) {
             @Override
             protected void includeDigestHeader(Request request) {
               super.includeDigestHeader(request);
@@ -440,10 +452,11 @@ abstract class EchoValidationSuiteBase extends AbstractValidationSuite {
           };
           mySigner.sign(request);
           try {
-            return Optional.of(EchoValidationSuiteBase.this
+            return Optional.of(EchoValidationSuiteCommon.this
                 .makeRequestAndExpectHttp200(this, combination, request,
-                    EchoValidationSuiteBase.this.parentValidator.getCoveredHeiIDs(),
-                    Lists.newArrayList("b", "b")));
+                    EchoValidationSuiteCommon.this.parentValidator.getCoveredHeiIDs(),
+                    Lists.newArrayList("b", "b")
+                ));
           } catch (Failure f) {
             if (f.getStatus().equals(Status.FAILURE)) {
               throw f.withChangedStatus(Status.WARNING);
@@ -456,7 +469,8 @@ abstract class EchoValidationSuiteBase extends AbstractValidationSuite {
     }
   }
 
-  private void checkEdgeCasesForSxxx(Combination combination) throws SuiteBroken {
+  private void checkEdgeCasesForSxxx(Combination combination)
+      throws SuiteBroken {
     assert combination.getCliAuth().equals(CombEntry.CLIAUTH_TLSCERT_SELFSIGNED);
 
     this.addAndRun(false, new InlineValidationStep() {
@@ -471,24 +485,25 @@ abstract class EchoValidationSuiteBase extends AbstractValidationSuite {
       @Override
       protected Optional<Response> innerRun() throws Failure {
         Request request =
-            EchoValidationSuiteBase.this.createValidRequestForCombination(this, combination);
+            EchoValidationSuiteCommon.this.createValidRequestForCombination(this, combination);
 
         // Override the work done by the original (valid) request signer.
         KeyPair otherKeyPair =
-            EchoValidationSuiteBase.this.parentValidator.getUnregisteredKeyPair();
+            EchoValidationSuiteCommon.this.parentValidator.getUnregisteredKeyPair();
         X509Certificate otherCert =
-            EchoValidationSuiteBase.this.parentValidator.generateCertificate(otherKeyPair);
+            EchoValidationSuiteCommon.this.parentValidator.generateCertificate(otherKeyPair);
         EwpCertificateRequestSigner mySigner =
             new EwpCertificateRequestSigner(otherCert, otherKeyPair);
         mySigner.sign(request);
 
-        return Optional.of(EchoValidationSuiteBase.this
+        return Optional.of(EchoValidationSuiteCommon.this
             .makeRequestAndExpectError(this, combination, request, Lists.newArrayList(401, 403)));
       }
     });
   }
 
-  private void checkEdgeCasesForxHxx(Combination combination) throws SuiteBroken {
+  private void checkEdgeCasesForxHxx(Combination combination)
+      throws SuiteBroken {
 
     this.addAndRun(false, new InlineValidationStep() {
 
@@ -501,20 +516,22 @@ abstract class EchoValidationSuiteBase extends AbstractValidationSuite {
       @Override
       protected Optional<Response> innerRun() throws Failure {
         Request request =
-            EchoValidationSuiteBase.this.createValidRequestForCombination(this, combination);
+            EchoValidationSuiteCommon.this.createValidRequestForCombination(this, combination);
         request.putHeader("Accept-Signature", "unknown-algorithm");
-        EchoValidationSuiteBase.this.getRequestSignerForCombination(this, request, combination)
+        EchoValidationSuiteCommon.this.getRequestSignerForCombination(this, request, combination)
             .sign(request);
         Combination relaxedCombination = combination.withChangedSrvAuth(CombEntry.SRVAUTH_TLSCERT);
         if (combination.getCliAuth().equals(CombEntry.CLIAUTH_NONE)) {
-          return Optional.of(EchoValidationSuiteBase.this
+          return Optional.of(EchoValidationSuiteCommon.this
               .makeRequestAndExpectError(this, relaxedCombination, request,
-                  Lists.newArrayList(401, 403)));
+                  Lists.newArrayList(401, 403)
+              ));
         } else {
-          return Optional.of(EchoValidationSuiteBase.this
+          return Optional.of(EchoValidationSuiteCommon.this
               .makeRequestAndExpectHttp200(this, relaxedCombination, request,
-                  EchoValidationSuiteBase.this.parentValidator.getCoveredHeiIDs(),
-                  Lists.newArrayList()));
+                  EchoValidationSuiteCommon.this.parentValidator.getCoveredHeiIDs(),
+                  Lists.newArrayList()
+              ));
         }
       }
     });
@@ -530,18 +547,19 @@ abstract class EchoValidationSuiteBase extends AbstractValidationSuite {
       @Override
       protected Optional<Response> innerRun() throws Failure {
         Request request =
-            EchoValidationSuiteBase.this.createValidRequestForCombination(this, combination);
+            EchoValidationSuiteCommon.this.createValidRequestForCombination(this, combination);
         request.putHeader("Accept-Signature", "rsa-sha256, unknown-algorithm");
-        EchoValidationSuiteBase.this.getRequestSignerForCombination(this, request, combination)
+        EchoValidationSuiteCommon.this.getRequestSignerForCombination(this, request, combination)
             .sign(request);
         if (combination.getCliAuth().equals(CombEntry.CLIAUTH_NONE)) {
-          return Optional.of(EchoValidationSuiteBase.this
+          return Optional.of(EchoValidationSuiteCommon.this
               .makeRequestAndExpectError(this, combination, request, Lists.newArrayList(401, 403)));
         } else {
-          return Optional.of(EchoValidationSuiteBase.this
+          return Optional.of(EchoValidationSuiteCommon.this
               .makeRequestAndExpectHttp200(this, combination, request,
-                  EchoValidationSuiteBase.this.parentValidator.getCoveredHeiIDs(),
-                  Lists.newArrayList()));
+                  EchoValidationSuiteCommon.this.parentValidator.getCoveredHeiIDs(),
+                  Lists.newArrayList()
+              ));
         }
       }
     });
@@ -559,19 +577,21 @@ abstract class EchoValidationSuiteBase extends AbstractValidationSuite {
         @Override
         protected Optional<Response> innerRun() throws Failure {
           Request request =
-              EchoValidationSuiteBase.this.createValidRequestForCombination(this, combination);
+              EchoValidationSuiteCommon.this.createValidRequestForCombination(this, combination);
           request.putHeader("X-Request-Id", UUID.randomUUID().toString());
-          EchoValidationSuiteBase.this.getRequestSignerForCombination(this, request, combination)
+          EchoValidationSuiteCommon.this.getRequestSignerForCombination(this, request, combination)
               .sign(request);
           if (combination.getCliAuth().equals(CombEntry.CLIAUTH_NONE)) {
-            return Optional.of(EchoValidationSuiteBase.this
+            return Optional.of(EchoValidationSuiteCommon.this
                 .makeRequestAndExpectError(this, combination, request,
-                    Lists.newArrayList(401, 403)));
+                    Lists.newArrayList(401, 403)
+                ));
           } else {
-            return Optional.of(EchoValidationSuiteBase.this
+            return Optional.of(EchoValidationSuiteCommon.this
                 .makeRequestAndExpectHttp200(this, combination, request,
-                    EchoValidationSuiteBase.this.parentValidator.getCoveredHeiIDs(),
-                    Lists.newArrayList()));
+                    EchoValidationSuiteCommon.this.parentValidator.getCoveredHeiIDs(),
+                    Lists.newArrayList()
+                ));
           }
         }
       });
@@ -579,7 +599,11 @@ abstract class EchoValidationSuiteBase extends AbstractValidationSuite {
 
   }
 
-  private void checkEdgeCasesForxxEx(Combination combination) throws SuiteBroken {
+  //FindBugs is not smart enough to infer that actual type of this.currentState
+  //is EchoSuiteState not just SuiteState
+  @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
+  private void checkEdgeCasesForxxEx(Combination combination)
+      throws SuiteBroken {
 
     if (!combination.getHttpMethod().equals("POST")) {
       throw new RuntimeException();
@@ -598,17 +622,17 @@ abstract class EchoValidationSuiteBase extends AbstractValidationSuite {
       protected Optional<Response> innerRun() throws Failure {
 
         Request request =
-            EchoValidationSuiteBase.this.createValidRequestForCombination(this, combination);
+            EchoValidationSuiteCommon.this.createValidRequestForCombination(this, combination);
         // Transform it to a GET request, while leaving the body etc. intact.
         request.setMethod("GET");
-        EchoValidationSuiteBase.this.getRequestSignerForCombination(this, request, combination)
+        EchoValidationSuiteCommon.this.getRequestSignerForCombination(this, request, combination)
             .sign(request);
         List<Integer> acceptableResponses = Lists.newArrayList(405);
         if (combination.getCliAuth().equals(CombEntry.CLIAUTH_NONE)) {
           acceptableResponses.add(403);
           acceptableResponses.add(401);
         }
-        return Optional.of(EchoValidationSuiteBase.this
+        return Optional.of(EchoValidationSuiteCommon.this
             .makeRequestAndExpectError(this, combination, request, acceptableResponses));
       }
     });
@@ -624,25 +648,25 @@ abstract class EchoValidationSuiteBase extends AbstractValidationSuite {
       @Override
       protected Optional<Response> innerRun() throws Failure {
 
-        Request request = EchoValidationSuiteBase.this
+        Request request = EchoValidationSuiteCommon.this
             .createValidRequestForCombination(this, combination, "echo=a&echo=b&echo=a");
         byte[] body = request.getBody().get();
         // Truncate right after the encryptedAesKeyLength.
         body = Arrays.copyOf(body, 32 + 2);
         request.setBody(body);
-        EchoValidationSuiteBase.this.getRequestSignerForCombination(this, request, combination)
+        EchoValidationSuiteCommon.this.getRequestSignerForCombination(this, request, combination)
             .sign(request);
         List<Integer> acceptableResponses = Lists.newArrayList(400);
         if (combination.getCliAuth().equals(CombEntry.CLIAUTH_NONE)) {
           acceptableResponses.add(403);
           acceptableResponses.add(401);
         }
-        return Optional.of(EchoValidationSuiteBase.this
+        return Optional.of(EchoValidationSuiteCommon.this
             .makeRequestAndExpectError(this, combination, request, acceptableResponses));
       }
     });
 
-    if (!this.endpointSupports(CombEntry.REQENCR_TLS)) {
+    if (!this.endpointSupports(CombEntry.REQENCR_TLS, this.currentState)) {
 
       // This endpoint explicitly requires all requests to be encrypted.
 
@@ -657,23 +681,29 @@ abstract class EchoValidationSuiteBase extends AbstractValidationSuite {
 
         @Override
         protected Optional<Response> innerRun() throws Failure {
-          Request request = EchoValidationSuiteBase.this.createValidRequestForCombination(this,
-              combination.withChangedReqEncr(CombEntry.REQENCR_TLS));
+          Request request = EchoValidationSuiteCommon.this.createValidRequestForCombination(
+              this,
+              combination.withChangedReqEncr(CombEntry.REQENCR_TLS)
+          );
           List<Integer> acceptableResponses = Lists.newArrayList(415);
           if (combination.getCliAuth().equals(CombEntry.CLIAUTH_NONE)) {
             acceptableResponses.add(403);
             acceptableResponses.add(401);
           }
-          return Optional.of(EchoValidationSuiteBase.this
+          return Optional.of(EchoValidationSuiteCommon.this
               .makeRequestAndExpectError(this, combination, request, acceptableResponses));
         }
       });
     }
   }
 
-  private void checkEdgeCasesForxxxE(Combination combination) throws SuiteBroken {
+  //FindBugs is not smart enough to infer that actual type of this.currentState
+  //is EchoSuiteState not just SuiteState
+  @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
+  private void checkEdgeCasesForxxxE(Combination combination)
+      throws SuiteBroken {
 
-    boolean encryptionRequired = !this.endpointSupports(CombEntry.RESENCR_TLS);
+    boolean encryptionRequired = !this.endpointSupports(CombEntry.RESENCR_TLS, this.currentState);
     boolean noAuth = combination.getCliAuth().equals(CombEntry.CLIAUTH_NONE);
 
     if (!noAuth) {
@@ -697,18 +727,20 @@ abstract class EchoValidationSuiteBase extends AbstractValidationSuite {
         protected Optional<Response> innerRun() throws Failure {
 
           Request request =
-              EchoValidationSuiteBase.this.createValidRequestForCombination(this, combination);
+              EchoValidationSuiteCommon.this.createValidRequestForCombination(this, combination);
           request.putHeader("Accept-Encoding", "invalid-coding");
-          EchoValidationSuiteBase.this.getRequestSignerForCombination(this, request, combination)
+          EchoValidationSuiteCommon.this.getRequestSignerForCombination(this, request, combination)
               .sign(request);
           if (encryptionRequired) {
-            return Optional.of(EchoValidationSuiteBase.this.makeRequestAndExpectError(this,
-                combination.withChangedResEncr(CombEntry.RESENCR_TLS), request, 406));
+            return Optional.of(EchoValidationSuiteCommon.this.makeRequestAndExpectError(this,
+                combination.withChangedResEncr(CombEntry.RESENCR_TLS), request, 406
+            ));
           } else {
-            return Optional.of(EchoValidationSuiteBase.this.makeRequestAndExpectHttp200(this,
+            return Optional.of(EchoValidationSuiteCommon.this.makeRequestAndExpectHttp200(this,
                 combination.withChangedResEncr(CombEntry.RESENCR_TLS), request,
-                EchoValidationSuiteBase.this.parentValidator.getCoveredHeiIDs(),
-                Collections.<String>emptyList()));
+                EchoValidationSuiteCommon.this.parentValidator.getCoveredHeiIDs(),
+                Collections.emptyList()
+            ));
           }
         }
       });
@@ -726,14 +758,15 @@ abstract class EchoValidationSuiteBase extends AbstractValidationSuite {
         protected Optional<Response> innerRun() throws Failure {
 
           Request request =
-              EchoValidationSuiteBase.this.createValidRequestForCombination(this, combination);
+              EchoValidationSuiteCommon.this.createValidRequestForCombination(this, combination);
           request.putHeader("Accept-Encoding", " ewp-rsa-AES128GCM ; q=1 , *;q=0");
-          EchoValidationSuiteBase.this.getRequestSignerForCombination(this, request, combination)
+          EchoValidationSuiteCommon.this.getRequestSignerForCombination(this, request, combination)
               .sign(request);
-          return Optional.of(EchoValidationSuiteBase.this
+          return Optional.of(EchoValidationSuiteCommon.this
               .makeRequestAndExpectHttp200(this, combination, request,
-                  EchoValidationSuiteBase.this.parentValidator.getCoveredHeiIDs(),
-                  Collections.<String>emptyList()));
+                  EchoValidationSuiteCommon.this.parentValidator.getCoveredHeiIDs(),
+                  Collections.emptyList()
+              ));
         }
       });
 
@@ -750,14 +783,16 @@ abstract class EchoValidationSuiteBase extends AbstractValidationSuite {
           protected Optional<Response> innerRun() throws Failure {
 
             Request request =
-                EchoValidationSuiteBase.this.createValidRequestForCombination(this, combination);
+                EchoValidationSuiteCommon.this.createValidRequestForCombination(this, combination);
             request.putHeader("Accept-Encoding", " ewp-rsa-aes128gcm;q=0, identity;q=1");
-            EchoValidationSuiteBase.this.getRequestSignerForCombination(this, request, combination)
+            EchoValidationSuiteCommon.this
+                .getRequestSignerForCombination(this, request, combination)
                 .sign(request);
-            return Optional.of(EchoValidationSuiteBase.this.makeRequestAndExpectHttp200(this,
+            return Optional.of(EchoValidationSuiteCommon.this.makeRequestAndExpectHttp200(this,
                 combination.withChangedResEncr(CombEntry.RESENCR_TLS), request,
-                EchoValidationSuiteBase.this.parentValidator.getCoveredHeiIDs(),
-                Collections.<String>emptyList()));
+                EchoValidationSuiteCommon.this.parentValidator.getCoveredHeiIDs(),
+                Collections.emptyList()
+            ));
           }
         });
       }
@@ -777,36 +812,40 @@ abstract class EchoValidationSuiteBase extends AbstractValidationSuite {
         protected Optional<Response> innerRun() throws Failure {
 
           Request request =
-              EchoValidationSuiteBase.this.createValidRequestForCombination(this, combination);
+              EchoValidationSuiteCommon.this.createValidRequestForCombination(this, combination);
           RSAPublicKey attackersKey =
-              EchoValidationSuiteBase.this.parentValidator.getServerRsaPublicKeyInUse();
+              EchoValidationSuiteCommon.this.parentValidator.getServerRsaPublicKeyInUse();
           byte[] attackersKeyFingerprint =
               DigestUtils.getSha256Digest().digest(attackersKey.getEncoded());
           if (request.getHeader("Accept-Response-Encryption-Key") == null) {
-            request.putHeader("Accept-Response-Encryption-Key",
-                Base64.getEncoder().encodeToString(attackersKey.getEncoded()));
+            request.putHeader(
+                "Accept-Response-Encryption-Key",
+                Base64.getEncoder().encodeToString(attackersKey.getEncoded())
+            );
           } else {
             // Should not happen. When httpsig client authentication is used, then this
             // header should not be present.
             throw new RuntimeException();
           }
           // Make sure that attacker's key is NOT used.
-          Response response = EchoValidationSuiteBase.this.makeRequest(this, request);
+          Response response = EchoValidationSuiteCommon.this.makeRequest(this, request);
           try {
             byte[] actualFingerprint =
                 EwpRsaAes128GcmDecoder.extractRecipientPublicKeySha256(response.getBody());
             if (Arrays.equals(actualFingerprint, attackersKeyFingerprint)) {
               throw new Failure("The response was encrypted with the attacker's key. "
                   + "Your installation is vulnerable to man-in-the-middle attacks.", Status.FAILURE,
-                  response);
+                  response
+              );
             }
           } catch (BadEwpRsaAesBody e) {
             // Ignore. This exception will be re-thrown in a moment (and properly cast
             // into Failure).
           }
-          EchoValidationSuiteBase.this.expectHttp200(this, combination, request, response,
-              EchoValidationSuiteBase.this.parentValidator.getCoveredHeiIDs(),
-              Collections.<String>emptyList());
+          EchoValidationSuiteCommon.this.expectHttp200(this, combination, request, response,
+              EchoValidationSuiteCommon.this.parentValidator.getCoveredHeiIDs(),
+              Collections.emptyList()
+          );
           return Optional.of(response);
         }
       });
@@ -824,24 +863,26 @@ abstract class EchoValidationSuiteBase extends AbstractValidationSuite {
         protected Optional<Response> innerRun() throws Failure {
 
           Request request =
-              EchoValidationSuiteBase.this.createValidRequestForCombination(this, combination);
+              EchoValidationSuiteCommon.this.createValidRequestForCombination(this, combination);
           RSAPublicKey newKey =
-              EchoValidationSuiteBase.this.parentValidator.getServerRsaPublicKeyInUse();
+              EchoValidationSuiteCommon.this.parentValidator.getServerRsaPublicKeyInUse();
           byte[] newKeyFingerprint = DigestUtils.getSha256Digest().digest(newKey.getEncoded());
           if (request.getHeader("Accept-Response-Encryption-Key") == null) {
-            request.putHeader("Accept-Response-Encryption-Key",
-                Base64.getEncoder().encodeToString(newKey.getEncoded()));
+            request.putHeader(
+                "Accept-Response-Encryption-Key",
+                Base64.getEncoder().encodeToString(newKey.getEncoded())
+            );
           } else {
             // Should not happen. When httpsig client authentication is used, then this
             // header should not be present.
             throw new RuntimeException();
           }
-          EchoValidationSuiteBase.this.getRequestSignerForCombination(this, request, combination)
+          EchoValidationSuiteCommon.this.getRequestSignerForCombination(this, request, combination)
               .sign(request);
           // Make sure that the "old" key is not used.
-          Response response = EchoValidationSuiteBase.this.makeRequest(this, request);
+          Response response = EchoValidationSuiteCommon.this.makeRequest(this, request);
           KeyPair oldKeyPair =
-              EchoValidationSuiteBase.this.parentValidator.getClientRsaKeyPairInUse();
+              EchoValidationSuiteCommon.this.parentValidator.getClientRsaKeyPairInUse();
           byte[] oldKeyFingerprint =
               DigestUtils.getSha256Digest().digest(oldKeyPair.getPublic().getEncoded());
           try {
@@ -860,24 +901,25 @@ abstract class EchoValidationSuiteBase extends AbstractValidationSuite {
             // Ignore. This exception will be re-thrown in a moment (and properly cast
             // into Failure).
           }
-          EchoValidationSuiteBase.this.expectHttp200(this, combination, request, response,
-              EchoValidationSuiteBase.this.parentValidator.getCoveredHeiIDs(),
-              Collections.<String>emptyList());
+          EchoValidationSuiteCommon.this.expectHttp200(this, combination, request, response,
+              EchoValidationSuiteCommon.this.parentValidator.getCoveredHeiIDs(),
+              Collections.emptyList()
+          );
           return Optional.of(response);
         }
       });
     }
   }
 
-  private boolean endpointSupports(CombEntry combEntry) {
-    Set<CombEntry> set = this.getAllCombEntriesSupportedByEndpoint();
+  private boolean endpointSupports(CombEntry combEntry, EchoSuiteState state) {
+    Set<CombEntry> set = this.getAllCombEntriesSupportedByEndpoint(state);
     return set.contains(combEntry);
   }
 
-  private Set<CombEntry> getAllCombEntriesSupportedByEndpoint() {
+  private Set<CombEntry> getAllCombEntriesSupportedByEndpoint(EchoSuiteState state) {
     if (this.allCombEntriesCache == null) {
       this.allCombEntriesCache = new HashSet<>();
-      for (Combination combination : this.combinationsToValidate) {
+      for (Combination combination : state.combinations) {
         this.allCombEntriesCache.add(combination.getCliAuth());
         this.allCombEntriesCache.add(combination.getSrvAuth());
         this.allCombEntriesCache.add(combination.getReqEncr());
@@ -888,11 +930,16 @@ abstract class EchoValidationSuiteBase extends AbstractValidationSuite {
   }
 
   @Override
-  protected void validateCombinationPost(Combination combination) throws SuiteBroken {
-    this.addAndRun(false,
-        this.createHttpMethodValidationStep(combination.withChangedHttpMethod("PUT")));
-    this.addAndRun(false,
-        this.createHttpMethodValidationStep(combination.withChangedHttpMethod("DELETE")));
+  protected void validateCombinationPost(Combination combination)
+      throws SuiteBroken {
+    this.addAndRun(
+        false,
+        this.createHttpMethodValidationStep(combination.withChangedHttpMethod("PUT"))
+    );
+    this.addAndRun(
+        false,
+        this.createHttpMethodValidationStep(combination.withChangedHttpMethod("DELETE"))
+    );
 
     this.addAndRun(false, new InlineValidationStep() {
 
@@ -909,12 +956,13 @@ abstract class EchoValidationSuiteBase extends AbstractValidationSuite {
         expectedEchoValues.add("a");
         expectedEchoValues.add("b");
         expectedEchoValues.add("a");
-        Request request = EchoValidationSuiteBase.this
+        Request request = EchoValidationSuiteCommon.this
             .createValidRequestForCombination(this, combination, "echo=a&echo=b&echo=a");
-        return Optional.of(EchoValidationSuiteBase.this
+        return Optional.of(EchoValidationSuiteCommon.this
             .makeRequestAndExpectHttp200(this, combination, request,
-                EchoValidationSuiteBase.this.parentValidator.getCoveredHeiIDs(),
-                expectedEchoValues));
+                EchoValidationSuiteCommon.this.parentValidator.getCoveredHeiIDs(),
+                expectedEchoValues
+            ));
       }
     });
 
@@ -930,7 +978,7 @@ abstract class EchoValidationSuiteBase extends AbstractValidationSuite {
 
       @Override
       protected Optional<Response> innerRun() throws Failure {
-        Request request = EchoValidationSuiteBase.this
+        Request request = EchoValidationSuiteCommon.this
             .createValidRequestForCombination(this, combination, "echo=a&echo=b&echo=a");
         // Update the URL
         String url = request.getUrl();
@@ -943,12 +991,13 @@ abstract class EchoValidationSuiteBase extends AbstractValidationSuite {
         expectedEchoValues.add("b");
         expectedEchoValues.add("a");
         // We have changed the URL, so we need to regenerate the digest and signature.
-        EchoValidationSuiteBase.this.getRequestSignerForCombination(this, request, combination)
+        EchoValidationSuiteCommon.this.getRequestSignerForCombination(this, request, combination)
             .sign(request);
-        return Optional.of(EchoValidationSuiteBase.this
+        return Optional.of(EchoValidationSuiteCommon.this
             .makeRequestAndExpectHttp200(this, combination, request,
-                EchoValidationSuiteBase.this.parentValidator.getCoveredHeiIDs(),
-                expectedEchoValues));
+                EchoValidationSuiteCommon.this.parentValidator.getCoveredHeiIDs(),
+                expectedEchoValues
+            ));
       }
     });
 
@@ -965,13 +1014,13 @@ abstract class EchoValidationSuiteBase extends AbstractValidationSuite {
       protected Optional<Response> innerRun() throws Failure {
 
         Request request =
-            EchoValidationSuiteBase.this.createValidRequestForCombination(this, combination);
+            EchoValidationSuiteCommon.this.createValidRequestForCombination(this, combination);
         // Allow the response to be gzipped.
         String prev = request.getHeader("Accept-Encoding");
         request.putHeader("Accept-Encoding", "gzip" + ((prev != null) ? ", " + prev : ""));
-        EchoValidationSuiteBase.this.getRequestSignerForCombination(this, request, combination)
+        EchoValidationSuiteCommon.this.getRequestSignerForCombination(this, request, combination)
             .sign(request);
-        Response response = EchoValidationSuiteBase.this.makeRequest(this, request);
+        Response response = EchoValidationSuiteCommon.this.makeRequest(this, request);
         int encryptionIndex = -1;
         int gzipIndex = -1;
         List<String> codings = Utils.commaSeparatedTokens(response.getHeader("Content-Encoding"));
@@ -983,12 +1032,13 @@ abstract class EchoValidationSuiteBase extends AbstractValidationSuite {
           }
         }
         if (combination.getCliAuth().equals(CombEntry.CLIAUTH_NONE)) {
-          EchoValidationSuiteBase.this
+          EchoValidationSuiteCommon.this
               .expectError(this, combination, request, response, Lists.newArrayList(401, 403));
         } else {
-          EchoValidationSuiteBase.this.expectHttp200(this, combination, request, response,
-              EchoValidationSuiteBase.this.parentValidator.getCoveredHeiIDs(),
-              Collections.emptyList());
+          EchoValidationSuiteCommon.this.expectHttp200(this, combination, request, response,
+              EchoValidationSuiteCommon.this.parentValidator.getCoveredHeiIDs(),
+              Collections.emptyList()
+          );
         }
         if (gzipIndex == -1) {
           throw new Failure("The client explicitly accepted gzip, but the server didn't compress "
@@ -1007,7 +1057,8 @@ abstract class EchoValidationSuiteBase extends AbstractValidationSuite {
   }
 
   @Override
-  protected void validateCombinationGet(Combination combination) throws SuiteBroken {
+  protected void validateCombinationGet(Combination combination)
+      throws SuiteBroken {
     this.addAndRun(false, new InlineValidationStep() {
 
       @Override
@@ -1023,18 +1074,22 @@ abstract class EchoValidationSuiteBase extends AbstractValidationSuite {
         expectedEchoValues.add("a");
         expectedEchoValues.add("b");
         expectedEchoValues.add("a");
-        Request request = EchoValidationSuiteBase.this.createValidRequestForCombination(this,
+        Request request = EchoValidationSuiteCommon.this.createValidRequestForCombination(
+            this,
             combination.withChangedUrl(
-                EchoValidationSuiteBase.this.urlToBeValidated + "?echo=a&echo=b&echo=a"));
-        return Optional.of(EchoValidationSuiteBase.this
+                EchoValidationSuiteCommon.this.urlToBeValidated + "?echo=a&echo=b&echo=a")
+        );
+        return Optional.of(EchoValidationSuiteCommon.this
             .makeRequestAndExpectHttp200(this, combination, request,
-                EchoValidationSuiteBase.this.parentValidator.getCoveredHeiIDs(),
-                expectedEchoValues));
+                EchoValidationSuiteCommon.this.parentValidator.getCoveredHeiIDs(),
+                expectedEchoValues
+            ));
       }
     });
   }
 
-  private void validateCombinationEdgeCases(Combination combination) throws SuiteBroken {
+  private void validateCombinationEdgeCases(Combination combination)
+      throws SuiteBroken {
     /* Try to "break" specific security method implementations. */
 
     if (combination.getCliAuth().equals(CombEntry.CLIAUTH_NONE)) {
@@ -1077,107 +1132,12 @@ abstract class EchoValidationSuiteBase extends AbstractValidationSuite {
   }
 
   @Override
-  protected void validateCombination(Combination combination) throws SuiteBroken {
+  protected void validateCombination(Combination combination)
+      throws SuiteBroken {
     if (!combination.getCliAuth().equals(CombEntry.CLIAUTH_NONE)) {
       super.validateCombination(combination);
     }
     validateCombinationEdgeCases(combination);
-  }
-
-  @Override
-  public List<ValidationStepWithStatus> getResults() {
-    return this.steps;
-  }
-
-  @Override
-  protected List<CombEntry> getResponseEncryptionMethods(HttpSecuritySettings sec,
-      List<String> notices, List<String> warnings, List<String> errors) {
-    List<CombEntry> ret = new ArrayList<>();
-    if (sec.supportsResEncrTls()) {
-      ret.add(CombEntry.RESENCR_TLS);
-    }
-    if (sec.supportsResEncrEwp()) {
-      ret.add(CombEntry.RESENCR_EWP);
-    }
-    if (ret.size() == 0) {
-      errors.add("Your Echo API does not support ANY of the response encryption "
-          + "methods recognized by the Validator.");
-    }
-    return ret;
-  }
-
-  @Override
-  protected List<CombEntry> getRequestEncryptionMethods(HttpSecuritySettings sec,
-      List<String> notices, List<String> warnings, List<String> errors) {
-    List<CombEntry> ret = new ArrayList<>();
-    if (sec.supportsReqEncrTls()) {
-      ret.add(CombEntry.REQENCR_TLS);
-    }
-    if (sec.supportsReqEncrEwp()) {
-      ret.add(CombEntry.REQENCR_EWP);
-    }
-    if (ret.size() == 0) {
-      errors.add("Your Echo API does not support ANY of the request encryption "
-          + "methods recognized by the Validator.");
-    }
-
-    return ret;
-  }
-
-  @Override
-  protected List<CombEntry> getServerAuthenticationMethods(HttpSecuritySettings sec,
-      List<String> notices, List<String> warnings, List<String> errors) {
-    List<CombEntry> ret = new ArrayList<>();
-    if (sec.supportsSrvAuthTlsCert()) {
-      ret.add(CombEntry.SRVAUTH_TLSCERT);
-    }
-    if (sec.supportsSrvAuthHttpSig()) {
-      ret.add(CombEntry.SRVAUTH_HTTPSIG);
-      if (!sec.supportsSrvAuthTlsCert()) {
-        warnings.add("Server which support HTTP Signature Server Authentication "
-            + "SHOULD also support TLS Server Certificate Authentication");
-      }
-    } else {
-      notices.add("It is RECOMMENDED for all servers to support "
-          + "HTTP Signature Server Authentication.");
-    }
-    if (ret.size() == 0) {
-      errors.add("Your Echo API does not support ANY of the server authentication "
-          + "methods recognized by the Validator.");
-    }
-    return ret;
-  }
-
-  @Override
-  protected List<CombEntry> getClientAuthenticationMethods(HttpSecuritySettings sec,
-      List<String> notices, List<String> warnings, List<String> errors) {
-    List<CombEntry> ret = new ArrayList<>();
-    if (sec.supportsCliAuthNone()) {
-      warnings.add("Anonymous Client Authentication SHOULD NOT be enabled for Echo API.");
-    }
-    // Even though, we will still run some tests on it.
-    ret.add(CombEntry.CLIAUTH_NONE);
-    if (sec.supportsCliAuthTlsCert()) {
-      if (sec.supportsCliAuthTlsCertSelfSigned()) {
-        ret.add(CombEntry.CLIAUTH_TLSCERT_SELFSIGNED);
-      } else {
-        notices.add("Echo API Validator is able to validate TLS Client Authentication "
-            + "ONLY with a self-signed client certificate. You Echo API endpoint declares "
-            + "that it does not support self-signed Client Certificates. Therefore, TLS "
-            + "Client Authentication tests will be skipped.");
-      }
-    }
-    if (sec.supportsCliAuthHttpSig()) {
-      ret.add(CombEntry.CLIAUTH_HTTPSIG);
-    } else {
-      warnings.add("It is RECOMMENDED for all EWP server endpoints to support HTTP "
-          + "Signature Client Authentication. Your endpoint doesn't.");
-    }
-    if (ret.size() <= 1) {
-      errors.add("Your Echo API does not support ANY of the client authentication "
-          + "methods recognized by the Validator.");
-    }
-    return ret;
   }
 
   private void verifyResponseStatus(Response response) throws Failure {
@@ -1235,7 +1195,8 @@ abstract class EchoValidationSuiteBase extends AbstractValidationSuite {
           + "However, there's something wrong with the echo values produced. "
           + "We expected the response to contain the following echo values: " + echoValuesExpected
           + ", but the following values were found instead: " + echoValuesGot, Status.FAILURE,
-          response);
+          response
+      );
     }
     StringBuilder sb = new StringBuilder();
     if (notices.size() > 0) {
@@ -1253,13 +1214,13 @@ abstract class EchoValidationSuiteBase extends AbstractValidationSuite {
    * Make the request and make sure that the response contains a valid HTTP 200 Echo API response.
    *
    * @param request
-   *         The request to be made.
+   *     The request to be made.
    * @param heiIdsExpected
-   *         The expected contents of the hei-id list.
+   *     The expected contents of the hei-id list.
    * @param echoValuesExpected
-   *         The expected contents of the echo list.
+   *     The expected contents of the echo list.
    * @throws Failure
-   *         If some expectations are not met.
+   *     If some expectations are not met.
    */
   private Response makeRequestAndExpectHttp200(InlineValidationStep step, Combination combination,
       Request request, List<String> heiIdsExpected, List<String> echoValuesExpected)

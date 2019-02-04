@@ -1,7 +1,5 @@
 package eu.erasmuswithoutpaper.registry.validators.echovalidator;
 
-import java.util.TreeMap;
-
 import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
 import eu.erasmuswithoutpaper.registry.internet.Internet;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
@@ -12,6 +10,7 @@ import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.ListMultimap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,14 +18,19 @@ import org.slf4j.LoggerFactory;
  * Service for validating external Echo API implementations.
  */
 @Service
-public class EchoValidator extends ApiValidator {
+public class EchoValidator extends ApiValidator<EchoSuiteState> {
   private static final Logger logger = LoggerFactory.getLogger(EchoValidator.class);
-  private static TreeMap<SemanticVersion, ValidationSuiteFactory> validationSuites =
-      new TreeMap<>();
+  private static ListMultimap<SemanticVersion, ValidationSuiteFactory<EchoSuiteState>>
+      validationSuites;
 
   static {
-    validationSuites.put(new SemanticVersion(2, 0, 0), EchoValidationSuiteV200::new);
+    validationSuites = ApiValidator.createMultimap();
+
+    validationSuites.put(new SemanticVersion(1, 0, 0), EchoSetupValidationSuiteV1::new);
     validationSuites.put(new SemanticVersion(1, 0, 0), EchoValidationSuiteV100::new);
+
+    validationSuites.put(new SemanticVersion(2, 0, 0), EchoSetupValidationSuiteV2::new);
+    validationSuites.put(new SemanticVersion(2, 0, 0), EchoValidationSuiteV200::new);
   }
 
   @Autowired
@@ -41,7 +45,13 @@ public class EchoValidator extends ApiValidator {
   }
 
   @Override
-  protected TreeMap<SemanticVersion, ValidationSuiteFactory> getValidationSuitesMap() {
+  protected ListMultimap<SemanticVersion, ValidationSuiteFactory<EchoSuiteState>>
+      getValidationSuites() {
     return validationSuites;
+  }
+
+  @Override
+  protected EchoSuiteState createState() {
+    return new EchoSuiteState();
   }
 }

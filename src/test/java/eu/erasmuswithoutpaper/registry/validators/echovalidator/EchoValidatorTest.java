@@ -925,7 +925,7 @@ public class EchoValidatorTest extends AbstractApiTest {
   }
 
   @Override
-  protected ApiValidator GetValidator() {
+  protected ApiValidator<EchoSuiteState> GetValidator() {
     return validator;
   }
 }

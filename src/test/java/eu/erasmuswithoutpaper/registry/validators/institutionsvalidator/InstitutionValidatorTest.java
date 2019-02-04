@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.google.common.collect.Lists;
 import eu.erasmuswithoutpaper.registry.validators.AbstractApiTest;
+import eu.erasmuswithoutpaper.registry.validators.AbstractValidationSuite;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.internet.FakeInternet;
 import eu.erasmuswithoutpaper.registry.internet.FakeInternetService;
@@ -301,7 +302,7 @@ public class InstitutionValidatorTest extends AbstractApiTest {
   }
 
   @Override
-  protected ApiValidator GetValidator() {
+  protected ApiValidator<InstitutionsSuiteState> GetValidator() {
     return validator;
   }
 }

@@ -11,15 +11,15 @@ import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Describes the set of test/steps to be run on an Echo API implementation in order to properly
- * validate it.
- */
-class EchoValidationSuiteV100 extends EchoValidationSuiteCommon {
-  private static final Logger logger = LoggerFactory.getLogger(EchoValidationSuiteV100.class);
+public class EchoSetupValidationSuiteV2 extends EchoSetupValidationSuite {
+  private static final Logger logger = LoggerFactory.getLogger(EchoSetupValidationSuiteV2.class);
 
-  EchoValidationSuiteV100(ApiValidator<EchoSuiteState> echoValidator, EwpDocBuilder docBuilder,
-      Internet internet, String urlStr, RegistryClient regClient, ManifestRepository repo,
+  protected EchoSetupValidationSuiteV2(
+      ApiValidator<EchoSuiteState> echoValidator,
+      EwpDocBuilder docBuilder,
+      Internet internet, String urlStr,
+      RegistryClient regClient,
+      ManifestRepository repo,
       EchoSuiteState state) {
     super(echoValidator, docBuilder, internet, urlStr, regClient, repo, state);
   }
@@ -31,26 +31,26 @@ class EchoValidationSuiteV100 extends EchoValidationSuiteCommon {
 
   @Override
   protected KnownElement getKnownElement() {
-    return KnownElement.RESPONSE_ECHO_V1;
+    return KnownElement.RESPONSE_ECHO_V2;
   }
 
   @Override
   protected String getApiNamespace() {
-    return KnownNamespace.APIENTRY_ECHO_V1.getNamespaceUri();
+    return KnownNamespace.APIENTRY_ECHO_V2.getNamespaceUri();
   }
 
   @Override
   protected String getApiVersion() {
-    return "1.0.0";
+    return "2.0.0";
   }
 
   @Override
   public String getApiPrefix() {
-    return "e1";
+    return "e2";
   }
 
   @Override
   public String getApiResponsePrefix() {
-    return "er1";
+    return "er2";
   }
 }

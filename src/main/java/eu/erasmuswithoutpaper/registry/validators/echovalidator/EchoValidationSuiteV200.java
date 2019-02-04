@@ -15,12 +15,13 @@ import org.slf4j.LoggerFactory;
  * Describes the set of test/steps to be run on an Echo API implementation in order to properly
  * validate it.
  */
-class EchoValidationSuiteV200 extends EchoValidationSuiteBase {
+class EchoValidationSuiteV200 extends EchoValidationSuiteCommon {
   private static final Logger logger = LoggerFactory.getLogger(EchoValidationSuiteV200.class);
 
-  EchoValidationSuiteV200(ApiValidator echoValidator, EwpDocBuilder docBuilder, Internet internet,
-      String urlStr, RegistryClient regClient, ManifestRepository repo) {
-    super(echoValidator, docBuilder, internet, urlStr, regClient, repo);
+  EchoValidationSuiteV200(ApiValidator<EchoSuiteState> echoValidator, EwpDocBuilder docBuilder,
+      Internet internet, String urlStr, RegistryClient regClient, ManifestRepository repo,
+      EchoSuiteState state) {
+    super(echoValidator, docBuilder, internet, urlStr, regClient, repo, state);
   }
 
   @Override

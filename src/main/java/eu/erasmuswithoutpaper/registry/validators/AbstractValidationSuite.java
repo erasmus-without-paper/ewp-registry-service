@@ -5,16 +5,13 @@ import static org.joox.JOOX.$;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.interfaces.RSAPublicKey;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -55,7 +52,6 @@ import eu.erasmuswithoutpaper.registry.repository.ManifestRepository;
 import eu.erasmuswithoutpaper.registry.validators.InlineValidationStep.Failure;
 import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus.Status;
 import eu.erasmuswithoutpaper.registry.validators.echovalidator.HttpSecuritySettings;
-import eu.erasmuswithoutpaper.registryclient.ApiSearchConditions;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 import com.google.common.collect.Lists;
@@ -70,10 +66,10 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-public abstract class AbstractValidationSuite {
+public abstract class AbstractValidationSuite<S extends SuiteState> {
   protected final ManifestRepository repo;
 
-  protected final ApiValidator parentValidator;
+  protected final ApiValidator<S> parentValidator;
   protected final List<ValidationStepWithStatus> steps;
   protected final EwpDocBuilder docBuilder;
   protected final Internet internet;
@@ -83,17 +79,15 @@ public abstract class AbstractValidationSuite {
   protected final EwpHttpSigRequestSigner reqSignerHttpSig;
   protected final DecodingHelper resDecoderHelper;
   protected final String urlToBeValidated;
-  protected List<Combination> combinationsToValidate = new ArrayList<>();
-  protected EwpHttpSigResponseAuthorizer resAuthorizerHttpSig;
-  protected Element matchedApiEntry;
   protected Match catalogueMatch = null;
-  private boolean suiteBroken;
+  protected S currentState;
 
-  protected AbstractValidationSuite(ApiValidator echoValidator, EwpDocBuilder docBuilder,
-      Internet internet, String urlStr, RegistryClient regClient, ManifestRepository repo) {
+  protected AbstractValidationSuite(ApiValidator<S> validator,
+      EwpDocBuilder docBuilder, Internet internet, String urlStr, RegistryClient regClient,
+      ManifestRepository repo, S currentState) {
     this.repo = repo;
     this.steps = new ArrayList<>();
-    this.parentValidator = echoValidator;
+    this.parentValidator = validator;
     this.docBuilder = docBuilder;
     this.internet = internet;
     this.regClient = regClient;
@@ -112,11 +106,12 @@ public abstract class AbstractValidationSuite {
     )));
     this.resDecoderHelper.addDecoder(new GzipResponseDecoder());
     this.urlToBeValidated = urlStr;
+    this.currentState = currentState;
   }
 
   protected void runTests(HttpSecurityDescription security) throws SuiteBroken {
     boolean hasCompatibleTest = false;
-    for (Combination combination : this.combinationsToValidate) {
+    for (Combination combination : this.currentState.combinations) {
       if (security == null || combination.getSecurityDescription().equals(security)) {
         this.validateCombination(combination);
         hasCompatibleTest = true;
@@ -136,65 +131,12 @@ public abstract class AbstractValidationSuite {
    */
   public void run(HttpSecurityDescription security) {
     try {
-      addCredentialsDateTest();
-      addHttpsSchemeTest();
-      addApiVersionTest();
-      validateSecurityMethods();
       runTests(security);
     } catch (SuiteBroken e) {
-      suiteBroken = true;
+      this.currentState.broken = true;
     } catch (RuntimeException e) {
       this.steps.add(new GenericErrorFakeStep(e));
     }
-  }
-
-  protected void addCredentialsDateTest() throws SuiteBroken {
-    this.addAndRun(false, new InlineValidationStep() {
-
-      @Override
-      public String getName() {
-        return "Check if our client credentials have been served long enough.";
-      }
-
-      @Override
-      protected Optional<Response> innerRun() throws Failure {
-        if (new Date().getTime() - AbstractValidationSuite.this.parentValidator
-            .getCredentialsGenerationDate().getTime() < 10 * 60 * 1000) {
-          throw new Failure(
-              "Our client credentials are quite fresh. This means that many Echo APIs will "
-                  + "(correctly) return error responses in places where we expect HTTP 200. "
-                  + "This notice will disappear once our credentials are 10 minutes old.",
-              Status.NOTICE,
-              null
-          );
-        }
-        return Optional.empty();
-      }
-    });
-  }
-
-  protected void addHttpsSchemeTest() throws SuiteBroken {
-    this.addAndRun(true, new InlineValidationStep() {
-
-      @Override
-      public String getName() {
-        return "Verifying the format of the URL. Expecting a valid HTTPS-scheme URL.";
-      }
-
-      @Override
-      protected Optional<Response> innerRun() throws Failure {
-        if (!AbstractValidationSuite.this.urlToBeValidated.startsWith("https://")) {
-          throw new Failure("It needs to be HTTPS.", Status.FAILURE, null);
-        }
-        try {
-          new URL(AbstractValidationSuite.this.urlToBeValidated);
-        } catch (MalformedURLException e) {
-          throw new Failure("Exception while parsing URL format: " + e, Status.FAILURE, null);
-        }
-        return Optional.empty();
-      }
-    });
-
   }
 
   /**
@@ -214,59 +156,6 @@ public abstract class AbstractValidationSuite {
       // Note, that NOTICE and WARNING are still acceptable.
       throw new SuiteBroken();
     }
-  }
-
-  protected void addApiVersionTest() throws SuiteBroken {
-    this.addAndRun(true, new InlineValidationStep() {
-
-      @Override
-      public String getName() {
-        return "Verifying if the URL is properly registered.";
-      }
-
-      @Override
-      protected Optional<Response> innerRun() throws Failure {
-        //TODO: sprawdzić czy dostarczony url jest zarejestrowany w katalogu oraz
-        //ze wersja do ktorej przygotowane sa testy jest kompatybilna z ta z katalogu
-        //w ogole tu trzeba wziac pod uwage dostarczona wersje, a nie kazda z katalogu
-        //do zastanowienia sie
-
-        int matchedApiEntries = 0;
-
-        ApiSearchConditions conds = new ApiSearchConditions();
-        conds.setApiClassRequired(
-            AbstractValidationSuite.this.getApiNamespace(),
-            AbstractValidationSuite.this.getApiName(),
-            AbstractValidationSuite.this.getApiVersion()
-        );
-        Collection<Element> entries = AbstractValidationSuite.this.regClient.findApis(conds);
-        for (Element entry : entries) {
-          if ($(entry).find("url").text().equals(AbstractValidationSuite.this.urlToBeValidated)) {
-            AbstractValidationSuite.this.matchedApiEntry = entry;
-            matchedApiEntries++;
-          }
-        }
-
-        if (matchedApiEntries == 0) {
-          throw new Failure("Could not find this URL in the Registry Catalogue. "
-              + "Make sure that it is properly registered "
-              + "(as declared in API's `manifest-entry.xsd` file): "
-              + AbstractValidationSuite.this.urlToBeValidated, Status.FAILURE, null);
-        }
-
-        if (matchedApiEntries > 1) {
-          throw new Failure("Multiple (" + Integer.toString(matchedApiEntries)
-              + ") API entries found for this URL. "
-              + "Results of the remaining tests might be non-determinictic.", Status.WARNING, null);
-        }
-
-        return Optional.empty();
-      }
-    });
-  }
-
-  public boolean isSuiteBroken() {
-    return suiteBroken;
   }
 
   protected void checkAuthErrors(List<String> errors, List<String> warnings, List<String> notices)
@@ -307,82 +196,10 @@ public abstract class AbstractValidationSuite {
   }
 
   protected HttpSecuritySettings getSecuritySettings() {
-    Element httpSecurityElem = $(matchedApiEntry).namespaces(KnownNamespace.prefixMap())
-        .xpath(getApiPrefix() + ":http-security").get(0);
+    Element httpSecurityElem =
+        $(this.currentState.matchedApiEntry).namespaces(KnownNamespace.prefixMap())
+            .xpath(getApiPrefix() + ":http-security").get(0);
     return new HttpSecuritySettings(httpSecurityElem);
-  }
-
-  protected void validateSecurityMethods() throws SuiteBroken {
-    this.addAndRun(false, new InlineValidationStep() {
-
-      @Override
-      public String getName() {
-        return "Querying for supported security methods. Validating http-security integrity.";
-      }
-
-      @Override
-      protected Optional<Response> innerRun() throws Failure {
-
-        List<String> notices = new ArrayList<>();
-        List<String> warnings = new ArrayList<>();
-        List<String> errors = new ArrayList<>();
-
-        // Parse http-security element. Record all warnings.
-
-        HttpSecuritySettings sec = getSecuritySettings();
-        notices.addAll(sec.getNotices());
-
-        // Generate all possible combinations of validatable security methods.
-        populateCombinationsToValidate(
-            getClientAuthenticationMethods(sec, notices, warnings, errors),
-            getServerAuthenticationMethods(sec, notices, warnings, errors),
-            getRequestEncryptionMethods(sec, notices, warnings, errors),
-            getResponseEncryptionMethods(sec, notices, warnings, errors)
-        );
-
-        // Determine the status. If not success, then raise a proper exception.
-        checkAuthErrors(errors, warnings, notices);
-
-        return Optional.empty();
-      }
-    });
-  }
-
-  private void populateCombinationsToValidate(List<CombEntry> cliAuthMethodsToValidate,
-      List<CombEntry> srvAuthMethodsToValidate, List<CombEntry> reqEncrMethodsToValidate,
-      List<CombEntry> resEncrMethodsToValidate) {
-    for (CombEntry cliauth : cliAuthMethodsToValidate) {
-      for (CombEntry srvauth : srvAuthMethodsToValidate) {
-        for (CombEntry reqencr : reqEncrMethodsToValidate) {
-          for (CombEntry resencr : resEncrMethodsToValidate) {
-            boolean supportsGetRequests = true;
-            if (reqencr.equals(CombEntry.REQENCR_EWP)) {
-              supportsGetRequests = false;
-            }
-            if (supportsGetRequests) {
-              AbstractValidationSuite.this.combinationsToValidate.add(new Combination(
-                  "GET",
-                  AbstractValidationSuite.this.urlToBeValidated,
-                  AbstractValidationSuite.this.matchedApiEntry,
-                  cliauth,
-                  srvauth,
-                  reqencr,
-                  resencr
-              ));
-            }
-            AbstractValidationSuite.this.combinationsToValidate.add(new Combination(
-                "POST",
-                AbstractValidationSuite.this.urlToBeValidated,
-                AbstractValidationSuite.this.matchedApiEntry,
-                cliauth,
-                srvauth,
-                reqencr,
-                resencr
-            ));
-          }
-        }
-      }
-    }
   }
 
   protected void validateCombination(Combination combination) throws SuiteBroken {
@@ -526,11 +343,11 @@ public abstract class AbstractValidationSuite {
   }
 
   protected EwpHttpSigResponseAuthorizer getEwpHttpSigResponseAuthorizer() {
-    if (this.resAuthorizerHttpSig == null) {
-      this.resAuthorizerHttpSig =
-          new EwpHttpSigResponseAuthorizer(this.regClient, this.matchedApiEntry);
+    if (this.currentState.resAuthorizerHttpSig == null) {
+      this.currentState.resAuthorizerHttpSig =
+          new EwpHttpSigResponseAuthorizer(this.regClient, this.currentState.matchedApiEntry);
     }
-    return this.resAuthorizerHttpSig;
+    return this.currentState.resAuthorizerHttpSig;
   }
 
   protected void validateResponseCommonsForxHxx(Combination combination, Request request,
@@ -796,7 +613,7 @@ public abstract class AbstractValidationSuite {
   }
 
   protected int getMaxIds(String what) {
-    Match maxIdsMatch = $(this.matchedApiEntry).namespaces(KnownNamespace.prefixMap())
+    Match maxIdsMatch = $(this.currentState.matchedApiEntry).namespaces(KnownNamespace.prefixMap())
         .xpath(getApiPrefix() + ":max-" + what);
     if (maxIdsMatch.isEmpty()) {
       return 1;
@@ -927,27 +744,19 @@ public abstract class AbstractValidationSuite {
 
   protected abstract String getApiVersion();
 
-  protected abstract List<CombEntry> getResponseEncryptionMethods(HttpSecuritySettings sec,
-      List<String> notices, List<String> warnings, List<String> errors);
+  protected abstract void validateCombinationPost(Combination combination)
+      throws SuiteBroken;
 
-  protected abstract List<CombEntry> getRequestEncryptionMethods(HttpSecuritySettings sec,
-      List<String> notices, List<String> warnings, List<String> errors);
-
-  protected abstract List<CombEntry> getServerAuthenticationMethods(HttpSecuritySettings sec,
-      List<String> notices, List<String> warnings, List<String> errors);
-
-  protected abstract List<CombEntry> getClientAuthenticationMethods(HttpSecuritySettings sec,
-      List<String> notices, List<String> warnings, List<String> errors);
-
-  protected abstract void validateCombinationPost(Combination combination) throws SuiteBroken;
-
-  protected abstract void validateCombinationGet(Combination combination) throws SuiteBroken;
+  protected abstract void validateCombinationGet(Combination combination)
+      throws SuiteBroken;
 
   protected abstract Logger getLogger();
 
   protected abstract KnownElement getKnownElement();
 
-  public abstract List<ValidationStepWithStatus> getResults();
+  public List<ValidationStepWithStatus> getResults() {
+    return this.steps;
+  }
 
   public abstract String getApiPrefix();
 

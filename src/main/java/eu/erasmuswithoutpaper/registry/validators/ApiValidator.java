@@ -8,7 +8,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import javax.annotation.PostConstruct;
 
@@ -21,13 +20,15 @@ import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.google.common.collect.ListMultimap;
+import com.google.common.collect.MultimapBuilder;
 import org.slf4j.Logger;
 
 
 /**
  * Base class for services validating external APIs' implementations.
  */
-public abstract class ApiValidator {
+public abstract class ApiValidator<S extends SuiteState> {
   protected final RegistryClient client;
   protected final EwpDocBuilder docBuilder;
   protected final Internet internet;
@@ -60,10 +61,15 @@ public abstract class ApiValidator {
     this.validatedApiName = validatedApiName;
   }
 
-  private static Collection<ValidationSuiteFactory> getCompatibleSuites(SemanticVersion version,
-      TreeMap<SemanticVersion, ValidationSuiteFactory> map) {
-    List<ValidationSuiteFactory> result = new ArrayList<>();
-    for (Map.Entry<SemanticVersion, ValidationSuiteFactory> entry : map.entrySet()) {
+  protected static <K extends Comparable<? super K>, V> ListMultimap<K, V> createMultimap() {
+    return MultimapBuilder.treeKeys().linkedListValues().build();
+  }
+
+  private Collection<ValidationSuiteFactory<S>> getCompatibleSuites(
+      SemanticVersion version,
+      ListMultimap<SemanticVersion, ValidationSuiteFactory<S>> map) {
+    List<ValidationSuiteFactory<S>> result = new ArrayList<>();
+    for (Map.Entry<SemanticVersion, ValidationSuiteFactory<S>> entry : map.entries()) {
       if (version.isCompatible(entry.getKey())) {
         result.add(entry.getValue());
       }
@@ -161,11 +167,13 @@ public abstract class ApiValidator {
 
   public abstract Logger getLogger();
 
-  protected abstract TreeMap<SemanticVersion, ValidationSuiteFactory> getValidationSuitesMap();
+  protected abstract ListMultimap<SemanticVersion, ValidationSuiteFactory<S>> getValidationSuites();
 
   public Collection<SemanticVersion> getCoveredApiVersions() {
-    return getValidationSuitesMap().keySet();
+    return getValidationSuites().keySet();
   }
+
+  protected abstract S createState();
 
   /**
    * Runs all tests that are compatible with provided version.
@@ -181,20 +189,25 @@ public abstract class ApiValidator {
   public List<ValidationStepWithStatus> runTests(String urlStr, SemanticVersion version,
       HttpSecurityDescription security) {
     List<ValidationStepWithStatus> result = new ArrayList<>();
-    for (ValidationSuiteFactory sf : getCompatibleSuites(version, getValidationSuitesMap())) {
-      AbstractValidationSuite suite =
-          sf.create(this, this.docBuilder, this.internet, urlStr, this.client, repo);
+    S state = createState();
+    for (ValidationSuiteFactory<S> sf : getCompatibleSuites(
+        version,
+        getValidationSuites()
+    )) {
+      AbstractValidationSuite<S> suite =
+          sf.create(this, this.docBuilder, this.internet, urlStr, this.client, repo, state);
       suite.run(security);
       result.addAll(suite.getResults());
-      if (suite.isSuiteBroken()) {
+      if (state.broken) {
         break;
       }
     }
     return result;
   }
 
-  protected interface ValidationSuiteFactory {
-    AbstractValidationSuite create(ApiValidator validator, EwpDocBuilder docBuilder,
-        Internet internet, String urlStr, RegistryClient regClient, ManifestRepository repo);
+  protected interface ValidationSuiteFactory<T extends SuiteState> {
+    AbstractValidationSuite<T> create(ApiValidator<T> validator, EwpDocBuilder docBuilder,
+        Internet internet, String urlStr, RegistryClient regClient, ManifestRepository repo,
+        T state);
   }
 }

@@ -449,7 +449,7 @@ public class UiController {
    * @return An undocumented JSON object with the results of the validation (not guaranteed to stay
    *     backward compatible).
    */
-  private ResponseEntity<String> validateApi(String url, ApiValidator tester) {
+  private ResponseEntity<String> validateApi(String url, ApiValidator<?> tester) {
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
     headers.setCacheControl("max-age=0, must-revalidate");
