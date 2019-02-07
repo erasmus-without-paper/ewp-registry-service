@@ -5,12 +5,7 @@ Our client credentials are quite fresh. This means that many Echo APIs will (cor
 
 
 ### SUCCESS: Verifying the format of the URL. Expecting a valid HTTPS-scheme URL.
-
-### WARNING: Verifying if the URL is properly registered.
-
-Version 1.0.0 of the API is deprecated. You should implement new version.
-
-
+### SUCCESS: Verifying if the URL is properly registered.
 ### SUCCESS: Trying Combination[GATTT] (no client authentication). Expecting a valid HTTP 401 or HTTP 403 error response.
 ### SUCCESS: Trying Combination[PATTT] (no client authentication). Expecting a valid HTTP 401 or HTTP 403 error response.
 ### SUCCESS: Trying Combination[GSTTT] with an unknown TLS client certificate (a random one, that has never been published in the Registry). Expecting to receive a valid HTTP 401 or HTTP 403 error response.

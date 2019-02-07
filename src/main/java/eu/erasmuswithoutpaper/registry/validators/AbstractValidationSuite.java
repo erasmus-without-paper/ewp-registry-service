@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -58,10 +59,8 @@ import eu.erasmuswithoutpaper.registryclient.ApiSearchConditions;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 import com.google.common.collect.Lists;
-
 import net.adamcin.httpsig.api.Algorithm;
 import net.adamcin.httpsig.api.Challenge;
-import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.joox.Match;
@@ -84,15 +83,14 @@ public abstract class AbstractValidationSuite {
   protected final EwpHttpSigRequestSigner reqSignerHttpSig;
   protected final DecodingHelper resDecoderHelper;
   protected final String urlToBeValidated;
-  protected List<Combination> combinationsToValidate;
+  protected List<Combination> combinationsToValidate = new ArrayList<>();
   protected EwpHttpSigResponseAuthorizer resAuthorizerHttpSig;
   protected Element matchedApiEntry;
-  protected ApiVersionDescription apiVersionDetected;
   protected Match catalogueMatch = null;
+  private boolean suiteBroken;
 
   protected AbstractValidationSuite(ApiValidator echoValidator, EwpDocBuilder docBuilder,
-      Internet internet,
-      String urlStr, RegistryClient regClient, ManifestRepository repo) {
+      Internet internet, String urlStr, RegistryClient regClient, ManifestRepository repo) {
     this.repo = repo;
     this.steps = new ArrayList<>();
     this.parentValidator = echoValidator;
@@ -101,44 +99,57 @@ public abstract class AbstractValidationSuite {
     this.regClient = regClient;
     this.reqSignerAnon = new AnonymousRequestSigner();
     this.reqSignerCert =
-        new EwpCertificateRequestSigner(this.parentValidator.getTlsClientCertificateInUse(),
-            this.parentValidator.getTlsKeyPairInUse());
+        new EwpCertificateRequestSigner(
+            this.parentValidator.getTlsClientCertificateInUse(),
+            this.parentValidator.getTlsKeyPairInUse()
+        );
     this.reqSignerHttpSig =
         new EwpHttpSigRequestSigner(this.parentValidator.getClientRsaKeyPairInUse());
     this.resDecoderHelper = new DecodingHelper();
-    this.resDecoderHelper.addDecoder(new EwpRsaAesResponseDecoder(
-        Lists.newArrayList(this.parentValidator.getClientRsaKeyPairInUse(),
-            this.parentValidator.getServerRsaKeyPairInUse())));
+    this.resDecoderHelper.addDecoder(new EwpRsaAesResponseDecoder(Lists.newArrayList(
+        this.parentValidator.getClientRsaKeyPairInUse(),
+        this.parentValidator.getServerRsaKeyPairInUse()
+    )));
     this.resDecoderHelper.addDecoder(new GzipResponseDecoder());
     this.urlToBeValidated = urlStr;
-    this.apiVersionDetected = null;
   }
 
-  public abstract List<ValidationStepWithStatus> getResults();
-
-  protected abstract void runTests() throws SuiteBroken;
+  protected void runTests(HttpSecurityDescription security) throws SuiteBroken {
+    boolean hasCompatibleTest = false;
+    for (Combination combination : this.combinationsToValidate) {
+      if (security == null || combination.getSecurityDescription().equals(security)) {
+        this.validateCombination(combination);
+        hasCompatibleTest = true;
+      }
+    }
+    if (!hasCompatibleTest) {
+      throw new RuntimeException(
+          "Security " + security.toString() + " is not supported by this endpoint");
+    }
+  }
 
   /**
    * Runs all tests.
+   *
+   * @param security
+   *     security method to be used in tests. If security == null then all tests are run.
    */
-  public void run() {
+  public void run(HttpSecurityDescription security) {
     try {
       addCredentialsDateTest();
       addHttpsSchemeTest();
       addApiVersionTest();
-      runTests();
+      validateSecurityMethods();
+      runTests(security);
     } catch (SuiteBroken e) {
-      // Ignore.
+      suiteBroken = true;
     } catch (RuntimeException e) {
       this.steps.add(new GenericErrorFakeStep(e));
     }
   }
 
-  protected abstract List<ApiVersionDescription> getApiVersions();
-
   protected void addCredentialsDateTest() throws SuiteBroken {
     this.addAndRun(false, new InlineValidationStep() {
-
 
       @Override
       public String getName() {
@@ -153,7 +164,9 @@ public abstract class AbstractValidationSuite {
               "Our client credentials are quite fresh. This means that many Echo APIs will "
                   + "(correctly) return error responses in places where we expect HTTP 200. "
                   + "This notice will disappear once our credentials are 10 minutes old.",
-              Status.NOTICE, null);
+              Status.NOTICE,
+              null
+          );
         }
         return Optional.empty();
       }
@@ -187,10 +200,12 @@ public abstract class AbstractValidationSuite {
   /**
    * Add a new step (to the public list of steps been run) and run it.
    *
-   * @param requireSuccess If true, then a {@link SuiteBroken} exception will be raised, if this
-   *                       steps fails.
-   * @param step           The step to be added and run.
-   * @throws SuiteBroken If the step, which was required to succeed, fails.
+   * @param requireSuccess
+   *     If true, then a {@link SuiteBroken} exception will be raised, if this steps fails.
+   * @param step
+   *     The step to be added and run.
+   * @throws SuiteBroken
+   *     If the step, which was required to succeed, fails.
    */
   protected void addAndRun(boolean requireSuccess, InlineValidationStep step) throws SuiteBroken {
     this.steps.add(step);
@@ -211,19 +226,24 @@ public abstract class AbstractValidationSuite {
 
       @Override
       protected Optional<Response> innerRun() throws Failure {
-        List<ApiVersionDescription> apis = getApiVersions();
+        //TODO: sprawdzić czy dostarczony url jest zarejestrowany w katalogu oraz
+        //ze wersja do ktorej przygotowane sa testy jest kompatybilna z ta z katalogu
+        //w ogole tu trzeba wziac pod uwage dostarczona wersje, a nie kazda z katalogu
+        //do zastanowienia sie
+
         int matchedApiEntries = 0;
 
-        for (ApiVersionDescription api : apis) {
-          ApiSearchConditions conds = new ApiSearchConditions();
-          conds.setApiClassRequired(api.namespace, api.name, api.version);
-          Collection<Element> entries = AbstractValidationSuite.this.regClient.findApis(conds);
-          for (Element entry : entries) {
-            if ($(entry).find("url").text().equals(AbstractValidationSuite.this.urlToBeValidated)) {
-              AbstractValidationSuite.this.apiVersionDetected = api;
-              AbstractValidationSuite.this.matchedApiEntry = entry;
-              matchedApiEntries++;
-            }
+        ApiSearchConditions conds = new ApiSearchConditions();
+        conds.setApiClassRequired(
+            AbstractValidationSuite.this.getApiNamespace(),
+            AbstractValidationSuite.this.getApiName(),
+            AbstractValidationSuite.this.getApiVersion()
+        );
+        Collection<Element> entries = AbstractValidationSuite.this.regClient.findApis(conds);
+        for (Element entry : entries) {
+          if ($(entry).find("url").text().equals(AbstractValidationSuite.this.urlToBeValidated)) {
+            AbstractValidationSuite.this.matchedApiEntry = entry;
+            matchedApiEntries++;
           }
         }
 
@@ -235,33 +255,9 @@ public abstract class AbstractValidationSuite {
         }
 
         if (matchedApiEntries > 1) {
-          throw new Failure(
-              "Multiple (" + Integer.toString(matchedApiEntries)
-                  + ") API entries found for this URL. "
-                  + "Results of the remaining tests might be non-determinictic.",
-              Status.WARNING, null);
-        }
-
-        if (AbstractValidationSuite.this.apiVersionDetected.status == ApiVersionStatus.OBSOLETE) {
-          throw new Failure(
-              "Version " + AbstractValidationSuite.this.apiVersionDetected.version
-                  + " of the API is obsolete. You might consider implementing new version.",
-              Status.WARNING, null);
-        }
-
-        if (AbstractValidationSuite.this.apiVersionDetected.status == ApiVersionStatus.DEPRECATED) {
-          throw new Failure(
-              "Version " + AbstractValidationSuite.this.apiVersionDetected.version
-                  + " of the API is deprecated. You should implement new version.",
-              Status.WARNING, null);
-        }
-
-        if (AbstractValidationSuite.this.apiVersionDetected.status
-            == ApiVersionStatus.DISCONTINUED) {
-          throw new Failure(
-              "Version " + AbstractValidationSuite.this.apiVersionDetected.version
-                  + " of the API is discontinued. You must implement new version.",
-              Status.ERROR, null);
+          throw new Failure("Multiple (" + Integer.toString(matchedApiEntries)
+              + ") API entries found for this URL. "
+              + "Results of the remaining tests might be non-determinictic.", Status.WARNING, null);
         }
 
         return Optional.empty();
@@ -269,91 +265,12 @@ public abstract class AbstractValidationSuite {
     });
   }
 
-  /**
-   * This is a "fake" {@link ValidationStepWithStatus} which is dynamically added to the list of
-   * steps whenever some unexpected runtime exception occurs.
-   */
-  protected static final class GenericErrorFakeStep implements ValidationStepWithStatus {
-
-    private final RuntimeException cause;
-
-    public GenericErrorFakeStep(RuntimeException cause) {
-      this.cause = cause;
-    }
-
-    @Override
-    public String getMessage() {
-      return this.cause.getMessage();
-    }
-
-    @Override
-    public String getName() {
-      return "Other error occurred. Please contact the developers.";
-    }
-
-    @Override
-    public List<Request> getRequestSnapshots() {
-      return Lists.newArrayList();
-    }
-
-    @Override
-    public List<Response> getResponseSnapshots() {
-      return Lists.newArrayList();
-    }
-
-    @Override
-    public Optional<String> getServerDeveloperErrorMessage() {
-      return Optional.empty();
-    }
-
-    @Override
-    public Status getStatus() {
-      return Status.ERROR;
-    }
+  public boolean isSuiteBroken() {
+    return suiteBroken;
   }
 
-  /**
-   * Thrown when a validation step fails so badly, that no other steps should be run.
-   */
-  @SuppressWarnings("serial")
-  public static class SuiteBroken extends Exception {
-  }
-
-  protected enum ApiVersionStatus {
-    ACTIVE("Active"),
-    OBSOLETE("Obsolete"),
-    DEPRECATED("Deprecated"),
-    DISCONTINUED("Discontinued");
-
-    private String name;
-
-    ApiVersionStatus(String name) {
-      this.name = name;
-    }
-
-    @Override
-    public String toString() {
-      return name;
-    }
-  }
-
-  protected static class ApiVersionDescription {
-    public final String version;
-    public final String namespace;
-    public final String name;
-    public final ApiVersionStatus status;
-
-    public ApiVersionDescription(String version, String namespace,
-                                 String name, ApiVersionStatus status) {
-      this.version = version;
-      this.namespace = namespace;
-      this.name = name;
-      this.status = status;
-    }
-  }
-
-  protected void checkAuthErrors(List<String> errors, List<String> warnings,
-                                 List<String> notices) throws Failure {
+  protected void checkAuthErrors(List<String> errors, List<String> warnings, List<String> notices)
+      throws Failure {
     StringBuilder sb = new StringBuilder();
     Status status = Status.SUCCESS;
     if (errors.size() > 0) {
@@ -389,18 +306,9 @@ public abstract class AbstractValidationSuite {
     }
   }
 
-  public abstract String getApiPrefix();
-
-  public abstract String getApiResponsePrefix();
-
   protected HttpSecuritySettings getSecuritySettings() {
-    return parseMatchedApiEntry(getApiPrefix(), this.matchedApiEntry);
-  }
-
-  private static HttpSecuritySettings parseMatchedApiEntry(String apiPrefix,
-      Element matchedApiEntry) {
-    Element httpSecurityElem = $(matchedApiEntry)
-        .namespaces(KnownNamespace.prefixMap()).xpath(apiPrefix + ":http-security").get(0);
+    Element httpSecurityElem = $(matchedApiEntry).namespaces(KnownNamespace.prefixMap())
+        .xpath(getApiPrefix() + ":http-security").get(0);
     return new HttpSecuritySettings(httpSecurityElem);
   }
 
@@ -440,54 +348,9 @@ public abstract class AbstractValidationSuite {
     });
   }
 
-  protected static Combination parseSecuritySettings(
-      String url, String method,
-      Element matchedApiEntry) {
-    Element httpSecurityElem = $(matchedApiEntry).xpath("*[local-name()='http-security']").get(0);
-    HttpSecuritySettings securitySettings = new HttpSecuritySettings(httpSecurityElem);
-
-    CombEntry cliauth = CombEntry.CLIAUTH_NONE;
-    if (securitySettings.supportsCliAuthNone()) {
-      //Intentionally left empty
-    } else if (securitySettings.supportsCliAuthHttpSig()) {
-      cliauth = CombEntry.CLIAUTH_HTTPSIG;
-    } else if (securitySettings.supportsCliAuthTlsCertSelfSigned()) {
-      cliauth = CombEntry.CLIAUTH_TLSCERT_SELFSIGNED;
-    } else if (securitySettings.supportsCliAuthTlsCert()) {
-      //TODO
-      throw new NotImplementedException();
-    }
-
-    CombEntry srvauth = CombEntry.SRVAUTH_TLSCERT;
-    if (securitySettings.supportsSrvAuthTlsCert()) {
-      //Intentionally left empty
-    } else if (securitySettings.supportsSrvAuthHttpSig()) {
-      srvauth = CombEntry.SRVAUTH_HTTPSIG;
-    }
-
-    CombEntry reqencr = CombEntry.REQENCR_TLS;
-    if (securitySettings.supportsReqEncrTls()) {
-      //Intentionally left empty
-    } else if (securitySettings.supportsReqEncrEwp()) {
-      reqencr = CombEntry.REQENCR_EWP;
-    }
-
-    CombEntry resencr = CombEntry.RESENCR_TLS;
-    if (securitySettings.supportsResEncrTls()) {
-      //Intentionally left empty
-    } else if (securitySettings.supportsResEncrEwp()) {
-      resencr = CombEntry.RESENCR_EWP;
-    }
-
-    return new Combination(method, url,
-        matchedApiEntry, cliauth, srvauth, reqencr,
-        resencr);
-  }
-
-  private void populateCombinationsToValidate(
-      List<CombEntry> cliAuthMethodsToValidate, List<CombEntry> srvAuthMethodsToValidate,
-      List<CombEntry> reqEncrMethodsToValidate, List<CombEntry> resEncrMethodsToValidate) {
-    AbstractValidationSuite.this.combinationsToValidate = new ArrayList<>();
+  private void populateCombinationsToValidate(List<CombEntry> cliAuthMethodsToValidate,
+      List<CombEntry> srvAuthMethodsToValidate, List<CombEntry> reqEncrMethodsToValidate,
+      List<CombEntry> resEncrMethodsToValidate) {
     for (CombEntry cliauth : cliAuthMethodsToValidate) {
       for (CombEntry srvauth : srvAuthMethodsToValidate) {
         for (CombEntry reqencr : reqEncrMethodsToValidate) {
@@ -497,40 +360,30 @@ public abstract class AbstractValidationSuite {
               supportsGetRequests = false;
             }
             if (supportsGetRequests) {
-              AbstractValidationSuite.this.combinationsToValidate
-                  .add(new Combination("GET", AbstractValidationSuite.this.urlToBeValidated,
-                      AbstractValidationSuite.this.matchedApiEntry, cliauth, srvauth, reqencr,
-                      resencr));
+              AbstractValidationSuite.this.combinationsToValidate.add(new Combination(
+                  "GET",
+                  AbstractValidationSuite.this.urlToBeValidated,
+                  AbstractValidationSuite.this.matchedApiEntry,
+                  cliauth,
+                  srvauth,
+                  reqencr,
+                  resencr
+              ));
             }
-            AbstractValidationSuite.this.combinationsToValidate
-                .add(new Combination("POST", AbstractValidationSuite.this.urlToBeValidated,
-                    AbstractValidationSuite.this.matchedApiEntry, cliauth, srvauth, reqencr,
-                    resencr));
+            AbstractValidationSuite.this.combinationsToValidate.add(new Combination(
+                "POST",
+                AbstractValidationSuite.this.urlToBeValidated,
+                AbstractValidationSuite.this.matchedApiEntry,
+                cliauth,
+                srvauth,
+                reqencr,
+                resencr
+            ));
           }
         }
       }
     }
   }
-
-  protected abstract List<CombEntry> getResponseEncryptionMethods(
-      HttpSecuritySettings sec, List<String> notices,
-      List<String> warnings, List<String> errors);
-
-  protected abstract List<CombEntry> getRequestEncryptionMethods(
-      HttpSecuritySettings sec, List<String> notices,
-      List<String> warnings, List<String> errors);
-
-  protected abstract List<CombEntry> getServerAuthenticationMethods(
-      HttpSecuritySettings sec, List<String> notices,
-      List<String> warnings, List<String> errors);
-
-  protected abstract List<CombEntry> getClientAuthenticationMethods(
-      HttpSecuritySettings sec, List<String> notices,
-      List<String> warnings, List<String> errors);
-
-  protected abstract void validateCombinationPost(Combination combination) throws SuiteBroken;
-
-  protected abstract void validateCombinationGet(Combination combination) throws SuiteBroken;
 
   protected void validateCombination(Combination combination) throws SuiteBroken {
     if (combination.getHttpMethod().equals("POST")) {
@@ -541,12 +394,12 @@ public abstract class AbstractValidationSuite {
   }
 
   protected Request createValidRequestForCombination(InlineValidationStep step,
-                                                     Combination combination) {
+      Combination combination) {
     return this.createValidRequestForCombination(step, combination, (byte[]) null);
   }
 
   protected Request createValidRequestForCombination(InlineValidationStep step,
-                                                     Combination combination, byte[] body) {
+      Combination combination, byte[] body) {
 
     Request request = new Request(combination.getHttpMethod(), combination.getUrl());
     if (body != null) {
@@ -580,8 +433,11 @@ public abstract class AbstractValidationSuite {
     } else if (combination.getResEncr().equals(CombEntry.RESENCR_EWP)) {
       request.putHeader("Accept-Encoding", "ewp-rsa-aes128gcm, identity;q=0.1");
       if (!combination.getCliAuth().equals(CombEntry.CLIAUTH_HTTPSIG)) {
-        request.putHeader("Accept-Response-Encryption-Key", Base64.getEncoder()
-            .encodeToString(this.parentValidator.getClientRsaPublicKeyInUse().getEncoded()));
+        request.putHeader(
+            "Accept-Response-Encryption-Key",
+            Base64.getEncoder()
+                .encodeToString(this.parentValidator.getClientRsaPublicKeyInUse().getEncoded())
+        );
       }
     } else {
       throw new RuntimeException("Not supported");
@@ -600,8 +456,11 @@ public abstract class AbstractValidationSuite {
     if (body == null) {
       return this.createValidRequestForCombination(step, combination);
     } else {
-      return this.createValidRequestForCombination(step, combination,
-          body.getBytes(StandardCharsets.UTF_8));
+      return this.createValidRequestForCombination(
+          step,
+          combination,
+          body.getBytes(StandardCharsets.UTF_8)
+      );
     }
   }
 
@@ -622,15 +481,14 @@ public abstract class AbstractValidationSuite {
       protected Optional<Response> innerRun() throws Failure {
         Request request =
             AbstractValidationSuite.this.createValidRequestForCombination(this, combination);
-        return Optional.of(
-            AbstractValidationSuite.this.makeRequestAndExpectError(
-                this, combination, request, 405));
+        return Optional.of(AbstractValidationSuite.this
+            .makeRequestAndExpectError(this, combination, request, 405));
       }
     };
   }
 
-  protected RequestEncoder getRequestEncoderForCombination(
-      InlineValidationStep step, Request request, Combination combination) {
+  protected RequestEncoder getRequestEncoderForCombination(InlineValidationStep step,
+      Request request, Combination combination) {
     step.addRequestSnapshot(request);
     if (combination.getReqEncr().equals(CombEntry.REQENCR_TLS)) {
       return new NoopRequestEncoder();
@@ -675,8 +533,8 @@ public abstract class AbstractValidationSuite {
     return this.resAuthorizerHttpSig;
   }
 
-  protected void validateResponseCommonsForxHxx(
-      Combination combination, Request request, Response response) throws Failure {
+  protected void validateResponseCommonsForxHxx(Combination combination, Request request,
+      Response response) throws Failure {
     try {
       this.getEwpHttpSigResponseAuthorizer().authorize(request, response);
     } catch (InvalidResponseError e) {
@@ -723,17 +581,16 @@ public abstract class AbstractValidationSuite {
   }
 
   protected Response makeRequestAndExpectError(InlineValidationStep step, Combination combination,
-                                             Request request, int status) throws Failure {
+      Request request, int status) throws Failure {
     return this.makeRequestAndExpectError(step, combination, request, Lists.newArrayList(status));
   }
 
-  protected Response makeRequestAndExpectError(InlineValidationStep step,
-      Combination combination, Request request, List<Integer> statuses) throws Failure {
+  protected Response makeRequestAndExpectError(InlineValidationStep step, Combination combination,
+      Request request, List<Integer> statuses) throws Failure {
     Response response = this.makeRequest(step, request);
     this.expectError(step, combination, request, response, statuses);
     return response;
   }
-
 
   protected Response makeRequest(InlineValidationStep step, Request request) throws Failure {
     step.addRequestSnapshot(request);
@@ -744,35 +601,34 @@ public abstract class AbstractValidationSuite {
     } catch (IOException e) {
       getLogger().debug(
           "Problems retrieving response from server: " + ExceptionUtils.getFullStackTrace(e));
-      throw new Failure("Problems retrieving response from server: " + e.getMessage(), Status.ERROR,
-          null);
+      throw new Failure(
+          "Problems retrieving response from server: " + e.getMessage(),
+          Status.ERROR,
+          null
+      );
     }
   }
 
-  protected Response makeRequest(
-      InlineValidationStep step, Combination combination,
-      Request request, List<String> notices)
-      throws Failure {
+  protected Response makeRequest(InlineValidationStep step, Combination combination,
+      Request request, List<String> notices) throws Failure {
     Response response = this.makeRequest(step, request);
-    notices.addAll(
-        this.decodeAndValidateResponseCommons(step, combination, request, response)
-    );
+    notices.addAll(this.decodeAndValidateResponseCommons(step, combination, request, response));
     return response;
   }
-
-
-  protected abstract Logger getLogger();
 
   /**
    * Make the request and check if the response contains a valid error of expected type.
    *
-   * @param request The request to be made.
-   * @param statuses Expected HTTP response statuses (any of those).
-   * @throws Failure If HTTP status differs from expected, or if the response body doesn't contain a
-   *         proper error response.
+   * @param request
+   *     The request to be made.
+   * @param statuses
+   *     Expected HTTP response statuses (any of those).
+   * @throws Failure
+   *     If HTTP status differs from expected, or if the response body doesn't contain a proper
+   *     error response.
    */
   protected void expectError(InlineValidationStep step, Combination combination, Request request,
-                           Response response, List<Integer> statuses) throws Failure {
+      Response response, List<Integer> statuses) throws Failure {
     final List<String> notices =
         this.decodeAndValidateResponseCommons(step, combination, request, response);
     if (!statuses.contains(response.getStatus())) {
@@ -780,12 +636,12 @@ public abstract class AbstractValidationSuite {
       int expectedFirstDigit = statuses.get(0) / 100;
       Status failureStatus =
           (gotFirstDigit == expectedFirstDigit) ? Status.WARNING : Status.FAILURE;
-      throw new Failure(
-          "HTTP "
-              + String.join(" or HTTP ",
-              statuses.stream().map(Object::toString).collect(Collectors.toList()))
-              + " expected, but HTTP " + response.getStatus() + " received.",
-          failureStatus, response);
+      String message = "HTTP " + String.join(
+          " or HTTP ",
+          statuses.stream().map(Object::toString).collect(Collectors.toList())
+      );
+      message += " expected, but HTTP " + response.getStatus() + " received.";
+      throw new Failure(message, failureStatus, response);
     }
     BuildParams params = new BuildParams(response.getBody());
     params.setExpectedKnownElement(KnownElement.COMMON_ERROR_RESPONSE);
@@ -793,9 +649,11 @@ public abstract class AbstractValidationSuite {
     if (!result.isValid()) {
       throw new Failure(
           "HTTP response status was okay, but the content has failed Schema validation. "
-              + "It is recommended to return a proper <error-response> in case of errors. "
-              + this.formatDocBuildErrors(result.getErrors()),
-          Status.WARNING, response);
+              + "It is recommended to return a proper <error-response> in case of errors. " + this
+              .formatDocBuildErrors(result.getErrors()),
+          Status.WARNING,
+          response
+      );
     }
     if (response.getStatus() == 401) {
       String wwwauth = response.getHeader("WWW-Authenticate");
@@ -810,20 +668,24 @@ public abstract class AbstractValidationSuite {
           throw new Failure("Your WWW-Authenticate header should contain the \"realm\" property "
               + "with \"EWP\" value.", Status.WARNING, response);
         }
-        if (!parsed.getAlgorithms().isEmpty()
-            && (!parsed.getAlgorithms().contains(Algorithm.RSA_SHA256))) {
+        if (!parsed.getAlgorithms().isEmpty() && (!parsed.getAlgorithms()
+            .contains(Algorithm.RSA_SHA256))) {
           throw new Failure(
               "Your WWW-Authenticate describes required Signature algorithms, "
                   + "but the list doesn't contain the required rsa-sha256 algorithm.",
-              Status.WARNING, response);
+              Status.WARNING,
+              response
+          );
         }
-        if (!parsed.getHeaders().isEmpty() && (!parsed.getHeaders().containsAll(
-            Lists.newArrayList("(request-target)", "host", "digest", "x-request-id", "date")))) {
+        if (!parsed.getHeaders().isEmpty() && (!parsed.getHeaders().containsAll(Lists
+            .newArrayList("(request-target)", "host", "digest", "x-request-id", "date")))) {
           throw new Failure(
               "If you want to include the \"headers\" "
                   + "property in your WWW-Authenticate header, then it should contain at least "
                   + "all required values: (request-target), host, digest, x-request-id and date",
-              Status.WARNING, response);
+              Status.WARNING,
+              response
+          );
         }
       }
       String wantDigest = response.getHeader("Want-Digest");
@@ -858,8 +720,7 @@ public abstract class AbstractValidationSuite {
 
   protected Element makeXmlFromBytes(byte[] bytes) {
     try {
-      final InputStream stream =
-          new ByteArrayInputStream(bytes);
+      final InputStream stream = new ByteArrayInputStream(bytes);
       DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
       Document document = builder.parse(stream);
       return document.getDocumentElement();
@@ -894,10 +755,9 @@ public abstract class AbstractValidationSuite {
 
   protected List<String> getApiUrlForHei(String api, String hei) {
     Match apis = getCatalogueMatcher().xpath(
-        "/r:catalogue/r:host/r:institutions-covered/"
-            + "r:hei-id[normalize-space(text())='" + hei + "']"
-            + "/../../r:apis-implemented/*[local-name()='" + api + "']/*[local-name()='url']"
-    );
+        "/r:catalogue/r:host/r:institutions-covered/" + "r:hei-id[normalize-space(text())='" + hei
+            + "']" + "/../../r:apis-implemented/*[local-name()='" + api
+            + "']/*[local-name()='url']");
     if (apis.isEmpty()) {
       return null;
     }
@@ -905,11 +765,8 @@ public abstract class AbstractValidationSuite {
   }
 
   protected Element getApiEntryFromUrl(String url) {
-    List<Element> apis = getCatalogueMatcher().xpath(
-        "/r:catalogue/r:host/r:apis-implemented/*/"
-          + "*[local-name()='url' and normalize-space(text())='" + url + "']"
-          + "/.."
-    ).get();
+    List<Element> apis = getCatalogueMatcher().xpath("/r:catalogue/r:host/r:apis-implemented/*/"
+        + "*[local-name()='url' and normalize-space(text())='" + url + "']" + "/..").get();
     if (apis.isEmpty()) {
       return null;
     }
@@ -921,9 +778,8 @@ public abstract class AbstractValidationSuite {
       DocumentBuilder docBuilder = Utils.newSecureDocumentBuilder();
       Document doc = null;
       try {
-        doc = docBuilder.parse(new ByteArrayInputStream(
-            this.repo.getCatalogue().getBytes(StandardCharsets.UTF_8))
-        );
+        doc = docBuilder.parse(new ByteArrayInputStream(this.repo.getCatalogue()
+            .getBytes(StandardCharsets.UTF_8)));
       } catch (SAXException | IOException | CatalogueNotFound e) {
         throw new RuntimeException(e);
       }
@@ -934,30 +790,18 @@ public abstract class AbstractValidationSuite {
   }
 
   protected List<String> fetchHeiIdsCoveredByApiByUrl(String url) {
-    return getCatalogueMatcher().xpath(
-        "/r:catalogue/r:host/r:apis-implemented/*/"
-            + "*[local-name()='url' and normalize-space(text())='" + url + "']"
-            + "/../../../r:institutions-covered/r:hei-id"
-    ).texts();
+    return getCatalogueMatcher().xpath("/r:catalogue/r:host/r:apis-implemented/*/"
+        + "*[local-name()='url' and normalize-space(text())='" + url + "']"
+        + "/../../../r:institutions-covered/r:hei-id").texts();
   }
 
   protected int getMaxIds(String what) {
-    Match maxIdsMatch = $(this.matchedApiEntry)
-        .namespaces(KnownNamespace.prefixMap()).xpath(getApiPrefix() + ":max-" + what);
+    Match maxIdsMatch = $(this.matchedApiEntry).namespaces(KnownNamespace.prefixMap())
+        .xpath(getApiPrefix() + ":max-" + what);
     if (maxIdsMatch.isEmpty()) {
       return 1;
     }
     return Integer.parseInt(maxIdsMatch.get(0).getTextContent());
-  }
-
-  protected static class Parameter {
-    public final String name;
-    public final String value;
-
-    public Parameter(String name, String value) {
-      this.name = name;
-      this.value = value;
-    }
   }
 
   protected Request createRequestWithParameters(InlineValidationStep step, Combination combination,
@@ -1002,23 +846,16 @@ public abstract class AbstractValidationSuite {
     throw new Failure(sb.toString(), Status.NOTICE, response);
   }
 
-  protected void expect200(Response response)
-      throws Failure {
+  protected void expect200(Response response) throws Failure {
     if (response.getStatus() != 200) {
       StringBuilder sb = new StringBuilder();
-      sb.append("HTTP 200 expected, but HTTP ")
-          .append(response.getStatus())
-          .append(" received.");
+      sb.append("HTTP 200 expected, but HTTP ").append(response.getStatus()).append(" received.");
       if (response.getStatus() == 403) {
         sb.append(" Make sure you validate clients' credentials against a fresh "
             + "Registry catalogue version.");
       }
       throw new Failure(sb.toString(), Status.FAILURE, response);
     }
-  }
-
-  protected interface Verifier {
-    void verify(AbstractValidationSuite suite, Match root, Response response) throws Failure;
   }
 
   protected Response verifyResponse(InlineValidationStep step, Combination combination,
@@ -1037,15 +874,15 @@ public abstract class AbstractValidationSuite {
     BuildResult result = this.docBuilder.build(params);
     if (!result.isValid()) {
       throw new Failure(
-          "HTTP response status was okay, but the content has failed Schema validation. "
-              + this.formatDocBuildErrors(result.getErrors()),
-          Status.FAILURE, response);
+          "HTTP response status was okay, but the content has failed Schema validation. " + this
+              .formatDocBuildErrors(result.getErrors()),
+          Status.FAILURE,
+          response
+      );
     }
     Match root = $(result.getDocument().get()).namespaces(KnownNamespace.prefixMap());
     verifier.verify(this, root, response);
   }
-
-  protected abstract KnownElement getKnownElement();
 
   protected void testParameters200(Combination combination, String name, List<Parameter> params,
       Verifier verifier) throws SuiteBroken {
@@ -1057,25 +894,19 @@ public abstract class AbstractValidationSuite {
 
       @Override
       protected Optional<Response> innerRun() throws Failure {
-        Request request = createRequestWithParameters(
-            this, combination, params
-        );
-        return Optional.of(verifyResponse(
-            this, combination, request, verifier
-        ));
+        Request request = createRequestWithParameters(this, combination, params);
+        return Optional.of(verifyResponse(this, combination, request, verifier));
       }
     });
   }
 
-  protected void testParametersError(Combination combination,
-      String name, List<Parameter> params, int error) throws SuiteBroken {
-    testParametersError(
-        combination, name, params, Arrays.asList(error)
-    );
+  protected void testParametersError(Combination combination, String name, List<Parameter> params,
+      int error) throws SuiteBroken {
+    testParametersError(combination, name, params, Arrays.asList(error));
   }
 
-  protected void testParametersError(Combination combination,
-      String name, List<Parameter> params, List<Integer> errors) throws SuiteBroken {
+  protected void testParametersError(Combination combination, String name, List<Parameter> params,
+      List<Integer> errors) throws SuiteBroken {
     this.addAndRun(false, new InlineValidationStep() {
       @Override
       public String getName() {
@@ -1085,11 +916,107 @@ public abstract class AbstractValidationSuite {
       @Override
       protected Optional<Response> innerRun() throws Failure {
         Request request = createRequestWithParameters(this, combination, params);
-        return Optional.of(makeRequestAndExpectError(
-            this, combination, request, errors
-        ));
+        return Optional.of(makeRequestAndExpectError(this, combination, request, errors));
       }
     });
+  }
+
+  protected abstract String getApiNamespace();
+
+  protected abstract String getApiName();
+
+  protected abstract String getApiVersion();
+
+  protected abstract List<CombEntry> getResponseEncryptionMethods(HttpSecuritySettings sec,
+      List<String> notices, List<String> warnings, List<String> errors);
+
+  protected abstract List<CombEntry> getRequestEncryptionMethods(HttpSecuritySettings sec,
+      List<String> notices, List<String> warnings, List<String> errors);
+
+  protected abstract List<CombEntry> getServerAuthenticationMethods(HttpSecuritySettings sec,
+      List<String> notices, List<String> warnings, List<String> errors);
+
+  protected abstract List<CombEntry> getClientAuthenticationMethods(HttpSecuritySettings sec,
+      List<String> notices, List<String> warnings, List<String> errors);
+
+  protected abstract void validateCombinationPost(Combination combination) throws SuiteBroken;
+
+  protected abstract void validateCombinationGet(Combination combination) throws SuiteBroken;
+
+  protected abstract Logger getLogger();
+
+  protected abstract KnownElement getKnownElement();
+
+  public abstract List<ValidationStepWithStatus> getResults();
+
+  public abstract String getApiPrefix();
+
+  public abstract String getApiResponsePrefix();
+
+  protected interface Verifier {
+    void verify(AbstractValidationSuite suite, Match root, Response response) throws Failure;
+  }
+
+
+  /**
+   * This is a "fake" {@link ValidationStepWithStatus} which is dynamically added to the list of
+   * steps whenever some unexpected runtime exception occurs.
+   */
+  protected static final class GenericErrorFakeStep implements ValidationStepWithStatus {
+
+    private final RuntimeException cause;
+
+    public GenericErrorFakeStep(RuntimeException cause) {
+      this.cause = cause;
+    }
+
+    @Override
+    public String getMessage() {
+      return this.cause.getMessage();
+    }
+
+    @Override
+    public String getName() {
+      return "Other error occurred. Please contact the developers.";
+    }
+
+    @Override
+    public List<Request> getRequestSnapshots() {
+      return Lists.newArrayList();
+    }
+
+    @Override
+    public List<Response> getResponseSnapshots() {
+      return Lists.newArrayList();
+    }
+
+    @Override
+    public Optional<String> getServerDeveloperErrorMessage() {
+      return Optional.empty();
+    }
+
+    @Override
+    public Status getStatus() {
+      return Status.ERROR;
+    }
+  }
+
+
+  /**
+   * Thrown when a validation step fails so badly, that no other steps should be run.
+   */
+  @SuppressWarnings("serial")
+  public static class SuiteBroken extends Exception {}
+
+
+  protected static class Parameter {
+    public final String name;
+    public final String value;
+
+    public Parameter(String name, String value) {
+      this.name = name;
+      this.value = value;
+    }
   }
 
 }

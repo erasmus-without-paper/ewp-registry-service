@@ -1,40 +1,53 @@
 package eu.erasmuswithoutpaper.registry.validators.institutionsvalidator;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import eu.erasmuswithoutpaper.registry.internet.InternetTestHelpers;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigRequestAuthorizer;
 import eu.erasmuswithoutpaper.registry.internet.sec.Http4xx;
 import eu.erasmuswithoutpaper.registry.validators.EWPCountryCode;
+import eu.erasmuswithoutpaper.registry.validators.EWPEither;
 import eu.erasmuswithoutpaper.registry.validators.EWPFlexibleAddress;
 import eu.erasmuswithoutpaper.registry.validators.EWPHTTPWithOptionalLang;
 import eu.erasmuswithoutpaper.registry.validators.EWPStringWithOptionalLang;
 import eu.erasmuswithoutpaper.registry.validators.EWPUrlHTTP;
 import eu.erasmuswithoutpaper.registry.validators.EWPUrlHTTPS;
-import eu.erasmuswithoutpaper.registry.validators.EWPEither;
 import eu.erasmuswithoutpaper.registry.validators.ValidatorKeyStore;
 import eu.erasmuswithoutpaper.registry.validators.XMLSchemaRef;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
-import java.io.IOException;
-import java.util.*;
-
 public class InstitutionServiceV2Valid extends AbstractInstitutionV2Service {
-
-  protected Request currentRequest;
-
-  protected static class ErrorResponseException extends Exception {
-    public Response response;
-    public ErrorResponseException(Response _response) {
-      response = _response;
-    }
-  }
 
   protected final int max_hei_ids = 2;
   private final EwpHttpSigRequestAuthorizer myAuthorizer;
   private final List<String> coveredHeiIds;
+  protected Request currentRequest;
   protected Map<String, HEIData> coveredHeis = new HashMap<>();
   protected List<HEIData> coveredHeisList = new ArrayList<>();
+
+  public InstitutionServiceV2Valid(String url, RegistryClient registryClient,
+      ValidatorKeyStore validatorKeyStore) {
+    super(url, registryClient);
+    this.myAuthorizer = new EwpHttpSigRequestAuthorizer(this.registryClient);
+    coveredHeiIds = validatorKeyStore.getCoveredHeiIDs();
+
+    //Create fake HEIs
+    HEIData d1 = createFakeHeiData(coveredHeiIds.get(0));
+    addHei(d1);
+
+    HEIData d2 = createFakeHeiData(coveredHeiIds.get(1));
+    d2.mobility_factsheet_url = Arrays
+        .asList(new EWPHTTPWithOptionalLang(new EWPUrlHTTP("https://test.1")),
+            new EWPHTTPWithOptionalLang(new EWPUrlHTTP("https://test.2/en"), "EN"));
+    addHei(d2);
+  }
 
   private void addHei(HEIData data) {
     coveredHeis.put(data.hei_id, data);
@@ -45,10 +58,8 @@ public class InstitutionServiceV2Valid extends AbstractInstitutionV2Service {
     HEIData data = new HEIData();
     data.hei_id = heiid;
     data.name = new EWPStringWithOptionalLang("Test1", "EN");
-    data.name_ = Arrays.asList(
-      new EWPStringWithOptionalLang("Test2"),
-      new EWPStringWithOptionalLang("Test3", "PL")
-    );
+    data.name_ = Arrays.asList(new EWPStringWithOptionalLang("Test2"),
+        new EWPStringWithOptionalLang("Test3", "PL"));
     data.abbreviation = "TST";
     data.contact = null;
     data.logo_url = new EWPUrlHTTPS("https://logo.url");
@@ -68,9 +79,8 @@ public class InstitutionServiceV2Valid extends AbstractInstitutionV2Service {
     data.mailing_address.elem.postalCode = "postal code";
     data.mailing_address.elem.recipientName = Arrays.asList("name1", "name2");
     data.mailing_address.elem.region = "reg1";
-    data.mobility_factsheet_url = Arrays.asList(
-      new EWPHTTPWithOptionalLang(new EWPUrlHTTP("https://test.1"))
-    );
+    data.mobility_factsheet_url =
+        Arrays.asList(new EWPHTTPWithOptionalLang(new EWPUrlHTTP("https://test.1")));
     data.ounit_id = GetCoveredOUnits();
     data.root_ounit_id = GetRootOUnit();
     data.website_url = new EWPHTTPWithOptionalLang(new EWPUrlHTTP("https://www.test.pl"), "PL");
@@ -87,24 +97,6 @@ public class InstitutionServiceV2Valid extends AbstractInstitutionV2Service {
 
   public List<String> GetCoveredHeiIds() {
     return coveredHeiIds;
-  }
-
-  public InstitutionServiceV2Valid(String url, RegistryClient registryClient,
-    ValidatorKeyStore validatorKeyStore) {
-    super(url, registryClient);
-    this.myAuthorizer = new EwpHttpSigRequestAuthorizer(this.registryClient);
-    coveredHeiIds = validatorKeyStore.getCoveredHeiIDs();
-
-    //Create fake HEIs
-    HEIData d1 = createFakeHeiData(coveredHeiIds.get(0));
-    addHei(d1);
-
-    HEIData d2 = createFakeHeiData(coveredHeiIds.get(1));
-    d2.mobility_factsheet_url = Arrays.asList(
-      new EWPHTTPWithOptionalLang(new EWPUrlHTTP("https://test.1")),
-      new EWPHTTPWithOptionalLang(new EWPUrlHTTP("https://test.2/en"), "EN")
-    );
-    addHei(d2);
   }
 
   @Override
@@ -130,17 +122,14 @@ public class InstitutionServiceV2Valid extends AbstractInstitutionV2Service {
     try {
       this.myAuthorizer.authorize(this.currentRequest);
     } catch (Http4xx e) {
-      throw new ErrorResponseException(
-        e.generateEwpErrorResponse()
-      );
+      throw new ErrorResponseException(e.generateEwpErrorResponse());
     }
   }
 
   protected void CheckHeis(List<String> heis) throws ErrorResponseException {
     if (heis.size() > max_hei_ids) {
       throw new ErrorResponseException(
-        createErrorResponse(this.currentRequest, 400, "Exceeded max-hei-ids")
-      );
+          createErrorResponse(this.currentRequest, 400, "Exceeded max-hei-ids"));
     }
   }
 
@@ -164,11 +153,10 @@ public class InstitutionServiceV2Valid extends AbstractInstitutionV2Service {
   }
 
   protected void CheckParamsEncoding() throws ErrorResponseException {
-    if (this.currentRequest.getMethod().equals("POST")
-        && !this.currentRequest.getHeader("content-type").equals("application/x-www-form-urlencoded")) {
+    if (this.currentRequest.getMethod().equals("POST") && !this.currentRequest
+        .getHeader("content-type").equals("application/x-www-form-urlencoded")) {
       throw new ErrorResponseException(
-        createErrorResponse(this.currentRequest, 415, "Unsupported content-type")
-      );
+          createErrorResponse(this.currentRequest, 415, "Unsupported content-type"));
     }
   }
 
@@ -180,27 +168,24 @@ public class InstitutionServiceV2Valid extends AbstractInstitutionV2Service {
   protected void ExtractParamsNoHeiIds(Map<String, List<String>> params)
       throws ErrorResponseException {
     throw new ErrorResponseException(
-      createErrorResponse(this.currentRequest, 400, "Expected \"hei_id\" parameters")
-    );
+        createErrorResponse(this.currentRequest, 400, "Expected \"hei_id\" parameters"));
   }
 
   protected void ExtractParamsNoParams(Map<String, List<String>> params)
       throws ErrorResponseException {
     throw new ErrorResponseException(
-      createErrorResponse(this.currentRequest, 400, "No parameters provided")
-    );
+        createErrorResponse(this.currentRequest, 400, "No parameters provided"));
   }
 
   protected void CheckRequestMethod() throws ErrorResponseException {
-    if (!(this.currentRequest.getMethod().equals("GET") || this.currentRequest.getMethod().equals("POST"))) {
+    if (!(this.currentRequest.getMethod().equals("GET") || this.currentRequest.getMethod()
+        .equals("POST"))) {
       throw new ErrorResponseException(
-        this.createErrorResponse(this.currentRequest, 405, "We expect GETs and POSTs only")
-      );
+          this.createErrorResponse(this.currentRequest, 405, "We expect GETs and POSTs only"));
     }
   }
 
-  protected void ProcessCoveredHei(String hei, List<HEIData> heis)
-      throws ErrorResponseException {
+  protected void ProcessCoveredHei(String hei, List<HEIData> heis) throws ErrorResponseException {
     heis.add(coveredHeis.get(hei));
   }
 
@@ -209,17 +194,24 @@ public class InstitutionServiceV2Valid extends AbstractInstitutionV2Service {
     //Ignore
   }
 
-  protected List<HEIData> ProcessHeis(List<String> heis)
-      throws ErrorResponseException {
+  protected List<HEIData> ProcessHeis(List<String> heis) throws ErrorResponseException {
     List<HEIData> ret = new ArrayList<>();
     for (String hei : heis) {
       if (coveredHeis.containsKey(hei)) {
         ProcessCoveredHei(hei, ret);
-      }
-      else {
+      } else {
         ProcessNotCoveredHei(hei, ret);
       }
     }
     return ret;
+  }
+
+
+  protected static class ErrorResponseException extends Exception {
+    public Response response;
+
+    public ErrorResponseException(Response _response) {
+      response = _response;
+    }
   }
 }

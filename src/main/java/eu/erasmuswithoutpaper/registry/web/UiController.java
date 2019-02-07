@@ -40,6 +40,7 @@ import eu.erasmuswithoutpaper.registry.updater.RegistryUpdater;
 import eu.erasmuswithoutpaper.registry.updater.UptimeChecker;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.Combination;
+import eu.erasmuswithoutpaper.registry.validators.SemanticVersion;
 import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus;
 import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus.Status;
 import eu.erasmuswithoutpaper.registry.validators.echovalidator.EchoValidator;
@@ -411,7 +412,8 @@ public class UiController {
 
     JsonArray testsArray = new JsonArray();
     Status worstStatus = Status.SUCCESS;
-    List<ValidationStepWithStatus> testResults = tester.runTests(url);
+    List<ValidationStepWithStatus> testResults =
+        tester.runTests(url, new SemanticVersion(2, 0, 0), null);
     for (ValidationStepWithStatus testResult : testResults) {
       JsonObject testObj = new JsonObject();
       testObj.addProperty("name", testResult.getName());

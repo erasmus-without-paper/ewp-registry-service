@@ -11,6 +11,7 @@ import eu.erasmuswithoutpaper.registry.repository.ManifestRepositoryImpl;
 import eu.erasmuswithoutpaper.registry.sourceprovider.ManifestSource;
 import eu.erasmuswithoutpaper.registry.sourceprovider.TestManifestSourceProvider;
 import eu.erasmuswithoutpaper.registry.updater.RegistryUpdater;
+import eu.erasmuswithoutpaper.registry.validators.SemanticVersion;
 import eu.erasmuswithoutpaper.registry.validators.ValidatorKeyStore;
 import eu.erasmuswithoutpaper.registry.web.SelfManifestProvider;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
@@ -20,8 +21,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
 import java.security.KeyPair;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -100,7 +99,7 @@ public class InstitutionValidatorTest extends AbstractApiTest {
   private void serviceTest(FakeInternetService service, String url, String filename) {
     try {
       this.internet.addFakeInternetService(service);
-      assertThat(this.getValidatorReport(url))
+      assertThat(this.getValidatorReport(url, new SemanticVersion(2, 0, 0), null))
         .isEqualTo(this.getFileAsString(filename));
       this.internet.removeFakeInternetService(service);
     } finally {

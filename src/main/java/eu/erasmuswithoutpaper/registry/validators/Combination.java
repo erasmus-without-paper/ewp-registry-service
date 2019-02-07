@@ -14,45 +14,39 @@ public class Combination {
   /**
    * @return An ordered map of {@link CombEntry} codes mapped to their short names.
    */
-  public static LinkedHashMap<String, String> getCombinationLegend() {
+  private static LinkedHashMap<String, String> combinationLegend = new LinkedHashMap<>();
+
+  static {
     LinkedHashMap<String, String> options = new LinkedHashMap<>();
     options.put("G----", "HTTP GET method");
     options.put("P----", "HTTP POST method");
-    options.put("-A---", "No Client Authentication (Anonymous Client)");
-    options.put("-S---", "Client Authentication with TLS Certificate (self-signed)");
-    options.put("-T---", "Client Authentication with TLS Certificate (CA-signed)");
-    options.put("-H---", "Client Authentication with HTTP Signature");
-    options.put("--T--", "Server Authentication with TLS Certificate (CA-signed)");
-    options.put("--H--", "Server Authentication with HTTP Signature");
-    options.put("---T-", "Request Encryption only with regular TLS");
-    options.put("---E-", "Request Encryption with ewp-rsa-aes128gcm");
-    options.put("----T", "Response Encryption only with regular TLS");
-    options.put("----E", "Response Encryption with ewp-rsa-aes128gcm");
-    return options;
+
+    HttpSecurityDescription.getLegend().forEach((key, value) -> options.put("-" + key, value));
   }
 
   private final String httpmethod;
   private final String url;
   private final Element apiEntry;
-
-  private final CombEntry cliauth;
-  private final CombEntry srvauth;
-  private final CombEntry reqencr;
-  private final CombEntry resencr;
+  private final HttpSecurityDescription securityDescription;
 
   /**
-   * Describes HTTP method, security methods used to authenticate user and server and
-   * encryption methods.
+   * Describes HTTP method, security methods used to authenticate user and server and encryption
+   * methods.
    */
   public Combination(String httpmethod, String url, Element apiEntry, CombEntry cliauth,
-                     CombEntry srvauth, CombEntry reqencr, CombEntry resencr) {
+      CombEntry srvauth, CombEntry reqencr, CombEntry resencr) {
     this.httpmethod = httpmethod;
     this.url = url;
     this.apiEntry = apiEntry;
-    this.cliauth = cliauth;
-    this.srvauth = srvauth;
-    this.reqencr = reqencr;
-    this.resencr = resencr;
+    this.securityDescription = new HttpSecurityDescription(cliauth, srvauth, reqencr, resencr);
+  }
+
+  public static LinkedHashMap<String, String> getCombinationLegend() {
+    return combinationLegend;
+  }
+
+  public HttpSecurityDescription getSecurityDescription() {
+    return securityDescription;
   }
 
   @Override
@@ -76,12 +70,11 @@ public class Combination {
   }
 
   public CombEntry getCliAuth() {
-    return this.cliauth;
+    return this.securityDescription.getCliAuth();
   }
 
   public String getFiveLetterCode() {
-    return this.getHttpMethodCode() + this.cliauth.toString() + this.srvauth.toString()
-        + this.reqencr.toString() + this.resencr.toString();
+    return this.getHttpMethodCode() + this.securityDescription.toString();
   }
 
   public String getHttpMethod() {
@@ -89,15 +82,15 @@ public class Combination {
   }
 
   public CombEntry getReqEncr() {
-    return this.reqencr;
+    return this.securityDescription.getReqEncr();
   }
 
   public CombEntry getResEncr() {
-    return this.resencr;
+    return this.securityDescription.getResEncr();
   }
 
   public CombEntry getSrvAuth() {
-    return this.srvauth;
+    return this.securityDescription.getSrvAuth();
   }
 
   public String getUrl() {
@@ -133,4 +126,5 @@ public class Combination {
     return new Combination(this.getHttpMethod(), url, this.getApiEntry(), this.getCliAuth(),
         this.getSrvAuth(), this.getReqEncr(), this.getResEncr());
   }
+
 }

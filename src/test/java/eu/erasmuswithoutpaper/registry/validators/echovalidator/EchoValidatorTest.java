@@ -13,6 +13,7 @@ import eu.erasmuswithoutpaper.registry.sourceprovider.ManifestSource;
 import eu.erasmuswithoutpaper.registry.sourceprovider.TestManifestSourceProvider;
 import eu.erasmuswithoutpaper.registry.updater.RegistryUpdater;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
+import eu.erasmuswithoutpaper.registry.validators.SemanticVersion;
 import eu.erasmuswithoutpaper.registry.web.SelfManifestProvider;
 import eu.erasmuswithoutpaper.registry.web.UiController;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
@@ -124,7 +125,7 @@ public class EchoValidatorTest extends AbstractApiTest {
 
       service = new ServiceHTTTInvalid1(echoUrlHTTT, this.client);
       this.internet.addFakeInternetService(service);
-      assertThat(this.getValidatorReport(echoUrlHTTT)).contains("FAILURE",
+      assertThat(this.getValidatorReport(echoUrlHTTT, new SemanticVersion(2, 0, 0), null)).contains("FAILURE",
           "HTTP 200 expected, but HTTP 400 received.",
           "This endpoint requires HTTP Signature to use one of the following algorithms: RSA_SHA512");
       this.internet.removeFakeInternetService(service);
@@ -141,7 +142,7 @@ public class EchoValidatorTest extends AbstractApiTest {
 
       service = new ServiceHTTTInvalid10(echoUrlHTTT, this.client);
       this.internet.addFakeInternetService(service);
-      String out = this.getValidatorReport(echoUrlHTTT);
+      String out = this.getValidatorReport(echoUrlHTTT, new SemanticVersion(2, 0, 0), null);
       assertThat(out).contains("FAILURE: Trying Combination[PHTTT] with an invalid Digest.");
       assertThat(out).contains("WARNING: Trying Combination[PHTTT] with \"SHA\" "
           + "request digest. This algorithm is deprecated, so we are expecting to "
@@ -160,7 +161,7 @@ public class EchoValidatorTest extends AbstractApiTest {
 
       service = new ServiceHTTTInvalid11(echoUrlHTTT, this.client);
       this.internet.addFakeInternetService(service);
-      String out = this.getValidatorReport(echoUrlHTTT);
+      String out = this.getValidatorReport(echoUrlHTTT, new SemanticVersion(2, 0, 0), null);
       assertThat(out).doesNotContain("FAILURE");
       assertThat(out)
           .contains("WARNING: Trying Combination[PHTTT] with non-canonical X-Request-ID");
@@ -178,7 +179,7 @@ public class EchoValidatorTest extends AbstractApiTest {
 
       service = new ServiceHTTTInvalid12(echoUrlHTTT, this.client);
       this.internet.addFakeInternetService(service);
-      String out = this.getValidatorReport(echoUrlHTTT);
+      String out = this.getValidatorReport(echoUrlHTTT, new SemanticVersion(2, 0, 0), null);
       assertThat(out).containsOnlyOnce("FAILURE");
       assertThat(out).contains("FAILURE: Trying Combination[PHTTT] POST request with "
           + "a list of echo values [a, b, a], plus an additional GET echo=c&echo=c parameters");
@@ -198,7 +199,7 @@ public class EchoValidatorTest extends AbstractApiTest {
 
       service = new ServiceHTTTInvalid2(echoUrlHTTT, this.client);
       this.internet.addFakeInternetService(service);
-      String out = this.getValidatorReport(echoUrlHTTT);
+      String out = this.getValidatorReport(echoUrlHTTT, new SemanticVersion(2, 0, 0), null);
       assertThat(out)
           .contains("### FAILURE: Trying Combination[PHTTT] with Original-Date (instead of Date). "
               + "Expecting to receive a valid HTTP 200 response.\n\n"
@@ -218,7 +219,7 @@ public class EchoValidatorTest extends AbstractApiTest {
 
       service = new ServiceHTTTInvalid3(echoUrlHTTT, this.client);
       this.internet.addFakeInternetService(service);
-      String out = this.getValidatorReport(echoUrlHTTT);
+      String out = this.getValidatorReport(echoUrlHTTT, new SemanticVersion(2, 0, 0), null);
       assertThat(out)
           .contains("### FAILURE: Trying Combination[PHTTT] with unsigned x-request-id header. "
               + "Expecting to receive a valid HTTP 400 or HTTP 401 error response.\n\n"
@@ -237,7 +238,7 @@ public class EchoValidatorTest extends AbstractApiTest {
 
       service = new ServiceHTTTInvalid4(echoUrlHTTT, this.client);
       this.internet.addFakeInternetService(service);
-      String out = this.getValidatorReport(echoUrlHTTT);
+      String out = this.getValidatorReport(echoUrlHTTT, new SemanticVersion(2, 0, 0), null);
       assertThat(out).contains(
           "FAILURE: Trying Combination[PHTTT] with some extra unknown, but properly signed headers");
       this.internet.removeFakeInternetService(service);
@@ -254,7 +255,7 @@ public class EchoValidatorTest extends AbstractApiTest {
 
       service = new ServiceHTTTInvalid5(echoUrlHTTT, this.client);
       this.internet.addFakeInternetService(service);
-      String out = this.getValidatorReport(echoUrlHTTT);
+      String out = this.getValidatorReport(echoUrlHTTT, new SemanticVersion(2, 0, 0), null);
       assertThat(out).doesNotContain("FAILURE");
       assertThat(out).doesNotContain("ERROR");
       assertThat(out).contains("WARNING");
@@ -274,7 +275,7 @@ public class EchoValidatorTest extends AbstractApiTest {
 
       service = new ServiceHTTTInvalid6(echoUrlHTTT, this.client);
       this.internet.addFakeInternetService(service);
-      String out = this.getValidatorReport(echoUrlHTTT);
+      String out = this.getValidatorReport(echoUrlHTTT, new SemanticVersion(2, 0, 0), null);
       assertThat(out).doesNotContain("FAILURE");
       assertThat(out).doesNotContain("ERROR");
       assertThat(out).contains("WARNING");
@@ -294,7 +295,7 @@ public class EchoValidatorTest extends AbstractApiTest {
 
       service = new ServiceHTTTInvalid7(echoUrlHTTT, this.client);
       this.internet.addFakeInternetService(service);
-      String out = this.getValidatorReport(echoUrlHTTT);
+      String out = this.getValidatorReport(echoUrlHTTT, new SemanticVersion(2, 0, 0), null);
       assertThat(out).contains(
           "FAILURE: Trying Combination[PHTTT] signed with a server key, instead of a client key. "
               + "Expecting to receive a valid HTTP 403 error response");
@@ -312,7 +313,7 @@ public class EchoValidatorTest extends AbstractApiTest {
 
       service = new ServiceHTTTInvalid8(echoUrlHTTT, this.client);
       this.internet.addFakeInternetService(service);
-      String out = this.getValidatorReport(echoUrlHTTT);
+      String out = this.getValidatorReport(echoUrlHTTT, new SemanticVersion(2, 0, 0), null);
       assertThat(out).doesNotContain("FAILURE");
       assertThat(out).contains("WARNING: Trying Combination[PHTTT] with an unsynchronized clock");
       this.internet.removeFakeInternetService(service);
@@ -329,7 +330,7 @@ public class EchoValidatorTest extends AbstractApiTest {
 
       service = new ServiceHTTTInvalid9(echoUrlHTTT, this.client);
       this.internet.addFakeInternetService(service);
-      String out = this.getValidatorReport(echoUrlHTTT);
+      String out = this.getValidatorReport(echoUrlHTTT, new SemanticVersion(2, 0, 0), null);
       assertThat(out).contains(
           "FAILURE: Trying Combination[PHTTT] with a known keyId, but " + "invalid signature");
       assertThat(out).contains("FAILURE: Trying Combination[PHTTT] with missing headers "
@@ -348,7 +349,7 @@ public class EchoValidatorTest extends AbstractApiTest {
 
       service = new ServiceHTTTValid(echoUrlHTTT, this.client);
       this.internet.addFakeInternetService(service);
-      assertThat(this.getValidatorReport(echoUrlHTTT))
+      assertThat(this.getValidatorReport(echoUrlHTTT, new SemanticVersion(2, 0, 0), null))
           .isEqualTo(this.getFileAsString("echovalidator/ServiceHTTTValid.txt"));
       this.internet.removeFakeInternetService(service);
 
@@ -364,7 +365,7 @@ public class EchoValidatorTest extends AbstractApiTest {
 
       service = new ServiceMHTTValid(echoUrlMHTT, this.client, myKeyPair);
       this.internet.addFakeInternetService(service);
-      String out = this.getValidatorReport(echoUrlMHTT);
+      String out = this.getValidatorReport(echoUrlMHTT, new SemanticVersion(2, 0, 0), null);
       assertThat(out).doesNotContain("FAILURE");
       assertThat(out).doesNotContain("ERROR");
       assertThat(out).doesNotContain("WARNING");
@@ -385,7 +386,7 @@ public class EchoValidatorTest extends AbstractApiTest {
 
       service = new ServiceMMMMValid(echoUrlMMMM, this.client, Lists.newArrayList(myKeyPair));
       this.internet.addFakeInternetService(service);
-      String out = this.getValidatorReport(echoUrlMMMM);
+      String out = this.getValidatorReport(echoUrlMMMM, new SemanticVersion(2, 0, 0), null);
       assertThat(out).doesNotContain("FAILURE");
       assertThat(out).doesNotContain("ERROR");
       assertThat(out).doesNotContain("WARNING");
@@ -403,7 +404,7 @@ public class EchoValidatorTest extends AbstractApiTest {
 
       service = new ServiceMMTTInvalid1(echoUrlMMTT, this.client, myKeyPair);
       this.internet.addFakeInternetService(service);
-      String out = this.getValidatorReport(echoUrlMMTT);
+      String out = this.getValidatorReport(echoUrlMMTT, new SemanticVersion(2, 0, 0), null);
       assertThat(out).contains("FAILURE");
       assertThat(out).contains("Expecting the response's Signature to cover the \"date\" header "
           + "or the \"original-date\" header");
@@ -421,7 +422,7 @@ public class EchoValidatorTest extends AbstractApiTest {
 
       service = new ServiceMMTTInvalid2(echoUrlMMTT, this.client, myKeyPair);
       this.internet.addFakeInternetService(service);
-      String out = this.getValidatorReport(echoUrlMMTT);
+      String out = this.getValidatorReport(echoUrlMMTT, new SemanticVersion(2, 0, 0), null);
       assertThat(out).contains("FAILURE");
       assertThat(out).contains("Server/client difference exceeds the maximum allowed threshold");
       this.internet.removeFakeInternetService(service);
@@ -438,7 +439,7 @@ public class EchoValidatorTest extends AbstractApiTest {
 
       service = new ServiceMMTTInvalid3(echoUrlMMTT, this.client, myKeyPair);
       this.internet.addFakeInternetService(service);
-      String out = this.getValidatorReport(echoUrlMMTT);
+      String out = this.getValidatorReport(echoUrlMMTT, new SemanticVersion(2, 0, 0), null);
       assertThat(out).contains("FAILURE");
       assertThat(out).contains("Missing SHA-256 digest in Digest header");
       this.internet.removeFakeInternetService(service);
@@ -455,7 +456,7 @@ public class EchoValidatorTest extends AbstractApiTest {
 
       service = new ServiceMMTTInvalid4(echoUrlMMTT, this.client, myKeyPair);
       this.internet.addFakeInternetService(service);
-      String out = this.getValidatorReport(echoUrlMMTT);
+      String out = this.getValidatorReport(echoUrlMMTT, new SemanticVersion(2, 0, 0), null);
       assertThat(out).contains("FAILURE");
       assertThat(out).contains("Response SHA-256 digest mismatch");
       this.internet.removeFakeInternetService(service);
@@ -472,7 +473,7 @@ public class EchoValidatorTest extends AbstractApiTest {
 
       service = new ServiceMMTTInvalid5(echoUrlMMTT, this.client, myKeyPair);
       this.internet.addFakeInternetService(service);
-      String out = this.getValidatorReport(echoUrlMMTT);
+      String out = this.getValidatorReport(echoUrlMMTT, new SemanticVersion(2, 0, 0), null);
       assertThat(out).contains("FAILURE");
       assertThat(out).contains("HTTP Signature Server Authentication requires the server "
           + "to include the correlated (and signed) X-Request-Id");
@@ -490,7 +491,7 @@ public class EchoValidatorTest extends AbstractApiTest {
 
       service = new ServiceMMTTInvalid6(echoUrlMMTT, this.client, myKeyPair);
       this.internet.addFakeInternetService(service);
-      String out = this.getValidatorReport(echoUrlMMTT);
+      String out = this.getValidatorReport(echoUrlMMTT, new SemanticVersion(2, 0, 0), null);
       assertThat(out).contains("FAILURE");
       assertThat(out).contains("Missing X-Request-Signature response header");
       this.internet.removeFakeInternetService(service);
@@ -507,7 +508,7 @@ public class EchoValidatorTest extends AbstractApiTest {
 
       service = new ServiceMMTTInvalid7(echoUrlMMTT, this.client, myKeyPair);
       this.internet.addFakeInternetService(service);
-      String out = this.getValidatorReport(echoUrlMMTT);
+      String out = this.getValidatorReport(echoUrlMMTT, new SemanticVersion(2, 0, 0), null);
       assertThat(out).contains("FAILURE");
       assertThat(out).contains("X-Request-Signature response header doesn't match the "
           + "actual HTTP Signature of the orginal request");
@@ -525,7 +526,7 @@ public class EchoValidatorTest extends AbstractApiTest {
 
       service = new ServiceMMTTInvalid8(echoUrlMMTT, this.client, myKeyPair);
       this.internet.addFakeInternetService(service);
-      String out = this.getValidatorReport(echoUrlMMTT);
+      String out = this.getValidatorReport(echoUrlMMTT, new SemanticVersion(2, 0, 0), null);
       assertThat(out).contains("FAILURE");
       assertThat(out).contains("Expecting the response's Signature to cover the \"digest\" "
           + "header, but it doesn't.");
@@ -544,7 +545,7 @@ public class EchoValidatorTest extends AbstractApiTest {
 
       service = new ServiceMMTTInvalid9(echoUrlMMTT, this.client, myKeyPair);
       this.internet.addFakeInternetService(service);
-      String out = this.getValidatorReport(echoUrlMMTT);
+      String out = this.getValidatorReport(echoUrlMMTT, new SemanticVersion(2, 0, 0), null);
       assertThat(out).contains("FAILURE");
       assertThat(out).contains("The request didn't contain the X-Request-Id header, "
           + "so the response also shouldn't.");
@@ -562,7 +563,7 @@ public class EchoValidatorTest extends AbstractApiTest {
 
       service = new ServiceMMTTValid(echoUrlMMTT, this.client, myKeyPair);
       this.internet.addFakeInternetService(service);
-      String out = this.getValidatorReport(echoUrlMMTT);
+      String out = this.getValidatorReport(echoUrlMMTT, new SemanticVersion(2, 0, 0), null);
       assertThat(out).isEqualTo(this.getFileAsString("echovalidator/ServiceMMTTValid.txt"));
       assertThat(out).doesNotContain("FAILURE");
       assertThat(out).doesNotContain("ERROR");
@@ -586,7 +587,7 @@ public class EchoValidatorTest extends AbstractApiTest {
 
       service = new ServiceMMTTValid2(echoUrlMMTT, this.client, myKeyPair);
       this.internet.addFakeInternetService(service);
-      String out = this.getValidatorReport(echoUrlMMTT);
+      String out = this.getValidatorReport(echoUrlMMTT, new SemanticVersion(2, 0, 0), null);
       assertThat(out).doesNotContain("FAILURE");
       assertThat(out).doesNotContain("ERROR");
       assertThat(out).doesNotContain("WARNING");
@@ -621,7 +622,7 @@ public class EchoValidatorTest extends AbstractApiTest {
         }
       };
       this.internet.addFakeInternetService(service);
-      String out = this.getValidatorReport(echoUrlMMTT);
+      String out = this.getValidatorReport(echoUrlMMTT, new SemanticVersion(2, 0, 0), null);
       assertThat(out).contains("FAILURE");
       assertThat(out).contains(
           "keyId extracted from the response's Signature header has been found in the Registry, "
@@ -640,7 +641,7 @@ public class EchoValidatorTest extends AbstractApiTest {
 
       service = new ServiceMTTTInvalid1(echoUrlMTTT, this.client);
       this.internet.addFakeInternetService(service);
-      String out = this.getValidatorReport(echoUrlMTTT);
+      String out = this.getValidatorReport(echoUrlMTTT, new SemanticVersion(2, 0, 0), null);
       assertThat(out).contains("FAILURE: Trying Combination[PATTT]");
       this.internet.removeFakeInternetService(service);
     } finally {
@@ -655,7 +656,7 @@ public class EchoValidatorTest extends AbstractApiTest {
 
       service = new ServiceMTTTValid(echoUrlMTTT, this.client);
       this.internet.addFakeInternetService(service);
-      assertThat(this.getValidatorReport(echoUrlMTTT))
+      assertThat(this.getValidatorReport(echoUrlMTTT, new SemanticVersion(2, 0, 0), null))
           .isEqualTo(this.getFileAsString("echovalidator/ServiceMTTTValid.txt"));
       this.internet.removeFakeInternetService(service);
     } finally {
@@ -670,7 +671,7 @@ public class EchoValidatorTest extends AbstractApiTest {
 
       service = new ServiceSTETInvalid1(echoUrlSTET, this.client, Lists.newArrayList(myKeyPair));
       this.internet.addFakeInternetService(service);
-      String out = this.getValidatorReport(echoUrlSTET);
+      String out = this.getValidatorReport(echoUrlSTET, new SemanticVersion(2, 0, 0), null);
       assertThat(out).containsOnlyOnce("FAILURE");
       assertThat(out).contains("Trying Combination[GSTET] - this is invalid, "
           + "because GET requests are not supported by ewp-rsa-aes128gcm encryption.");
@@ -688,7 +689,7 @@ public class EchoValidatorTest extends AbstractApiTest {
 
       service = new ServiceSTETInvalid2(echoUrlSTET, this.client, Lists.newArrayList(myKeyPair));
       this.internet.addFakeInternetService(service);
-      String out = this.getValidatorReport(echoUrlSTET);
+      String out = this.getValidatorReport(echoUrlSTET, new SemanticVersion(2, 0, 0), null);
       // Expect all failures to fail with the same message.
       int failureCount = StringUtils.countMatches(out, "FAILURE");
       int expectedCount =
@@ -708,7 +709,7 @@ public class EchoValidatorTest extends AbstractApiTest {
 
       service = new ServiceSTETValid(echoUrlSTET, this.client, Lists.newArrayList(myKeyPair));
       this.internet.addFakeInternetService(service);
-      String out = this.getValidatorReport(echoUrlSTET);
+      String out = this.getValidatorReport(echoUrlSTET, new SemanticVersion(2, 0, 0), null);
       assertThat(out).doesNotContain("FAILURE");
       assertThat(out).doesNotContain("ERROR");
       assertThat(out).containsOnlyOnce("WARNING");
@@ -727,7 +728,7 @@ public class EchoValidatorTest extends AbstractApiTest {
 
       service = new ServiceSTTEInvalid1(echoUrlSTTE, this.client);
       this.internet.addFakeInternetService(service);
-      String out = this.getValidatorReport(echoUrlSTTE);
+      String out = this.getValidatorReport(echoUrlSTTE, new SemanticVersion(2, 0, 0), null);
       assertThat(out).doesNotContain("FAILURE");
       assertThat(out).doesNotContain("ERROR");
       assertThat(out).contains("WARNING: Querying for supported security methods");
@@ -748,7 +749,7 @@ public class EchoValidatorTest extends AbstractApiTest {
 
       service = new ServiceSTTEInvalid2(echoUrlSTTE, this.client);
       this.internet.addFakeInternetService(service);
-      String out = this.getValidatorReport(echoUrlSTTE);
+      String out = this.getValidatorReport(echoUrlSTTE, new SemanticVersion(2, 0, 0), null);
       assertThat(out).contains("FAILURE");
       assertThat(out).contains("The response was (successfully) encoded with the 'gzip' "
           + "coding, but the client didn't declare this encoding as acceptable");
@@ -765,7 +766,7 @@ public class EchoValidatorTest extends AbstractApiTest {
 
       service = new ServiceSTTEInvalid3(echoUrlSTTE, this.client);
       this.internet.addFakeInternetService(service);
-      String out = this.getValidatorReport(echoUrlSTTE);
+      String out = this.getValidatorReport(echoUrlSTTE, new SemanticVersion(2, 0, 0), null);
       assertThat(out).contains("FAILURE");
       assertThat(out).contains("Expecting the response to be encoded with ewp-rsa-aes128gcm");
 
@@ -781,7 +782,7 @@ public class EchoValidatorTest extends AbstractApiTest {
 
       service = new ServiceSTTEValid(echoUrlSTTE, this.client);
       this.internet.addFakeInternetService(service);
-      String out = this.getValidatorReport(echoUrlSTTE);
+      String out = this.getValidatorReport(echoUrlSTTE, new SemanticVersion(2, 0, 0), null);
       assertThat(out).doesNotContain("FAILURE");
       assertThat(out).doesNotContain("ERROR");
       assertThat(out).containsOnlyOnce("WARNING");
@@ -800,7 +801,7 @@ public class EchoValidatorTest extends AbstractApiTest {
 
       service = new ServiceSTTTInvalid1(echoUrlSTTT, this.client);
       this.internet.addFakeInternetService(service);
-      assertThat(this.getValidatorReport(echoUrlSTTT))
+      assertThat(this.getValidatorReport(echoUrlSTTT, new SemanticVersion(2, 0, 0), null))
           .isEqualTo(this.getFileAsString("echovalidator/ServiceSTTTInvalid1.txt"));
       this.internet.removeFakeInternetService(service);
 
@@ -816,7 +817,7 @@ public class EchoValidatorTest extends AbstractApiTest {
 
       service = new ServiceSTTTInvalid2(echoUrlSTTT, this.client);
       this.internet.addFakeInternetService(service);
-      assertThat(this.getValidatorReport(echoUrlSTTT))
+      assertThat(this.getValidatorReport(echoUrlSTTT, new SemanticVersion(2, 0, 0), null))
           .isEqualTo(this.getFileAsString("echovalidator/ServiceSTTTInvalid2.txt"));
       this.internet.removeFakeInternetService(service);
 
@@ -832,7 +833,7 @@ public class EchoValidatorTest extends AbstractApiTest {
 
       service = new ServiceSTTTInvalid3(echoUrlSTTT, this.client);
       this.internet.addFakeInternetService(service);
-      assertThat(this.getValidatorReport(echoUrlSTTT))
+      assertThat(this.getValidatorReport(echoUrlSTTT, new SemanticVersion(2, 0, 0), null))
           .isEqualTo(this.getFileAsString("echovalidator/ServiceSTTTInvalid3.txt"));
       this.internet.removeFakeInternetService(service);
 
@@ -848,7 +849,7 @@ public class EchoValidatorTest extends AbstractApiTest {
 
       service = new ServiceSTTTValid(echoUrlSTTT, this.client);
       this.internet.addFakeInternetService(service);
-      String out = this.getValidatorReport(echoUrlSTTT);
+      String out = this.getValidatorReport(echoUrlSTTT, new SemanticVersion(2, 0, 0), null);
       assertThat(out).containsOnlyOnce("WARNING");
       assertThat(out).contains("It is RECOMMENDED for all EWP server endpoints to support "
           + "HTTP Signature Client Authentication");
@@ -866,7 +867,7 @@ public class EchoValidatorTest extends AbstractApiTest {
 
       service = new ServiceTTTTDummy(echoUrlTTTT, this.client);
       this.internet.addFakeInternetService(service);
-      assertThat(this.getValidatorReport(echoUrlTTTT))
+      assertThat(this.getValidatorReport(echoUrlTTTT, new SemanticVersion(2, 0, 0), null))
           .isEqualTo(this.getFileAsString("echovalidator/ServiceTTTTDummy.txt"));
       this.internet.removeFakeInternetService(service);
 
@@ -882,7 +883,7 @@ public class EchoValidatorTest extends AbstractApiTest {
 
       service = new ServiceV1Invalid1(echoV1Url, this.client);
       this.internet.addFakeInternetService(service);
-      assertThat(this.getValidatorReport(echoV1Url))
+      assertThat(this.getValidatorReport(echoV1Url, new SemanticVersion(1, 0, 0), null))
           .isEqualTo(this.getFileAsString("echovalidator/ServiceV1Invalid1.txt"));
       this.internet.removeFakeInternetService(service);
 
@@ -898,7 +899,7 @@ public class EchoValidatorTest extends AbstractApiTest {
 
       service = new ServiceV1Invalid2(echoV1Url, this.client);
       this.internet.addFakeInternetService(service);
-      assertThat(this.getValidatorReport(echoV1Url))
+      assertThat(this.getValidatorReport(echoV1Url, new SemanticVersion(1, 0, 0), null))
           .isEqualTo(this.getFileAsString("echovalidator/ServiceV1Invalid2.txt"));
       this.internet.removeFakeInternetService(service);
 
@@ -914,7 +915,7 @@ public class EchoValidatorTest extends AbstractApiTest {
 
       service = new ServiceV1Valid(echoV1Url, this.client);
       this.internet.addFakeInternetService(service);
-      assertThat(this.getValidatorReport(echoV1Url))
+      assertThat(this.getValidatorReport(echoV1Url, new SemanticVersion(1, 0, 0), null))
           .isEqualTo(this.getFileAsString("echovalidator/ServiceV1Valid.txt"));
       this.internet.removeFakeInternetService(service);
 

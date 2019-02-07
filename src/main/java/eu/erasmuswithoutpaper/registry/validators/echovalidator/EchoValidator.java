@@ -1,11 +1,11 @@
 package eu.erasmuswithoutpaper.registry.validators.echovalidator;
 
-import java.util.List;
+import java.util.TreeMap;
 
 import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
 import eu.erasmuswithoutpaper.registry.internet.Internet;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
-import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus;
+import eu.erasmuswithoutpaper.registry.validators.SemanticVersion;
 import eu.erasmuswithoutpaper.registry.validators.ValidatorKeyStore;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
@@ -20,25 +20,28 @@ import org.slf4j.LoggerFactory;
  */
 @Service
 public class EchoValidator extends ApiValidator {
+  private static final Logger logger = LoggerFactory.getLogger(EchoValidator.class);
+  private static TreeMap<SemanticVersion, ValidationSuiteFactory> validationSuites =
+      new TreeMap<>();
+
+  static {
+    validationSuites.put(new SemanticVersion(2, 0, 0), EchoValidationSuiteV200::new);
+    validationSuites.put(new SemanticVersion(1, 0, 0), EchoValidationSuiteV100::new);
+  }
+
   @Autowired
   public EchoValidator(EwpDocBuilder docBuilder, Internet internet, RegistryClient client,
       ValidatorKeyStore validatorKeyStore) {
-    super(docBuilder, internet, client, validatorKeyStore);
+    super(docBuilder, internet, client, validatorKeyStore, "echo");
   }
-
-  @Override
-  public List<ValidationStepWithStatus> runTests(String urlStr) {
-    EchoValidationSuite suite =
-        new EchoValidationSuite(this, this.docBuilder, this.internet, urlStr, this.client,
-            this.repo);
-    suite.run();
-    return suite.getResults();
-  }
-
-  private static final Logger logger = LoggerFactory.getLogger(EchoValidator.class);
 
   @Override
   public Logger getLogger() {
     return logger;
+  }
+
+  @Override
+  protected TreeMap<SemanticVersion, ValidationSuiteFactory> getValidationSuitesMap() {
+    return validationSuites;
   }
 }

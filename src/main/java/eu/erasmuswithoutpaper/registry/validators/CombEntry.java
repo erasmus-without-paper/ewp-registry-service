@@ -12,8 +12,12 @@ public enum CombEntry {
 
   private final char code;
 
-  private CombEntry(char code) {
+  CombEntry(char code) {
     this.code = code;
+  }
+
+  public char getCode() {
+    return code;
   }
 
   @Override
