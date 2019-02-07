@@ -13,10 +13,11 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -31,7 +32,8 @@ import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registry.notifier.NotifierService;
 import eu.erasmuswithoutpaper.registry.repository.CatalogueDependantCache;
-import eu.erasmuswithoutpaper.registry.repository.CatalogueNotFound;
+import eu.erasmuswithoutpaper.registry.repository.ManifestNotFound;
+import eu.erasmuswithoutpaper.registry.repository.ManifestRepository;
 import eu.erasmuswithoutpaper.registry.sourceprovider.ManifestSource;
 import eu.erasmuswithoutpaper.registry.sourceprovider.ManifestSourceProvider;
 import eu.erasmuswithoutpaper.registry.updater.ManifestUpdateStatus;
@@ -39,12 +41,17 @@ import eu.erasmuswithoutpaper.registry.updater.ManifestUpdateStatusRepository;
 import eu.erasmuswithoutpaper.registry.updater.RegistryUpdater;
 import eu.erasmuswithoutpaper.registry.updater.UptimeChecker;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
+import eu.erasmuswithoutpaper.registry.validators.ApiValidatorsManager;
 import eu.erasmuswithoutpaper.registry.validators.Combination;
+import eu.erasmuswithoutpaper.registry.validators.HttpSecurityDescription;
+import eu.erasmuswithoutpaper.registry.validators.HttpSecurityDescription.InvalidDescriptionString;
 import eu.erasmuswithoutpaper.registry.validators.SemanticVersion;
+import eu.erasmuswithoutpaper.registry.validators.SemanticVersion.InvalidVersionString;
 import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus;
 import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus.Status;
 import eu.erasmuswithoutpaper.registry.validators.echovalidator.EchoValidator;
 import eu.erasmuswithoutpaper.registry.validators.institutionsvalidator.InstitutionsValidator;
+import eu.erasmuswithoutpaper.registry.validators.web.ManifestApiEntry;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,6 +92,7 @@ public class UiController {
 
   private final TaskExecutor taskExecutor;
   private final ManifestUpdateStatusRepository manifestStatusRepo;
+  private final ManifestRepository manifestRepository;
   private final ManifestSourceProvider sourceProvider;
   private final RegistryUpdater updater;
   private final NotifierService notifier;
@@ -97,6 +105,7 @@ public class UiController {
   private final CoverageMatrixGenerator matrixGenerator;
   private final RegistryClient regClient;
   private final CatalogueDependantCache catcache;
+  private final ApiValidatorsManager apiValidatorsManager;
 
   private byte[] cachedCss;
   private String cachedCssFingerprint;
@@ -105,29 +114,49 @@ public class UiController {
   private byte[] cachedLogo;
 
   /**
-   * @param taskExecutor needed for running background tasks.
-   * @param manifestUpdateStatuses needed to display statuses of manifests.
-   * @param sourceProvider needed to present the list of all sources.
-   * @param updater needed to perform on-demand manifest updates.
-   * @param notifier needed to retrieve issues watched by particular recipients.
-   * @param uptimeChecker needed to display current uptime stats.
-   * @param docBuilder needed to support online document validation service.
-   * @param echoTester needed to support online Echo API validation service.
-   * @param selfManifestProvider needed in Echo Validator responses.
-   * @param resLoader needed to load CSS, logos etc.
-   * @param matrixGenerator needed to render "API support table".
-   * @param regClient needed to feed the {@link CoverageMatrixGenerator}.
-   * @param catcache needed for caching the result of {@link CoverageMatrixGenerator}.
+   * @param taskExecutor
+   *     needed for running background tasks.
+   * @param manifestUpdateStatuses
+   *     needed to display statuses of manifests.
+   * @param manifestRepository
+   *     needed to display list of apis implemented by hosts in manifest.
+   * @param sourceProvider
+   *     needed to present the list of all sources.
+   * @param updater
+   *     needed to perform on-demand manifest updates.
+   * @param notifier
+   *     needed to retrieve issues watched by particular recipients.
+   * @param uptimeChecker
+   *     needed to display current uptime stats.
+   * @param docBuilder
+   *     needed to support online document validation service.
+   * @param echoTester
+   *     needed to support online Echo API validation service.
+   * @param selfManifestProvider
+   *     needed in Echo Validator responses.
+   * @param resLoader
+   *     needed to load CSS, logos etc.
+   * @param matrixGenerator
+   *     needed to render "API support table".
+   * @param regClient
+   *     needed to feed the {@link CoverageMatrixGenerator}.
+   * @param catcache
+   *     needed for caching the result of {@link CoverageMatrixGenerator}.
+   * @param apiValidatorsManager
+   *     needed to check if there are some tests for given api and version.
    */
   @Autowired
   public UiController(TaskExecutor taskExecutor,
-      ManifestUpdateStatusRepository manifestUpdateStatuses, ManifestSourceProvider sourceProvider,
-      RegistryUpdater updater, NotifierService notifier, UptimeChecker uptimeChecker,
-      EwpDocBuilder docBuilder, EchoValidator echoTester, SelfManifestProvider selfManifestProvider,
-      ResourceLoader resLoader, CoverageMatrixGenerator matrixGenerator, RegistryClient regClient,
-      CatalogueDependantCache catcache, InstitutionsValidator institutionsTester) {
+      ManifestUpdateStatusRepository manifestUpdateStatuses, ManifestRepository manifestRepository,
+      ManifestSourceProvider sourceProvider, RegistryUpdater updater, NotifierService notifier,
+      UptimeChecker uptimeChecker, EwpDocBuilder docBuilder, EchoValidator echoTester,
+      SelfManifestProvider selfManifestProvider, ResourceLoader resLoader,
+      CoverageMatrixGenerator matrixGenerator, RegistryClient regClient,
+      CatalogueDependantCache catcache, InstitutionsValidator institutionsTester,
+      ApiValidatorsManager apiValidatorsManager) {
     this.taskExecutor = taskExecutor;
     this.manifestStatusRepo = manifestUpdateStatuses;
+    this.manifestRepository = manifestRepository;
     this.sourceProvider = sourceProvider;
     this.updater = updater;
     this.notifier = notifier;
@@ -140,10 +169,12 @@ public class UiController {
     this.regClient = regClient;
     this.catcache = catcache;
     this.institutionsTester = institutionsTester;
+    this.apiValidatorsManager = apiValidatorsManager;
   }
 
   /**
-   * @param response Needed to add some custom headers.
+   * @param response
+   *     Needed to add some custom headers.
    * @return The HEI/API coverage matrix page.
    */
   @RequestMapping(value = "/coverage", method = RequestMethod.GET)
@@ -153,17 +184,13 @@ public class UiController {
     mav.setViewName("coverage");
     response.addHeader("Cache-Control", "public, max-age=300");
 
-    try {
-      mav.addObject("coverageMatrixHtml", this.getCoverageMatrixHtml());
-    } catch (CatalogueNotFound e) {
-      mav.addObject("coverageMatrixHtml", "<p>No catalogue found.</p>");
-    }
-
+    mav.addObject("coverageMatrixHtml", this.getCoverageMatrixHtml());
     return mav;
   }
 
   /**
-   * @param response Needed to add some custom headers.
+   * @param response
+   *     Needed to add some custom headers.
    * @return Our CSS file.
    */
   @ResponseBody
@@ -178,12 +205,13 @@ public class UiController {
   }
 
   /**
-   * @param response Needed to add some custom headers.
+   * @param response
+   *     Needed to add some custom headers.
    * @return Our scripts file.
    */
   @ResponseBody
   @RequestMapping(value = "/scripts-{version}.js", method = RequestMethod.GET,
-      produces = "application/javascript")
+                  produces = "application/javascript")
   @SuppressFBWarnings("EI_EXPOSE_REP")
   public byte[] getJs(HttpServletResponse response) {
     response.addHeader("Cache-Control", "public, max-age=86400, stale-while-revalidate=604800");
@@ -194,7 +222,8 @@ public class UiController {
   }
 
   /**
-   * @param response Needed to add some custom headers.
+   * @param response
+   *     Needed to add some custom headers.
    * @return EWP logo image. Depends on the result of {@link #isUsingDevDesign()}.
    */
   @ResponseBody
@@ -219,13 +248,15 @@ public class UiController {
   }
 
   /**
-   * @param response Needed to add some custom headers.
-   * @param adminEmails Admin emails to display on page.
+   * @param response
+   *     Needed to add some custom headers.
+   * @param adminEmails
+   *     Admin emails to display on page.
    * @return A welcome page.
    */
   @RequestMapping(value = "/", method = RequestMethod.GET)
   public ModelAndView index(HttpServletResponse response,
-                            @Value("${app.admin-emails}") List<String> adminEmails) {
+      @Value("${app.admin-emails}") List<String> adminEmails) {
 
     ModelAndView mav = new ModelAndView();
     this.initializeMavCommons(mav);
@@ -245,8 +276,10 @@ public class UiController {
   }
 
   /**
-   * @param response Needed to add some custom headers.
-   * @param url URL of the manifest source.
+   * @param response
+   *     Needed to add some custom headers.
+   * @param url
+   *     URL of the manifest source.
    * @return A page describing the status of the manifest.
    */
   @RequestMapping(value = "/status", params = "url", method = RequestMethod.GET)
@@ -269,12 +302,42 @@ public class UiController {
   }
 
   /**
+   * @param response
+   *     Needed to add some custom headers.
+   * @param url
+   *     URL of the manifest source.
+   * @return A page describing the status of the manifest.
+   */
+  @RequestMapping(value = "/manifestValidation", params = "url", method = RequestMethod.GET)
+  public ModelAndView manifestValidate(HttpServletResponse response, @RequestParam String url) {
+    ModelAndView mav = new ModelAndView();
+    this.initializeMavCommons(mav);
+    mav.setViewName("manifestValidation");
+    response.addHeader("Cache-Control", "max-age=0, must-revalidate");
+
+    mav.addObject("manifestUrl", url);
+
+    List<ManifestApiEntry> apis;
+    try {
+      apis = ManifestApiEntry
+          .parseManifest(manifestRepository.getManifestFiltered(url), apiValidatorsManager);
+    } catch (ManifestNotFound manifestNotFound) {
+      mav.setStatus(HttpStatus.BAD_REQUEST);
+      return mav;
+    }
+    mav.addObject("apis", apis);
+    return mav;
+  }
+
+  /**
    * Perform an on-demand reload of a single specific manifest.
    *
-   * @param response Needed to add some custom headers.
-   * @param url URL of the manifest source to be reloaded.
+   * @param response
+   *     Needed to add some custom headers.
+   * @param url
+   *     URL of the manifest source to be reloaded.
    * @return Empty response with HTTP 200 on success (queued). Empty HTTP 400 response on error
-   *         (unknown URL).
+   *     (unknown URL).
    */
   @RequestMapping(value = "/reload", params = "url", method = RequestMethod.POST)
   public ResponseEntity<String> reloadManifest(HttpServletResponse response,
@@ -287,21 +350,17 @@ public class UiController {
     Optional<ManifestSource> source = this.sourceProvider.getOne(url);
 
     if (source.isPresent()) {
-      this.taskExecutor.execute(new Runnable() {
-        @Override
-        public void run() {
-          UiController.this.updater.reloadManifestSource(source.get());
-        }
-      });
-      return new ResponseEntity<String>("", headers, HttpStatus.OK);
+      this.taskExecutor.execute(() -> UiController.this.updater.reloadManifestSource(source.get()));
+      return new ResponseEntity<>("", headers, HttpStatus.OK);
     } else {
-      return new ResponseEntity<String>("", headers, HttpStatus.BAD_REQUEST);
+      return new ResponseEntity<>("", headers, HttpStatus.BAD_REQUEST);
     }
   }
 
 
   /**
-   * @param response Needed to add some custom headers.
+   * @param response
+   *     Needed to add some custom headers.
    * @return A page with all manifest sources and their statuses.
    */
   @RequestMapping(value = "/status", method = RequestMethod.GET)
@@ -316,6 +375,7 @@ public class UiController {
       statuses.add(this.manifestStatusRepo.findOne(source.getUrl()));
     }
     mav.addObject("manifestStatuses", statuses);
+    mav.addObject("manifestValidationUrl", Application.getRootUrl() + "/manifestValidation");
     return mav;
   }
 
@@ -323,8 +383,10 @@ public class UiController {
   /**
    * Display a status page tailored for a given notification recipient.
    *
-   * @param response Needed to add some custom headers.
-   * @param email Email address of the recipient.
+   * @param response
+   *     Needed to add some custom headers.
+   * @param email
+   *     Email address of the recipient.
    * @return A page with the list of issue statuses related to this recipient.
    */
   @RequestMapping(value = "/status", params = "email", method = RequestMethod.GET)
@@ -347,9 +409,10 @@ public class UiController {
    * This is not part of the API and MAY be removed later on.
    * </p>
    *
-   * @param url The URL at which the Institutions API is being served.
+   * @param url
+   *     The URL at which the Institutions API is being served.
    * @return An undocumented JSON object with the results of the validation (not guaranteed to stay
-   *         backward compatible).
+   *     backward compatible).
    */
   @RequestMapping(path = "/validate-institutions", params = "url", method = RequestMethod.POST)
   public ResponseEntity<String> validateInstitutions(@RequestParam String url) {
@@ -363,9 +426,10 @@ public class UiController {
    * This is not part of the API and MAY be removed later on.
    * </p>
    *
-   * @param url The URL at which the Echo API is being served.
+   * @param url
+   *     The URL at which the Echo API is being served.
    * @return An undocumented JSON object with the results of the validation (not guaranteed to stay
-   *         backward compatible).
+   *     backward compatible).
    */
   @RequestMapping(path = "/validate-echo", params = "url", method = RequestMethod.POST)
   public ResponseEntity<String> validateEcho(@RequestParam String url) {
@@ -373,15 +437,17 @@ public class UiController {
   }
 
   /**
-   * Run validation on one of APIs served at the given URL.
+   * Run validation on one of APIs served at the given URL. TODO: remove when validators are removed
+   * from developers website.
    *
    * <p>
    * This is not part of the API and MAY be removed later on.
    * </p>
    *
-   * @param url The URL at which the API is being served.
+   * @param url
+   *     The URL at which the API is being served.
    * @return An undocumented JSON object with the results of the validation (not guaranteed to stay
-   *         backward compatible).
+   *     backward compatible).
    */
   private ResponseEntity<String> validateApi(String url, ApiValidator tester) {
     HttpHeaders headers = new HttpHeaders();
@@ -397,8 +463,10 @@ public class UiController {
     info.addProperty("validationStarted", isoDateFormat.format(validationStarted));
     Date clientKeysRegenerated = this.echoTester.getCredentialsGenerationDate();
     info.addProperty("clientKeysRegenerated", isoDateFormat.format(clientKeysRegenerated));
-    info.addProperty("clientKeysAgeWhenValidationStartedInSeconds",
-        (validationStarted.getTime() - clientKeysRegenerated.getTime()) / 1000);
+    info.addProperty(
+        "clientKeysAgeWhenValidationStartedInSeconds",
+        (validationStarted.getTime() - clientKeysRegenerated.getTime()) / 1000
+    );
     info.addProperty("registryManifestBody", this.selfManifestProvider.getManifest());
     JsonArray combinations = new JsonArray();
     info.add("Combinations", combinations); // WRCLEANIT: backward compatibility
@@ -435,9 +503,8 @@ public class UiController {
     responseObj.add("tests", testsArray);
     Gson gson = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
     String json = gson.toJson(responseObj);
-    return new ResponseEntity<String>(json, headers, HttpStatus.OK);
+    return new ResponseEntity<>(json, headers, HttpStatus.OK);
   }
-
 
   /**
    * Validate a supplied XML document against all known EWP schemas.
@@ -446,9 +513,10 @@ public class UiController {
    * This is not part of the API and MAY be removed later on.
    * </p>
    *
-   * @param xml The XML to be validated.
+   * @param xml
+   *     The XML to be validated.
    * @return An undocumented JSON object with the results of the validation (not guaranteed to stay
-   *         backward compatible).
+   *     backward compatible).
    */
   @RequestMapping(path = "/validate", params = "xml", method = RequestMethod.POST)
   public ResponseEntity<String> validateXml(@RequestParam String xml) {
@@ -484,12 +552,7 @@ public class UiController {
     }
 
     // prettyLines
-    List<String> prettyLines1 = result1.getPrettyLines().orElseGet(new Supplier<List<String>>() {
-      @Override
-      public List<String> get() {
-        return Lists.newArrayList();
-      }
-    });
+    List<String> prettyLines1 = result1.getPrettyLines().orElseGet(Lists::newArrayList);
     JsonArray prettyLines2 = new JsonArray();
     result2.add("prettyLines", prettyLines2);
     for (String line : prettyLines1) {
@@ -499,7 +562,7 @@ public class UiController {
     // Format the result.
     Gson gson = new GsonBuilder().setPrettyPrinting().create();
     String json = gson.toJson(result2);
-    return new ResponseEntity<String>(json, headers, HttpStatus.OK);
+    return new ResponseEntity<>(json, headers, HttpStatus.OK);
   }
 
   private void cacheCss() {
@@ -547,8 +610,10 @@ public class UiController {
     result.add("headers", headers);
     if (request.getClientCertificate().isPresent()) {
       try {
-        result.addProperty("clientCertFingerprint",
-            DigestUtils.sha256Hex(request.getClientCertificate().get().getEncoded()));
+        result.addProperty(
+            "clientCertFingerprint",
+            DigestUtils.sha256Hex(request.getClientCertificate().get().getEncoded())
+        );
       } catch (CertificateEncodingException e) {
         throw new RuntimeException(e);
       }
@@ -580,8 +645,10 @@ public class UiController {
     BuildResult buildResult = this.docBuilder.build(params);
     if (buildResult.getDocument().isPresent()) {
       Match root = $(buildResult.getDocument().get()).namespaces(KnownNamespace.prefixMap());
-      result.addProperty("developerMessage",
-          root.xpath("/ewp:error-response/ewp:developer-message").text());
+      result.addProperty(
+          "developerMessage",
+          root.xpath("/ewp:error-response/ewp:developer-message").text()
+      );
       result.addProperty("prettyXml", buildResult.getPrettyXml().orElse(null));
     } else {
       result.add("developerMessage", JsonNull.INSTANCE);
@@ -608,7 +675,7 @@ public class UiController {
     return results;
   }
 
-  private String getCoverageMatrixHtml() throws CatalogueNotFound {
+  private String getCoverageMatrixHtml() {
     String result = this.catcache.getCoverageMatrixHtml();
     if (result == null) {
       result = this.matrixGenerator.generateToHtmlTable(this.regClient);
@@ -640,4 +707,181 @@ public class UiController {
   private boolean isUsingDevDesign() {
     return !Application.isProductionSite();
   }
+
+  /**
+   * Run validation on one of APIs served at the given URL.
+   *
+   * <p>
+   * This is not part of the API and MAY be removed later on.
+   * </p>
+   *
+   * @param url
+   *     The URL at which the API is being served.
+   * @param name Name of the API being tested.
+   * @param version Version of the API being tested.
+   * @param security Security ddescription to be tested.
+   */
+  @RequestMapping(path = "/validateApi", method = RequestMethod.POST)
+  public ModelAndView validateApiVersion(@RequestParam String url, @RequestParam String name,
+      @RequestParam String version, @RequestParam String security) {
+    ModelAndView mav = new ModelAndView();
+    this.initializeMavCommons(mav);
+    mav.setViewName("validationResult");
+
+    Map<String, Object> info = new HashMap<>();
+    DateFormat isoDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+    Date validationStarted = new Date();
+    info.put("validationStarted", isoDateFormat.format(validationStarted));
+    Date clientKeysRegenerated = this.echoTester.getCredentialsGenerationDate();
+    info.put("clientKeysRegenerated", isoDateFormat.format(clientKeysRegenerated));
+    info.put(
+        "clientKeysAgeWhenValidationStartedInSeconds",
+        (validationStarted.getTime() - clientKeysRegenerated.getTime()) / 1000
+    );
+    info.put("registryManifestBody", this.selfManifestProvider.getManifest());
+    info.put("security", security);
+    info.put("url", url);
+    info.put("apiName", name);
+    info.put("version", version);
+
+    HttpSecurityDescription desc;
+    SemanticVersion ver;
+    try {
+      desc = new HttpSecurityDescription(security);
+      ver = new SemanticVersion(version);
+    } catch (InvalidDescriptionString | InvalidVersionString ignored) {
+      mav.setStatus(HttpStatus.BAD_REQUEST);
+      return mav;
+    }
+
+    info.put("securityExplanation", desc.getExplanation());
+    mav.addObject("info", info);
+
+    Status worstStatus = Status.SUCCESS;
+    if (!this.apiValidatorsManager.hasCompatibleTests(name, ver)) {
+      mav.setStatus(HttpStatus.BAD_REQUEST);
+      return mav;
+    }
+
+
+    List<Map<String, Object>> testsArray = new ArrayList<>();
+    List<ValidationStepWithStatus> testResults =
+        this.apiValidatorsManager.getApiValidator(name).runTests(url, ver, desc);
+    for (ValidationStepWithStatus testResult : testResults) {
+      Map<String, Object> testObj = new HashMap<>();
+      testObj.put("name", testResult.getName());
+      testObj.put("status", testResult.getStatus().toString());
+      if (worstStatus.compareTo(testResult.getStatus()) < 0) {
+        worstStatus = testResult.getStatus();
+      }
+
+      String message = testResult.getMessage();
+      testObj.put("message", message);
+
+      List<Object> requestSnapshots = this.formatRequestSnapshotsToMap(testResult);
+      testObj.put("requestSnapshots", requestSnapshots);
+      List<Object> responseSnapshots = this.formatResponseSnapshotsToMap(testResult);
+      testObj.put("responseSnapshots", responseSnapshots);
+
+      boolean hasMessage = !message.isEmpty() && !message.equals("OK");
+      testObj.put("hasMessage", hasMessage);
+
+      boolean hasDetails = !requestSnapshots.isEmpty() || !responseSnapshots.isEmpty();
+      testObj.put("hasDetails", hasDetails);
+
+      int height = 1;
+      if (hasMessage) {
+        height += 1;
+      }
+      if (hasDetails) {
+        height += 1;
+      }
+
+      testObj.put("height", height);
+
+      testsArray.add(testObj);
+    }
+
+    mav.addObject("success", worstStatus.equals(Status.SUCCESS));
+    mav.addObject("status", worstStatus.toString());
+    mav.addObject("tests", testsArray);
+
+    return mav;
+  }
+
+
+  private List<Object> formatResponseSnapshotsToMap(ValidationStepWithStatus testResult) {
+    List<Object> results = new ArrayList<>();
+    for (Response snapshot : testResult.getResponseSnapshots()) {
+      results.add(this.formatResponseSnapshotToMap(snapshot));
+    }
+    return results;
+  }
+
+  private Map<String, Object> formatResponseSnapshotToMap(Response response) {
+    Map<String, Object> result = new HashMap<>();
+    result.put("status", response.getStatus());
+    result.put("rawBodyBase64", Base64.encode(response.getBody()));
+    BuildParams params = new BuildParams(response.getBody());
+    params.setMakingPretty(true);
+    BuildResult buildResult = this.docBuilder.build(params);
+    if (buildResult.getDocument().isPresent()) {
+      Match root = $(buildResult.getDocument().get()).namespaces(KnownNamespace.prefixMap());
+      result.put(
+          "developerMessage",
+          root.xpath("/ewp:error-response/ewp:developer-message").text()
+      );
+      result.put("prettyXml", buildResult.getPrettyXml().orElse(null));
+    } else {
+      result.put("developerMessage", null);
+      result.put("prettyXml", null);
+    }
+    result.put("headers", response.getHeaders());
+    result.put("processingNoticesHtml", response.getProcessingNoticesHtml());
+    return result;
+  }
+
+  private List<Object> formatRequestSnapshotsToMap(ValidationStepWithStatus testResult) {
+    List<Object> results = new ArrayList<>();
+    for (Request snapshot : testResult.getRequestSnapshots()) {
+      results.add(this.formatRequestSnapshotToMap(snapshot));
+    }
+    return results;
+  }
+
+  private Map<String, Object> formatRequestSnapshotToMap(Request request) {
+    Map<String, Object> result = new HashMap<>();
+    if (request.getBody().isPresent()) {
+      byte[] body = request.getBody().get();
+      result.put("rawBodyBase64", Base64.encode(body));
+      CharsetDecoder decoder = StandardCharsets.UTF_8.newDecoder();
+      try {
+        CharBuffer decoded = decoder.decode(ByteBuffer.wrap(body));
+        result.put("body", decoded.toString());
+      } catch (CharacterCodingException e) {
+        result.put("body", null);
+      }
+    } else {
+      result.put("rawBodyBase64", null);
+      result.put("body", null);
+    }
+    result.put("url", request.getUrl());
+    result.put("method", request.getMethod());
+    result.put("headers", request.getHeaders());
+    if (request.getClientCertificate().isPresent()) {
+      try {
+        result.put(
+            "clientCertFingerprint",
+            DigestUtils.sha256Hex(request.getClientCertificate().get().getEncoded())
+        );
+      } catch (CertificateEncodingException e) {
+        throw new RuntimeException(e);
+      }
+    } else {
+      result.put("clientCertFingerprint", null);
+    }
+    result.put("processingNoticesHtml", request.getProcessingNoticesHtml());
+    return result;
+  }
+
 }

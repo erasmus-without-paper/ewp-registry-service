@@ -1,0 +1,58 @@
+{% extends "generic-with-toolbar" %}
+
+{% block pageTitle %}Validate API Endpoints{% endblock %}
+
+{% block main %}
+    <section class='ewp-section'>
+        <h2 class='ewp-section-title'>API Validator</h2>
+
+        <p class='ewp-para'>APIs defined in manifest
+            <code class='ewpst__bordered-code'><a href='{{ manifestUrl }}'>{{ manifestUrl }}</a></code>:
+        </p>
+
+        <table class='ewpsrc'>
+            {% for api in apis %}
+                {% if api.available %}
+                    <tr class='ewpsrc__item'>
+                        <td class='ewpsrv__apiname'> {{ api.name }} </td>
+                        <td class='ewpsrv__apiversion'> {{ api.version }} </td>
+                    </tr>
+                    {% for security in api.securities %}
+                        <tr class='ewpsrc__item ewpsrc__item--status-0'>
+                            <td class='ewpsrv__security_combination'>
+                                <abbr title="{{ security.explanation }}">{{ security }}</abbr>
+                            </td>
+                            <td class='ewpsrv_details manifest_validator_validate_cell'>
+                                <a class='manifest_validator_validate'
+                                        data-api-url="{{ api.url }}"
+                                        data-api-name="{{ api.name }}"
+                                        data-api-version="{{ api.version }}"
+                                        data-api-sec="{{ security }}">
+                                    validate
+                                 </a>
+                            </td>
+                            <td class='ewpsrv_details manifest_validator_in_progress_cell' hidden>
+                                Validation in progress...
+                            </td>
+                            <td class='ewpsrv_details manifest_validator_done_cell' hidden>
+                                <a class='manifest_validator_done'>
+                                    show results
+                                </a>
+                            </td>
+                            <td class='ewpsrv_details manifest_validator_error_cell' hidden>
+                                <a class='manifest_validator_error'
+                                        data-api-url="{{ api.url }}"
+                                        data-api-name="{{ api.name }}"
+                                        data-api-version="{{ api.version }}"
+                                        data-api-sec="{{ security }}">
+                                    An error has occured, try again.
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% endif %}
+            {% endfor %}
+        </table>
+    </section>
+{% endblock %}
+

@@ -19,6 +19,7 @@
                     <td class='ewpsrv__details'>
                         <a class='ewp-manifest-reloader' data-manifest-url="{{ stat.url }}">reload now</a>
                     </td>
+                    <td class='ewpsrv__details'><a href='{{ manifestValidationUrl }}?url={{ stat.url }}'>validate</a></td>
                 </tr>
             {% endfor %}
         </table>

@@ -408,3 +408,63 @@ a:hover {
 .ewpsrc__item .ewpsrc__url {
     font-family: 'Inconsolata', monospace;
 }
+
+
+.ewpsrc__test_validation-table .ewpsrc__item td {
+    background: #eee;
+}
+.ewpsrc__test_validation-table .ewpsrc__item td.ewpsrc__item--status-SUCCESS {
+    background: #b6d7a8;
+}
+.ewpsrc__test_validation-table .ewpsrc__item td.ewpsrc__item--status-NOTICE {
+    background: #fff2cc;
+}
+.ewpsrc__test_validation-table .ewpsrc__item td.ewpsrc__item--status-WARNING {
+    background: #fed;
+}
+.ewpsrc__test_validation-table .ewpsrc__item td.ewpsrc__item--status-FAILURE {
+    background: #fdd;
+}
+.ewpsrc__test_details-table {
+    width: 100%;
+}
+.ewpsrc__test_index {
+    vertical-align: text-top;
+}
+.ewpsrc__test_value {
+    word-wrap: anywhere;
+}
+.ewpsrc__test_key {
+    color: #4a7996;
+}
+.ewpsrc__test_http-header .ewpsrc__test_key {
+    color: #b00;
+}
+.ewpsrc__test_validation-table {
+    width: 100%;
+}
+.ewpsrc__test_message-body {
+    padding: 0.7em 1em;
+    background: #fff;
+    word-break: break-all;
+    white-space: pre-wrap;
+    font-size: 80%;
+    background: #f3f3f3;
+    border: 0;
+    border-left: 5px solid #ccc;
+}
+.ewpsrc__test_developer-message {
+    display: block;
+    margin: 0.4em 0 0.2em;
+    max-width: 634px;
+    color: #b00;
+    font-weight: bold;
+    word-break: break-all;
+}
+.ewpsrc__test_processing-notice {
+    display: list-item;
+    margin: 0.3em 0 0.3em 17px;
+    max-width: 634px;
+    color: #555;
+    font-weight: bold;
+}
