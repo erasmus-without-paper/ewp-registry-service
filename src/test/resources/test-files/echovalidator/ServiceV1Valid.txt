@@ -8,9 +8,8 @@ Our client credentials are quite fresh. This means that many Echo APIs will (cor
 ### SUCCESS: Verifying if the URL is properly registered.
 ### SUCCESS: Trying Combination[GATTT] (no client authentication). Expecting a valid HTTP 401 or HTTP 403 error response.
 ### SUCCESS: Trying Combination[PATTT] (no client authentication). Expecting a valid HTTP 401 or HTTP 403 error response.
-### SUCCESS: Trying Combination[GSTTT] with an unknown TLS client certificate (a random one, that has never been published in the Registry). Expecting to receive a valid HTTP 401 or HTTP 403 error response.
 ### SUCCESS: Trying Combination[GSTTT] GET request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.
-### SUCCESS: Trying Combination[PSTTT] with an unknown TLS client certificate (a random one, that has never been published in the Registry). Expecting to receive a valid HTTP 401 or HTTP 403 error response.
+### SUCCESS: Trying Combination[GSTTT] with an unknown TLS client certificate (a random one, that has never been published in the Registry). Expecting to receive a valid HTTP 401 or HTTP 403 error response.
 ### SUCCESS: Trying Combination[-STTT] with a PUT request. Expecting to receive a valid HTTP 405 error response.
 ### SUCCESS: Trying Combination[-STTT] with a DELETE request. Expecting to receive a valid HTTP 405 error response.
 ### SUCCESS: Trying Combination[PSTTT] POST request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.
@@ -21,3 +20,4 @@ Our client credentials are quite fresh. This means that many Echo APIs will (cor
 The client explicitly accepted gzip, but the server didn't compress its response. That's not an error, but it might be useful to support gzip encoding to save bandwidth.
 
 
+### SUCCESS: Trying Combination[PSTTT] with an unknown TLS client certificate (a random one, that has never been published in the Registry). Expecting to receive a valid HTTP 401 or HTTP 403 error response.

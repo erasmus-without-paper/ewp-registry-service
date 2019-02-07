@@ -1078,10 +1078,10 @@ abstract class EchoValidationSuiteBase extends AbstractValidationSuite {
 
   @Override
   protected void validateCombination(Combination combination) throws SuiteBroken {
-    validateCombinationEdgeCases(combination);
     if (!combination.getCliAuth().equals(CombEntry.CLIAUTH_NONE)) {
       super.validateCombination(combination);
     }
+    validateCombinationEdgeCases(combination);
   }
 
   @Override

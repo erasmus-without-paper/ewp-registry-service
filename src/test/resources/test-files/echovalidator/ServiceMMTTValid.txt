@@ -17,9 +17,8 @@ Our client credentials are quite fresh. This means that many Echo APIs will (cor
 ### SUCCESS: Trying Combination[PAHTT] with no valid algorithm in Accept-Signature header. Expecting to receive unsigned response.
 ### SUCCESS: Trying Combination[PAHTT] with multiple algorithms in Accept-Signature header (one of which is rsa-sha256). Expecting to receive a signed response.
 ### SUCCESS: Trying Combination[PAHTT] with X-Request-Id header. This header is not required to be present in this request in this combination, but we're still expecting the server to include its copy in the response.
-### SUCCESS: Trying Combination[GSTTT] with an unknown TLS client certificate (a random one, that has never been published in the Registry). Expecting to receive a valid HTTP 401 or HTTP 403 error response.
 ### SUCCESS: Trying Combination[GSTTT] GET request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.
-### SUCCESS: Trying Combination[PSTTT] with an unknown TLS client certificate (a random one, that has never been published in the Registry). Expecting to receive a valid HTTP 401 or HTTP 403 error response.
+### SUCCESS: Trying Combination[GSTTT] with an unknown TLS client certificate (a random one, that has never been published in the Registry). Expecting to receive a valid HTTP 401 or HTTP 403 error response.
 ### SUCCESS: Trying Combination[-STTT] with a PUT request. Expecting to receive a valid HTTP 405 error response.
 ### SUCCESS: Trying Combination[-STTT] with a DELETE request. Expecting to receive a valid HTTP 405 error response.
 ### SUCCESS: Trying Combination[PSTTT] POST request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.
@@ -30,15 +29,12 @@ Our client credentials are quite fresh. This means that many Echo APIs will (cor
 The client explicitly accepted gzip, but the server didn't compress its response. That's not an error, but it might be useful to support gzip encoding to save bandwidth.
 
 
+### SUCCESS: Trying Combination[PSTTT] with an unknown TLS client certificate (a random one, that has never been published in the Registry). Expecting to receive a valid HTTP 401 or HTTP 403 error response.
+### SUCCESS: Trying Combination[GSHTT] GET request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.
 ### SUCCESS: Trying Combination[GSHTT] with an unknown TLS client certificate (a random one, that has never been published in the Registry). Expecting to receive a valid HTTP 401 or HTTP 403 error response.
 ### SUCCESS: Trying Combination[GSHTT] with no valid algorithm in Accept-Signature header. Expecting to receive unsigned response.
 ### SUCCESS: Trying Combination[GSHTT] with multiple algorithms in Accept-Signature header (one of which is rsa-sha256). Expecting to receive a signed response.
 ### SUCCESS: Trying Combination[GSHTT] with X-Request-Id header. This header is not required to be present in this request in this combination, but we're still expecting the server to include its copy in the response.
-### SUCCESS: Trying Combination[GSHTT] GET request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.
-### SUCCESS: Trying Combination[PSHTT] with an unknown TLS client certificate (a random one, that has never been published in the Registry). Expecting to receive a valid HTTP 401 or HTTP 403 error response.
-### SUCCESS: Trying Combination[PSHTT] with no valid algorithm in Accept-Signature header. Expecting to receive unsigned response.
-### SUCCESS: Trying Combination[PSHTT] with multiple algorithms in Accept-Signature header (one of which is rsa-sha256). Expecting to receive a signed response.
-### SUCCESS: Trying Combination[PSHTT] with X-Request-Id header. This header is not required to be present in this request in this combination, but we're still expecting the server to include its copy in the response.
 ### SUCCESS: Trying Combination[-SHTT] with a PUT request. Expecting to receive a valid HTTP 405 error response.
 ### SUCCESS: Trying Combination[-SHTT] with a DELETE request. Expecting to receive a valid HTTP 405 error response.
 ### SUCCESS: Trying Combination[PSHTT] POST request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.
@@ -49,6 +45,11 @@ The client explicitly accepted gzip, but the server didn't compress its response
 The client explicitly accepted gzip, but the server didn't compress its response. That's not an error, but it might be useful to support gzip encoding to save bandwidth.
 
 
+### SUCCESS: Trying Combination[PSHTT] with an unknown TLS client certificate (a random one, that has never been published in the Registry). Expecting to receive a valid HTTP 401 or HTTP 403 error response.
+### SUCCESS: Trying Combination[PSHTT] with no valid algorithm in Accept-Signature header. Expecting to receive unsigned response.
+### SUCCESS: Trying Combination[PSHTT] with multiple algorithms in Accept-Signature header (one of which is rsa-sha256). Expecting to receive a signed response.
+### SUCCESS: Trying Combination[PSHTT] with X-Request-Id header. This header is not required to be present in this request in this combination, but we're still expecting the server to include its copy in the response.
+### SUCCESS: Trying Combination[GHTTT] GET request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.
 ### SUCCESS: Trying Combination[GHTTT] with an unknown RSA client key (a random one, that has never been published in the Registry). Expecting to receive a valid HTTP 401 or HTTP 403 error response.
 ### SUCCESS: Trying Combination[GHTTT] with a known keyId, but invalid signature. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
 ### SUCCESS: Trying Combination[GHTTT] with missing headers that were supposed to be signed. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
@@ -62,7 +63,16 @@ The client explicitly accepted gzip, but the server didn't compress its response
 ### SUCCESS: Trying Combination[GHTTT] signed with a server key, instead of a client key. Expecting to receive a valid HTTP 403 error response.
 ### SUCCESS: Trying Combination[GHTTT] with an unsynchronized clock (Original-Date 20 minutes in the past). Expecting to receive a valid HTTP 400 error response.
 ### SUCCESS: Trying Combination[GHTTT] with non-canonical X-Request-ID. Expecting to receive a valid HTTP 400 error response.
-### SUCCESS: Trying Combination[GHTTT] GET request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.
+### SUCCESS: Trying Combination[-HTTT] with a PUT request. Expecting to receive a valid HTTP 405 error response.
+### SUCCESS: Trying Combination[-HTTT] with a DELETE request. Expecting to receive a valid HTTP 405 error response.
+### SUCCESS: Trying Combination[PHTTT] POST request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.
+### SUCCESS: Trying Combination[PHTTT] POST request with a list of echo values [a, b, a], plus an additional GET echo=c&echo=c parameters. Expecting the GET parameters to be ignored. (It's a POST request, so all parameters are passed via POST body.)
+
+### NOTICE: Trying Combination[PHTTT] with additional "gzip" added in Accept-Encoding. Expecting the same response, but preferably gzipped.
+
+The client explicitly accepted gzip, but the server didn't compress its response. That's not an error, but it might be useful to support gzip encoding to save bandwidth.
+
+
 ### SUCCESS: Trying Combination[PHTTT] with an unknown RSA client key (a random one, that has never been published in the Registry). Expecting to receive a valid HTTP 401 or HTTP 403 error response.
 ### SUCCESS: Trying Combination[PHTTT] with a known keyId, but invalid signature. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
 ### SUCCESS: Trying Combination[PHTTT] with missing headers that were supposed to be signed. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
@@ -80,16 +90,7 @@ The client explicitly accepted gzip, but the server didn't compress its response
 ### SUCCESS: Trying Combination[PHTTT] with multiple Digests (one of which is SHA-256). Expecting to receive a valid HTTP 200 response.
 ### SUCCESS: Trying Combination[PHTTT] with "SHA" request digest. This algorithm is deprecated, so we are expecting to receive a valid HTTP 400 response.
 ### SUCCESS: Trying Combination[PHTTT] with "shA-256" request digest (mixed case). Digest RFC requires clients to accept that. Expecting to receive a valid HTTP 200 response.
-### SUCCESS: Trying Combination[-HTTT] with a PUT request. Expecting to receive a valid HTTP 405 error response.
-### SUCCESS: Trying Combination[-HTTT] with a DELETE request. Expecting to receive a valid HTTP 405 error response.
-### SUCCESS: Trying Combination[PHTTT] POST request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.
-### SUCCESS: Trying Combination[PHTTT] POST request with a list of echo values [a, b, a], plus an additional GET echo=c&echo=c parameters. Expecting the GET parameters to be ignored. (It's a POST request, so all parameters are passed via POST body.)
-
-### NOTICE: Trying Combination[PHTTT] with additional "gzip" added in Accept-Encoding. Expecting the same response, but preferably gzipped.
-
-The client explicitly accepted gzip, but the server didn't compress its response. That's not an error, but it might be useful to support gzip encoding to save bandwidth.
-
-
+### SUCCESS: Trying Combination[GHHTT] GET request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.
 ### SUCCESS: Trying Combination[GHHTT] with an unknown RSA client key (a random one, that has never been published in the Registry). Expecting to receive a valid HTTP 401 or HTTP 403 error response.
 ### SUCCESS: Trying Combination[GHHTT] with a known keyId, but invalid signature. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
 ### SUCCESS: Trying Combination[GHHTT] with missing headers that were supposed to be signed. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
@@ -105,7 +106,16 @@ The client explicitly accepted gzip, but the server didn't compress its response
 ### SUCCESS: Trying Combination[GHHTT] with non-canonical X-Request-ID. Expecting to receive a valid HTTP 400 error response.
 ### SUCCESS: Trying Combination[GHHTT] with no valid algorithm in Accept-Signature header. Expecting to receive unsigned response.
 ### SUCCESS: Trying Combination[GHHTT] with multiple algorithms in Accept-Signature header (one of which is rsa-sha256). Expecting to receive a signed response.
-### SUCCESS: Trying Combination[GHHTT] GET request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.
+### SUCCESS: Trying Combination[-HHTT] with a PUT request. Expecting to receive a valid HTTP 405 error response.
+### SUCCESS: Trying Combination[-HHTT] with a DELETE request. Expecting to receive a valid HTTP 405 error response.
+### SUCCESS: Trying Combination[PHHTT] POST request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.
+### SUCCESS: Trying Combination[PHHTT] POST request with a list of echo values [a, b, a], plus an additional GET echo=c&echo=c parameters. Expecting the GET parameters to be ignored. (It's a POST request, so all parameters are passed via POST body.)
+
+### NOTICE: Trying Combination[PHHTT] with additional "gzip" added in Accept-Encoding. Expecting the same response, but preferably gzipped.
+
+The client explicitly accepted gzip, but the server didn't compress its response. That's not an error, but it might be useful to support gzip encoding to save bandwidth.
+
+
 ### SUCCESS: Trying Combination[PHHTT] with an unknown RSA client key (a random one, that has never been published in the Registry). Expecting to receive a valid HTTP 401 or HTTP 403 error response.
 ### SUCCESS: Trying Combination[PHHTT] with a known keyId, but invalid signature. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
 ### SUCCESS: Trying Combination[PHHTT] with missing headers that were supposed to be signed. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
@@ -125,13 +135,3 @@ The client explicitly accepted gzip, but the server didn't compress its response
 ### SUCCESS: Trying Combination[PHHTT] with "shA-256" request digest (mixed case). Digest RFC requires clients to accept that. Expecting to receive a valid HTTP 200 response.
 ### SUCCESS: Trying Combination[PHHTT] with no valid algorithm in Accept-Signature header. Expecting to receive unsigned response.
 ### SUCCESS: Trying Combination[PHHTT] with multiple algorithms in Accept-Signature header (one of which is rsa-sha256). Expecting to receive a signed response.
-### SUCCESS: Trying Combination[-HHTT] with a PUT request. Expecting to receive a valid HTTP 405 error response.
-### SUCCESS: Trying Combination[-HHTT] with a DELETE request. Expecting to receive a valid HTTP 405 error response.
-### SUCCESS: Trying Combination[PHHTT] POST request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.
-### SUCCESS: Trying Combination[PHHTT] POST request with a list of echo values [a, b, a], plus an additional GET echo=c&echo=c parameters. Expecting the GET parameters to be ignored. (It's a POST request, so all parameters are passed via POST body.)
-
-### NOTICE: Trying Combination[PHHTT] with additional "gzip" added in Accept-Encoding. Expecting the same response, but preferably gzipped.
-
-The client explicitly accepted gzip, but the server didn't compress its response. That's not an error, but it might be useful to support gzip encoding to save bandwidth.
-
-

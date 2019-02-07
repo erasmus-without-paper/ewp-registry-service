@@ -21,19 +21,13 @@ Notices:
 ### SUCCESS: Trying Combination[GATTT] (no client authentication). Expecting a valid HTTP 401 or HTTP 403 error response.
 ### SUCCESS: Trying Combination[PATTT] (no client authentication). Expecting a valid HTTP 401 or HTTP 403 error response.
 
-### FAILURE: Trying Combination[GSTTT] with an unknown TLS client certificate (a random one, that has never been published in the Registry). Expecting to receive a valid HTTP 401 or HTTP 403 error response.
-
-HTTP 401 or HTTP 403 expected, but HTTP 200 received.
-
-
-
 ### FAILURE: Trying Combination[GSTTT] GET request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.
 
 The response has proper HTTP status and it passed the schema validation. However, the set of returned hei-ids doesn't match what we expect. It should contain the following: [hei01.developers.erasmuswithoutpaper.eu, hei02.developers.erasmuswithoutpaper.eu]
 
 
 
-### FAILURE: Trying Combination[PSTTT] with an unknown TLS client certificate (a random one, that has never been published in the Registry). Expecting to receive a valid HTTP 401 or HTTP 403 error response.
+### FAILURE: Trying Combination[GSTTT] with an unknown TLS client certificate (a random one, that has never been published in the Registry). Expecting to receive a valid HTTP 401 or HTTP 403 error response.
 
 HTTP 401 or HTTP 403 expected, but HTTP 200 received.
 
@@ -66,5 +60,11 @@ The response has proper HTTP status and it passed the schema validation. However
 ### FAILURE: Trying Combination[PSTTT] with additional "gzip" added in Accept-Encoding. Expecting the same response, but preferably gzipped.
 
 The response has proper HTTP status and it passed the schema validation. However, the set of returned hei-ids doesn't match what we expect. It should contain the following: [hei01.developers.erasmuswithoutpaper.eu, hei02.developers.erasmuswithoutpaper.eu]
+
+
+
+### FAILURE: Trying Combination[PSTTT] with an unknown TLS client certificate (a random one, that has never been published in the Registry). Expecting to receive a valid HTTP 401 or HTTP 403 error response.
+
+HTTP 401 or HTTP 403 expected, but HTTP 200 received.
 
 
