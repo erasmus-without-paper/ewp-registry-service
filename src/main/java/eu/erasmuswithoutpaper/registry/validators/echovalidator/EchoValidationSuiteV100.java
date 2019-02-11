@@ -19,9 +19,9 @@ class EchoValidationSuiteV100 extends EchoValidationSuiteCommon {
   private static final Logger logger = LoggerFactory.getLogger(EchoValidationSuiteV100.class);
 
   EchoValidationSuiteV100(ApiValidator<EchoSuiteState> echoValidator, EwpDocBuilder docBuilder,
-      Internet internet, String urlStr, RegistryClient regClient, ManifestRepository repo,
+      Internet internet, RegistryClient regClient, ManifestRepository repo,
       EchoSuiteState state) {
-    super(echoValidator, docBuilder, internet, urlStr, regClient, repo, state);
+    super(echoValidator, docBuilder, internet, regClient, repo, state);
   }
 
   @Override

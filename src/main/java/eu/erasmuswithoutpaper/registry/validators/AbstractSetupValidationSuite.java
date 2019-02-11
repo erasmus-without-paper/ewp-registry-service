@@ -2,10 +2,12 @@ package eu.erasmuswithoutpaper.registry.validators;
 
 import static org.joox.JOOX.$;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -18,6 +20,10 @@ import eu.erasmuswithoutpaper.registry.validators.echovalidator.HttpSecuritySett
 import eu.erasmuswithoutpaper.registryclient.ApiSearchConditions;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
+import com.google.common.base.Charsets;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.w3c.dom.Element;
 
 public abstract class AbstractSetupValidationSuite<S extends SuiteState>
@@ -25,10 +31,10 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
   protected AbstractSetupValidationSuite(
       ApiValidator<S> validator,
       EwpDocBuilder docBuilder,
-      Internet internet, String urlStr,
+      Internet internet,
       RegistryClient regClient,
       ManifestRepository repo, S state) {
-    super(validator, docBuilder, internet, urlStr, regClient, repo, state);
+    super(validator, docBuilder, internet, regClient, repo, state);
   }
 
   @Override
@@ -36,13 +42,79 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
       throws SuiteBroken {
     runCredentialsDateTest();
     runHttpsSchemeTest();
-    runApiVersionTest();
+    runCheckUrlAndVersionTest();
     validateSecurityMethods();
+    checkApiVersion();
     runApiSpecificTests(security);
+  }
+
+  private List<SemanticVersion> getGitHubTags() {
+    String url = "https://api.github.com/repos/erasmus-without-paper/ewp-specs-api-";
+    url += getApiName();
+    url += "/tags";
+
+    List<SemanticVersion> result = new ArrayList<>();
+    try {
+      byte[] data = this.internet.getUrl(url);
+      JSONArray jsonArray = new JSONArray(new String(data, Charsets.UTF_8));
+      for (int i = 0; i < jsonArray.length(); i++) {
+        JSONObject jsonObject = jsonArray.getJSONObject(i);
+        SemanticVersion version = new SemanticVersion(jsonObject.getString("name"));
+        result.add(version);
+      }
+      return result;
+    } catch (IOException e) {
+      getLogger().warn("Cannot fetch github tags from url " + url);
+    } catch (JSONException e) {
+      getLogger().warn("GitHub api returned invalid JSON from url " + url);
+    } catch (SemanticVersion.InvalidVersionString e) {
+      getLogger().warn("GitHub tags response contained invalid name field.");
+    }
+    return new ArrayList<>();
   }
 
   protected void runApiSpecificTests(HttpSecurityDescription security) {
     //intentionally left empty
+  }
+
+  private void checkApiVersion() throws SuiteBroken {
+    final List<SemanticVersion> tags = getGitHubTags();
+    if (tags.isEmpty()) {
+      return;
+    }
+
+    final SemanticVersion expectedVersion = this.currentState.version;
+    final boolean isCorrect = tags.contains(expectedVersion);
+    final Optional<SemanticVersion> newVersion = tags.stream().filter(
+        version -> version.compareTo(expectedVersion) > 0 && !version.isReleaseCandidate()
+    ).max(Comparator.naturalOrder());
+
+    this.addAndRun(false, new InlineValidationStep() {
+      @Override
+      public String getName() {
+        return "Verifying API version.";
+      }
+
+      @Override
+      protected Optional<Response> innerRun() throws Failure {
+        if (!isCorrect) {
+          throw new Failure(
+              "API version " + AbstractSetupValidationSuite.this.currentState.version.toString()
+                  + " is not valid. It's not listed as a tag in GitHub.",
+              Status.FAILURE, null
+          );
+        }
+        if (newVersion.isPresent()) {
+          throw new Failure(
+              "There is a new version of this API available (" + newVersion.get().toString()
+                  + "). Consider upgrading your "
+                  + "implementation.",
+              Status.NOTICE, null
+          );
+        }
+        return Optional.empty();
+      }
+    });
   }
 
   protected void runCredentialsDateTest() throws SuiteBroken {
@@ -80,11 +152,11 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
 
       @Override
       protected Optional<Response> innerRun() throws Failure {
-        if (!AbstractSetupValidationSuite.this.urlToBeValidated.startsWith("https://")) {
+        if (!AbstractSetupValidationSuite.this.currentState.url.startsWith("https://")) {
           throw new Failure("It needs to be HTTPS.", Status.FAILURE, null);
         }
         try {
-          new URL(AbstractSetupValidationSuite.this.urlToBeValidated);
+          new URL(AbstractSetupValidationSuite.this.currentState.url);
         } catch (MalformedURLException e) {
           throw new Failure("Exception while parsing URL format: " + e, Status.FAILURE, null);
         }
@@ -143,7 +215,7 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
             }
             if (supportsGetRequests) {
               this.currentState.combinations.add(
-                  new Combination("GET", AbstractSetupValidationSuite.this.urlToBeValidated,
+                  new Combination("GET", AbstractSetupValidationSuite.this.currentState.url,
                       AbstractSetupValidationSuite.this.currentState.matchedApiEntry, cliauth,
                       srvauth,
                       reqencr,
@@ -151,7 +223,7 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
                   ));
             }
             this.currentState.combinations.add(
-                new Combination("POST", AbstractSetupValidationSuite.this.urlToBeValidated,
+                new Combination("POST", AbstractSetupValidationSuite.this.currentState.url,
                     AbstractSetupValidationSuite.this.currentState.matchedApiEntry, cliauth,
                     srvauth,
                     reqencr,
@@ -163,7 +235,7 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
     }
   }
 
-  protected void runApiVersionTest() throws SuiteBroken {
+  protected void runCheckUrlAndVersionTest() throws SuiteBroken {
     this.addAndRun(true, new InlineValidationStep() {
 
       @Override
@@ -173,39 +245,38 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
 
       @Override
       protected Optional<Response> innerRun() throws Failure {
-        //TODO: sprawdzić czy dostarczony url jest zarejestrowany w katalogu oraz
-        //ze wersja do ktorej przygotowane sa testy jest kompatybilna z ta z katalogu
-        //w ogole tu trzeba wziac pod uwage dostarczona wersje, a nie kazda z katalogu
-        //do zastanowienia sie
-
         int matchedApiEntries = 0;
 
         ApiSearchConditions conds = new ApiSearchConditions();
         conds.setApiClassRequired(
             AbstractSetupValidationSuite.this.getApiNamespace(),
             AbstractSetupValidationSuite.this.getApiName(),
-            AbstractSetupValidationSuite.this.getApiVersion()
+            AbstractSetupValidationSuite.this.currentState.version.toString()
         );
+
+        String expectedVersionStr =
+            AbstractSetupValidationSuite.this.currentState.version.toString();
+        String expectedUrl = AbstractSetupValidationSuite.this.currentState.url;
         Collection<Element> entries = AbstractSetupValidationSuite.this.regClient.findApis(conds);
         for (Element entry : entries) {
-          if ($(entry).find("url").text()
-              .equals(AbstractSetupValidationSuite.this.urlToBeValidated)) {
+          String version = entry.getAttribute("version");
+          if ($(entry).find("url").text().equals(expectedUrl)
+              && version.equals(expectedVersionStr)) {
             AbstractSetupValidationSuite.this.currentState.matchedApiEntry = entry;
             matchedApiEntries++;
           }
         }
 
         if (matchedApiEntries == 0) {
-          throw new Failure("Could not find this URL in the Registry Catalogue. "
+          throw new Failure("Could not find this URL and version in the Registry Catalogue. "
               + "Make sure that it is properly registered "
               + "(as declared in API's `manifest-entry.xsd` file): "
-              + AbstractSetupValidationSuite.this.urlToBeValidated, Status.FAILURE, null);
+              + AbstractSetupValidationSuite.this.currentState.url, Status.FAILURE, null);
         }
 
         if (matchedApiEntries > 1) {
           throw new Failure("Multiple (" + Integer.toString(matchedApiEntries)
-              + ") API entries found for this URL. "
-              + "Results of the remaining tests might be non-determinictic.", Status.WARNING, null);
+              + ") API entries found for this URL and version.", Status.FAILURE, null);
         }
 
         return Optional.empty();

@@ -20,11 +20,11 @@ public class EchoSetupValidationSuiteV1 extends EchoSetupValidationSuite {
   protected EchoSetupValidationSuiteV1(
       ApiValidator<EchoSuiteState> echoValidator,
       EwpDocBuilder docBuilder,
-      Internet internet, String urlStr,
+      Internet internet,
       RegistryClient regClient,
       ManifestRepository repo,
       EchoSuiteState state) {
-    super(echoValidator, docBuilder, internet, urlStr, regClient, repo, state);
+    super(echoValidator, docBuilder, internet, regClient, repo, state);
   }
 
   @Override
@@ -64,22 +64,22 @@ public class EchoSetupValidationSuiteV1 extends EchoSetupValidationSuite {
   protected void validateSecurityMethods() throws SuiteBroken {
     // GATTT, PATTT, GSTTT, PSTTT
     this.currentState.combinations.add(
-        new Combination("GET", this.urlToBeValidated, this.currentState.matchedApiEntry,
+        new Combination("GET", this.currentState.url, this.currentState.matchedApiEntry,
             CombEntry.CLIAUTH_NONE,
             CombEntry.SRVAUTH_TLSCERT, CombEntry.REQENCR_TLS, CombEntry.RESENCR_TLS
         ));
     this.currentState.combinations.add(
-        new Combination("POST", this.urlToBeValidated, this.currentState.matchedApiEntry,
+        new Combination("POST", this.currentState.url, this.currentState.matchedApiEntry,
             CombEntry.CLIAUTH_NONE,
             CombEntry.SRVAUTH_TLSCERT, CombEntry.REQENCR_TLS, CombEntry.RESENCR_TLS
         ));
     this.currentState.combinations.add(
-        new Combination("GET", this.urlToBeValidated, this.currentState.matchedApiEntry,
+        new Combination("GET", this.currentState.url, this.currentState.matchedApiEntry,
             CombEntry.CLIAUTH_TLSCERT_SELFSIGNED, CombEntry.SRVAUTH_TLSCERT, CombEntry.REQENCR_TLS,
             CombEntry.RESENCR_TLS
         ));
     this.currentState.combinations.add(
-        new Combination("POST", this.urlToBeValidated, this.currentState.matchedApiEntry,
+        new Combination("POST", this.currentState.url, this.currentState.matchedApiEntry,
             CombEntry.CLIAUTH_TLSCERT_SELFSIGNED, CombEntry.SRVAUTH_TLSCERT, CombEntry.REQENCR_TLS,
             CombEntry.RESENCR_TLS
         ));

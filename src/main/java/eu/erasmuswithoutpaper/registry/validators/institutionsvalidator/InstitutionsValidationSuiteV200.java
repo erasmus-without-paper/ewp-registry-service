@@ -34,9 +34,9 @@ class InstitutionsValidationSuiteV200 extends InstitutionsValidationSuiteBase {
       LoggerFactory.getLogger(InstitutionsValidationSuiteV200.class);
 
   InstitutionsValidationSuiteV200(ApiValidator<InstitutionsSuiteState> validator,
-      EwpDocBuilder docBuilder, Internet internet, String urlStr, RegistryClient regClient,
+      EwpDocBuilder docBuilder, Internet internet, RegistryClient regClient,
       ManifestRepository repo, InstitutionsSuiteState state) {
-    super(validator, docBuilder, internet, urlStr, regClient, repo, state);
+    super(validator, docBuilder, internet, regClient, repo, state);
   }
 
   @Override
@@ -61,8 +61,9 @@ class InstitutionsValidationSuiteV200 extends InstitutionsValidationSuiteBase {
       }
 
       @Override
+      @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
       protected Optional<Response> innerRun() throws Failure {
-        String url = InstitutionsValidationSuiteV200.this.urlToBeValidated;
+        String url = InstitutionsValidationSuiteV200.this.currentState.url;
         List<String> coveredHeiIds =
             InstitutionsValidationSuiteV200.this.fetchHeiIdsCoveredByApiByUrl(url);
         if (coveredHeiIds.isEmpty()) {

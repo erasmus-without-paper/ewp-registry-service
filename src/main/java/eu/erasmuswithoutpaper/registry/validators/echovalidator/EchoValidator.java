@@ -26,11 +26,19 @@ public class EchoValidator extends ApiValidator<EchoSuiteState> {
   static {
     validationSuites = ApiValidator.createMultimap();
 
-    validationSuites.put(new SemanticVersion(1, 0, 0), EchoSetupValidationSuiteV1::new);
-    validationSuites.put(new SemanticVersion(1, 0, 0), EchoValidationSuiteV100::new);
+    validationSuites.put(new SemanticVersion(1, 0, 0),
+        EchoSetupValidationSuiteV1::new
+    );
+    validationSuites.put(new SemanticVersion(1, 0, 0),
+        EchoValidationSuiteV100::new
+    );
 
-    validationSuites.put(new SemanticVersion(2, 0, 0), EchoSetupValidationSuiteV2::new);
-    validationSuites.put(new SemanticVersion(2, 0, 0), EchoValidationSuiteV200::new);
+    validationSuites.put(new SemanticVersion(2, 0, 0),
+        EchoSetupValidationSuiteV2::new
+    );
+    validationSuites.put(new SemanticVersion(2, 0, 0),
+        EchoValidationSuiteV200::new
+    );
   }
 
   @Autowired
@@ -51,7 +59,7 @@ public class EchoValidator extends ApiValidator<EchoSuiteState> {
   }
 
   @Override
-  protected EchoSuiteState createState() {
-    return new EchoSuiteState();
+  protected EchoSuiteState createState(String url, SemanticVersion version) {
+    return new EchoSuiteState(url, version);
   }
 }

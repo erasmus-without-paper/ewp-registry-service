@@ -78,12 +78,11 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
   protected final EwpCertificateRequestSigner reqSignerCert;
   protected final EwpHttpSigRequestSigner reqSignerHttpSig;
   protected final DecodingHelper resDecoderHelper;
-  protected final String urlToBeValidated;
   protected Match catalogueMatch = null;
   protected S currentState;
 
   protected AbstractValidationSuite(ApiValidator<S> validator,
-      EwpDocBuilder docBuilder, Internet internet, String urlStr, RegistryClient regClient,
+      EwpDocBuilder docBuilder, Internet internet, RegistryClient regClient,
       ManifestRepository repo, S currentState) {
     this.repo = repo;
     this.steps = new ArrayList<>();
@@ -105,7 +104,6 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
         this.parentValidator.getServerRsaKeyPairInUse()
     )));
     this.resDecoderHelper.addDecoder(new GzipResponseDecoder());
-    this.urlToBeValidated = urlStr;
     this.currentState = currentState;
   }
 

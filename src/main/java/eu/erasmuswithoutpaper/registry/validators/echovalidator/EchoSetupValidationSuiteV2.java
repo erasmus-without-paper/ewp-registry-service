@@ -17,11 +17,11 @@ public class EchoSetupValidationSuiteV2 extends EchoSetupValidationSuite {
   protected EchoSetupValidationSuiteV2(
       ApiValidator<EchoSuiteState> echoValidator,
       EwpDocBuilder docBuilder,
-      Internet internet, String urlStr,
+      Internet internet,
       RegistryClient regClient,
       ManifestRepository repo,
       EchoSuiteState state) {
-    super(echoValidator, docBuilder, internet, urlStr, regClient, repo, state);
+    super(echoValidator, docBuilder, internet, regClient, repo, state);
   }
 
   @Override

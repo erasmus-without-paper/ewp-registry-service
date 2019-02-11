@@ -57,9 +57,9 @@ abstract class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSui
   private Set<CombEntry> allCombEntriesCache = null;
 
   EchoValidationSuiteCommon(ApiValidator<EchoSuiteState> echoValidator, EwpDocBuilder docBuilder,
-      Internet internet, String urlStr, RegistryClient regClient, ManifestRepository repo,
+      Internet internet, RegistryClient regClient, ManifestRepository repo,
       EchoSuiteState state) {
-    super(echoValidator, docBuilder, internet, urlStr, regClient, repo, state);
+    super(echoValidator, docBuilder, internet, regClient, repo, state);
   }
 
   private void checkEdgeCasesForAxxx(Combination combination)
@@ -1069,6 +1069,7 @@ abstract class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSui
       }
 
       @Override
+      @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
       protected Optional<Response> innerRun() throws Failure {
         ArrayList<String> expectedEchoValues = new ArrayList<>();
         expectedEchoValues.add("a");
@@ -1077,7 +1078,7 @@ abstract class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSui
         Request request = EchoValidationSuiteCommon.this.createValidRequestForCombination(
             this,
             combination.withChangedUrl(
-                EchoValidationSuiteCommon.this.urlToBeValidated + "?echo=a&echo=b&echo=a")
+                EchoValidationSuiteCommon.this.currentState.url + "?echo=a&echo=b&echo=a")
         );
         return Optional.of(EchoValidationSuiteCommon.this
             .makeRequestAndExpectHttp200(this, combination, request,

@@ -12,9 +12,9 @@ import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 public abstract class InstitutionsValidationSuiteBase
     extends AbstractValidationSuite<InstitutionsSuiteState> {
   protected InstitutionsValidationSuiteBase(ApiValidator<InstitutionsSuiteState> echoValidator,
-      EwpDocBuilder docBuilder, Internet internet, String urlStr, RegistryClient regClient,
+      EwpDocBuilder docBuilder, Internet internet, RegistryClient regClient,
       ManifestRepository repo, InstitutionsSuiteState state) {
-    super(echoValidator, docBuilder, internet, urlStr, regClient, repo, state);
+    super(echoValidator, docBuilder, internet, regClient, repo, state);
   }
 
   @Override

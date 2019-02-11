@@ -21,6 +21,9 @@ public class ServiceMMTTInvalid4 extends ServiceMMTTValid {
   public Response handleInternetRequest2(Request request)
       throws IOException, ErrorResponseException {
     Response response = super.handleInternetRequest2(request);
+    if (response == null) {
+      return null;
+    }
     byte[] prev = response.getBody();
     byte[] changed = new byte[prev.length + 1];
     System.arraycopy(prev, 0, changed, 0, prev.length);

@@ -22,8 +22,14 @@ public class InstitutionsValidator extends ApiValidator<InstitutionsSuiteState> 
 
   static {
     validationSuites = ApiValidator.createMultimap();
-    validationSuites.put(new SemanticVersion(2, 0, 0), InstitutionsSetupValidationSuiteV2::new);
-    validationSuites.put(new SemanticVersion(2, 0, 0), InstitutionsValidationSuiteV200::new);
+    validationSuites.put(
+        new SemanticVersion(2, 0, 0),
+        InstitutionsSetupValidationSuiteV2::new
+    );
+    validationSuites.put(
+        new SemanticVersion(2, 0, 0),
+        InstitutionsValidationSuiteV200::new
+    );
   }
 
   /**
@@ -53,7 +59,7 @@ public class InstitutionsValidator extends ApiValidator<InstitutionsSuiteState> 
   }
 
   @Override
-  protected InstitutionsSuiteState createState() {
-    return new InstitutionsSuiteState();
+  protected InstitutionsSuiteState createState(String url, SemanticVersion version) {
+    return new InstitutionsSuiteState(url, version);
   }
 }

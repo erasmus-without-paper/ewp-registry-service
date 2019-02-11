@@ -883,7 +883,7 @@ public class EchoValidatorTest extends AbstractApiTest {
 
       service = new ServiceV1Invalid1(echoV1Url, this.client);
       this.internet.addFakeInternetService(service);
-      assertThat(this.getValidatorReport(echoV1Url, new SemanticVersion(1, 0, 0), null))
+      assertThat(this.getValidatorReport(echoV1Url, new SemanticVersion(1, 1, 1), null))
           .isEqualTo(this.getFileAsString("echovalidator/ServiceV1Invalid1.txt"));
       this.internet.removeFakeInternetService(service);
 
@@ -899,7 +899,7 @@ public class EchoValidatorTest extends AbstractApiTest {
 
       service = new ServiceV1Invalid2(echoV1Url, this.client);
       this.internet.addFakeInternetService(service);
-      assertThat(this.getValidatorReport(echoV1Url, new SemanticVersion(1, 0, 0), null))
+      assertThat(this.getValidatorReport(echoV1Url, new SemanticVersion(1, 1, 1), null))
           .isEqualTo(this.getFileAsString("echovalidator/ServiceV1Invalid2.txt"));
       this.internet.removeFakeInternetService(service);
 
@@ -915,7 +915,7 @@ public class EchoValidatorTest extends AbstractApiTest {
 
       service = new ServiceV1Valid(echoV1Url, this.client);
       this.internet.addFakeInternetService(service);
-      assertThat(this.getValidatorReport(echoV1Url, new SemanticVersion(1, 0, 0), null))
+      assertThat(this.getValidatorReport(echoV1Url, new SemanticVersion(1, 1, 1), null))
           .isEqualTo(this.getFileAsString("echovalidator/ServiceV1Valid.txt"));
       this.internet.removeFakeInternetService(service);
 

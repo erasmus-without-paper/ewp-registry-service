@@ -173,7 +173,7 @@ public abstract class ApiValidator<S extends SuiteState> {
     return getValidationSuites().keySet();
   }
 
-  protected abstract S createState();
+  protected abstract S createState(String url, SemanticVersion version);
 
   /**
    * Runs all tests that are compatible with provided version.
@@ -189,13 +189,13 @@ public abstract class ApiValidator<S extends SuiteState> {
   public List<ValidationStepWithStatus> runTests(String urlStr, SemanticVersion version,
       HttpSecurityDescription security) {
     List<ValidationStepWithStatus> result = new ArrayList<>();
-    S state = createState();
+    S state = createState(urlStr, version);
     for (ValidationSuiteFactory<S> sf : getCompatibleSuites(
         version,
         getValidationSuites()
     )) {
       AbstractValidationSuite<S> suite =
-          sf.create(this, this.docBuilder, this.internet, urlStr, this.client, repo, state);
+          sf.create(this, this.docBuilder, this.internet, this.client, repo, state);
       suite.run(security);
       result.addAll(suite.getResults());
       if (state.broken) {
@@ -207,7 +207,7 @@ public abstract class ApiValidator<S extends SuiteState> {
 
   protected interface ValidationSuiteFactory<T extends SuiteState> {
     AbstractValidationSuite<T> create(ApiValidator<T> validator, EwpDocBuilder docBuilder,
-        Internet internet, String urlStr, RegistryClient regClient, ManifestRepository repo,
+        Internet internet, RegistryClient regClient, ManifestRepository repo,
         T state);
   }
 }

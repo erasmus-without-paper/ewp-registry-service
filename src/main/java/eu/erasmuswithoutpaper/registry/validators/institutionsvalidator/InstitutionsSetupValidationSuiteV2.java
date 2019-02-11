@@ -25,9 +25,9 @@ class InstitutionsSetupValidationSuiteV2
       LoggerFactory.getLogger(InstitutionsSetupValidationSuiteV2.class);
 
   InstitutionsSetupValidationSuiteV2(ApiValidator<InstitutionsSuiteState> validator,
-      EwpDocBuilder docBuilder, Internet internet, String urlStr, RegistryClient regClient,
+      EwpDocBuilder docBuilder, Internet internet, RegistryClient regClient,
       ManifestRepository repo, InstitutionsSuiteState state) {
-    super(validator, docBuilder, internet, urlStr, regClient, repo, state);
+    super(validator, docBuilder, internet, regClient, repo, state);
   }
 
   private int getMaxHeiIds() {
