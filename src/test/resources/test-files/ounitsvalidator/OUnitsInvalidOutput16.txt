@@ -10,7 +10,7 @@ Our client credentials are quite fresh. This means that many APIs will (correctl
 ### NOTICE: Querying for supported security methods. Validating http-security integrity.
 
 Notices:
-- You may consider allowing this API to by accessed by anonymous clients.
+- You may consider allowing this API to be accessed by anonymous clients.
 - It is RECOMMENDED for all servers to support HTTP Signature Server Authentication.
 
 

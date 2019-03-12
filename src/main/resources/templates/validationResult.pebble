@@ -3,7 +3,7 @@
 {% block pageTitle %}{{ info.apiName }} validation result{% endblock %}
 
 {% block main %}
-    <section class='ewp-section'>
+    <section class='ewp-section ewp-section-validation-results'>
         <h1 class='ewp-section-title'>
             Result: <code class='ewpst__bordered'>
                 {{ status }}
@@ -25,7 +25,11 @@
                 <p class='ewp-para'>Version: {{ info.version }}</p>
             </li>
             <li>
-                <abbr title="{{ info.securityExplanation }}">{{ info.security }}</abbr>
+                Security:</br>
+                <code class='ewpst__bordered-code-larger'>{{ info.security }}</code> </br>
+                {% for explanation in info.securityExplanation %}
+                    <code class='ewpst__bordered-code-larger'>{{ explanation.marker }}</code> - {{ explanation.description }}</br>
+                {% endfor %}
             </li>
             <li>
                 Datetime validation started: <code class='ewpst__bordered-code'>{{ info.validationStarted }}</code>
@@ -40,19 +44,22 @@
 
         <h2 class='ewp-section-title'>Validation results</h2>
 
+        <button type="button" id="show_all_details">Show all details</button>
+        <button type="button" id="hide_all_details">Hide all details</button>
+
         <table class='ewpsrc ewpsrc__test_validation-table'>
         {% for test in tests %}
             <tr class='ewpsrc__item'>
                 <td class='ewpsrc__test_index' rowspan='{{ test.height }}'>{{ loop.index + 1 }}</td>
-                <td class='ewpsrc__test_name ewpsrc__item ewpsrc__item--status-{{ test.status }}'>{{ test.name }}</td>
-                <td class='ewpsrc__item ewpsrc__item--status-{{ test.status }}'>
+                <td class='ewpsrc__item ewpsrc__test_text ewpsrc__item--status-{{ test.status }}'>{{ test.name }}</td>
+                <td class='ewpsrc__item ewpsrc__item--status-{{ test.status }} ewpsrc__test_validation-status-code'>
                     {{ test.status }}
                 </td>
             </tr>
 
             {% if test.hasMessage %}
             <tr class='ewpsrc__item'>
-                <td colspan='2' class='ewpsrc__item ewpsrc__item--status-{{ test.status }}'>{{ test.message }}</td>
+                <td colspan='2' class='ewpsrc__item ewpsrc__test_text ewpsrc__item--status-{{ test.status }}'>{{ test.message }}</td>
             </tr>
             {% endif %}
 
@@ -101,6 +108,7 @@
                 </td>
             </tr>
             {% endif %}
+            <tr class='ewp-empty-row'></tr>
 
         {% endfor %}
         </table>
@@ -136,7 +144,7 @@
 
 {% macro printHeaders(message) %}
     {% for header in message.headers %}
-        {{ printKeyValue(header.key, header.value, "ewpsrc__http-header") }}
+        {{ printKeyValue(header.key, header.value, "ewpsrc__test_http-header ") }}
     {% endfor %}
 
     {% for notice in message.processingNoticesHtml %}

@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -319,11 +320,22 @@ public class UiController {
     try {
       apis = ManifestApiEntry
           .parseManifest(manifestRepository.getManifestFiltered(url), apiValidatorsManager);
+      apis = apis.stream().filter(api -> api.available).collect(Collectors.toList());
     } catch (ManifestNotFound manifestNotFound) {
       mav.setStatus(HttpStatus.BAD_REQUEST);
       return mav;
     }
     mav.addObject("apis", apis);
+
+    List<Map<String, String>> securities = new ArrayList<>();
+    for (Map.Entry<String, String> entry : HttpSecurityDescription.getLegend().entrySet()) {
+      Map<String, String> mapParts = new HashMap<>();
+      mapParts.put("marker", entry.getKey());
+      mapParts.put("description", entry.getValue());
+      securities.add(mapParts);
+    }
+    mav.addObject("securities", securities);
+
     return mav;
   }
 
@@ -753,7 +765,18 @@ public class UiController {
       return mav;
     }
 
-    info.put("securityExplanation", desc.getExplanation());
+    String[] explanations = desc.getExplanation().split("\n");
+    List<Map<String, String>> splitExplanations = new ArrayList<>();
+    for (String explanation : explanations) {
+      String[] parts = explanation.split(":", 2);
+      Map<String, String> mapParts = new HashMap<>();
+      mapParts.put("marker", parts[0]);
+      mapParts.put("description", parts[1]);
+      splitExplanations.add(mapParts);
+    }
+
+
+    info.put("securityExplanation", splitExplanations);
     mav.addObject("info", info);
 
     Status worstStatus = Status.SUCCESS;

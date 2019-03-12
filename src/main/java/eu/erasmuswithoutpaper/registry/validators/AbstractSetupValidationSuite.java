@@ -345,7 +345,7 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
       List<String> notices, List<String> warnings, List<String> errors) {
     List<CombEntry> ret = new ArrayList<>();
     if (!sec.supportsCliAuthNone()) {
-      notices.add("You may consider allowing this API to by accessed by anonymous clients.");
+      notices.add("You may consider allowing this API to be accessed by anonymous clients.");
     } else {
       ret.add(CombEntry.CLIAUTH_NONE);
     }

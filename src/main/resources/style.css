@@ -425,17 +425,28 @@ a:hover {
 .ewpsrc__test_validation-table .ewpsrc__item td.ewpsrc__item--status-FAILURE {
     background: #fdd;
 }
+td.ewpsrc__test_validation-status-code {
+    font-weight: bold;
+    width: 10%;
+}
 .ewpsrc__test_details-table {
     width: 100%;
 }
-.ewpsrc__test_index {
-    vertical-align: text-top;
+td.ewpsrc__test_text {
+    padding-top: 8px;
+    padding-bottom: 8px;
 }
-.ewpsrc__test_value {
-    word-wrap: anywhere;
+td.ewpsrc__test_index {
+    vertical-align: text-top;
+    font-weight: bold;
 }
 .ewpsrc__test_key {
     color: #4a7996;
+}
+.ewpsrc__test_value {
+    word-break: break-all;
+    overlap-wrap: break-all;
+    word-wrap: anywhere;
 }
 .ewpsrc__test_http-header .ewpsrc__test_key {
     color: #b00;
@@ -467,4 +478,21 @@ a:hover {
     max-width: 634px;
     color: #555;
     font-weight: bold;
+}
+
+.ewpsrc__test_validation-table summary {
+    cursor: pointer;
+}
+.ewpst__bordered-code-larger {
+    background: #fff;
+    padding: 1px 3px 1px 3px;
+    border: 1px solid rgba(0,0,0,0.25);
+    font-size: larger;
+}
+.ewp-section-validation-results {
+    max-width: 1024px;
+    margin: auto;
+}
+.ewp-empty-row {
+    height: 20px;
 }

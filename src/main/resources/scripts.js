@@ -33,8 +33,9 @@ function swapWithFade(toHide, toShow) {
 }
 
 function validationResultsReceivedCallback(validationResults) {
-    var newWindow = window.open()
+    var newWindow = window.open();
     newWindow.document.write(validationResults);
+    newWindow.document.close();
 }
 
 // Selects first element matching selector from set of parent and its siblings.
@@ -82,3 +83,15 @@ jQuery(function($) {
     $(".manifest_validator_done").on("click", doneClicked);
 });
 
+function showAllDetails() {
+    $("details").attr("open", "open");
+}
+
+function hideAllDetails() {
+    $("details").removeAttr("open");
+}
+
+$(function($) {
+    $("#show_all_details").on("click", showAllDetails);
+    $("#hide_all_details").on("click", hideAllDetails);
+})
