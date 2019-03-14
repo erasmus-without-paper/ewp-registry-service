@@ -3,12 +3,12 @@
 {% block pageTitle %}Validate API Endpoints{% endblock %}
 
 {% block main %}
-    <section class='ewp-section'>
+    <section class='ewp-section ewp-section-centered'>
         <h2 class='ewp-section-title'>API Validator</h2>
 
         <h4 class='ewp-section-title'>Security options</h4>
         {% for security in securities %}
-            <code class='ewpst__bordered-code-larger'>{{ security.marker }}</code> - {{ security.description }} </br>
+            <code class='ewpst__bordered-code-larger'>{{ security.marker }}</code> - {{ security.description }} <br>
         {% endfor %}
 
 
@@ -18,7 +18,7 @@
 
         {% for api in apis %}
             <h3 style="margin-bottom:5px;">{{ api.name }} v{{ api.version }} </h3>
-            <code class='ewpst__bordered-code-larger'> {{ api.url }} </code> </br>
+            <code class='ewpst__bordered-code-larger'> {{ api.url }} </code> <br>
             {% for security in api.securities %}
             <div style="padding-top:5px;">
                 <code class='ewpst__bordered-code-larger'>{{ security }}</code> -
@@ -48,7 +48,7 @@
                         An error has occured, try again.
                     </a>
                 </span>
-                </br>
+                <br>
             </div>
             {% endfor %}
         {% endfor %}

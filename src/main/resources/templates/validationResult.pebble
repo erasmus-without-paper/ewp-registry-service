@@ -25,10 +25,10 @@
                 <p class='ewp-para'>Version: {{ info.version }}</p>
             </li>
             <li>
-                Security:</br>
-                <code class='ewpst__bordered-code-larger'>{{ info.security }}</code> </br>
+                Security:<br>
+                <code class='ewpst__bordered-code-larger'>{{ info.security }}</code> <br>
                 {% for explanation in info.securityExplanation %}
-                    <code class='ewpst__bordered-code-larger'>{{ explanation.marker }}</code> - {{ explanation.description }}</br>
+                    <code class='ewpst__bordered-code-larger'>{{ explanation.marker }}</code> - {{ explanation.description }}<br>
                 {% endfor %}
             </li>
             <li>
@@ -152,7 +152,7 @@
     {% endfor %}
 
     {% if message.developerMessage is not null %}
-        <p class="ewpsrc__test_developer-message"> Developer message:</br>{{ message.developerMessage }} </p>
+        <p class="ewpsrc__test_developer-message"> Developer message:<br>{{ message.developerMessage }} </p>
     {% endif %}
 {% endmacro %}
 
