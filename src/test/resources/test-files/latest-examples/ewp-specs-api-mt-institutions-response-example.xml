@@ -1,0 +1,30 @@
+<mt-institutions-response
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-mt-institutions/tree/stable-v1"
+    xmlns:a="https://github.com/erasmus-without-paper/ewp-specs-types-address/tree/stable-v1"
+    xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        https://github.com/erasmus-without-paper/ewp-specs-api-mt-institutions/tree/stable-v1
+        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-mt-institutions/stable-v1/response.xsd
+    ">
+
+    <!-- IMPORTANT: Please see the response.xsd file for detailed requirements and descriptions of all the elements. You 
+        MUST NOT base your implementation solely on the example file. -->
+
+    <hei>
+        <pic>999975814</pic>
+        <erasmus>N OSLO01</erasmus>
+        <erasmus-charter startDate="2014-01-01" endDate="2020-12-31">29714-EPP-1-2014-1-NO-EPPKA3-ECHE
+        </erasmus-charter>
+
+        <name xml:lang="en">University of Oslo</name>
+        <name xml:lang="no">Universitetet i Oslo</name>
+
+        <a:mailing-address>
+            <a:addressLine>University of Oslo</a:addressLine>
+            <a:addressLine>PROBLEMVEIEN 5-7 1073</a:addressLine>
+            <a:postalCode>03313</a:postalCode>
+            <a:locality>Oslo</a:locality>
+            <a:country>NO</a:country>
+        </a:mailing-address>
+    </hei>
+</mt-institutions-response>
