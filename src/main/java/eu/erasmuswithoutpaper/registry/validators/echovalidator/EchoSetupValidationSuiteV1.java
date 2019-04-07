@@ -1,14 +1,10 @@
 package eu.erasmuswithoutpaper.registry.validators.echovalidator;
 
-import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownElement;
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
-import eu.erasmuswithoutpaper.registry.internet.Internet;
-import eu.erasmuswithoutpaper.registry.repository.ManifestRepository;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.CombEntry;
 import eu.erasmuswithoutpaper.registry.validators.Combination;
-import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.slf4j.Logger;
@@ -19,12 +15,9 @@ public class EchoSetupValidationSuiteV1 extends EchoSetupValidationSuite {
 
   protected EchoSetupValidationSuiteV1(
       ApiValidator<EchoSuiteState> echoValidator,
-      EwpDocBuilder docBuilder,
-      Internet internet,
-      RegistryClient regClient,
-      ManifestRepository repo,
-      EchoSuiteState state) {
-    super(echoValidator, docBuilder, internet, regClient, repo, state);
+      EchoSuiteState state,
+      ValidationSuiteConfig config) {
+    super(echoValidator, state, config);
   }
 
   @Override

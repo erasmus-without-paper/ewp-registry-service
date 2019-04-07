@@ -1,20 +1,15 @@
 package eu.erasmuswithoutpaper.registry.validators.institutionsvalidator;
 
-import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownElement;
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
-import eu.erasmuswithoutpaper.registry.internet.Internet;
-import eu.erasmuswithoutpaper.registry.repository.ManifestRepository;
 import eu.erasmuswithoutpaper.registry.validators.AbstractValidationSuite;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
-import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 public abstract class InstitutionsValidationSuiteBase
     extends AbstractValidationSuite<InstitutionsSuiteState> {
   protected InstitutionsValidationSuiteBase(ApiValidator<InstitutionsSuiteState> echoValidator,
-      EwpDocBuilder docBuilder, Internet internet, RegistryClient regClient,
-      ManifestRepository repo, InstitutionsSuiteState state) {
-    super(echoValidator, docBuilder, internet, regClient, repo, state);
+      InstitutionsSuiteState state, ValidationSuiteConfig config) {
+    super(echoValidator, state, config);
   }
 
   @Override

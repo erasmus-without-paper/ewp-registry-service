@@ -1,67 +1,33 @@
 package eu.erasmuswithoutpaper.registry.validators.ounitsvalidator;
 
-import com.google.common.collect.Lists;
-import eu.erasmuswithoutpaper.registry.internet.FakeInternet;
-import eu.erasmuswithoutpaper.registry.internet.FakeInternetService;
-import eu.erasmuswithoutpaper.registry.repository.ManifestRepositoryImpl;
-import eu.erasmuswithoutpaper.registry.sourceprovider.ManifestSource;
-import eu.erasmuswithoutpaper.registry.sourceprovider.TestManifestSourceProvider;
-import eu.erasmuswithoutpaper.registry.updater.RegistryUpdater;
-import eu.erasmuswithoutpaper.registry.validators.AbstractApiTest;
-import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
-import eu.erasmuswithoutpaper.registry.validators.SemanticVersion;
-import eu.erasmuswithoutpaper.registry.validators.ValidatorKeyStore;
-import eu.erasmuswithoutpaper.registry.validators.institutionsvalidator.InstitutionServiceV2Valid;
-import eu.erasmuswithoutpaper.registry.validators.types.OunitsResponse;
-import eu.erasmuswithoutpaper.registry.web.SelfManifestProvider;
-import eu.erasmuswithoutpaper.registryclient.RegistryClient;
-import org.apache.xerces.impl.dv.util.Base64;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.security.KeyPair;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import eu.erasmuswithoutpaper.registry.internet.FakeInternetService;
+import eu.erasmuswithoutpaper.registry.sourceprovider.ManifestSource;
+import eu.erasmuswithoutpaper.registry.validators.AbstractApiTest;
+import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
+import eu.erasmuswithoutpaper.registry.validators.SemanticVersion;
+import eu.erasmuswithoutpaper.registry.validators.institutionsvalidator.InstitutionServiceV2Valid;
+import eu.erasmuswithoutpaper.registry.validators.types.OunitsResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.google.common.collect.Lists;
+import org.apache.xerces.impl.dv.util.Base64;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 public class OUnitsValidatorTest extends AbstractApiTest {
-  private static String selfManifestUrl;
-  private static String apiManifestUrl ;
-  private static boolean needsReinit;
   private static String institutionsUrlHTTT;
   private static String ounitsUrlHTTT;
-
-  @Autowired
-  private FakeInternet internet;
-
-  @Autowired
-  private ManifestRepositoryImpl repo;
-
-  @Autowired
-  private SelfManifestProvider selfManifestProvider;
-
-  @Autowired
-  private TestManifestSourceProvider sourceProvider;
-
   @Autowired
   private OUnitsValidator validator;
-
-  @Autowired
-  private RegistryUpdater registryUpdater;
-
-  @Autowired
-  private RegistryClient client;
-
-  @Autowired
-  private ValidatorKeyStore validatorKeyStore;
-
-  private static KeyPair myKeyPair;
+  private SemanticVersion version2 = new SemanticVersion(2, 0, 0);
 
   @BeforeClass
   public static void setUpClass() {
@@ -89,24 +55,24 @@ public class OUnitsValidatorTest extends AbstractApiTest {
 
       String apiManifest = this.getFileAsString("ounitsvalidator/manifest.xml");
       myKeyPair = this.validator.generateKeyPair();
-      apiManifest = apiManifest.replace("SERVER-KEY-PLACEHOLDER",
-                      Base64.encode(myKeyPair.getPublic().getEncoded()));
+      apiManifest = apiManifest.replace(
+          "SERVER-KEY-PLACEHOLDER",
+          Base64.encode(myKeyPair.getPublic().getEncoded())
+      );
       this.internet.putURL(apiManifestUrl, apiManifest);
       this.sourceProvider
-              .addSource(ManifestSource.newRegularSource(apiManifestUrl, Lists.newArrayList()));
+          .addSource(ManifestSource.newRegularSource(apiManifestUrl, Lists.newArrayList()));
 
       this.registryUpdater.reloadAllManifestSources();
       needsReinit = false;
     }
   }
 
-  private SemanticVersion version2 = new SemanticVersion(2, 0, 0);
-
   private void serviceTest(FakeInternetService service, String url, String filename) {
     try {
       this.internet.addFakeInternetService(service);
       assertThat(this.getValidatorReport(url, version2, null))
-        .isEqualTo(this.getFileAsString(filename));
+          .isEqualTo(this.getFileAsString(filename));
       this.internet.removeFakeInternetService(service);
 
     } finally {
@@ -131,7 +97,8 @@ public class OUnitsValidatorTest extends AbstractApiTest {
   @Test
   public void testAgainstOUnitsValid() {
     serviceTest(new OUnitsServiceV2Valid(ounitsUrlHTTT, this.client, GetInstitutions()) {},
-        ounitsUrlHTTT, "ounitsvalidator/OUnitsValidOutput.txt");
+        ounitsUrlHTTT, "ounitsvalidator/OUnitsValidOutput.txt"
+    );
   }
 
   /**

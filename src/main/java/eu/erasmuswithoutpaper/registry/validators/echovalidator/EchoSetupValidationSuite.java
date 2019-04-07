@@ -3,24 +3,17 @@ package eu.erasmuswithoutpaper.registry.validators.echovalidator;
 import java.util.ArrayList;
 import java.util.List;
 
-import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
-import eu.erasmuswithoutpaper.registry.internet.Internet;
-import eu.erasmuswithoutpaper.registry.repository.ManifestRepository;
 import eu.erasmuswithoutpaper.registry.validators.AbstractSetupValidationSuite;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.CombEntry;
-import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 public abstract class EchoSetupValidationSuite
     extends AbstractSetupValidationSuite<EchoSuiteState> {
   protected EchoSetupValidationSuite(
       ApiValidator<EchoSuiteState> echoValidator,
-      EwpDocBuilder docBuilder,
-      Internet internet,
-      RegistryClient regClient,
-      ManifestRepository repo,
-      EchoSuiteState state) {
-    super(echoValidator, docBuilder, internet, regClient, repo, state);
+      EchoSuiteState state,
+      ValidationSuiteConfig config) {
+    super(echoValidator, state, config);
   }
 
   @Override

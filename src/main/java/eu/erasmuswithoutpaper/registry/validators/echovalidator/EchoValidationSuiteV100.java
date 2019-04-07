@@ -1,12 +1,8 @@
 package eu.erasmuswithoutpaper.registry.validators.echovalidator;
 
-import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownElement;
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
-import eu.erasmuswithoutpaper.registry.internet.Internet;
-import eu.erasmuswithoutpaper.registry.repository.ManifestRepository;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
-import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,10 +14,9 @@ import org.slf4j.LoggerFactory;
 class EchoValidationSuiteV100 extends EchoValidationSuiteCommon {
   private static final Logger logger = LoggerFactory.getLogger(EchoValidationSuiteV100.class);
 
-  EchoValidationSuiteV100(ApiValidator<EchoSuiteState> echoValidator, EwpDocBuilder docBuilder,
-      Internet internet, RegistryClient regClient, ManifestRepository repo,
-      EchoSuiteState state) {
-    super(echoValidator, docBuilder, internet, regClient, repo, state);
+  EchoValidationSuiteV100(ApiValidator<EchoSuiteState> echoValidator,
+      EchoSuiteState state, ValidationSuiteConfig config) {
+    super(echoValidator, state, config);
   }
 
   @Override

@@ -6,10 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
-import eu.erasmuswithoutpaper.registry.internet.Internet;
 import eu.erasmuswithoutpaper.registry.internet.Response;
-import eu.erasmuswithoutpaper.registry.repository.ManifestRepository;
 import eu.erasmuswithoutpaper.registry.validators.AbstractValidationSuite;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.Combination;
@@ -17,7 +14,7 @@ import eu.erasmuswithoutpaper.registry.validators.InlineValidationStep;
 import eu.erasmuswithoutpaper.registry.validators.InlineValidationStep.Failure;
 import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus;
 import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus.Status;
-import eu.erasmuswithoutpaper.registryclient.RegistryClient;
+import eu.erasmuswithoutpaper.registry.validators.verifiers.ListEqualVerifier;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.joox.Match;
@@ -34,9 +31,8 @@ class InstitutionsValidationSuiteV200 extends InstitutionsValidationSuiteBase {
       LoggerFactory.getLogger(InstitutionsValidationSuiteV200.class);
 
   InstitutionsValidationSuiteV200(ApiValidator<InstitutionsSuiteState> validator,
-      EwpDocBuilder docBuilder, Internet internet, RegistryClient regClient,
-      ManifestRepository repo, InstitutionsSuiteState state) {
-    super(validator, docBuilder, internet, regClient, repo, state);
+      InstitutionsSuiteState state, ValidationSuiteConfig config) {
+    super(validator, state, config);
   }
 
   @Override
@@ -50,9 +46,7 @@ class InstitutionsValidationSuiteV200 extends InstitutionsValidationSuiteBase {
   protected void validateCombinationAny(Combination combination)
       throws SuiteBroken {
     final List<String> heis = new ArrayList<>();
-    String fakeHeiId = "this-is-some-unknown-and-unexpected-hei-id-its-very-long"
-        + "-but-sill-technically-correct-and-i-dont-think-that-anyone-would-use-it-as"
-        + "-a-hei-id-even-in-development";
+    String fakeHeiId = this.fakeId;
 
     this.addAndRun(true, new InlineValidationStep() {
       @Override
@@ -151,38 +145,21 @@ class InstitutionsValidationSuiteV200 extends InstitutionsValidationSuiteBase {
   }
 
 
-  private static class InstitutionsVerifier implements Verifier {
-    private final List<String> expectedHeiIDs;
-
+  private static class InstitutionsVerifier extends ListEqualVerifier {
     private InstitutionsVerifier(List<String> expectedHeiIDs) {
-      this.expectedHeiIDs = expectedHeiIDs;
+      super(expectedHeiIDs, Status.FAILURE);
     }
 
     @Override
     public void verify(AbstractValidationSuite suite, Match root, Response response)
         throws Failure {
-      List<String> receivedHeiIds = new ArrayList<>();
+      super.verify(suite, root, response);
+      verifyRootOUnitId(suite, root, response);
+    }
+
+    private void verifyRootOUnitId(AbstractValidationSuite suite, Match root, Response response)
+        throws Failure {
       String nsPrefix = suite.getApiResponsePrefix() + ":";
-      for (Match entry : root.xpath(nsPrefix + "hei/" + nsPrefix + "hei-id").each()) {
-        receivedHeiIds.add(entry.text());
-      }
-      for (String receivedId : receivedHeiIds) {
-        if (!expectedHeiIDs.contains(receivedId)) {
-          throw new Failure(
-              "The response has proper HTTP status and it passed the schema validation. However, "
-                  + "the set of returned hei-ids doesn't match what we expect. It contains <hei-id>"
-                  + receivedId + "</hei-id>, but it shouldn't. It should contain the following: "
-                  + expectedHeiIDs, Status.FAILURE, response);
-        }
-      }
-      for (String expectedId : expectedHeiIDs) {
-        if (!receivedHeiIds.contains(expectedId)) {
-          throw new Failure(
-              "The response has proper HTTP status and it passed the schema validation. However, "
-                  + "the set of returned hei-ids doesn't match what we expect. "
-                  + "It should contain the following: " + expectedHeiIDs, Status.FAILURE, response);
-        }
-      }
 
       for (Match entry : root.xpath(nsPrefix + "hei").each()) {
         Match rootOunitId = entry.xpath(nsPrefix + "root-ounit-id").first();
@@ -205,6 +182,16 @@ class InstitutionsValidationSuiteV200 extends InstitutionsValidationSuiteBase {
                   + "root-ounit-id is not included in ounit-id list.", Status.FAILURE, response);
         }
       }
+    }
+
+    @Override
+    protected List<String> getSelector() {
+      return Arrays.asList("hei", "hei-id");
+    }
+
+    @Override
+    protected String getParamName() {
+      return null;
     }
   }
 

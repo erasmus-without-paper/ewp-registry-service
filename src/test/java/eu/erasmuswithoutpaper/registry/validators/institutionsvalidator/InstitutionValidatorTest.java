@@ -2,64 +2,31 @@ package eu.erasmuswithoutpaper.registry.validators.institutionsvalidator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.google.common.collect.Lists;
-import eu.erasmuswithoutpaper.registry.validators.AbstractApiTest;
-import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
-import eu.erasmuswithoutpaper.registry.internet.FakeInternet;
-import eu.erasmuswithoutpaper.registry.internet.FakeInternetService;
-import eu.erasmuswithoutpaper.registry.repository.ManifestRepositoryImpl;
-import eu.erasmuswithoutpaper.registry.sourceprovider.ManifestSource;
-import eu.erasmuswithoutpaper.registry.sourceprovider.TestManifestSourceProvider;
-import eu.erasmuswithoutpaper.registry.updater.RegistryUpdater;
-import eu.erasmuswithoutpaper.registry.validators.SemanticVersion;
-import eu.erasmuswithoutpaper.registry.validators.ValidatorKeyStore;
-import eu.erasmuswithoutpaper.registry.validators.types.InstitutionsResponse;
-import eu.erasmuswithoutpaper.registry.web.SelfManifestProvider;
-import eu.erasmuswithoutpaper.registryclient.RegistryClient;
-import org.apache.xerces.impl.dv.util.Base64;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.security.KeyPair;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import eu.erasmuswithoutpaper.registry.internet.FakeInternetService;
+import eu.erasmuswithoutpaper.registry.sourceprovider.ManifestSource;
+import eu.erasmuswithoutpaper.registry.validators.AbstractApiTest;
+import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
+import eu.erasmuswithoutpaper.registry.validators.SemanticVersion;
+import eu.erasmuswithoutpaper.registry.validators.types.InstitutionsResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.google.common.collect.Lists;
+import org.apache.xerces.impl.dv.util.Base64;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
 public class InstitutionValidatorTest extends AbstractApiTest {
-  private static String selfManifestUrl;
-  private static String apiManifestUrl ;
-  private static boolean needsReinit;
   private static String institutionsUrlHTTT;
-
-  @Autowired
-  private FakeInternet internet;
-
-  @Autowired
-  private ManifestRepositoryImpl repo;
-
-  @Autowired
-  private SelfManifestProvider selfManifestProvider;
-
-  @Autowired
-  private TestManifestSourceProvider sourceProvider;
-
   @Autowired
   private InstitutionsValidator validator;
-
-  @Autowired
-  private RegistryUpdater registryUpdater;
-
-  @Autowired
-  private RegistryClient client;
-
-  @Autowired
-  private ValidatorKeyStore validatorKeyStore;
-
-  private static KeyPair myKeyPair;
 
   @BeforeClass
   public static void setUpClass() {
@@ -86,11 +53,13 @@ public class InstitutionValidatorTest extends AbstractApiTest {
 
       String apiManifest = this.getFileAsString("institutionsvalidator/manifest.xml");
       myKeyPair = this.validator.generateKeyPair();
-      apiManifest = apiManifest.replace("SERVER-KEY-PLACEHOLDER",
-                      Base64.encode(myKeyPair.getPublic().getEncoded()));
+      apiManifest = apiManifest.replace(
+          "SERVER-KEY-PLACEHOLDER",
+          Base64.encode(myKeyPair.getPublic().getEncoded())
+      );
       this.internet.putURL(apiManifestUrl, apiManifest);
       this.sourceProvider
-              .addSource(ManifestSource.newRegularSource(apiManifestUrl, Lists.newArrayList()));
+          .addSource(ManifestSource.newRegularSource(apiManifestUrl, Lists.newArrayList()));
 
       this.registryUpdater.reloadAllManifestSources();
       needsReinit = false;
@@ -101,7 +70,7 @@ public class InstitutionValidatorTest extends AbstractApiTest {
     try {
       this.internet.addFakeInternetService(service);
       assertThat(this.getValidatorReport(url, new SemanticVersion(2, 0, 0), null))
-        .isEqualTo(this.getFileAsString(filename));
+          .isEqualTo(this.getFileAsString(filename));
       this.internet.removeFakeInternetService(service);
     } finally {
       this.internet.clearAll();
@@ -112,7 +81,8 @@ public class InstitutionValidatorTest extends AbstractApiTest {
   public void testAgainstInstitutionsValid() {
     String url = institutionsUrlHTTT;
     serviceTest(new InstitutionServiceV2Valid(url, this.client, validatorKeyStore),
-        url, "institutionsvalidator/InstitutionsValidOutput.txt");
+        url, "institutionsvalidator/InstitutionsValidOutput.txt"
+    );
   }
 
   /**

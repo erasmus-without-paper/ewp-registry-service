@@ -1,31 +1,22 @@
 package eu.erasmuswithoutpaper.registry.validators.ounitsvalidator;
 
-import static org.joox.JOOX.$;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownElement;
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
-import eu.erasmuswithoutpaper.registry.internet.Internet;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
-import eu.erasmuswithoutpaper.registry.repository.ManifestRepository;
 import eu.erasmuswithoutpaper.registry.validators.AbstractSetupValidationSuite;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
-import eu.erasmuswithoutpaper.registry.validators.CombEntry;
 import eu.erasmuswithoutpaper.registry.validators.Combination;
 import eu.erasmuswithoutpaper.registry.validators.HttpSecurityDescription;
 import eu.erasmuswithoutpaper.registry.validators.InlineValidationStep;
-import eu.erasmuswithoutpaper.registry.validators.echovalidator.HttpSecuritySettings;
-import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import org.apache.commons.lang.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
@@ -35,11 +26,13 @@ class OUnitsSetupValidationSuiteV2
 
   private static final Logger logger =
       LoggerFactory.getLogger(OUnitsSetupValidationSuiteV2.class);
+  private final List<String> heis = new ArrayList<>();
+  private final List<String> institutionsUrls = new ArrayList<>();
 
   OUnitsSetupValidationSuiteV2(ApiValidator<OUnitsSuiteState> validator,
-      EwpDocBuilder docBuilder, Internet internet, RegistryClient regClient,
-      ManifestRepository repo, OUnitsSuiteState state) {
-    super(validator, docBuilder, internet, regClient, repo, state);
+      OUnitsSuiteState state,
+      ValidationSuiteConfig config) {
+    super(validator, state, config);
   }
 
   private int getMaxOunitIds() {
@@ -49,48 +42,6 @@ class OUnitsSetupValidationSuiteV2
   private int getMaxOunitCodes() {
     return getMaxIds("ounit-codes");
   }
-
-
-  protected static HttpSecurityDescription getDescriptionFromSecuritySettings(
-      HttpSecuritySettings securitySettings) {
-    CombEntry cliauth = CombEntry.CLIAUTH_NONE;
-    if (securitySettings.supportsCliAuthTlsCertSelfSigned()) {
-      cliauth = CombEntry.CLIAUTH_TLSCERT_SELFSIGNED;
-    } else if (securitySettings.supportsCliAuthHttpSig()) {
-      cliauth = CombEntry.CLIAUTH_HTTPSIG;
-    } else if (securitySettings.supportsCliAuthNone()) {
-      cliauth = CombEntry.CLIAUTH_NONE;
-    } else if (securitySettings.supportsCliAuthTlsCert()) {
-      //TODO
-      throw new NotImplementedException();
-    }
-
-    CombEntry srvauth = CombEntry.SRVAUTH_TLSCERT;
-    if (securitySettings.supportsSrvAuthTlsCert()) {
-      srvauth = CombEntry.SRVAUTH_TLSCERT;
-    } else if (securitySettings.supportsSrvAuthHttpSig()) {
-      srvauth = CombEntry.SRVAUTH_HTTPSIG;
-    }
-
-    CombEntry reqencr = CombEntry.REQENCR_TLS;
-    if (securitySettings.supportsReqEncrTls()) {
-      reqencr = CombEntry.REQENCR_TLS;
-    } else if (securitySettings.supportsReqEncrEwp()) {
-      reqencr = CombEntry.REQENCR_EWP;
-    }
-
-    CombEntry resencr = CombEntry.RESENCR_TLS;
-    if (securitySettings.supportsResEncrTls()) {
-      resencr = CombEntry.RESENCR_TLS;
-    } else if (securitySettings.supportsResEncrEwp()) {
-      resencr = CombEntry.RESENCR_EWP;
-    }
-
-    return new HttpSecurityDescription(cliauth, srvauth, reqencr, resencr);
-  }
-
-  private final List<String> heis = new ArrayList<>();
-  private final List<String> institutionsUrls = new ArrayList<>();
 
   private void getCoveredHeiIds() throws SuiteBroken {
     this.setup(new InlineValidationStep() {
@@ -127,21 +78,7 @@ class OUnitsSetupValidationSuiteV2
     });
   }
 
-  private HttpSecurityDescription getSecurityDescriptionFromApiEntry(Element apiEntry,
-      HttpSecurityDescription preferedSecurityDesc) {
-    Element httpSecurityElem = $(apiEntry).xpath("*[local-name()='http-security']").get(0);
-    HttpSecuritySettings securitySettings = new HttpSecuritySettings(httpSecurityElem);
-
-    // We are going to connect to institutions API, try to use the same security method,
-    // but if it is not compatible select one of available.
-    HttpSecurityDescription securityDescription = preferedSecurityDesc ;
-    if (preferedSecurityDesc == null || !preferedSecurityDesc .isCompatible(securitySettings)) {
-      securityDescription = getDescriptionFromSecuritySettings(securitySettings);
-    }
-    return securityDescription;
-  }
-
-  private void findInstitutionThatCoveresAnyOunit(HttpSecurityDescription securityDescription)
+  private void findInstitutionThatCoversAnyOunit(HttpSecurityDescription securityDescription)
       throws SuiteBroken {
     this.setup(new InlineValidationStep() {
       @Override
@@ -168,7 +105,8 @@ class OUnitsSetupValidationSuiteV2
             continue;
           }
 
-          Request request = createRequestWithParameters(this,
+          Request request = createRequestWithParameters(
+              this,
               new Combination(
                   "GET", url, apiEntry,
                   getSecurityDescriptionFromApiEntry(apiEntry, securityDescription)
@@ -217,7 +155,7 @@ class OUnitsSetupValidationSuiteV2
     this.currentState.ounitIds = new ArrayList<>();
 
     getCoveredHeiIds();
-    findInstitutionThatCoveresAnyOunit(securityDescription);
+    findInstitutionThatCoversAnyOunit(securityDescription);
   }
 
   @Override

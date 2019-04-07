@@ -12,10 +12,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -52,6 +54,9 @@ import eu.erasmuswithoutpaper.registry.repository.ManifestRepository;
 import eu.erasmuswithoutpaper.registry.validators.InlineValidationStep.Failure;
 import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus.Status;
 import eu.erasmuswithoutpaper.registry.validators.echovalidator.HttpSecuritySettings;
+import eu.erasmuswithoutpaper.registry.validators.githubtags.GitHubTagsGetter;
+import eu.erasmuswithoutpaper.registry.validators.verifiers.Verifier;
+import eu.erasmuswithoutpaper.registry.validators.verifiers.VerifierFactory;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 import com.google.common.collect.Lists;
@@ -61,12 +66,14 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.joox.Match;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 public abstract class AbstractValidationSuite<S extends SuiteState> {
+  protected static final String fakeId = "this-is-some-unknown-and-unexpected-id";
   protected final ManifestRepository repo;
 
   protected final ApiValidator<S> parentValidator;
@@ -81,15 +88,15 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
   protected Match catalogueMatch = null;
   protected S currentState;
 
-  protected AbstractValidationSuite(ApiValidator<S> validator,
-      EwpDocBuilder docBuilder, Internet internet, RegistryClient regClient,
-      ManifestRepository repo, S currentState) {
-    this.repo = repo;
+  protected AbstractValidationSuite(
+      ApiValidator<S> validator, S currentState,
+      ValidationSuiteConfig config) {
+    this.repo = config.repo;
     this.steps = new ArrayList<>();
     this.parentValidator = validator;
-    this.docBuilder = docBuilder;
-    this.internet = internet;
-    this.regClient = regClient;
+    this.docBuilder = config.docBuilder;
+    this.internet = config.internet;
+    this.regClient = config.regClient;
     this.reqSignerAnon = new AnonymousRequestSigner();
     this.reqSignerCert =
         new EwpCertificateRequestSigner(
@@ -105,6 +112,11 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
     )));
     this.resDecoderHelper.addDecoder(new GzipResponseDecoder());
     this.currentState = currentState;
+  }
+
+  @SafeVarargs
+  public static <T> List<T> concatArrays(List<T>... lists) {
+    return Stream.of(lists).flatMap(List::stream).collect(Collectors.toList());
   }
 
   protected void runTests(HttpSecurityDescription security) throws SuiteBroken {
@@ -297,8 +309,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
    *
    * @param combination
    *     combination to test with.
-   * @return ValidationStep
-   *     performing simple request with selected method.
+   * @return ValidationStep performing simple request with selected method.
    */
   protected InlineValidationStep createHttpMethodValidationStep(Combination combination) {
     return new InlineValidationStep() {
@@ -467,19 +478,43 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
    */
   protected void expectError(InlineValidationStep step, Combination combination, Request request,
       Response response, List<Integer> statuses) throws Failure {
+    expectError(step, combination, request, response, statuses, Status.FAILURE);
+  }
+
+  /**
+   * Check if the response contains a valid error of expected type.
+   *
+   * @param step
+   *     validation step associated with this response.
+   * @param combination
+   *     combination with which request was made.
+   * @param request
+   *     The request that triggered the response.
+   * @param response
+   *     Response to be tested.
+   * @param statuses
+   *     Expected HTTP response statuses (any of those).
+   * @param failureStatus
+   *     Type of error to report when statuses do not match.
+   * @throws Failure
+   *     If HTTP status differs from expected, or if the response body doesn't contain a proper
+   *     error response.
+   */
+  protected void expectError(InlineValidationStep step, Combination combination, Request request,
+      Response response, List<Integer> statuses, Status failureStatus) throws Failure {
     final List<String> notices =
         this.decodeAndValidateResponseCommons(step, combination, request, response);
     if (!statuses.contains(response.getStatus())) {
       int gotFirstDigit = response.getStatus() / 100;
       int expectedFirstDigit = statuses.get(0) / 100;
-      Status failureStatus =
-          (gotFirstDigit == expectedFirstDigit) ? Status.WARNING : Status.FAILURE;
+      Status status =
+          (gotFirstDigit == expectedFirstDigit) ? Status.WARNING : failureStatus;
       String message = "HTTP " + String.join(
           " or HTTP ",
           statuses.stream().map(Object::toString).collect(Collectors.toList())
       );
       message += " expected, but HTTP " + response.getStatus() + " received.";
-      throw new Failure(message, failureStatus, response);
+      throw new Failure(message, status, response);
     }
     BuildParams params = new BuildParams(response.getBody());
     params.setExpectedKnownElement(KnownElement.COMMON_ERROR_RESPONSE);
@@ -632,12 +667,16 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
   }
 
   protected int getMaxIds(String what) {
-    Match maxIdsMatch = $(this.currentState.matchedApiEntry).namespaces(KnownNamespace.prefixMap())
-        .xpath(getApiPrefix() + ":max-" + what);
+    Match maxIdsMatch = getManifestParameter("max-" + what);
     if (maxIdsMatch.isEmpty()) {
       return 1;
     }
     return Integer.parseInt(maxIdsMatch.get(0).getTextContent());
+  }
+
+  protected Match getManifestParameter(String what) {
+    return $(this.currentState.matchedApiEntry).namespaces(KnownNamespace.prefixMap())
+        .xpath(getApiPrefix() + ":" + what);
   }
 
   protected Request createRequestWithParameters(InlineValidationStep step, Combination combination,
@@ -683,6 +722,10 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
   }
 
   protected void expect200(Response response) throws Failure {
+    expect200(response, Status.FAILURE);
+  }
+
+  protected void expect200(Response response, Status failureStatus) throws Failure {
     if (response.getStatus() != 200) {
       StringBuilder sb = new StringBuilder();
       sb.append("HTTP 200 expected, but HTTP ").append(response.getStatus()).append(" received.");
@@ -690,15 +733,20 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
         sb.append(" Make sure you validate clients' credentials against a fresh "
             + "Registry catalogue version.");
       }
-      throw new Failure(sb.toString(), Status.FAILURE, response);
+      throw new Failure(sb.toString(), failureStatus, response);
     }
   }
 
   protected Response verifyResponse(InlineValidationStep step, Combination combination,
       Request request, Verifier verifier) throws Failure {
+    return verifyResponse(step, combination, request, verifier, Status.FAILURE);
+  }
+
+  protected Response verifyResponse(InlineValidationStep step, Combination combination,
+      Request request, Verifier verifier, Status failureStatus) throws Failure {
     List<String> notices = new ArrayList<>();
     Response response = makeRequest(step, combination, request, notices);
-    expect200(response);
+    expect200(response, failureStatus);
     verifyContents(response, verifier);
     checkNotices(response, notices);
     return response;
@@ -722,6 +770,11 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
 
   protected void testParameters200(Combination combination, String name, List<Parameter> params,
       Verifier verifier) throws SuiteBroken {
+    testParameters200(combination, name, params, verifier, Status.FAILURE);
+  }
+
+  protected void testParameters200(Combination combination, String name, List<Parameter> params,
+      Verifier verifier, Status failureStatus) throws SuiteBroken {
     this.addAndRun(false, new InlineValidationStep() {
       @Override
       public String getName() {
@@ -731,18 +784,28 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
       @Override
       protected Optional<Response> innerRun() throws Failure {
         Request request = createRequestWithParameters(this, combination, params);
-        return Optional.of(verifyResponse(this, combination, request, verifier));
+        return Optional.of(verifyResponse(this, combination, request, verifier, failureStatus));
       }
     });
   }
 
   protected void testParametersError(Combination combination, String name, List<Parameter> params,
       int error) throws SuiteBroken {
-    testParametersError(combination, name, params, Arrays.asList(error));
+    testParametersError(combination, name, params, Arrays.asList(error), Status.FAILURE);
+  }
+
+  protected void testParametersError(Combination combination, String name, List<Parameter> params,
+      int error, Status failureStatus) throws SuiteBroken {
+    testParametersError(combination, name, params, Arrays.asList(error), failureStatus);
   }
 
   protected void testParametersError(Combination combination, String name, List<Parameter> params,
       List<Integer> errors) throws SuiteBroken {
+    testParametersError(combination, name, params, errors, Status.FAILURE);
+  }
+
+  protected void testParametersError(Combination combination, String name, List<Parameter> params,
+      List<Integer> errors, Status status) throws SuiteBroken {
     this.addAndRun(false, new InlineValidationStep() {
       @Override
       public String getName() {
@@ -781,8 +844,249 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
 
   public abstract String getApiResponsePrefix();
 
-  protected interface Verifier {
-    void verify(AbstractValidationSuite suite, Match root, Response response) throws Failure;
+  protected void generalTestsIdsAndCodes(Combination combination, String name, String selectedHeiId,
+      String id, String code, int maxIds, int maxCodes, VerifierFactory verifier)
+      throws SuiteBroken {
+    if (code != null) {
+      testParameters200(
+          combination,
+          "Request for one of known " + name + "-codes, expect 200 OK.",
+          Arrays.asList(
+              new Parameter("hei_id", selectedHeiId),
+              new Parameter(name + "_code", code)
+          ),
+          verifier.create(Collections.singletonList(id))
+      );
+    }
+
+    testParameters200(
+        combination,
+        "Request one unknown " + name + "-id, expect 200 and empty response.",
+        Arrays.asList(
+            new Parameter("hei_id", selectedHeiId),
+            new Parameter(name + "_id", fakeId)
+        ),
+        verifier.create(new ArrayList<>())
+    );
+
+    if (maxIds > 1) {
+      testParameters200(
+          combination,
+          "Request one known and one unknown " + name + "-id, expect 200 and only one " + name
+              + " in response.",
+          Arrays.asList(
+              new Parameter("hei_id", selectedHeiId),
+              new Parameter(name + "_id", id),
+              new Parameter(name + "_id", fakeId)
+          ),
+          verifier.create(Collections.singletonList(id))
+      );
+    }
+
+    if (maxCodes > 1 && code != null) {
+      testParameters200(
+          combination,
+          "Request one known and one unknown " + name + "-code, expect 200 and only one " + name
+              + " in response.",
+          Arrays.asList(
+              new Parameter("hei_id", selectedHeiId),
+              new Parameter(name + "_code", code),
+              new Parameter(name + "_code", fakeId)
+          ),
+          verifier.create(Collections.singletonList(id))
+      );
+    }
+
+    testParametersError(
+        combination,
+        "Request without hei-ids and " + name + "-ids, expect 400.",
+        new ArrayList<>(),
+        400
+    );
+
+    testParametersError(
+        combination,
+        "Request without hei-ids, expect 400.",
+        Arrays.asList(new Parameter(name + "_id", id)),
+        400
+    );
+
+    testParametersError(
+        combination,
+        "Request without " + name + "-ids and " + name + "-codes, expect 400.",
+        Arrays.asList(new Parameter("hei_id", selectedHeiId)),
+        400
+    );
+
+    testParametersError(
+        combination,
+        "Request for one of known " + name + "-ids with unknown hei-id, expect 400.",
+        Arrays.asList(
+            new Parameter("hei_id", fakeId),
+            new Parameter(name + "_id", id)
+        ),
+        400
+    );
+
+    if (code != null) {
+      testParametersError(
+          combination,
+          "Request for one of known " + name + "-codes with unknown hei-id, expect 400.",
+          Arrays.asList(
+              new Parameter("hei_id", fakeId),
+              new Parameter(name + "_code", code)
+          ),
+          400
+      );
+    }
+
+    testParametersError(
+        combination,
+        "Request more than <max-" + name + "-ids> known " + name + "-ids, expect 400.",
+        concatArrays(
+            Arrays.asList(new Parameter("hei_id", selectedHeiId)),
+            Collections.nCopies(maxIds + 1, new Parameter(name + "_id", id))
+        ),
+        400
+    );
+
+    if (code != null) {
+      testParametersError(
+          combination,
+          "Request more than <max-" + name + "-codes> known " + name + "-codes, expect 400.",
+          concatArrays(
+              Arrays.asList(new Parameter("hei_id", selectedHeiId)),
+              Collections.nCopies(
+                  maxCodes + 1,
+                  new Parameter(name + "_code", code)
+              )
+          ),
+          400
+      );
+    }
+
+    testParametersError(
+        combination,
+        "Request more than <max-" + name + "-ids> unknown " + name + "-ids, expect 400.",
+        concatArrays(
+            Arrays.asList(new Parameter("hei_id", selectedHeiId)),
+            Collections.nCopies(maxIds + 1, new Parameter(name + "_id", fakeId))
+        ),
+        400
+    );
+
+    testParametersError(
+        combination,
+        "Request more than <max-" + name + "-codes> unknown " + name + "-codes, expect 400.",
+        concatArrays(
+            Arrays.asList(new Parameter("hei_id", selectedHeiId)),
+            Collections.nCopies(maxCodes + 1, new Parameter(name + "_code", fakeId))
+        ),
+        400
+    );
+
+    testParameters200(
+        combination,
+        "Request exactly <max-" + name + "-ids> known " + name + "-ids, expect 200 and <max-" + name
+            + "-ids> " + name + "-ids in response.",
+        concatArrays(
+            Arrays.asList(new Parameter("hei_id", selectedHeiId)),
+            Collections.nCopies(maxIds, new Parameter(name + "_id", id))
+        ),
+        verifier.create(Collections.nCopies(maxIds, id))
+    );
+
+    if (code != null) {
+      testParameters200(
+          combination,
+          "Request exactly <max-" + name + "-codes> known " + name + "-codes, expect 200 and <max-"
+              + name + "-codes> " + name + "-codes in response.",
+          concatArrays(
+              Arrays.asList(new Parameter("hei_id", selectedHeiId)),
+              Collections.nCopies(maxCodes, new Parameter(name + "_code", code)
+              )
+          ),
+          verifier.create(Collections.nCopies(maxCodes, id))
+      );
+    }
+
+    testParametersError(
+        combination,
+        "Request with single incorrect parameter, expect 400.",
+        Arrays.asList(new Parameter(name + "_id_param", id)),
+        400
+    );
+
+    testParameters200(
+        combination,
+        "Request with additional parameter, expect 200 and one " + name + " in response.",
+        Arrays.asList(
+            new Parameter("hei_id", selectedHeiId),
+            new Parameter(name + "_id", id),
+            new Parameter(name + "_id_param", id)
+        ),
+        verifier.create(Collections.singletonList(id))
+    );
+
+    if (code != null) {
+      testParametersError(
+          combination,
+          "Request with correct " + name + "_id and correct " + name + "_code, expect 400.",
+          Arrays.asList(
+              new Parameter("hei_id", selectedHeiId),
+              new Parameter(name + "_id", id),
+              new Parameter(name + "_code", code)
+          ),
+          400
+      );
+    }
+
+    testParametersError(
+        combination,
+        "Request with correct hei_id twice, expect 400.",
+        Arrays.asList(
+            new Parameter("hei_id", selectedHeiId),
+            new Parameter("hei_id", selectedHeiId),
+            new Parameter(name + "_id", id)
+        ),
+        400
+    );
+  }
+
+
+  public static class ValidationSuiteConfig {
+    public final EwpDocBuilder docBuilder;
+    public final Internet internet;
+    public final RegistryClient regClient;
+    public final ManifestRepository repo;
+    public final GitHubTagsGetter gitHubTagsGetter;
+
+    /**
+     * Creates data structure with all configurations required for AbstractValidationSuite to work.
+     *
+     * @param docBuilder
+     *     Needed for validating Echo API responses against the schemas.
+     * @param internet
+     *     Needed to make Echo API requests across the network.
+     * @param regClient
+     *     Needed to fetch (and verify) Echo APIs' security settings.
+     * @param repo
+     *     to store the new content of the fetched manifests.
+     * @param gitHubTagsGetter
+     *     to fetch API tags from GitHub.
+     */
+    public ValidationSuiteConfig(
+        EwpDocBuilder docBuilder,
+        Internet internet,
+        RegistryClient regClient,
+        ManifestRepository repo,
+        GitHubTagsGetter gitHubTagsGetter) {
+      this.docBuilder = docBuilder;
+      this.internet = internet;
+      this.regClient = regClient;
+      this.repo = repo;
+      this.gitHubTagsGetter = gitHubTagsGetter;
+    }
   }
 
 
@@ -792,9 +1096,11 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
    */
   protected static final class GenericErrorFakeStep implements ValidationStepWithStatus {
 
+    private static final Logger logger = LoggerFactory.getLogger(GenericErrorFakeStep.class);
     private final RuntimeException cause;
 
     public GenericErrorFakeStep(RuntimeException cause) {
+      logger.error(cause.getMessage(), cause);
       this.cause = cause;
     }
 

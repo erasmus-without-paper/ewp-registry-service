@@ -2,7 +2,6 @@ package eu.erasmuswithoutpaper.registry.validators;
 
 import static org.joox.JOOX.$;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -12,29 +11,62 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
-import eu.erasmuswithoutpaper.registry.internet.Internet;
 import eu.erasmuswithoutpaper.registry.internet.Response;
-import eu.erasmuswithoutpaper.registry.repository.ManifestRepository;
 import eu.erasmuswithoutpaper.registry.validators.echovalidator.HttpSecuritySettings;
+import eu.erasmuswithoutpaper.registry.validators.githubtags.GitHubTagsGetter;
 import eu.erasmuswithoutpaper.registryclient.ApiSearchConditions;
-import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
-import com.google.common.base.Charsets;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.w3c.dom.Element;
+
 
 public abstract class AbstractSetupValidationSuite<S extends SuiteState>
     extends AbstractValidationSuite<S> {
+  private GitHubTagsGetter gitHubTagsGetter;
+
   protected AbstractSetupValidationSuite(
       ApiValidator<S> validator,
-      EwpDocBuilder docBuilder,
-      Internet internet,
-      RegistryClient regClient,
-      ManifestRepository repo, S state) {
-    super(validator, docBuilder, internet, regClient, repo, state);
+      S state,
+      ValidationSuiteConfig config) {
+    super(validator, state, config);
+    this.gitHubTagsGetter = config.gitHubTagsGetter;
+  }
+
+  protected static HttpSecurityDescription getDescriptionFromSecuritySettings(
+      HttpSecuritySettings securitySettings) {
+    CombEntry cliauth = CombEntry.CLIAUTH_NONE;
+    if (securitySettings.supportsCliAuthTlsCertSelfSigned()) {
+      cliauth = CombEntry.CLIAUTH_TLSCERT_SELFSIGNED;
+    } else if (securitySettings.supportsCliAuthHttpSig()) {
+      cliauth = CombEntry.CLIAUTH_HTTPSIG;
+    } else if (securitySettings.supportsCliAuthNone()) {
+      cliauth = CombEntry.CLIAUTH_NONE;
+    } else if (securitySettings.supportsCliAuthTlsCert()) {
+      //TODO
+      throw new UnsupportedOperationException();
+    }
+
+    CombEntry srvauth = CombEntry.SRVAUTH_TLSCERT;
+    if (securitySettings.supportsSrvAuthTlsCert()) {
+      srvauth = CombEntry.SRVAUTH_TLSCERT;
+    } else if (securitySettings.supportsSrvAuthHttpSig()) {
+      srvauth = CombEntry.SRVAUTH_HTTPSIG;
+    }
+
+    CombEntry reqencr = CombEntry.REQENCR_TLS;
+    if (securitySettings.supportsReqEncrTls()) {
+      reqencr = CombEntry.REQENCR_TLS;
+    } else if (securitySettings.supportsReqEncrEwp()) {
+      reqencr = CombEntry.REQENCR_EWP;
+    }
+
+    CombEntry resencr = CombEntry.RESENCR_TLS;
+    if (securitySettings.supportsResEncrTls()) {
+      resencr = CombEntry.RESENCR_TLS;
+    } else if (securitySettings.supportsResEncrEwp()) {
+      resencr = CombEntry.RESENCR_EWP;
+    }
+
+    return new HttpSecurityDescription(cliauth, srvauth, reqencr, resencr);
   }
 
   @Override
@@ -49,28 +81,7 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
   }
 
   private List<SemanticVersion> getGitHubTags() {
-    String url = "https://api.github.com/repos/erasmus-without-paper/ewp-specs-api-";
-    url += getApiName();
-    url += "/tags";
-
-    List<SemanticVersion> result = new ArrayList<>();
-    try {
-      byte[] data = this.internet.getUrl(url);
-      JSONArray jsonArray = new JSONArray(new String(data, Charsets.UTF_8));
-      for (int i = 0; i < jsonArray.length(); i++) {
-        JSONObject jsonObject = jsonArray.getJSONObject(i);
-        SemanticVersion version = new SemanticVersion(jsonObject.getString("name"));
-        result.add(version);
-      }
-      return result;
-    } catch (IOException e) {
-      getLogger().warn("Cannot fetch github tags from url " + url);
-    } catch (JSONException e) {
-      getLogger().warn("GitHub api returned invalid JSON from url " + url);
-    } catch (SemanticVersion.InvalidVersionString e) {
-      getLogger().warn("GitHub tags response contained invalid name field.");
-    }
-    return new ArrayList<>();
+    return this.gitHubTagsGetter.getTags(getApiName(), this.internet, getLogger());
   }
 
   protected void runApiSpecificTests(HttpSecurityDescription security) throws SuiteBroken {
@@ -370,6 +381,20 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
           + "methods recognized by the Validator.");
     }
     return ret;
+  }
+
+  protected HttpSecurityDescription getSecurityDescriptionFromApiEntry(Element apiEntry,
+      HttpSecurityDescription preferredSecurityDesc) {
+    Element httpSecurityElem = $(apiEntry).xpath("*[local-name()='http-security']").get(0);
+    HttpSecuritySettings securitySettings = new HttpSecuritySettings(httpSecurityElem);
+
+    // Try to use the method from preferredSecurityDesc,
+    // but if it is not compatible select one of available methods.
+    HttpSecurityDescription securityDescription = preferredSecurityDesc;
+    if (preferredSecurityDesc == null || !preferredSecurityDesc.isCompatible(securitySettings)) {
+      securityDescription = getDescriptionFromSecuritySettings(securitySettings);
+    }
+    return securityDescription;
   }
 
   @Override

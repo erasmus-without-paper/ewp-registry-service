@@ -1,16 +1,50 @@
 package eu.erasmuswithoutpaper.registry.validators;
 
+import java.security.KeyPair;
 import java.util.List;
 
 import eu.erasmuswithoutpaper.registry.WRTest;
+import eu.erasmuswithoutpaper.registry.internet.FakeInternet;
+import eu.erasmuswithoutpaper.registry.repository.ManifestRepositoryImpl;
+import eu.erasmuswithoutpaper.registry.sourceprovider.TestManifestSourceProvider;
+import eu.erasmuswithoutpaper.registry.updater.RegistryUpdater;
 import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus.Status;
+import eu.erasmuswithoutpaper.registry.validators.coursesvalidator.CoursesValidator;
+import eu.erasmuswithoutpaper.registry.web.SelfManifestProvider;
 import eu.erasmuswithoutpaper.registry.web.UiController;
+import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class AbstractApiTest<StateType extends SuiteState> extends WRTest {
   @Autowired
   protected UiController uiController;
+
+  @Autowired
+  protected FakeInternet internet;
+
+  @Autowired
+  protected ManifestRepositoryImpl repo;
+
+  @Autowired
+  protected SelfManifestProvider selfManifestProvider;
+
+  @Autowired
+  protected TestManifestSourceProvider sourceProvider;
+
+  @Autowired
+  protected RegistryUpdater registryUpdater;
+
+  @Autowired
+  protected RegistryClient client;
+
+  @Autowired
+  protected ValidatorKeyStore validatorKeyStore;
+
+  protected static boolean needsReinit;
+  protected static String selfManifestUrl;
+  protected static String apiManifestUrl;
+  protected static KeyPair myKeyPair;
 
   protected abstract ApiValidator<StateType> GetValidator();
 

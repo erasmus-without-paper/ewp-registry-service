@@ -228,13 +228,4 @@ public class InstitutionServiceV2Valid extends AbstractInstitutionService {
     }
     return ret;
   }
-
-
-  protected static class ErrorResponseException extends Exception {
-    public Response response;
-
-    public ErrorResponseException(Response _response) {
-      response = _response;
-    }
-  }
 }

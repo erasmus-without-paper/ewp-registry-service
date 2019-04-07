@@ -79,6 +79,15 @@ public class KnownNamespace {
 
   /**
    * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-courses/blob/master/manifest-entry.xsd'>
+   * here</a>.
+   */ // TODO: master->stable!
+  public static final KnownNamespace RESPONSE_COURSES_V1 = new KnownNamespace("cor1",
+      "api-courses/tree/stable-v1", "api-courses/stable-v1/response.xsd", false);
+  // TODO: 1. false->true 2. master->stable
+
+  /**
+   * As described <a href=
    * 'https://github.com/erasmus-without-paper/ewp-specs-api-ounits/blob/stable-v2/manifest-entry.xsd'>
    * here</a>.
    */
@@ -169,21 +178,21 @@ public class KnownNamespace {
    * As described <a href=
    * 'https://github.com/erasmus-without-paper/ewp-specs-api-courses/blob/master/manifest-entry.xsd'>
    * here</a>.
-   */ // WRTODO: master->stable!
+   */ // TODO: master->stable!
   public static final KnownNamespace APIENTRY_COURSES_V1 =
-      new KnownNamespace("c1", "api-courses/blob/stable-v1/manifest-entry.xsd",
+      new KnownNamespace("co1", "api-courses/blob/stable-v1/manifest-entry.xsd",
           "api-courses/master/manifest-entry.xsd", false);
-  // WRTODO: 1. false->true 2. master->stable
+  // TODO: 1. false->true 2. master->stable
 
   /**
    * As described <a href=
    * 'https://github.com/erasmus-without-paper/ewp-specs-api-course-replication/blob/master/manifest-entry.xsd'>
    * here</a>.
-   */ // WRTODO: master->stable!
+   */ // TODO: master->stable!
   public static final KnownNamespace APIENTRY_COURSE_REPLICATION_V1 =
       new KnownNamespace("cr1", "api-course-replication/blob/stable-v1/manifest-entry.xsd",
           "api-course-replication/master/manifest-entry.xsd", false);
-  // WRTODO: 1. false->true 2. master->stable
+  // TODO: 1. false->true 2. master->stable
 
   /**
    * As described <a href=
@@ -223,61 +232,61 @@ public class KnownNamespace {
    * As described <a href=
    * 'https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/blob/master/manifest-entry.xsd'>
    * here</a>.
-   */ // WRTODO: master->stable!
+   */ // TODO: master->stable!
   public static final KnownNamespace APIENTRY_OMOBILITIES_V1 =
       new KnownNamespace("om1", "api-omobilities/blob/stable-v1/manifest-entry.xsd",
           "api-omobilities/master/manifest-entry.xsd", false);
-  // WRTODO: 1. false->true 2. master->stable
+  // TODO: 1. false->true 2. master->stable
 
   /**
    * As described <a href=
    * 'https://github.com/erasmus-without-paper/ewp-specs-api-omobility-cnr/blob/master/manifest-entry.xsd'>
    * here</a>.
-   */ // WRTODO: master->stable!
+   */ // TODO: master->stable!
   public static final KnownNamespace APIENTRY_OMOBILITY_CNR_V1 =
       new KnownNamespace("omc1", "api-omobility-cnr/blob/stable-v1/manifest-entry.xsd",
           "api-omobility/master/manifest-entry.xsd", false);
-  // WRTODO: 1. false->true 2. master->stable
+  // TODO: 1. false->true 2. master->stable
 
   /**
    * As described <a href=
    * 'https://github.com/erasmus-without-paper/ewp-specs-api-imobilities/blob/master/manifest-entry.xsd'>
    * here</a>.
-   */ // WRTODO: master->stable!
+   */ // TODO: master->stable!
   public static final KnownNamespace APIENTRY_IMOBILITIES_V1 =
       new KnownNamespace("im1", "api-imobilities/blob/stable-v1/manifest-entry.xsd",
           "api-imobilities/master/manifest-entry.xsd", false);
-  // WRTODO: 1. false->true 2. master->stable
+  // TODO: 1. false->true 2. master->stable
 
   /**
    * As described <a href=
    * 'https://github.com/erasmus-without-paper/ewp-specs-api-imobility-cnr/blob/master/manifest-entry.xsd'>
    * here</a>.
-   */ // WRTODO: master->stable!
+   */ // TODO: master->stable!
   public static final KnownNamespace APIENTRY_IMOBILITY_CNR_V1 =
       new KnownNamespace("imc1", "api-imobility-cnr/blob/stable-v1/manifest-entry.xsd",
           "api-imobility-cnr/master/manifest-entry.xsd", false);
-  // WRTODO: 1. false->true 2. master->stable
+  // TODO: 1. false->true 2. master->stable
 
   /**
    * As described <a href=
    * 'https://github.com/erasmus-without-paper/ewp-specs-api-imobility-tors/blob/master/manifest-entry.xsd'>
    * here</a>.
-   */ // WRTODO: master->stable!
+   */ // TODO: master->stable!
   public static final KnownNamespace APIENTRY_IMOBILITY_TORS_V1 =
       new KnownNamespace("imt1", "api-imobility-tors/blob/stable-v1/manifest-entry.xsd",
           "api-imobility-tors/master/manifest-entry.xsd", false);
-  // WRTODO: 1. false->true 2. master->stable
+  // TODO: 1. false->true 2. master->stable
 
   /**
    * As described <a href=
    * 'https://github.com/erasmus-without-paper/ewp-specs-api-imobility-tor-cnr/blob/master/manifest-entry.xsd'>
    * here</a>.
-   */ // WRTODO: master->stable!
+   */ // TODO: master->stable!
   public static final KnownNamespace APIENTRY_IMOBILITY_TOR_CNR_V1 =
       new KnownNamespace("imtc1", "api-imobility-tor-cnr/blob/stable-v1/manifest-entry.xsd",
           "api-imobility-tor-cnr/master/manifest-entry.xsd", false);
-  // WRTODO: 1. false->true 2. master->stable
+  // TODO: 1. false->true 2. master->stable
 
   /**
    * As described <a href=
@@ -347,7 +356,7 @@ public class KnownNamespace {
   public static final KnownNamespace SECENTRY_REQENCR_EWP_RSA_AES128GCM_V1 =
       new KnownNamespace("sec-C2", "sec-reqencr-rsa-aes128gcm/tree/stable-v1",
           "sec-reqencr-rsa-aes128gcm/stable-v1/security-entries.xsd", false);
-  // WRTODO: false->true
+  // TODO: false->true
 
   /**
    * As described <a href=
@@ -365,7 +374,7 @@ public class KnownNamespace {
   public static final KnownNamespace SECENTRY_RESENCR_EWP_RSA_AES128GCM_V1 =
       new KnownNamespace("sec-D2", "sec-resencr-rsa-aes128gcm/tree/stable-v1",
           "sec-resencr-rsa-aes128gcm/stable-v1/security-entries.xsd", false);
-  // WRTODO: false->true
+  // TODO: false->true
 
   private static final String COMMON_URI_PREFIX =
       "https://github.com/erasmus-without-paper/ewp-specs-";

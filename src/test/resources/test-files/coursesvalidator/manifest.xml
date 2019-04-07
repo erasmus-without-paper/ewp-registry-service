@@ -1,0 +1,51 @@
+<manifest
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/tree/stable-v4"
+    xmlns:r="https://github.com/erasmus-without-paper/ewp-specs-api-registry/tree/stable-v1"
+    xmlns:sec="https://github.com/erasmus-without-paper/ewp-specs-sec-intro/tree/stable-v2"
+>
+    <r:apis-implemented>
+        <discovery
+            xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/blob/stable-v4/manifest-entry.xsd"
+            version="4.1.0"
+        >
+            <url>https://university.example.com/manifest.xml</url>
+        </discovery>
+        <courses
+            xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-courses/blob/stable-v1/manifest-entry.xsd"
+            version="0.7.0"
+        >
+            <http-security>
+                <sec:client-auth-methods>
+                    <httpsig xmlns="https://github.com/erasmus-without-paper/ewp-specs-sec-cliauth-httpsig/tree/stable-v1"/>
+                </sec:client-auth-methods>
+            </http-security>
+            <url>https://university.example.com/courses/HTTT/</url>
+            <max-los-ids>2</max-los-ids>
+            <max-los-codes>2</max-los-codes>
+        </courses>
+        <simple-course-replication
+            xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-course-replication/blob/stable-v1/manifest-entry.xsd"
+            version="1.0.0"
+        >
+            <http-security>
+                <sec:client-auth-methods>
+                    <httpsig xmlns="https://github.com/erasmus-without-paper/ewp-specs-sec-cliauth-httpsig/tree/stable-v1"/>
+                </sec:client-auth-methods>
+            </http-security>
+            <url>https://university.example.com/creplication/HTTT/</url>
+            <allows-anonymous-access>true</allows-anonymous-access>
+            <supports-modified-since>true</supports-modified-since>
+        </simple-course-replication>
+    </r:apis-implemented>
+    <institutions-covered>
+        <r:hei id="hei01.developers.erasmuswithoutpaper.eu">
+            <r:name xml:lang="en">University of Warsaw test 01</r:name>
+        </r:hei>
+        <r:hei id="hei02.developers.erasmuswithoutpaper.eu">
+            <r:name xml:lang="en">University of Warsaw test 02</r:name>
+        </r:hei>
+    </institutions-covered>
+    <server-credentials-in-use>
+        <rsa-public-key>SERVER-KEY-PLACEHOLDER</rsa-public-key>
+    </server-credentials-in-use>
+</manifest>

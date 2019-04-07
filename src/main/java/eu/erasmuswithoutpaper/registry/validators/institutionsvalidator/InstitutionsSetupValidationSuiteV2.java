@@ -1,14 +1,10 @@
 package eu.erasmuswithoutpaper.registry.validators.institutionsvalidator;
 
-import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownElement;
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
-import eu.erasmuswithoutpaper.registry.internet.Internet;
-import eu.erasmuswithoutpaper.registry.repository.ManifestRepository;
 import eu.erasmuswithoutpaper.registry.validators.AbstractSetupValidationSuite;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.HttpSecurityDescription;
-import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.slf4j.Logger;
@@ -25,9 +21,8 @@ class InstitutionsSetupValidationSuiteV2
       LoggerFactory.getLogger(InstitutionsSetupValidationSuiteV2.class);
 
   InstitutionsSetupValidationSuiteV2(ApiValidator<InstitutionsSuiteState> validator,
-      EwpDocBuilder docBuilder, Internet internet, RegistryClient regClient,
-      ManifestRepository repo, InstitutionsSuiteState state) {
-    super(validator, docBuilder, internet, regClient, repo, state);
+      InstitutionsSuiteState state, ValidationSuiteConfig config) {
+    super(validator, state, config);
   }
 
   private int getMaxHeiIds() {

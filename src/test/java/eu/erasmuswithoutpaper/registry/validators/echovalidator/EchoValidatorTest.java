@@ -4,19 +4,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.security.KeyPair;
 
-import eu.erasmuswithoutpaper.registry.validators.AbstractApiTest;
-import eu.erasmuswithoutpaper.registry.internet.FakeInternet;
 import eu.erasmuswithoutpaper.registry.internet.FakeInternetService;
 import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigResponseSigner;
-import eu.erasmuswithoutpaper.registry.repository.ManifestRepositoryImpl;
 import eu.erasmuswithoutpaper.registry.sourceprovider.ManifestSource;
-import eu.erasmuswithoutpaper.registry.sourceprovider.TestManifestSourceProvider;
-import eu.erasmuswithoutpaper.registry.updater.RegistryUpdater;
+import eu.erasmuswithoutpaper.registry.validators.AbstractApiTest;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.SemanticVersion;
-import eu.erasmuswithoutpaper.registry.web.SelfManifestProvider;
-import eu.erasmuswithoutpaper.registry.web.UiController;
-import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -29,8 +22,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class EchoValidatorTest extends AbstractApiTest {
-
-  private static String selfManifestUrl;
   private static String echoManifestUrl;
   private static String echoV1Url;
   private static String echoUrlTTTT;
@@ -42,12 +33,12 @@ public class EchoValidatorTest extends AbstractApiTest {
   private static String echoUrlSTET;
   private static String echoUrlSTTE;
   private static String echoUrlMMMM;
-  private static boolean needsReinit;
-
   /**
    * KeyPair to be used for signing responses of our test services.
    */
   private static KeyPair myKeyPair;
+  @Autowired
+  private EchoValidator validator;
 
   @BeforeClass
   public static void setUpClass() {
@@ -66,30 +57,6 @@ public class EchoValidatorTest extends AbstractApiTest {
     needsReinit = true;
   }
 
-  @Autowired
-  private FakeInternet internet;
-
-  @Autowired
-  private UiController uiController;
-
-  @Autowired
-  private EchoValidator validator;
-
-  @Autowired
-  private ManifestRepositoryImpl repo;
-
-  @Autowired
-  private SelfManifestProvider selfManifestProvider;
-
-  @Autowired
-  private TestManifestSourceProvider sourceProvider;
-
-  @Autowired
-  private RegistryUpdater registryUpdater;
-
-  @Autowired
-  private RegistryClient client;
-
   @Before
   public void setUp() {
     if (needsReinit) {
@@ -107,8 +74,10 @@ public class EchoValidatorTest extends AbstractApiTest {
 
       String echoManifest = this.getFileAsString("echovalidator/manifest.xml");
       myKeyPair = this.validator.generateKeyPair();
-      echoManifest = echoManifest.replace("SERVER-KEY-PLACEHOLDER",
-          Base64.encode(myKeyPair.getPublic().getEncoded()));
+      echoManifest = echoManifest.replace(
+          "SERVER-KEY-PLACEHOLDER",
+          Base64.encode(myKeyPair.getPublic().getEncoded())
+      );
       this.internet.putURL(echoManifestUrl, echoManifest);
       this.sourceProvider
           .addSource(ManifestSource.newRegularSource(echoManifestUrl, Lists.newArrayList()));
@@ -125,9 +94,11 @@ public class EchoValidatorTest extends AbstractApiTest {
 
       service = new ServiceHTTTInvalid1(echoUrlHTTT, this.client);
       this.internet.addFakeInternetService(service);
-      assertThat(this.getValidatorReport(echoUrlHTTT, new SemanticVersion(2, 0, 0), null)).contains("FAILURE",
+      assertThat(this.getValidatorReport(echoUrlHTTT, new SemanticVersion(2, 0, 0), null)).contains(
+          "FAILURE",
           "HTTP 200 expected, but HTTP 400 received.",
-          "This endpoint requires HTTP Signature to use one of the following algorithms: RSA_SHA512");
+          "This endpoint requires HTTP Signature to use one of the following algorithms: RSA_SHA512"
+      );
       this.internet.removeFakeInternetService(service);
 
     } finally {
@@ -240,7 +211,8 @@ public class EchoValidatorTest extends AbstractApiTest {
       this.internet.addFakeInternetService(service);
       String out = this.getValidatorReport(echoUrlHTTT, new SemanticVersion(2, 0, 0), null);
       assertThat(out).contains(
-          "FAILURE: Trying Combination[PHTTT] with some extra unknown, but properly signed headers");
+          "FAILURE: Trying Combination[PHTTT] with some extra unknown, but properly signed "
+              + "headers");
       this.internet.removeFakeInternetService(service);
 
     } finally {

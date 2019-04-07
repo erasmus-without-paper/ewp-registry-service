@@ -23,15 +23,12 @@ import java.util.UUID;
 import eu.erasmuswithoutpaper.registry.common.Utils;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildParams;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildResult;
-import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
-import eu.erasmuswithoutpaper.registry.internet.Internet;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registry.internet.sec.EwpCertificateRequestSigner;
 import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigRequestSigner;
 import eu.erasmuswithoutpaper.registry.internet.sec.RequestSigner;
-import eu.erasmuswithoutpaper.registry.repository.ManifestRepository;
 import eu.erasmuswithoutpaper.registry.validators.AbstractValidationSuite;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.CombEntry;
@@ -39,7 +36,6 @@ import eu.erasmuswithoutpaper.registry.validators.Combination;
 import eu.erasmuswithoutpaper.registry.validators.InlineValidationStep;
 import eu.erasmuswithoutpaper.registry.validators.InlineValidationStep.Failure;
 import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus.Status;
-import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 import eu.erasmuswithoutpaper.rsaaes.BadEwpRsaAesBody;
 import eu.erasmuswithoutpaper.rsaaes.EwpRsaAes128GcmDecoder;
 
@@ -56,10 +52,9 @@ import org.joox.Match;
 abstract class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSuiteState> {
   private Set<CombEntry> allCombEntriesCache = null;
 
-  EchoValidationSuiteCommon(ApiValidator<EchoSuiteState> echoValidator, EwpDocBuilder docBuilder,
-      Internet internet, RegistryClient regClient, ManifestRepository repo,
-      EchoSuiteState state) {
-    super(echoValidator, docBuilder, internet, regClient, repo, state);
+  EchoValidationSuiteCommon(ApiValidator<EchoSuiteState> echoValidator,
+      EchoSuiteState state, ValidationSuiteConfig config) {
+    super(echoValidator, state, config);
   }
 
   private void checkEdgeCasesForAxxx(Combination combination)
@@ -1008,7 +1003,7 @@ abstract class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSui
         return "Trying " + combination + " with additional \"gzip\" added in "
             + "Accept-Encoding. Expecting the same response, but preferably gzipped.";
       }
-      // WRTODO: test gzip on unencrypted responses
+      // TODO: test gzip on unencrypted responses
 
       @Override
       protected Optional<Response> innerRun() throws Failure {

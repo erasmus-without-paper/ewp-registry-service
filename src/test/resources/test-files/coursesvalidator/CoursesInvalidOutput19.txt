@@ -1,0 +1,109 @@
+
+### NOTICE: Check if our client credentials have been served long enough.
+
+Our client credentials are quite fresh. This means that many APIs will (correctly) return error responses in places where we expect HTTP 200. This notice will disappear once our credentials are 10 minutes old.
+
+
+### SUCCESS: Verifying the format of the URL. Expecting a valid HTTPS-scheme URL.
+### SUCCESS: Verifying if the URL is properly registered.
+
+### NOTICE: Querying for supported security methods. Validating http-security integrity.
+
+Notices:
+- You may consider allowing this API to be accessed by anonymous clients.
+- It is RECOMMENDED for all servers to support HTTP Signature Server Authentication.
+
+
+
+
+### SUCCESS: Get hei-ids covered by host managing this url.
+### SUCCESS: Find Courses Replication API for any of covered HEIs.
+### SUCCESS: Use Course Replication API to obtain list of Courses for one of covered HEI IDs.
+### SUCCESS: Request for one of known los-ids, expect 200 OK.
+### SUCCESS: Request for one of known los-codes, expect 200 OK.
+### SUCCESS: Request one unknown los-id, expect 200 and empty response.
+### SUCCESS: Request one known and one unknown los-id, expect 200 and only one los in response.
+### SUCCESS: Request one known and one unknown los-code, expect 200 and only one los in response.
+### SUCCESS: Request without hei-ids and los-ids, expect 400.
+### SUCCESS: Request without hei-ids, expect 400.
+### SUCCESS: Request without los-ids and los-codes, expect 400.
+### SUCCESS: Request for one of known los-ids with unknown hei-id, expect 400.
+### SUCCESS: Request for one of known los-codes with unknown hei-id, expect 400.
+### SUCCESS: Request more than <max-los-ids> known los-ids, expect 400.
+### SUCCESS: Request more than <max-los-codes> known los-codes, expect 400.
+### SUCCESS: Request more than <max-los-ids> unknown los-ids, expect 400.
+### SUCCESS: Request more than <max-los-codes> unknown los-codes, expect 400.
+### SUCCESS: Request exactly <max-los-ids> known los-ids, expect 200 and <max-los-ids> los-ids in response.
+### SUCCESS: Request exactly <max-los-codes> known los-codes, expect 200 and <max-los-codes> los-codes in response.
+### SUCCESS: Request with single incorrect parameter, expect 400.
+### SUCCESS: Request with additional parameter, expect 200 and one los in response.
+### SUCCESS: Request with correct los_id and correct los_code, expect 400.
+### SUCCESS: Request with correct hei_id twice, expect 400.
+### SUCCESS: Request with correct hei_id and incorrect hei_id, expect 400.
+### SUCCESS: Ask for LOIs after one of the courses started, expect it is not included in results.
+### SUCCESS: Ask for LOIs before one of the courses ended, expect it is not included in results.
+### SUCCESS: Multiple lois_before parameters, expect 400.
+### SUCCESS: Multiple lois_after parameters, expect 400.
+
+### FAILURE: lois_before parameter is not a date, expect 400.
+
+HTTP 400 expected, but HTTP 200 received.
+
+
+
+### FAILURE: lois_before has format dd-MM-yyyy, expect 400.
+
+HTTP 400 expected, but HTTP 200 received.
+
+
+
+### FAILURE: lois_before consists of date and time, expect 400.
+
+HTTP 400 expected, but HTTP 200 received.
+
+
+### SUCCESS: Trying Combination[-HTTT] with a PUT request. Expecting to receive a valid HTTP 405 error response.
+### SUCCESS: Trying Combination[-HTTT] with a DELETE request. Expecting to receive a valid HTTP 405 error response.
+### SUCCESS: Request for one of known los-ids, expect 200 OK.
+### SUCCESS: Request for one of known los-codes, expect 200 OK.
+### SUCCESS: Request one unknown los-id, expect 200 and empty response.
+### SUCCESS: Request one known and one unknown los-id, expect 200 and only one los in response.
+### SUCCESS: Request one known and one unknown los-code, expect 200 and only one los in response.
+### SUCCESS: Request without hei-ids and los-ids, expect 400.
+### SUCCESS: Request without hei-ids, expect 400.
+### SUCCESS: Request without los-ids and los-codes, expect 400.
+### SUCCESS: Request for one of known los-ids with unknown hei-id, expect 400.
+### SUCCESS: Request for one of known los-codes with unknown hei-id, expect 400.
+### SUCCESS: Request more than <max-los-ids> known los-ids, expect 400.
+### SUCCESS: Request more than <max-los-codes> known los-codes, expect 400.
+### SUCCESS: Request more than <max-los-ids> unknown los-ids, expect 400.
+### SUCCESS: Request more than <max-los-codes> unknown los-codes, expect 400.
+### SUCCESS: Request exactly <max-los-ids> known los-ids, expect 200 and <max-los-ids> los-ids in response.
+### SUCCESS: Request exactly <max-los-codes> known los-codes, expect 200 and <max-los-codes> los-codes in response.
+### SUCCESS: Request with single incorrect parameter, expect 400.
+### SUCCESS: Request with additional parameter, expect 200 and one los in response.
+### SUCCESS: Request with correct los_id and correct los_code, expect 400.
+### SUCCESS: Request with correct hei_id twice, expect 400.
+### SUCCESS: Request with correct hei_id and incorrect hei_id, expect 400.
+### SUCCESS: Ask for LOIs after one of the courses started, expect it is not included in results.
+### SUCCESS: Ask for LOIs before one of the courses ended, expect it is not included in results.
+### SUCCESS: Multiple lois_before parameters, expect 400.
+### SUCCESS: Multiple lois_after parameters, expect 400.
+
+### FAILURE: lois_before parameter is not a date, expect 400.
+
+HTTP 400 expected, but HTTP 200 received.
+
+
+
+### FAILURE: lois_before has format dd-MM-yyyy, expect 400.
+
+HTTP 400 expected, but HTTP 200 received.
+
+
+
+### FAILURE: lois_before consists of date and time, expect 400.
+
+HTTP 400 expected, but HTTP 200 received.
+
+

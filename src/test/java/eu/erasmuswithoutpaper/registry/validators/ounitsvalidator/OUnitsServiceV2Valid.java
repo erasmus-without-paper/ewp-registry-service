@@ -26,13 +26,6 @@ public class OUnitsServiceV2Valid extends AbstractOUnitsService {
   protected List<String> requestedOUnitCodes;
   protected List<String> requestedHeiIds;
 
-  protected static class ErrorResponseException extends Exception {
-    public Response response;
-    public ErrorResponseException(Response _response) {
-      response = _response;
-    }
-  }
-
   protected final int max_ounit_ids = 2;
   protected final int max_ounit_codes = 2;
 

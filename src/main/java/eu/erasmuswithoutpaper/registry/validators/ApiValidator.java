@@ -15,6 +15,7 @@ import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
 import eu.erasmuswithoutpaper.registry.internet.Internet;
 import eu.erasmuswithoutpaper.registry.repository.ManifestRepository;
 import eu.erasmuswithoutpaper.registry.validators.echovalidator.EchoValidator;
+import eu.erasmuswithoutpaper.registry.validators.githubtags.GitHubTagsGetter;
 import eu.erasmuswithoutpaper.registry.web.SelfManifestProvider;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
@@ -38,6 +39,8 @@ public abstract class ApiValidator<S extends SuiteState> {
   protected ApiValidatorsManager apiValidatorsManager;
   @Autowired
   private ManifestRepository repo;
+  @Autowired
+  private GitHubTagsGetter gitHubTagsGetter;
 
   /**
    * @param docBuilder
@@ -192,14 +195,18 @@ public abstract class ApiValidator<S extends SuiteState> {
    */
   public List<ValidationStepWithStatus> runTests(String urlStr, SemanticVersion version,
       HttpSecurityDescription security) {
+    AbstractValidationSuite.ValidationSuiteConfig config =
+        new AbstractValidationSuite.ValidationSuiteConfig(
+            this.docBuilder, this.internet, this.client, this.repo,
+            this.gitHubTagsGetter
+        );
     List<ValidationStepWithStatus> result = new ArrayList<>();
     S state = createState(urlStr, version);
     for (ValidationSuiteFactory<S> sf : getCompatibleSuites(
         version,
         getValidationSuites()
     )) {
-      AbstractValidationSuite<S> suite =
-          sf.create(this, this.docBuilder, this.internet, this.client, repo, state);
+      AbstractValidationSuite<S> suite = sf.create(this, state, config);
       suite.run(security);
       result.addAll(suite.getResults());
       if (state.broken) {
@@ -210,8 +217,7 @@ public abstract class ApiValidator<S extends SuiteState> {
   }
 
   protected interface ValidationSuiteFactory<T extends SuiteState> {
-    AbstractValidationSuite<T> create(ApiValidator<T> validator, EwpDocBuilder docBuilder,
-        Internet internet, RegistryClient regClient, ManifestRepository repo,
-        T state);
+    AbstractValidationSuite<T> create(ApiValidator<T> validator, T state,
+        AbstractValidationSuite.ValidationSuiteConfig config);
   }
 }
