@@ -1,0 +1,42 @@
+{% extends "generic-with-toolbar" %}
+
+{% block pageTitle %}Status of the EWP Manifest Importer{% endblock %}
+
+{% block main %}
+    <section class='ewp-section ewp-section-centered'>
+        <h2 class='ewp-section-title'>XML Schema Validator</h2>
+
+        <p>This tool will help you with writing EWP XML documents. For example, you can paste
+        the contents of your <a href='https://github.com/erasmus-without-paper/ewp-specs-api-discovery'>Manifest
+        file</a> here before you upload it onto your production site. You should be able to validate any
+        XML document described in all RELEASED, DEPRECATED and OBSOLETE specifications (plus,
+        perhaps, some of the <span class='ewp-status ewp-status-draft'>DRAFT</span> ones).</p>
+
+        <p>Note, that this tool will validate <b>against the schema only</b>! Even if such validation succeeds,
+        your file <b>may still be invalid</b> (if, for example, you didn't adhere to the guidelines described in
+        <code>&lt;xs:documentation&gt;</code> elements included in the XSD files).</p>
+
+        <form id="xml_form" action="javascript:void(0);">
+            <p>Paste your XML document below and press <button id="validate_button">Validate</button></p>
+
+            <textarea id="xml_text" name="xml" style="width: 100%; height: 300px;"></textarea>
+        </form>
+
+        <section id="result_section" hidden>
+            <h3 class='ewp-section-title'>Result
+                <p class="ewp-manifest-validator-result" id="result_ok" hidden>OK</p>
+                <p class="ewp-manifest-validator-result" id="result_error" hidden>Failed</p>
+            </h3>
+
+            <span id="errors" hidden>
+            </span>
+
+            <span id="correct" hidden>
+                This seems to be a valid <code id="correct_element_name"></code> element (from <code id="correct_namespace"></code>).
+            <span>
+        </section>
+        <span id="server_error" hidden>
+            Server error, try again.
+        </span>
+    </section>
+{% endblock %}

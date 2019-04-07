@@ -501,3 +501,40 @@ td.ewpsrc__test_index {
     max-width: 1024px;
     margin: auto;
 }
+
+.ewp-manifest-validator-result {
+   font-size: larger;
+   color: #f00;
+   background: #fff;
+   display: inline-block;
+   border: 1px solid #ccc;
+   box-sizing: border-box;
+   margin: 0px 0px 10px 10px;
+   font-weight: bold;
+   padding: 4px 4px 4px 4px;
+}
+#result_error {
+   color: #f00;
+}
+#result_ok {
+    color: #0a0;
+}
+.ewp-manifest-validator-line-number {
+    font-style: italic;
+    color: #aaa;
+    font-style: monospace;
+}
+.ewp-manifest-validator-line {
+    font-weight: bold;
+    color: #fff;
+    background: #d00;
+}
+.ewp-manifest-validator-error-box {
+    padding: 0.7em 1em;
+    background: #fff;
+    border: 1px solid #ccc;
+    line-height: 1.5;
+    font-size: larger;
+    white-space: pre-wrap;
+    word-break: break-all;
+}

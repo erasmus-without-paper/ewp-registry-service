@@ -3,7 +3,7 @@
 {% block pageTitle %}Manifest Status Report{% endblock %}
 
 {% block main %}
-    <section class='ewp-section'>
+    <section class='ewp-section ewp-section-centered'>
         <h2 class='ewp-section-title'>Manifest Status Report</h2>
 
         <p class='ewp-para'>Manifest URL:

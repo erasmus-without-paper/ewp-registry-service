@@ -63,7 +63,10 @@
                     <span class='ewp-header__link-div'>|</span>
                     <a class='ewp-header__link' href='{{ coverageUrl }}'>HEI/API Coverage Matrix</a>
                     <span class='ewp-header__link-div'>|</span>
-                    <a class='ewp-header__link' href='https://developers.erasmuswithoutpaper.eu/'>EWP Developers Hub</a>
+                    <a class='ewp-header__link' href='{{ schemaValidatorUrl }}'>XML Schema Validator</a>
+                </p>
+                <p class='ewp-header__links'>
+                    <a class='ewp-header__link' style="margin: auto;" href='https://developers.erasmuswithoutpaper.eu/'>EWP Developers Hub</a>
                 </p>
             </div>
             <div class='ewp-header__vertical-divider'></div>

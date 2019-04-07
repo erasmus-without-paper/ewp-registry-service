@@ -264,6 +264,7 @@ public class UiController {
     mav.addObject("catalogueUrl", Application.getRootUrl() + "/catalogue-v1.xml");
     mav.addObject("statusUrl", Application.getRootUrl() + "/status");
     mav.addObject("coverageUrl", Application.getRootUrl() + "/coverage");
+    mav.addObject("schemaValidatorUrl", Application.getRootUrl() + "/schemaValidator");
     mav.addObject("uptime24", this.uptimeChecker.getLast24HoursUptimeRatio());
     mav.addObject("uptime7", this.uptimeChecker.getLast7DaysUptimeRatio());
     mav.addObject("uptime30", this.uptimeChecker.getLast30DaysUptimeRatio());
@@ -386,6 +387,22 @@ public class UiController {
     }
     mav.addObject("manifestStatuses", statuses);
     mav.addObject("manifestValidationUrl", Application.getRootUrl() + "/manifestValidation");
+    return mav;
+  }
+
+
+  /**
+   * XML Schema Validator view.
+   *
+   * @param response
+   *     Needed to add some custom headers.
+   * @return A page with the list of issue statuses related to this recipient.
+   */
+  @RequestMapping(value = "/schemaValidator", method = RequestMethod.GET)
+  public ModelAndView schemaValidator(HttpServletResponse response) {
+    ModelAndView mav = new ModelAndView();
+    this.initializeMavCommons(mav);
+    mav.setViewName("schemaValidator");
     return mav;
   }
 

@@ -3,7 +3,7 @@
 {% block pageTitle %}Status of the EWP Manifest Importer{% endblock %}
 
 {% block main %}
-    <section class='ewp-section'>
+    <section class='ewp-section ewp-section-centered'>
         <h2 class='ewp-section-title'>Manifest Importer Status</h2>
 
         <p class='ewp-para'>Currently defined manifest sources and their statuses:</p>
