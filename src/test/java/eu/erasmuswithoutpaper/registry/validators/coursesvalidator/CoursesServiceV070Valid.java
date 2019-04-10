@@ -18,17 +18,16 @@ import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigRequestAuthorizer;
 import eu.erasmuswithoutpaper.registry.internet.sec.Http4xx;
-import eu.erasmuswithoutpaper.registry.validators.coursereplicationvalidator.CourseReplicationServiceV2Valid;
+import eu.erasmuswithoutpaper.registry.validators.coursereplicationvalidator.CourseReplicationServiceV1Valid;
 import eu.erasmuswithoutpaper.registry.validators.types.CoursesResponse;
 import eu.erasmuswithoutpaper.registry.validators.types.StringWithOptionalLang;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 public class CoursesServiceV070Valid extends AbstractCoursesService {
-  protected final CourseReplicationServiceV2Valid CourseReplicationServiceV2;
-  private final EwpHttpSigRequestAuthorizer myAuthorizer;
-
+  protected final CourseReplicationServiceV1Valid CourseReplicationServiceV2;
   protected final int max_los_ids = 2;
   protected final int max_los_codes = 2;
+  private final EwpHttpSigRequestAuthorizer myAuthorizer;
   protected Map<String, CoursesResponse.LearningOpportunitySpecification> coveredLosIds =
       new HashMap<>();
   protected Map<String, CoursesResponse.LearningOpportunitySpecification> coveredLosCodes =
@@ -36,16 +35,8 @@ public class CoursesServiceV070Valid extends AbstractCoursesService {
   protected List<CoursesResponse.LearningOpportunitySpecification> coveredLossList =
       new ArrayList<>();
 
-  protected Request currentRequest;
-  protected String requestedHeiId;
-  protected List<String> requestedLosIds;
-  protected List<String> requestedLosCodes;
-  protected List<String> requestedHeiIds;
-  private XMLGregorianCalendar requestedLoisBefore;
-  private XMLGregorianCalendar requestedLoisAfter;
-
   public CoursesServiceV070Valid(String url, RegistryClient registryClient,
-      CourseReplicationServiceV2Valid courseReplicationService) {
+      CourseReplicationServiceV1Valid courseReplicationService) {
     super(url, registryClient, courseReplicationService);
     this.CourseReplicationServiceV2 = courseReplicationService;
     this.myAuthorizer = new EwpHttpSigRequestAuthorizer(this.registryClient);
@@ -148,15 +139,15 @@ public class CoursesServiceV070Valid extends AbstractCoursesService {
   @Override
   public Response handleCoursesInternetRequest(Request request) {
     try {
-      currentRequest = request;
-      VerifyCertificate();
-      CheckRequestMethod();
-      ExtractParams();
-      CheckHei();
-      CheckIds();
-      CheckCodes();
-      List<CoursesResponse.LearningOpportunitySpecification> data1 = ProcessIds();
-      List<CoursesResponse.LearningOpportunitySpecification> data2 = ProcessCodes();
+      RequestData requestData = new RequestData(request);
+      VerifyCertificate(requestData);
+      CheckRequestMethod(requestData);
+      ExtractParams(requestData);
+      CheckHei(requestData);
+      CheckIds(requestData);
+      CheckCodes(requestData);
+      List<CoursesResponse.LearningOpportunitySpecification> data1 = ProcessIds(requestData);
+      List<CoursesResponse.LearningOpportunitySpecification> data2 = ProcessCodes(requestData);
       data1.addAll(data2);
       return createCoursesResponse(data1);
     } catch (ErrorResponseException e) {
@@ -164,9 +155,9 @@ public class CoursesServiceV070Valid extends AbstractCoursesService {
     }
   }
 
-  private void VerifyCertificate() throws ErrorResponseException {
+  private void VerifyCertificate(RequestData requestData) throws ErrorResponseException {
     try {
-      this.myAuthorizer.authorize(this.currentRequest);
+      this.myAuthorizer.authorize(requestData.request);
     } catch (Http4xx e) {
       throw new ErrorResponseException(
           e.generateEwpErrorResponse()
@@ -174,21 +165,22 @@ public class CoursesServiceV070Valid extends AbstractCoursesService {
     }
   }
 
-  private void ExtractParams() throws ErrorResponseException {
-    CheckParamsEncoding();
-    Map<String, List<String>> params = InternetTestHelpers.extractAllParams(this.currentRequest);
+  private void ExtractParams(RequestData requestData) throws ErrorResponseException {
+    CheckParamsEncoding(requestData);
+    Map<String, List<String>> params =
+        InternetTestHelpers.extractAllParams(requestData.request);
 
-    this.requestedHeiIds = params.getOrDefault("hei_id", new ArrayList<>());
-    boolean hasHeiId = this.requestedHeiIds.size() > 0;
-    boolean multipleHeiId = this.requestedHeiIds.size() > 1;
+    List<String> heiIds = params.getOrDefault("hei_id", new ArrayList<>());
+    boolean hasHeiId = heiIds.size() > 0;
+    boolean multipleHeiId = heiIds.size() > 1;
 
-    this.requestedLosIds = params.getOrDefault("los_id", new ArrayList<>());
-    boolean hasLosId = !this.requestedLosIds.isEmpty();
+    requestData.losIds = params.getOrDefault("los_id", new ArrayList<>());
+    boolean hasLosId = !requestData.losIds.isEmpty();
 
-    this.requestedLosCodes = params.getOrDefault("los_code", new ArrayList<>());
-    boolean hasLosCode = !this.requestedLosCodes.isEmpty();
+    requestData.losCodes = params.getOrDefault("los_code", new ArrayList<>());
+    boolean hasLosCode = !requestData.losCodes.isEmpty();
 
-    this.requestedHeiId = hasHeiId ? this.requestedHeiIds.get(0) : null;
+    requestData.heiId = hasHeiId ? heiIds.get(0) : null;
 
     List<String> requestedLoisAfters = params.getOrDefault("lois_after", new ArrayList<>());
     boolean hasLoisAfter = !requestedLoisAfters.isEmpty();
@@ -196,34 +188,34 @@ public class CoursesServiceV070Valid extends AbstractCoursesService {
     boolean hasLoisBefore = !requestedLoisBefores.isEmpty();
 
     if (params.size() == 0) {
-      ErrorNoParams();
+      ErrorNoParams(requestData);
     }
     if (!hasHeiId) {
-      ErrorNoHeiId();
+      ErrorNoHeiId(requestData);
     }
     if (multipleHeiId) {
-      ErrorMultipleHeiIds();
+      ErrorMultipleHeiIds(requestData);
     }
     if (hasLosId && hasLosCode) {
-      ErrorIdsAndCodes();
+      ErrorIdsAndCodes(requestData);
     }
     if (!hasLosId && !hasLosCode) {
-      ErrorNoIdsNorCodes();
+      ErrorNoIdsNorCodes(requestData);
     }
     if (requestedLoisAfters.size() > 1) {
-      ErrorMultipleLoisAfter();
+      ErrorMultipleLoisAfter(requestData);
     }
     if (requestedLoisBefores.size() > 1) {
-      ErrorMultipleLoisBefore();
+      ErrorMultipleLoisBefore(requestData);
     }
-    this.requestedLoisBefore = null;
+    requestData.loisBefore = null;
     if (hasLoisBefore) {
-      this.requestedLoisBefore = CheckDateFormat(requestedLoisBefores.get(0));
+      requestData.loisBefore = CheckDateFormat(requestData, requestedLoisBefores.get(0));
     }
 
-    this.requestedLoisAfter = null;
+    requestData.loisAfter = null;
     if (hasLoisAfter) {
-      this.requestedLoisAfter = CheckDateFormat(requestedLoisAfters.get(0));
+      requestData.loisAfter = CheckDateFormat(requestData, requestedLoisAfters.get(0));
     }
 
     int expectedParams = 0;
@@ -233,70 +225,73 @@ public class CoursesServiceV070Valid extends AbstractCoursesService {
     expectedParams += hasLoisAfter ? 1 : 0;
     expectedParams += hasLoisBefore ? 1 : 0;
     if (params.size() > expectedParams) {
-      HandleUnexpectedParams();
+      HandleUnexpectedParams(requestData);
     }
 
-    if (this.requestedHeiId == null || this.requestedLosCodes == null
-        || this.requestedLosIds == null) {
+    if (requestData.heiId == null || requestData.losCodes == null
+        || requestData.losIds == null) {
       //We expect all of above members to have any value even in invalid scenarios.
       throw new NullPointerException();
     }
   }
 
-  protected XMLGregorianCalendar CheckDateFormat(String date) throws ErrorResponseException {
+  protected XMLGregorianCalendar CheckDateFormat(RequestData requestData, String date)
+      throws ErrorResponseException {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     try {
       formatter.parse(date);
       return DatatypeFactory.newInstance().newXMLGregorianCalendar(date);
     } catch (DateTimeParseException | DatatypeConfigurationException e) {
-      return ErrorDateFormat();
+      return ErrorDateFormat(requestData);
     }
   }
 
-  private void CheckHei() throws ErrorResponseException {
-    if (!CourseReplicationServiceV2.GetCoveredHeiIds().contains(this.requestedHeiId)) {
-      ErrorUnknownHeiId();
+  private void CheckHei(RequestData requestData) throws ErrorResponseException {
+    if (!CourseReplicationServiceV2.GetCoveredHeiIds().contains(requestData.heiId)) {
+      ErrorUnknownHeiId(requestData);
     } else {
-      HandleKnownHeiId();
+      HandleKnownHeiId(requestData);
     }
   }
 
-  private void CheckCodes() throws ErrorResponseException {
-    if (this.requestedLosCodes.size() > getMaxLosCodes()) {
-      ErrorMaxLosCodesExceeded();
+  private void CheckCodes(RequestData requestData) throws ErrorResponseException {
+    if (requestData.losCodes.size() > getMaxLosCodes()) {
+      ErrorMaxLosCodesExceeded(requestData);
     }
   }
 
-  private void CheckIds() throws ErrorResponseException {
-    if (this.requestedLosIds.size() > getMaxLosIds()) {
-      ErrorMaxLosIdsExceeded();
+  private void CheckIds(RequestData requestData) throws ErrorResponseException {
+    if (requestData.losIds.size() > getMaxLosIds()) {
+      ErrorMaxLosIdsExceeded(requestData);
     }
   }
 
-  private List<CoursesResponse.LearningOpportunitySpecification> ProcessCodes() {
-    return ProcessRequested(this.requestedLosCodes, coveredLosCodes);
+  private List<CoursesResponse.LearningOpportunitySpecification> ProcessCodes(
+      RequestData requestData) {
+    return ProcessRequested(requestData, requestData.losCodes, coveredLosCodes);
   }
 
-  private List<CoursesResponse.LearningOpportunitySpecification> ProcessIds() {
-    return ProcessRequested(this.requestedLosIds, coveredLosIds);
+  private List<CoursesResponse.LearningOpportunitySpecification> ProcessIds(
+      RequestData requestData) {
+    return ProcessRequested(requestData, requestData.losIds, coveredLosIds);
   }
 
-  private CoursesResponse.LearningOpportunitySpecification FilterEndDate(
+  private CoursesResponse.LearningOpportunitySpecification FilterEndDate(RequestData requestData,
       CoursesResponse.LearningOpportunitySpecification data) {
     List<CoursesResponse.LearningOpportunitySpecification.Specifies.LearningOpportunityInstance>
         instances =
         data.getSpecifies().getLearningOpportunityInstance().stream()
-            .filter(loi -> isBefore(loi.getEnd())).collect(
+            .filter(loi -> isBefore(requestData, loi.getEnd())).collect(
             Collectors.toList());
     return LearningOpportunityWithChangedInstances(data, instances);
   }
 
-  private CoursesResponse.LearningOpportunitySpecification FilterStartDate(
+  private CoursesResponse.LearningOpportunitySpecification FilterStartDate(RequestData requestData,
       CoursesResponse.LearningOpportunitySpecification data) {
     List<CoursesResponse.LearningOpportunitySpecification.Specifies.LearningOpportunityInstance>
         instances =
         data.getSpecifies().getLearningOpportunityInstance().stream()
-            .filter(loi -> isAfter(loi.getStart())).collect(
+            .filter(loi -> isAfter(requestData, loi.getStart())).collect(
             Collectors.toList());
     return LearningOpportunityWithChangedInstances(data, instances);
   }
@@ -326,34 +321,34 @@ public class CoursesServiceV070Valid extends AbstractCoursesService {
     return result;
   }
 
-  private boolean isBefore(XMLGregorianCalendar end) {
-    if (this.requestedLoisBefore == null) {
+  private boolean isBefore(RequestData requestData, XMLGregorianCalendar end) {
+    if (requestData.loisBefore == null) {
       return true;
     }
-    return end.compare(this.requestedLoisBefore) < 0;
+    return end.compare(requestData.loisBefore) < 0;
   }
 
-  private boolean isAfter(XMLGregorianCalendar end) {
-    if (this.requestedLoisAfter == null) {
+  private boolean isAfter(RequestData requestData, XMLGregorianCalendar end) {
+    if (requestData.loisAfter == null) {
       return true;
     }
-    return end.compare(this.requestedLoisAfter) > 0;
+    return end.compare(requestData.loisAfter) > 0;
   }
 
   private List<CoursesResponse.LearningOpportunitySpecification> ProcessRequested(
-      List<String> requested,
+      RequestData requestData, List<String> requested,
       Map<String, CoursesResponse.LearningOpportunitySpecification> covered) {
     List<CoursesResponse.LearningOpportunitySpecification> ret = new ArrayList<>();
     for (String los : requested) {
       CoursesResponse.LearningOpportunitySpecification data = covered.get(los);
       if (data == null) {
-        data = HandleUnknownLos();
+        data = HandleUnknownLos(requestData);
       } else {
-        data = HandleKnownLos(data);
+        data = HandleKnownLos(requestData, data);
       }
       if (data != null) {
-        data = FilterEndDate(data);
-        data = FilterStartDate(data);
+        data = FilterEndDate(requestData, data);
+        data = FilterStartDate(requestData, data);
       }
       if (data != null) {
         ret.add(data);
@@ -362,107 +357,123 @@ public class CoursesServiceV070Valid extends AbstractCoursesService {
     return ret;
   }
 
-  protected CoursesResponse.LearningOpportunitySpecification HandleKnownLos(
+  protected CoursesResponse.LearningOpportunitySpecification HandleKnownLos(RequestData requestData,
       CoursesResponse.LearningOpportunitySpecification data) {
     return data;
   }
 
-  protected CoursesResponse.LearningOpportunitySpecification HandleUnknownLos() {
+  protected CoursesResponse.LearningOpportunitySpecification HandleUnknownLos(
+      RequestData requestData) {
     return null;
   }
 
-  protected void CheckRequestMethod() throws ErrorResponseException {
-    if (!(this.currentRequest.getMethod().equals("GET") || this.currentRequest.getMethod()
+  protected void CheckRequestMethod(RequestData requestData) throws ErrorResponseException {
+    if (!(requestData.request.getMethod().equals("GET") || requestData.request
+        .getMethod()
         .equals("POST"))) {
       throw new ErrorResponseException(
-          this.createErrorResponse(this.currentRequest, 405, "We expect GETs and POSTs only")
+          createErrorResponse(requestData.request, 405, "We expect GETs and POSTs only")
       );
     }
   }
 
-  protected void CheckParamsEncoding() throws ErrorResponseException {
-    if (this.currentRequest.getMethod().equals("POST")
-        && !this.currentRequest.getHeader("content-type")
+  protected void CheckParamsEncoding(RequestData requestData) throws ErrorResponseException {
+    if (requestData.request.getMethod().equals("POST")
+        && !requestData.request.getHeader("content-type")
         .equals("application/x-www-form-urlencoded")) {
       throw new ErrorResponseException(
-          createErrorResponse(this.currentRequest, 415, "Unsupported content-type")
+          createErrorResponse(requestData.request, 415, "Unsupported content-type")
       );
     }
   }
 
-
-  protected void ErrorMaxLosCodesExceeded() throws ErrorResponseException {
+  protected void ErrorMaxLosCodesExceeded(RequestData requestData) throws ErrorResponseException {
     throw new ErrorResponseException(
-        createErrorResponse(this.currentRequest, 400, "max-los-codes exceeded")
+        createErrorResponse(requestData.request, 400, "max-los-codes exceeded")
     );
   }
 
-  protected void ErrorMaxLosIdsExceeded() throws ErrorResponseException {
+  protected void ErrorMaxLosIdsExceeded(RequestData requestData) throws ErrorResponseException {
     throw new ErrorResponseException(
-        createErrorResponse(this.currentRequest, 400, "max-los-ids exceeded")
+        createErrorResponse(requestData.request, 400, "max-los-ids exceeded")
     );
   }
 
-  protected void HandleKnownHeiId() {
+  protected void HandleKnownHeiId(RequestData requestData) {
     //Intentionally left empty
   }
 
-  protected void ErrorUnknownHeiId() throws ErrorResponseException {
+  protected void ErrorUnknownHeiId(RequestData requestData) throws ErrorResponseException {
     throw new ErrorResponseException(
-        createErrorResponse(this.currentRequest, 400, "Unknown hei_id")
+        createErrorResponse(requestData.request, 400, "Unknown hei_id")
     );
   }
 
-  protected void ErrorMultipleHeiIds() throws ErrorResponseException {
+  protected void ErrorMultipleHeiIds(RequestData requestData) throws ErrorResponseException {
     throw new ErrorResponseException(
-        createErrorResponse(this.currentRequest, 400, "More that one hei_id provided.")
+        createErrorResponse(requestData.request, 400, "More that one hei_id provided.")
     );
   }
 
-  protected void ErrorNoIdsNorCodes() throws ErrorResponseException {
+  protected void ErrorNoIdsNorCodes(RequestData requestData) throws ErrorResponseException {
     throw new ErrorResponseException(
-        createErrorResponse(this.currentRequest, 400, "los_id xor los_code is required.")
+        createErrorResponse(requestData.request, 400, "los_id xor los_code is required.")
     );
   }
 
-  protected void ErrorIdsAndCodes() throws ErrorResponseException {
+  protected void ErrorIdsAndCodes(RequestData requestData) throws ErrorResponseException {
     throw new ErrorResponseException(
-        createErrorResponse(this.currentRequest, 400, "Only one of los_id and los_code should" +
-            " be provided")
+        createErrorResponse(
+            requestData.request, 400, "Only one of los_id and los_code should" +
+                " be provided")
     );
   }
 
-  protected void ErrorNoHeiId() throws ErrorResponseException {
+  protected void ErrorNoHeiId(RequestData requestData) throws ErrorResponseException {
     throw new ErrorResponseException(
-        createErrorResponse(this.currentRequest, 400, "No hei_id parameter")
+        createErrorResponse(requestData.request, 400, "No hei_id parameter")
     );
   }
 
-  protected void HandleUnexpectedParams() throws ErrorResponseException {
+  protected void HandleUnexpectedParams(RequestData requestData) throws ErrorResponseException {
     //Ignore
   }
 
-  protected void ErrorNoParams() throws ErrorResponseException {
+  protected void ErrorNoParams(RequestData requestData) throws ErrorResponseException {
     throw new ErrorResponseException(
-        createErrorResponse(this.currentRequest, 400, "No parameters provided")
+        createErrorResponse(requestData.request, 400, "No parameters provided")
     );
   }
 
-  protected XMLGregorianCalendar ErrorDateFormat() throws ErrorResponseException {
+  protected XMLGregorianCalendar ErrorDateFormat(RequestData requestData)
+      throws ErrorResponseException {
     throw new ErrorResponseException(
-        createErrorResponse(this.currentRequest, 400, "Invalid date format.")
+        createErrorResponse(requestData.request, 400, "Invalid date format.")
     );
   }
 
-  protected void ErrorMultipleLoisAfter() throws ErrorResponseException {
+  protected void ErrorMultipleLoisAfter(RequestData requestData) throws ErrorResponseException {
     throw new ErrorResponseException(
-        createErrorResponse(this.currentRequest, 400, "Multiple lois-after.")
+        createErrorResponse(requestData.request, 400, "Multiple lois-after.")
     );
   }
 
-  protected void ErrorMultipleLoisBefore() throws ErrorResponseException {
+  protected void ErrorMultipleLoisBefore(RequestData requestData) throws ErrorResponseException {
     throw new ErrorResponseException(
-        createErrorResponse(this.currentRequest, 400, "Multiple lois-before.")
+        createErrorResponse(requestData.request, 400, "Multiple lois-before.")
     );
+  }
+
+  static class RequestData {
+    Request request;
+    String heiId;
+    List<String> losIds;
+    List<String> losCodes;
+    XMLGregorianCalendar loisBefore;
+    XMLGregorianCalendar loisAfter;
+
+    RequestData(Request request) {
+      this.request = request;
+    }
   }
 }

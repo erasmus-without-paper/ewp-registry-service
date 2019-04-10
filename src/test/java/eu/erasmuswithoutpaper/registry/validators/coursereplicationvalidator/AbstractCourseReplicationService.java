@@ -1,10 +1,12 @@
 package eu.erasmuswithoutpaper.registry.validators.coursereplicationvalidator;
 
 import java.io.IOException;
+import java.util.List;
 
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registry.validators.AbstractApiService;
+import eu.erasmuswithoutpaper.registry.validators.types.CourseReplicationResponse;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 public abstract class AbstractCourseReplicationService extends AbstractApiService {
@@ -44,4 +46,10 @@ public abstract class AbstractCourseReplicationService extends AbstractApiServic
    */
   protected abstract Response handleCourseReplicationInternetRequest(Request request)
       throws ErrorResponseException;
+
+  protected Response createCourseReplicationResponse(List<String> losIds) {
+    CourseReplicationResponse response = new CourseReplicationResponse();
+    response.getLosId().addAll(losIds);
+    return marshallResponse(200, response);
+  }
 }

@@ -136,11 +136,6 @@ class OUnitsValidationSuiteV200
   }
 
   @Override
-  protected String getApiVersion() {
-    return "2.0.0";
-  }
-
-  @Override
   public String getApiPrefix() {
     return "ou2";
   }

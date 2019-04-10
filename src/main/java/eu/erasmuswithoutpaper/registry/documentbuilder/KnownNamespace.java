@@ -88,6 +88,16 @@ public class KnownNamespace {
 
   /**
    * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-course-replication/blob/master/manifest-entry.xsd'>
+   * here</a>.
+   */ // WRTODO: master->stable!
+  public static final KnownNamespace RESPONSE_COURSE_REPLICATION_V1 = new KnownNamespace("crr1",
+      "api-course-replication/tree/stable-v1", "api-course-replication/stable-v1/response.xsd",
+      false);
+  // WRTODO: 1. false->true 2. master->stable
+
+  /**
+   * As described <a href=
    * 'https://github.com/erasmus-without-paper/ewp-specs-api-ounits/blob/stable-v2/manifest-entry.xsd'>
    * here</a>.
    */

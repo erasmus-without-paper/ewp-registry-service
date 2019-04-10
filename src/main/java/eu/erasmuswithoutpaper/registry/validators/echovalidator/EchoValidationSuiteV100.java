@@ -35,11 +35,6 @@ class EchoValidationSuiteV100 extends EchoValidationSuiteCommon {
   }
 
   @Override
-  protected String getApiVersion() {
-    return "1.0.0";
-  }
-
-  @Override
   public String getApiPrefix() {
     return "e1";
   }

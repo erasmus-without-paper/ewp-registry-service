@@ -221,6 +221,15 @@ public class KnownElement {
       );
 
   /**
+   * The root of the Course Replication API v1 response.
+   */
+  public static final KnownElement RESPONSE_COURSE_REPLICATION_V1 =
+      new KnownElement(KnownNamespace.RESPONSE_COURSE_REPLICATION_V1,
+          "course-replication-response",
+          "Course Replication v1 API Response"
+      );
+
+  /**
    * Support declaration for Anonymous Client Authentication.
    */
   public static final KnownElement SECENTRY_CLIAUTH_NONE_V1 =

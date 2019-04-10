@@ -824,8 +824,6 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
 
   protected abstract String getApiName();
 
-  protected abstract String getApiVersion();
-
   protected abstract void validateCombinationPost(Combination combination)
       throws SuiteBroken;
 

@@ -80,25 +80,18 @@ public class SemanticVersion implements Comparable<SemanticVersion> {
    * Check if this version is compatible with other. Version is compatible with other version if:
    * <ul>
    * <li>this.major == other major, and</li>
-   * <li>this.minor {@literal >} other.minor, or</li>
-   * <li><ul>
-   * <li>this.minor == other.minor and</li>
-   * <li>this.patch {@literal >}= other.patch.</li>
-   * </ul></li>
+   * <li>this {@literal >}= other.</li>
    * </ul>
-   * If this or other version is a release candidate only exact match is consider compatible.
    *
    * @param other
    *     version to check against.
    * @return true if this is compatible with other.
    */
   public boolean isCompatible(SemanticVersion other) {
-    if (this.isReleaseCandidate() || other.isReleaseCandidate()) {
-      return this.equals(other);
+    if (this.major != other.major) {
+      return false;
     }
-    boolean majorsMatch = major == other.major;
-    boolean patchesMatch = minor > other.minor || (minor == other.minor && patch >= other.patch);
-    return majorsMatch && patchesMatch;
+    return this.compareTo(other) >= 0;
   }
 
   @Override
@@ -152,7 +145,7 @@ public class SemanticVersion implements Comparable<SemanticVersion> {
     );
     String rc = "";
     if (this.isReleaseCandidate()) {
-      rc = "-rc" + this.releaseCandidate;
+      rc = "-rc" + this.releaseCandidate.getAsInt();
     }
     return version + rc;
   }

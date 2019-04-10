@@ -1,0 +1,53 @@
+
+### NOTICE: Check if our client credentials have been served long enough.
+
+Our client credentials are quite fresh. This means that many APIs will (correctly) return error responses in places where we expect HTTP 200. This notice will disappear once our credentials are 10 minutes old.
+
+
+### SUCCESS: Verifying the format of the URL. Expecting a valid HTTPS-scheme URL.
+### SUCCESS: Verifying if the URL is properly registered.
+
+### NOTICE: Querying for supported security methods. Validating http-security integrity.
+
+Notices:
+- You may consider allowing this API to be accessed by anonymous clients.
+- It is RECOMMENDED for all servers to support HTTP Signature Server Authentication.
+
+
+
+
+### SUCCESS: Get hei-ids covered by host managing this url.
+### SUCCESS: Request with known hei_id, expect 200.
+### SUCCESS: Request with known hei_id and invalid parameter, expect 200.
+### SUCCESS: Request with correct hei_id twice, expect 400.
+### SUCCESS: Request with single incorrect parameter, expect 400.
+
+### FAILURE: Request with unknown hei_id parameter, expect 400.
+
+HTTP 400 expected, but HTTP 200 received.
+
+
+### SUCCESS: Request without any parameter, expect 400.
+### SUCCESS: Check if this host supports modified_since.
+### SUCCESS: Request with known hei_id and correct date, expect 200.
+### SUCCESS: Request with invalid value of modified_since, expect 400.
+### SUCCESS: Request with modified_since being only a date, expect 400.
+### SUCCESS: Request with modified_since being a dateTime in wrong format, expect 400.
+### SUCCESS: Trying Combination[-HTTT] with a PUT request. Expecting to receive a valid HTTP 405 error response.
+### SUCCESS: Trying Combination[-HTTT] with a DELETE request. Expecting to receive a valid HTTP 405 error response.
+### SUCCESS: Request with known hei_id, expect 200.
+### SUCCESS: Request with known hei_id and invalid parameter, expect 200.
+### SUCCESS: Request with correct hei_id twice, expect 400.
+### SUCCESS: Request with single incorrect parameter, expect 400.
+
+### FAILURE: Request with unknown hei_id parameter, expect 400.
+
+HTTP 400 expected, but HTTP 200 received.
+
+
+### SUCCESS: Request without any parameter, expect 400.
+### SUCCESS: Check if this host supports modified_since.
+### SUCCESS: Request with known hei_id and correct date, expect 200.
+### SUCCESS: Request with invalid value of modified_since, expect 400.
+### SUCCESS: Request with modified_since being only a date, expect 400.
+### SUCCESS: Request with modified_since being a dateTime in wrong format, expect 400.

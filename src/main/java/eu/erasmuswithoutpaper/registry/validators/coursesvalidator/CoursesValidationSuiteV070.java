@@ -277,11 +277,6 @@ class CoursesValidationSuiteV070
   }
 
   @Override
-  protected String getApiVersion() {
-    return "0.7.0";
-  }
-
-  @Override
   public String getApiPrefix() {
     return "co1";
   }
