@@ -1,0 +1,26 @@
+<mt-projects-response
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-mt-projects/tree/stable-v1"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        https://github.com/erasmus-without-paper/ewp-specs-api-mt-projects/tree/stable-v1
+        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-mt-projects/stable-v1/response.xsd
+    ">
+
+    <!-- IMPORTANT: Please see the response.xsd file for detailed requirements and descriptions of all the elements. You 
+        MUST NOT base your implementation solely on the example file. -->
+
+    <project>
+        <agreement-number>2017-1-PL01-KA107-037079</agreement-number>
+        <start-date>2017-06-01</start-date>
+        <end-date>2019-07-31</end-date>
+        <action-type>KA107</action-type>
+    </project>
+
+    <project>
+        <agreement-number>2017-1-PL01-KA103-035979</agreement-number>
+        <start-date>2017-06-01</start-date>
+        <end-date>2019-07-31</end-date>
+        <action-type>KA103</action-type>
+    </project>
+
+</mt-projects-response>

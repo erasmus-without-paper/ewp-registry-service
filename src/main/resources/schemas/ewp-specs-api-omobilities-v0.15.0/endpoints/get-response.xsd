@@ -891,25 +891,6 @@
                     </xs:documentation>
                 </xs:annotation>
             </xs:enumeration>
-            <xs:enumeration value="nomination-verified">
-                <xs:annotation>
-                    <xs:documentation>
-                        The nomination was recognized by the receiving HEI as formally correct and
-                        complying with cooperation conditions. Now it's time for settling formalities,
-                        sending student's documents, creating the first Learning Agreement, etc.
-
-                        In this state, the first LA draft can be editied. Once the LA is signed, the
-                        status changes to "live".
-                    </xs:documentation>
-                </xs:annotation>
-            </xs:enumeration>
-            <xs:enumeration value="rejected">
-                <xs:annotation>
-                    <xs:documentation>
-                        The nomination has been rejected by the receiving HEI.
-                    </xs:documentation>
-                </xs:annotation>
-            </xs:enumeration>
             <xs:enumeration value="live">
                 <xs:annotation>
                     <xs:documentation>

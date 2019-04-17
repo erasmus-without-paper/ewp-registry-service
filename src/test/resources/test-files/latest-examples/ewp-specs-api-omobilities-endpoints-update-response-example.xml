@@ -9,12 +9,11 @@
 >
     <!--
     In this particular example, the message is the response to a successful
-    `update-statuses-v1` update request (in which a couple of students'
-    nominations have been accepted).
+    `approve-components-studied-draft-v1` update request.
 
     As noted in XSD, this message is optional. It's perfectly okay for the server
     to now supply it. However, if the server supplies it, then the client SHOULD
     display it to its user (if possible).
     -->
-    <ewp:success-user-message>Thank you. University of Warsaw's servers had successfully received your approval of 3 nominations.</ewp:success-user-message>
+    <ewp:success-user-message>Thank you. University of Warsaw's servers had successfully received your approval.</ewp:success-user-message>
 </omobilities-update-response>
