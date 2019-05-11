@@ -15,6 +15,8 @@ public class SuiteState {
   public EwpHttpSigResponseAuthorizer resAuthorizerHttpSig;
   public Element matchedApiEntry;
 
+  public ValidationParameters parameters = new ValidationParameters();
+
   public SuiteState(String url, SemanticVersion version) {
     this.url = url;
     this.version = version;

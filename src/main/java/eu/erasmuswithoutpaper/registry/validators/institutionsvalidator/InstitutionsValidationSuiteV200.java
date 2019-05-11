@@ -4,15 +4,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registry.validators.AbstractValidationSuite;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.Combination;
-import eu.erasmuswithoutpaper.registry.validators.InlineValidationStep;
 import eu.erasmuswithoutpaper.registry.validators.InlineValidationStep.Failure;
-import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus;
 import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus.Status;
 import eu.erasmuswithoutpaper.registry.validators.verifiers.ListEqualVerifier;
 
@@ -45,35 +42,11 @@ class InstitutionsValidationSuiteV200 extends InstitutionsValidationSuiteBase {
   @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
   protected void validateCombinationAny(Combination combination)
       throws SuiteBroken {
-    final List<String> heis = new ArrayList<>();
     String fakeHeiId = this.fakeId;
 
-    this.addAndRun(true, new InlineValidationStep() {
-      @Override
-      public String getName() {
-        return "Check if this host covers any institution.";
-      }
-
-      @Override
-      @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
-      protected Optional<Response> innerRun() throws Failure {
-        String url = InstitutionsValidationSuiteV200.this.currentState.url;
-        List<String> coveredHeiIds =
-            InstitutionsValidationSuiteV200.this.fetchHeiIdsCoveredByApiByUrl(url);
-        if (coveredHeiIds.isEmpty()) {
-          throw new InlineValidationStep.Failure(
-              "Manifest file doesn't contain any <hei-id> field. We cannot preform tests.",
-              ValidationStepWithStatus.Status.NOTICE, null
-          );
-        }
-        heis.addAll(coveredHeiIds);
-        return Optional.empty();
-      }
-    });
-
     testParameters200(combination, "Request for one of known HEI IDs, expect 200 OK.",
-        Arrays.asList(new Parameter("hei_id", heis.get(0))),
-        new InstitutionsVerifier(Collections.singletonList(heis.get(0)))
+        Arrays.asList(new Parameter("hei_id", currentState.selectedHeiId)),
+        new InstitutionsVerifier(Collections.singletonList(currentState.selectedHeiId))
     );
 
     testParameters200(combination, "Request one unknown HEI ID, expect 200 and empty response.",
@@ -85,8 +58,10 @@ class InstitutionsValidationSuiteV200 extends InstitutionsValidationSuiteBase {
       testParameters200(
           combination,
           "Request one known and one unknown HEI ID, expect 200 and only one HEI in response.",
-          Arrays.asList(new Parameter("hei_id", heis.get(0)), new Parameter("hei_id", fakeHeiId)),
-          new InstitutionsVerifier(Collections.singletonList(heis.get(0)))
+          Arrays.asList(new Parameter("hei_id", currentState.selectedHeiId),
+              new Parameter("hei_id", fakeHeiId)
+          ),
+          new InstitutionsVerifier(Collections.singletonList(currentState.selectedHeiId))
       );
     }
 
@@ -95,7 +70,9 @@ class InstitutionsValidationSuiteV200 extends InstitutionsValidationSuiteBase {
     );
 
     testParametersError(combination, "Request more than <max-hei-ids> known HEIs, expect 400.",
-        Collections.nCopies(this.currentState.maxHeiIds + 1, new Parameter("hei_id", heis.get(0))),
+        Collections.nCopies(this.currentState.maxHeiIds + 1,
+            new Parameter("hei_id", currentState.selectedHeiId)
+        ),
         400
     );
 
@@ -106,21 +83,24 @@ class InstitutionsValidationSuiteV200 extends InstitutionsValidationSuiteBase {
 
     testParameters200(combination, "Request exactly <max-hei-ids> known HEI IDs, "
             + "expect 200 and <max-hei-ids> HEI IDs in response.",
-        Collections.nCopies(this.currentState.maxHeiIds, new Parameter("hei_id", heis.get(0))),
-        new InstitutionsVerifier(Collections.nCopies(this.currentState.maxHeiIds, heis.get(0)))
+        Collections.nCopies(this.currentState.maxHeiIds,
+            new Parameter("hei_id", currentState.selectedHeiId)
+        ),
+        new InstitutionsVerifier(
+            Collections.nCopies(this.currentState.maxHeiIds, currentState.selectedHeiId))
     );
 
     testParametersError(combination, "Request with single incorrect parameter, expect 400.",
-        Arrays.asList(new Parameter("hei_id_param", heis.get(0))), 400
+        Arrays.asList(new Parameter("hei_id_param", currentState.selectedHeiId)), 400
     );
 
     testParameters200(combination,
         "Request with additional parameter, expect 200 and one hei_id response.", Arrays
             .asList(
-                new Parameter("hei_id", heis.get(0)),
-                new Parameter("hei_id_param", heis.get(0))
+                new Parameter("hei_id", currentState.selectedHeiId),
+                new Parameter("hei_id_param", currentState.selectedHeiId)
             ),
-        new InstitutionsVerifier(Collections.singletonList(heis.get(0)))
+        new InstitutionsVerifier(Collections.singletonList(currentState.selectedHeiId))
     );
   }
 

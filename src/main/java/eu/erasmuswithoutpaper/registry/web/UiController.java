@@ -19,7 +19,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 import javax.servlet.http.HttpServletResponse;
 
 import eu.erasmuswithoutpaper.registry.Application;
@@ -48,12 +47,13 @@ import eu.erasmuswithoutpaper.registry.validators.HttpSecurityDescription;
 import eu.erasmuswithoutpaper.registry.validators.HttpSecurityDescription.InvalidDescriptionString;
 import eu.erasmuswithoutpaper.registry.validators.SemanticVersion;
 import eu.erasmuswithoutpaper.registry.validators.SemanticVersion.InvalidVersionString;
+import eu.erasmuswithoutpaper.registry.validators.ValidationParameter;
+import eu.erasmuswithoutpaper.registry.validators.ValidationParameters;
 import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus;
 import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus.Status;
 import eu.erasmuswithoutpaper.registry.validators.ValidatorKeyStore;
 import eu.erasmuswithoutpaper.registry.validators.web.ManifestApiEntry;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ResourceLoader;
@@ -63,6 +63,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -210,7 +211,7 @@ public class UiController {
    */
   @ResponseBody
   @RequestMapping(value = "/scripts-{version}.js", method = RequestMethod.GET,
-                  produces = "application/javascript")
+      produces = "application/javascript")
   @SuppressFBWarnings("EI_EXPOSE_REP")
   public byte[] getJs(HttpServletResponse response) {
     response.addHeader("Cache-Control", "public, max-age=86400, stale-while-revalidate=604800");
@@ -508,7 +509,8 @@ public class UiController {
     JsonArray testsArray = new JsonArray();
     Status worstStatus = Status.SUCCESS;
     List<ValidationStepWithStatus> testResults =
-        tester.runTests(url, new SemanticVersion(2, 0, 0), null);
+        tester.runTests(url, new SemanticVersion(2, 0, 0), null,
+            new ValidationParameters());
     for (ValidationStepWithStatus testResult : testResults) {
       JsonObject testObj = new JsonObject();
       testObj.addProperty("name", testResult.getName());
@@ -735,30 +737,10 @@ public class UiController {
     return !Application.isProductionSite();
   }
 
-  /**
-   * Run validation on one of APIs served at the given URL.
-   *
-   * <p>
-   * This is not part of the API and MAY be removed later on.
-   * </p>
-   *
-   * @param url
-   *     The URL at which the API is being served.
-   * @param name Name of the API being tested.
-   * @param version Version of the API being tested.
-   * @param security Security ddescription to be tested.
-   * @return HTML with validation results.
-   */
-  @RequestMapping(path = "/validateApi", method = RequestMethod.POST)
-  public ModelAndView validateApiVersion(@RequestParam String url, @RequestParam String name,
-      @RequestParam String version, @RequestParam String security) {
-    ModelAndView mav = new ModelAndView();
-    this.initializeMavCommons(mav);
-    mav.setViewName("validationResult");
-
+  private Map<String, Object> createValidationInfo(ValidationRequestBody requestBody,
+      HttpSecurityDescription description, Date validationStarted) {
     Map<String, Object> info = new HashMap<>();
     DateFormat isoDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-    Date validationStarted = new Date();
     info.put("validationStarted", isoDateFormat.format(validationStarted));
     Date clientKeysRegenerated = this.validatorKeyStore.getCredentialsGenerationDate();
     info.put("clientKeysRegenerated", isoDateFormat.format(clientKeysRegenerated));
@@ -767,22 +749,17 @@ public class UiController {
         (validationStarted.getTime() - clientKeysRegenerated.getTime()) / 1000
     );
     info.put("registryManifestBody", this.selfManifestProvider.getManifest());
-    info.put("security", security);
-    info.put("url", url);
-    info.put("apiName", name);
-    info.put("version", version);
+    info.put("security", requestBody.getSecurity());
+    info.put("url", requestBody.getUrl());
+    info.put("apiName", requestBody.getName());
+    info.put("version", requestBody.getVersion());
 
-    HttpSecurityDescription desc;
-    SemanticVersion ver;
-    try {
-      desc = new HttpSecurityDescription(security);
-      ver = new SemanticVersion(version);
-    } catch (InvalidDescriptionString | InvalidVersionString ignored) {
-      mav.setStatus(HttpStatus.BAD_REQUEST);
-      return mav;
-    }
+    info.put("securityExplanation", createSecurityExplanation(description));
+    return info;
+  }
 
-    String[] explanations = desc.getExplanation().split("\n");
+  private Object createSecurityExplanation(HttpSecurityDescription description) {
+    String[] explanations = description.getExplanation().split("\n");
     List<Map<String, String>> splitExplanations = new ArrayList<>();
     for (String explanation : explanations) {
       String[] parts = explanation.split(":", 2);
@@ -791,61 +768,101 @@ public class UiController {
       mapParts.put("description", parts[1]);
       splitExplanations.add(mapParts);
     }
+    return splitExplanations;
+  }
 
+  /**
+   * Run validation on one of APIs served at the given URL.
+   *
+   * <p>
+   * This is not part of the API and MAY be removed later on.
+   * </p>
+   *
+   * @param requestBody
+   *     request body.
+   * @return HTML with validation results.
+   */
+  @RequestMapping(path = "/validateApi", method = RequestMethod.POST)
+  public ModelAndView validateApiVersion(@RequestBody ValidationRequestBody requestBody) {
+    ModelAndView mav = new ModelAndView();
+    this.initializeMavCommons(mav);
+    mav.setViewName("validationResult");
 
-    info.put("securityExplanation", splitExplanations);
-    mav.addObject("info", info);
-
-    Status worstStatus = Status.SUCCESS;
-    if (!this.apiValidatorsManager.hasCompatibleTests(name, ver)) {
+    HttpSecurityDescription desc;
+    SemanticVersion ver;
+    try {
+      desc = new HttpSecurityDescription(requestBody.getSecurity());
+      ver = new SemanticVersion(requestBody.getVersion());
+    } catch (InvalidDescriptionString | InvalidVersionString ignored) {
       mav.setStatus(HttpStatus.BAD_REQUEST);
       return mav;
     }
 
-
-    List<Map<String, Object>> testsArray = new ArrayList<>();
-    List<ValidationStepWithStatus> testResults =
-        this.apiValidatorsManager.getApiValidator(name).runTests(url, ver, desc);
-    for (ValidationStepWithStatus testResult : testResults) {
-      Map<String, Object> testObj = new HashMap<>();
-      testObj.put("name", testResult.getName());
-      testObj.put("status", testResult.getStatus().toString());
-      if (worstStatus.compareTo(testResult.getStatus()) < 0) {
-        worstStatus = testResult.getStatus();
-      }
-
-      String message = testResult.getMessage();
-      testObj.put("message", message);
-
-      List<Object> requestSnapshots = this.formatRequestSnapshotsToMap(testResult);
-      testObj.put("requestSnapshots", requestSnapshots);
-      List<Object> responseSnapshots = this.formatResponseSnapshotsToMap(testResult);
-      testObj.put("responseSnapshots", responseSnapshots);
-
-      boolean hasMessage = !message.isEmpty() && !message.equals("OK");
-      testObj.put("hasMessage", hasMessage);
-
-      boolean hasDetails = !requestSnapshots.isEmpty() || !responseSnapshots.isEmpty();
-      testObj.put("hasDetails", hasDetails);
-
-      int height = 1;
-      if (hasMessage) {
-        height += 1;
-      }
-      if (hasDetails) {
-        height += 1;
-      }
-
-      testObj.put("height", height);
-
-      testsArray.add(testObj);
+    if (!this.apiValidatorsManager.hasCompatibleTests(requestBody.getName(), ver)) {
+      mav.setStatus(HttpStatus.BAD_REQUEST);
+      return mav;
     }
 
+    ValidationParameters requestParameters = new ValidationParameters(requestBody.getParameters());
+    List<ValidationParameter> availableParameters =
+        this.apiValidatorsManager.getParameters(requestBody.getName(), ver);
+
+    if (!requestParameters.checkDependencies(availableParameters)) {
+      mav.setStatus(HttpStatus.BAD_REQUEST);
+      return mav;
+    }
+
+    Date validationStartedDate = new Date();
+
+    List<ValidationStepWithStatus> testResults = this.apiValidatorsManager
+        .getApiValidator(requestBody.getName())
+        .runTests(requestBody.getUrl(), ver, desc, requestParameters);
+
+    List<Map<String, Object>> testsArray =
+        testResults.stream().map(this::createTestStepDescription).collect(Collectors.toList());
+
+    Status worstStatus =
+        testResults.stream().map(ValidationStepWithStatus::getStatus).min(Status::compareTo)
+            .orElse(Status.SUCCESS);
+
+    mav.addObject("info", createValidationInfo(requestBody, desc, validationStartedDate));
     mav.addObject("success", worstStatus.equals(Status.SUCCESS));
     mav.addObject("status", worstStatus.toString());
     mav.addObject("tests", testsArray);
 
     return mav;
+  }
+
+  private Map<String, Object> createTestStepDescription(ValidationStepWithStatus testResult) {
+    Map<String, Object> testStepDescription = new HashMap<>();
+    testStepDescription.put("name", testResult.getName());
+    testStepDescription.put("status", testResult.getStatus().toString());
+
+    String message = testResult.getMessage();
+    testStepDescription.put("message", message);
+
+    List<Object> requestSnapshots = this.formatRequestSnapshotsToMap(testResult);
+    testStepDescription.put("requestSnapshots", requestSnapshots);
+    List<Object> responseSnapshots = this.formatResponseSnapshotsToMap(testResult);
+    testStepDescription.put("responseSnapshots", responseSnapshots);
+
+    boolean hasMessage = !message.isEmpty() && !message.equals("OK");
+    testStepDescription.put("hasMessage", hasMessage);
+
+    boolean hasDetails = !requestSnapshots.isEmpty() || !responseSnapshots.isEmpty();
+    testStepDescription.put("hasDetails", hasDetails);
+
+    int height = 1;
+    if (hasMessage) {
+      height += 1;
+    }
+    if (hasDetails) {
+      height += 1;
+    }
+
+    testStepDescription.put("height", height);
+
+    return testStepDescription;
   }
 
 

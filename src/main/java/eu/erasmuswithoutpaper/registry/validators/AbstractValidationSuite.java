@@ -1170,5 +1170,4 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
       this.value = value;
     }
   }
-
 }

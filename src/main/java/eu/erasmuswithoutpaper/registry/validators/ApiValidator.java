@@ -68,16 +68,29 @@ public abstract class ApiValidator<S extends SuiteState> {
     return MultimapBuilder.treeKeys().linkedListValues().build();
   }
 
-  private Collection<ValidationSuiteFactory<S>> getCompatibleSuites(
+  private Collection<ValidationSuiteInfo<S>> getCompatibleSuites(
       SemanticVersion version,
-      ListMultimap<SemanticVersion, ValidationSuiteFactory<S>> map) {
-    List<ValidationSuiteFactory<S>> result = new ArrayList<>();
-    for (Map.Entry<SemanticVersion, ValidationSuiteFactory<S>> entry : map.entries()) {
+      ListMultimap<SemanticVersion, ValidationSuiteInfo<S>> map) {
+    List<ValidationSuiteInfo<S>> result = new ArrayList<>();
+    for (Map.Entry<SemanticVersion, ValidationSuiteInfo<S>> entry : map.entries()) {
       if (version.isCompatible(entry.getKey())) {
         result.add(entry.getValue());
       }
     }
     return result;
+  }
+
+  /**
+   * Get list of parameters for all validators compatible with version `version`.
+   * @param version
+   *    version of the API for which parameters will be returned.
+   */
+  public List<ValidationParameter> getParameters(SemanticVersion version) {
+    List<ValidationParameter> parameters = new ArrayList<>();
+    for (ValidationSuiteInfo<S> info : getCompatibleSuites(version, getValidationSuites())) {
+      parameters.addAll(info.parameters);
+    }
+    return parameters;
   }
 
   @PostConstruct
@@ -174,7 +187,7 @@ public abstract class ApiValidator<S extends SuiteState> {
 
   public abstract Logger getLogger();
 
-  protected abstract ListMultimap<SemanticVersion, ValidationSuiteFactory<S>> getValidationSuites();
+  protected abstract ListMultimap<SemanticVersion, ValidationSuiteInfo<S>> getValidationSuites();
 
   public Collection<SemanticVersion> getCoveredApiVersions() {
     return getValidationSuites().keySet();
@@ -191,10 +204,12 @@ public abstract class ApiValidator<S extends SuiteState> {
    *     version to validate.
    * @param security
    *     security method to validate.
+   * @param parameters
+   *     parameters passed by user.
    * @return List of steps performed and their results.
    */
   public List<ValidationStepWithStatus> runTests(String urlStr, SemanticVersion version,
-      HttpSecurityDescription security) {
+      HttpSecurityDescription security, ValidationParameters parameters) {
     AbstractValidationSuite.ValidationSuiteConfig config =
         new AbstractValidationSuite.ValidationSuiteConfig(
             this.docBuilder, this.internet, this.client, this.repo,
@@ -202,11 +217,10 @@ public abstract class ApiValidator<S extends SuiteState> {
         );
     List<ValidationStepWithStatus> result = new ArrayList<>();
     S state = createState(urlStr, version);
-    for (ValidationSuiteFactory<S> sf : getCompatibleSuites(
-        version,
-        getValidationSuites()
-    )) {
-      AbstractValidationSuite<S> suite = sf.create(this, state, config);
+    state.parameters = parameters;
+    for (ValidationSuiteInfo<S> info : getCompatibleSuites(version, getValidationSuites())) {
+      AbstractValidationSuite<S> suite =
+          info.factory.create(this, state, config);
       suite.run(security);
       result.addAll(suite.getResults());
       if (state.broken) {
@@ -219,5 +233,22 @@ public abstract class ApiValidator<S extends SuiteState> {
   protected interface ValidationSuiteFactory<T extends SuiteState> {
     AbstractValidationSuite<T> create(ApiValidator<T> validator, T state,
         AbstractValidationSuite.ValidationSuiteConfig config);
+  }
+
+
+  public static class ValidationSuiteInfo<T extends SuiteState> {
+    ValidationSuiteFactory<T> factory;
+    List<ValidationParameter> parameters;
+
+    public ValidationSuiteInfo(ValidationSuiteFactory<T> factory,
+        List<ValidationParameter> parameters) {
+      this.factory = factory;
+      this.parameters = parameters;
+    }
+
+    public ValidationSuiteInfo(ValidationSuiteFactory<T> factory) {
+      this.factory = factory;
+      this.parameters = new ArrayList<>();
+    }
   }
 }

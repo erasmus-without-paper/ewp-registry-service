@@ -1,15 +1,14 @@
 package eu.erasmuswithoutpaper.registry.validators.coursesreplicationvalidator;
 
+import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownElement;
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
-import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registry.validators.AbstractSetupValidationSuite;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.HttpSecurityDescription;
-import eu.erasmuswithoutpaper.registry.validators.InlineValidationStep;
+import eu.erasmuswithoutpaper.registry.validators.ValidationParameter;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.joox.Match;
@@ -22,10 +21,17 @@ class CourseReplicationSetupValidationSuiteV100
 
   private static final Logger logger =
       LoggerFactory.getLogger(CourseReplicationSetupValidationSuiteV100.class);
+  private static final String HEI_ID_PARAMETER = "hei_id";
 
   CourseReplicationSetupValidationSuiteV100(ApiValidator<CourseReplicationSuiteState> validator,
       CourseReplicationSuiteState state, ValidationSuiteConfig config) {
     super(validator, state, config);
+  }
+
+  public static List<ValidationParameter> getParameters() {
+    return Arrays.asList(
+        new ValidationParameter(HEI_ID_PARAMETER)
+    );
   }
 
   //PMD linter forces methods returning boolean to start with 'is', it's not want we want.
@@ -37,35 +43,6 @@ class CourseReplicationSetupValidationSuiteV100
     return Boolean.parseBoolean(match.get(0).getTextContent());
   }
 
-  private void getCoveredHeiIds() throws SuiteBroken {
-    this.setup(new InlineValidationStep() {
-      @Override
-      public String getName() {
-        return "Get hei-ids covered by host managing this url.";
-      }
-
-      @Override
-      @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
-      protected Optional<Response> innerRun() throws Failure {
-        String url = CourseReplicationSetupValidationSuiteV100.this.currentState.url;
-        List<String> coveredHeiIds =
-            CourseReplicationSetupValidationSuiteV100.this.fetchHeiIdsCoveredByApiByUrl(url);
-
-        if (coveredHeiIds.isEmpty()) {
-          throw new Failure(
-              "Catalogue doesn't contain any hei-ids covered by this url. We cannot preform tests.",
-              Status.NOTICE, null
-          );
-        }
-
-        CourseReplicationSetupValidationSuiteV100.this.currentState.selectedHeiId =
-            coveredHeiIds.get(0);
-
-        return Optional.empty();
-      }
-    });
-  }
-
   //FindBugs is not smart enough to infer that actual type of this.currentState
   //is CoursesSuiteState not just SuiteState
   @Override
@@ -73,7 +50,11 @@ class CourseReplicationSetupValidationSuiteV100
   protected void runApiSpecificTests(HttpSecurityDescription securityDescription)
       throws SuiteBroken {
     this.currentState.supportsModifiedSince = getSupportsModifiedSince();
-    getCoveredHeiIds();
+    if (this.currentState.parameters.contains(HEI_ID_PARAMETER)) {
+      this.currentState.selectedHeiId = this.currentState.parameters.get(HEI_ID_PARAMETER);
+    } else {
+      this.currentState.selectedHeiId = getCoveredHeiIds(this.currentState.url).get(0);
+    }
   }
 
   @Override

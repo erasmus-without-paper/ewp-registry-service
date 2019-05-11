@@ -1,9 +1,3 @@
-function replaceWithFade(whatTo, whatWith) {
-    $(whatWith).hide();
-    $(whatTo).replaceWith(whatWith);
-    $(whatWith).fadeIn();
-}
-
 jQuery(function($) {
     $(".ewp-manifest-reloader").on("click", function() {
         var self = $(this);
@@ -39,34 +33,54 @@ function validationResultsReceivedCallback(validationResults) {
 }
 
 // Selects first element matching selector from set of parent and its siblings.
-function getParentOrItsSibling(element, selector) {
-    return $(element).parent().parent().children(selector)[0];
+function selectValidationStatusCell(element, selector) {
+    return $(element).closest(".security_entry").find(selector)[0];
 }
 
 function doneClicked() {
-    var validate_cell = getParentOrItsSibling(this, ".manifest_validator_validate_cell");
-    var done_cell = getParentOrItsSibling(this, ".manifest_validator_done_cell");
+    var validate_cell = selectValidationStatusCell(this, ".manifest_validator_validate_cell");
+    var done_cell = selectValidationStatusCell(this, ".manifest_validator_done_cell");
 
     validationResultsReceivedCallback($(this).parent()[0].validationResults);
     swapWithFade(done_cell, validate_cell);
 }
 
+function gatherParameters(element) {
+    var params = $(element).closest(".api_entry")
+        .find(".validation_parameters")
+        .find(".validation_parameter")
+        .find("input");
+
+    var result = $.map(params, (elem, idx) => {
+        var value = $(elem).val().trim();
+        var name = $(elem).attr("name");
+        if (value) {
+            return {name: name, value: value};
+        }
+        return null;
+    });
+
+    return result;
+}
+
 function validateClicked() {
     var this_cell = $(this).parent();
-    var in_progress_cell = getParentOrItsSibling(this, ".manifest_validator_in_progress_cell");
-    var done_cell = getParentOrItsSibling(this, ".manifest_validator_done_cell");
-    var error_cell = getParentOrItsSibling(this, ".manifest_validator_error_cell");
+    var in_progress_cell = selectValidationStatusCell(this, ".manifest_validator_in_progress_cell");
+    var done_cell = selectValidationStatusCell(this, ".manifest_validator_done_cell");
+    var error_cell = selectValidationStatusCell(this, ".manifest_validator_error_cell");
 
     $.ajax({
         url: "/validateApi",
-        data: {
+        data: JSON.stringify({
             url: $(this).attr("data-api-url"),
             name: $(this).attr("data-api-name"),
             version: $(this).attr("data-api-version"),
             security: $(this).attr("data-api-sec"),
-        },
-        method: "POST",
-        dataType: "text"
+            parameters: gatherParameters(this)
+        }),
+        type: "POST",
+        contentType: 'application/json',
+        dataType: "html"
     }).done(function(data) {
         done_cell.validationResults = data;
         swapWithFade(in_progress_cell, done_cell);

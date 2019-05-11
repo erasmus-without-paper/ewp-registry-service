@@ -57,18 +57,18 @@ class OUnitsValidationSuiteV200
             Arrays.asList(
                 new Parameter("hei_id", OUnitsValidationSuiteV200.this.currentState.selectedHeiId),
                 new Parameter(
-                    "ounit_id", OUnitsValidationSuiteV200.this.currentState.ounitIds.get(0))
+                    "ounit_id", OUnitsValidationSuiteV200.this.currentState.selectedOunitId)
             )
         );
         List<String> expectedIDs =
-            Collections.singletonList(OUnitsValidationSuiteV200.this.currentState.ounitIds.get(0));
+            Collections.singletonList(OUnitsValidationSuiteV200.this.currentState.selectedOunitId);
         Response response = verifyResponse(
             this, combination, request, new OUnitIdsVerifier(expectedIDs)
         );
         List<String> codes = selectFromDocument(
             makeXmlFromBytes(response.getBody()),
             "/ounits-response/ounit/ounit-id[text()=\""
-                + OUnitsValidationSuiteV200.this.currentState.ounitIds.get(0)
+                + OUnitsValidationSuiteV200.this.currentState.selectedOunitId
                 + "\"]/../ounit-code"
         );
         ounitCodes.add(codes.get(0));
@@ -77,7 +77,7 @@ class OUnitsValidationSuiteV200
     });
 
     generalTestsIdsAndCodes(
-        combination, "ounit", this.currentState.selectedHeiId, this.currentState.ounitIds.get(0),
+        combination, "ounit", this.currentState.selectedHeiId, this.currentState.selectedOunitId,
         ounitCodes.get(0), this.currentState.maxOunitIds, this.currentState.maxOunitCodes,
         OUnitIdsVerifier::new
     );
@@ -88,7 +88,7 @@ class OUnitsValidationSuiteV200
         Arrays.asList(
             new Parameter("hei_id", this.currentState.selectedHeiId),
             new Parameter("hei_id", this.fakeId),
-            new Parameter("ounit_id", this.currentState.ounitIds.get(0))
+            new Parameter("ounit_id", OUnitsValidationSuiteV200.this.currentState.selectedOunitId)
         ),
         400,
         Status.WARNING

@@ -16,7 +16,7 @@ Notices:
 
 
 
-### SUCCESS: Get hei-ids covered by host managing this url.
+### SUCCESS: Check if this host covers any HEI.
 ### SUCCESS: Find Courses Replication API for any of covered HEIs.
 ### SUCCESS: Use Course Replication API to obtain list of Courses for one of covered HEI IDs.
 ### SUCCESS: Request for one of known los-ids, expect 200 OK.

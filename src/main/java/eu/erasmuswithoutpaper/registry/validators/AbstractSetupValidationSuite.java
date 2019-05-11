@@ -2,20 +2,24 @@ package eu.erasmuswithoutpaper.registry.validators;
 
 import static org.joox.JOOX.$;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registry.validators.echovalidator.HttpSecuritySettings;
 import eu.erasmuswithoutpaper.registry.validators.githubtags.GitHubTagsGetter;
 import eu.erasmuswithoutpaper.registryclient.ApiSearchConditions;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.w3c.dom.Element;
 
 
@@ -87,6 +91,35 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
   protected void runApiSpecificTests(HttpSecurityDescription security) throws SuiteBroken {
     //intentionally left empty
   }
+
+  protected List<String> getCoveredHeiIds(String url) throws SuiteBroken {
+    List<String> heis = new ArrayList<>();
+    this.setup(new InlineValidationStep() {
+      @Override
+      public String getName() {
+        return "Check if this host covers any HEI.";
+      }
+
+      @Override
+      @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
+      protected Optional<Response> innerRun() throws Failure {
+        List<String> coveredHeiIds =
+            AbstractSetupValidationSuite.this.fetchHeiIdsCoveredByApiByUrl(url);
+        if (coveredHeiIds.isEmpty()) {
+          throw new InlineValidationStep.Failure(
+              "Manifest file doesn't contain any <hei-id> field covered by this URL. We cannot "
+                  + "preform tests.",
+              ValidationStepWithStatus.Status.NOTICE, null
+          );
+        }
+        heis.addAll(coveredHeiIds);
+        return Optional.empty();
+      }
+    });
+
+    return heis;
+  }
+
 
   private void checkApiVersion() throws SuiteBroken {
     final List<SemanticVersion> tags = getGitHubTags();
@@ -407,4 +440,137 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
       throws SuiteBroken {
   }
 
+  protected List<HeiIdAndUrl> getApiUrlsForHeis(List<String> heiIds, String api, String testName,
+      String error)
+      throws SuiteBroken {
+    List<HeiIdAndUrl> heiIdAndUrls = new ArrayList<>();
+
+    this.setup(new InlineValidationStep() {
+      @Override
+      public String getName() {
+        return testName;
+      }
+
+      @Override
+      @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
+      protected Optional<Response> innerRun() throws Failure {
+        for (String hei : heiIds) {
+          List<String> urls = AbstractSetupValidationSuite.this
+              .getApiUrlForHei(api, hei);
+          if (urls != null && !urls.isEmpty()) {
+            heiIdAndUrls.add(new HeiIdAndUrl(hei, urls.get(0)));
+          }
+        }
+
+        if (heiIdAndUrls.isEmpty()) {
+          throw new Failure(error, Status.NOTICE, null);
+        }
+
+        return Optional.empty();
+      }
+    });
+
+    return heiIdAndUrls;
+  }
+
+  private Request makeApiRequestWithPreferredSecurity(
+      InlineValidationStep step, HeiIdAndUrl heiIdAndUrl,
+      HttpSecurityDescription preferedSecurityDescription) {
+    Element apiEntry = AbstractSetupValidationSuite.this.getApiEntryFromUrl(heiIdAndUrl.url);
+    if (apiEntry == null) {
+      return null;
+    }
+
+    return createRequestWithParameters(
+        step,
+        new Combination("GET", heiIdAndUrl.url, apiEntry,
+            getSecurityDescriptionFromApiEntry(apiEntry, preferedSecurityDescription)
+        ),
+        Arrays.asList(new Parameter("hei_id", heiIdAndUrl.heiId))
+    );
+  }
+
+  /**
+   * Given list of pairs (heiId, apiUrl) calls each of apiUrls with it's corresponding
+   * heiId as a 'hei_id' parameter. 'selector' is used to extract values from the response.
+   * When the function finds first (heiId, apiUrl) pair for which 'selector' select at least one
+   * element, then (heiId, first selected element as a string) pair is returned.
+   *
+   * @param heiIdAndUrls
+   *      List of (heiId, apiUrl) pairs.
+   * @param securityDescription
+   *      This security method will be used in calls to url from apiUrls if it is possible.
+   *      If queried endpoint doesn't support this security method different one will be used.
+   * @param selector
+   *      xpath selector that filters responses from apiUrls
+   * @param stepName
+   *      Name of generated validation step.
+   * @param error
+   *      Error to report if not a single (heiId, string) pair can be found.
+   */
+  protected HeiIdAndString findResponseWithString(
+      List<HeiIdAndUrl> heiIdAndUrls,
+      HttpSecurityDescription securityDescription,
+      String selector,
+      String stepName,
+      String error
+  )
+      throws SuiteBroken {
+    HeiIdAndString heiIdAndString = new HeiIdAndString();
+    this.setup(new InlineValidationStep() {
+      @Override
+      public String getName() {
+        return stepName;
+      }
+
+      @Override
+      @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
+      protected Optional<Response> innerRun() throws Failure {
+        for (HeiIdAndUrl heiIdAndUrl : heiIdAndUrls) {
+          if (heiIdAndUrl.url == null || heiIdAndUrl.heiId == null) {
+            continue;
+          }
+
+          try {
+            Response response = AbstractSetupValidationSuite.this.internet.makeRequest(
+                makeApiRequestWithPreferredSecurity(this, heiIdAndUrl, securityDescription)
+            );
+            expect200(response);
+            List<String> selectedStrings = selectFromDocument(
+                makeXmlFromBytes(response.getBody()), selector
+            );
+
+            if (!selectedStrings.isEmpty()) {
+              heiIdAndString.string = selectedStrings.get(0);
+              heiIdAndString.heiId = heiIdAndUrl.heiId;
+              return Optional.empty();
+            }
+          } catch (IOException | Failure ignored) {
+            // Ignore
+          }
+        }
+
+        throw new Failure(error, Status.NOTICE, null);
+      }
+    });
+
+    return heiIdAndString;
+  }
+
+
+  protected static class HeiIdAndUrl {
+    public String heiId;
+    public String url;
+
+    public HeiIdAndUrl(String heiId, String url) {
+      this.heiId = heiId;
+      this.url = url;
+    }
+  }
+
+
+  public static class HeiIdAndString {
+    public String heiId;
+    public String string;
+  }
 }

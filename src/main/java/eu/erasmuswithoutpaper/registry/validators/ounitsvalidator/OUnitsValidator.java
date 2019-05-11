@@ -23,18 +23,21 @@ public class OUnitsValidator extends ApiValidator<OUnitsSuiteState> {
     return logger;
   }
 
-  private static ListMultimap<SemanticVersion, ValidationSuiteFactory<OUnitsSuiteState>>
+  private static ListMultimap<SemanticVersion, ValidationSuiteInfo<OUnitsSuiteState>>
       validationSuites;
 
   static {
     validationSuites = ApiValidator.createMultimap();
     validationSuites.put(
         new SemanticVersion(2, 0, 0),
-        OUnitsSetupValidationSuiteV2::new
+        new ValidationSuiteInfo<>(
+            OUnitsSetupValidationSuiteV2::new,
+            OUnitsSetupValidationSuiteV2.getParameters()
+        )
     );
     validationSuites.put(
         new SemanticVersion(2, 0, 0),
-        OUnitsValidationSuiteV200::new
+        new ValidationSuiteInfo<>(OUnitsValidationSuiteV200::new)
     );
   }
 
@@ -44,7 +47,7 @@ public class OUnitsValidator extends ApiValidator<OUnitsSuiteState> {
   }
 
   @Override
-  protected ListMultimap<SemanticVersion, ValidationSuiteFactory<OUnitsSuiteState>>
+  protected ListMultimap<SemanticVersion, ValidationSuiteInfo<OUnitsSuiteState>>
       getValidationSuites() {
     return validationSuites;
   }

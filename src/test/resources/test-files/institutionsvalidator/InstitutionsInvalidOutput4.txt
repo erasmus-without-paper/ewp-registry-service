@@ -16,7 +16,7 @@ Notices:
 
 
 
-### SUCCESS: Check if this host covers any institution.
+### SUCCESS: Check if this host covers any HEI.
 ### SUCCESS: Request for one of known HEI IDs, expect 200 OK.
 ### SUCCESS: Request one unknown HEI ID, expect 200 and empty response.
 ### SUCCESS: Request one known and one unknown HEI ID, expect 200 and only one HEI in response.
@@ -34,7 +34,6 @@ Expected only hei_id parameters
 
 ### SUCCESS: Trying Combination[-HTTT] with a PUT request. Expecting to receive a valid HTTP 405 error response.
 ### SUCCESS: Trying Combination[-HTTT] with a DELETE request. Expecting to receive a valid HTTP 405 error response.
-### SUCCESS: Check if this host covers any institution.
 ### SUCCESS: Request for one of known HEI IDs, expect 200 OK.
 ### SUCCESS: Request one unknown HEI ID, expect 200 and empty response.
 ### SUCCESS: Request one known and one unknown HEI ID, expect 200 and only one HEI in response.

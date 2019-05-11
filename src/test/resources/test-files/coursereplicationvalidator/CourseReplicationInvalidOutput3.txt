@@ -16,7 +16,7 @@ Notices:
 
 
 
-### SUCCESS: Get hei-ids covered by host managing this url.
+### SUCCESS: Check if this host covers any HEI.
 ### SUCCESS: Request with known hei_id, expect 200.
 ### SUCCESS: Request with known hei_id and invalid parameter, expect 200.
 

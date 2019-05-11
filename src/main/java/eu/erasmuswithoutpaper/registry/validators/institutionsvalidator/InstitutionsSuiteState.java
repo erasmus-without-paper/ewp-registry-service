@@ -5,6 +5,7 @@ import eu.erasmuswithoutpaper.registry.validators.SuiteState;
 
 public class InstitutionsSuiteState extends SuiteState {
   public int maxHeiIds = 0;
+  public String selectedHeiId;
 
   public InstitutionsSuiteState(String url, SemanticVersion version) {
     super(url, version);

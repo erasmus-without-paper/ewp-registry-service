@@ -10,6 +10,7 @@ import eu.erasmuswithoutpaper.registry.validators.ApiValidatorsManager;
 import eu.erasmuswithoutpaper.registry.validators.CombEntry;
 import eu.erasmuswithoutpaper.registry.validators.HttpSecurityDescription;
 import eu.erasmuswithoutpaper.registry.validators.SemanticVersion;
+import eu.erasmuswithoutpaper.registry.validators.ValidationParameter;
 import eu.erasmuswithoutpaper.registry.validators.echovalidator.HttpSecuritySettings;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -25,6 +26,7 @@ public class ManifestApiEntry {
   public final String url;
   public final List<HttpSecurityDescription> securities;
   public final boolean available;
+  public final List<ValidationParameter> parameters;
 
   /**
    * Description of API endpoint.
@@ -38,15 +40,19 @@ public class ManifestApiEntry {
    * @param securities
    *     list of all supported HTTP security combinations.
    * @param available
-   *     whether tests for this API are available.
+   *     true is there are tests available for this API in this version
+   * @param parameters
+   *     parameters that can be passed to tests for this API in this version
    */
   public ManifestApiEntry(String name, String version, String url,
-      List<HttpSecurityDescription> securities, boolean available) {
+      List<HttpSecurityDescription> securities, boolean available,
+      List<ValidationParameter> parameters) {
     this.name = name;
     this.version = version;
     this.url = url;
     this.securities = securities;
     this.available = available;
+    this.parameters = parameters;
   }
 
   /**
@@ -95,7 +101,9 @@ public class ManifestApiEntry {
         parseSecurity(new HttpSecuritySettings(securityElement));
 
     return new ManifestApiEntry(apiName, version, url, securitySettings,
-        manager.hasCompatibleTests(apiName, semanticVersion));
+        manager.hasCompatibleTests(apiName, semanticVersion),
+        manager.getParameters(apiName, semanticVersion)
+    );
   }
 
   private static List<CombEntry> getResponseEncryptionMethods(HttpSecuritySettings sec) {
@@ -165,7 +173,8 @@ public class ManifestApiEntry {
           for (CombEntry resEncMethod : resEncr) {
             result.add(
                 new HttpSecurityDescription(clientAuthMethod, serverAuthMethod, reqEncrMethod,
-                    resEncMethod));
+                    resEncMethod
+                ));
           }
         }
       }

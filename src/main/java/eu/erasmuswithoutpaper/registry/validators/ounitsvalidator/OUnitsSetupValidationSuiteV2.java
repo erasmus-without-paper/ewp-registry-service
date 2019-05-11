@@ -1,38 +1,39 @@
 package eu.erasmuswithoutpaper.registry.validators.ounitsvalidator;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownElement;
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
-import eu.erasmuswithoutpaper.registry.internet.Request;
-import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registry.validators.AbstractSetupValidationSuite;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
-import eu.erasmuswithoutpaper.registry.validators.Combination;
 import eu.erasmuswithoutpaper.registry.validators.HttpSecurityDescription;
-import eu.erasmuswithoutpaper.registry.validators.InlineValidationStep;
+import eu.erasmuswithoutpaper.registry.validators.ValidationParameter;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Element;
 
 class OUnitsSetupValidationSuiteV2
     extends AbstractSetupValidationSuite<OUnitsSuiteState> {
 
   private static final Logger logger =
       LoggerFactory.getLogger(OUnitsSetupValidationSuiteV2.class);
-  private final List<String> heis = new ArrayList<>();
-  private final List<String> institutionsUrls = new ArrayList<>();
+  private static final String HEI_ID_PARAMETER = "hei_id";
+  private static final String OUNIT_ID_PARAMETER = "ounit_id";
 
   OUnitsSetupValidationSuiteV2(ApiValidator<OUnitsSuiteState> validator,
       OUnitsSuiteState state,
       ValidationSuiteConfig config) {
     super(validator, state, config);
+  }
+
+  public static List<ValidationParameter> getParameters() {
+    return Arrays.asList(
+        new ValidationParameter(HEI_ID_PARAMETER),
+        new ValidationParameter(OUNIT_ID_PARAMETER, Arrays.asList(HEI_ID_PARAMETER))
+    );
   }
 
   private int getMaxOunitIds() {
@@ -43,105 +44,29 @@ class OUnitsSetupValidationSuiteV2
     return getMaxIds("ounit-codes");
   }
 
-  private void getCoveredHeiIds() throws SuiteBroken {
-    this.setup(new InlineValidationStep() {
-      @Override
-      public String getName() {
-        return "Get hei-ids covered by host managing this url.";
-      }
-
-      @Override
-      @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
-      protected Optional<Response> innerRun() throws Failure {
-        String url = OUnitsSetupValidationSuiteV2.this.currentState.url;
-        List<String> coveredHeiIds =
-            OUnitsSetupValidationSuiteV2.this.fetchHeiIdsCoveredByApiByUrl(url);
-        if (coveredHeiIds.isEmpty()) {
-          throw new Failure(
-              "Catalogue doesn't contain any hei-ids covered by this url. We cannot preform tests.",
-              Status.NOTICE, null
-          );
-        }
-
-        heis.addAll(coveredHeiIds);
-        for (String hei : coveredHeiIds) {
-          List<String> urls =
-              OUnitsSetupValidationSuiteV2.this.getApiUrlForHei("institutions", hei);
-          if (!urls.isEmpty()) {
-            institutionsUrls.add(urls.get(0));
-          } else {
-            institutionsUrls.add(null);
-          }
-        }
-        return Optional.empty();
-      }
-    });
+  private HeiIdAndString findInstitutionThatCoversAnyOUnit(
+      HttpSecurityDescription securityDescription,
+      List<HeiIdAndUrl> heiIdAndInstitutionsUrls)
+      throws SuiteBroken {
+    return findResponseWithString(
+        heiIdAndInstitutionsUrls,
+        securityDescription,
+        "/institutions-response/hei/ounit-id",
+        "Use Institutions API to obtain list of OUnits for one of covered HEI IDs.",
+        "We tried to find ounit-id to perform tests on, but Institutions API doesn't report any "
+            + "OUnit for any of HEIs that we checked."
+    );
   }
 
-  private void findInstitutionThatCoversAnyOunit(HttpSecurityDescription securityDescription)
-      throws SuiteBroken {
-    this.setup(new InlineValidationStep() {
-      @Override
-      public String getName() {
-        return "Use institutions API to obtain list of OUnits for one of covered HEI IDs.";
-      }
-
-      @Override
-      @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
-      protected Optional<Response> innerRun() throws Failure {
-        // Iterate through every (institutions url, hei id) pair we obtained earlier.
-        // Find first pair such that call to `institution url` with `hei id` as a parameter
-        // returns non-empty list of OUnit Ids.
-        // Tests will be performed on that list of OUnit IDs.
-        for (int i = 0; i < institutionsUrls.size(); i++) {
-          final String url = institutionsUrls.get(i);
-          final String heiId = heis.get(i);
-          if (url == null) {
-            continue;
-          }
-
-          Element apiEntry = OUnitsSetupValidationSuiteV2.this.getApiEntryFromUrl(url);
-          if (apiEntry == null) {
-            continue;
-          }
-
-          Request request = createRequestWithParameters(
-              this,
-              new Combination(
-                  "GET", url, apiEntry,
-                  getSecurityDescriptionFromApiEntry(apiEntry, securityDescription)
-              ),
-              Arrays.asList(new Parameter("hei_id", heiId))
-          );
-          Response response = null;
-          try {
-            response = OUnitsSetupValidationSuiteV2.this.internet.makeRequest(request);
-            expect200(response);
-          } catch (IOException | Failure e) {
-            continue;
-          }
-          List<String> coveredOunits = selectFromDocument(
-              makeXmlFromBytes(response.getBody()),
-              "/institutions-response/hei/ounit-id"
-          );
-          if (!coveredOunits.isEmpty()) {
-            //Found not empty
-            OUnitsSetupValidationSuiteV2.this.currentState.ounitIds.addAll(coveredOunits);
-            OUnitsSetupValidationSuiteV2.this.currentState.selectedHeiId = heiId;
-            break;
-          }
-        }
-
-        if (OUnitsSetupValidationSuiteV2.this.currentState.ounitIds.isEmpty()) {
-          throw new Failure(
-              "Cannot fetch any ounits.",
-              Status.NOTICE, null
-          );
-        }
-
-        return Optional.empty();
-      }
-    });
+  private List<HeiIdAndUrl> getInstitutionsUrl(List<String> heiIds) throws SuiteBroken {
+    return getApiUrlsForHeis(
+        heiIds,
+        "institutions",
+        "Find Institutions API for any of covered HEIs.",
+        "To perform tests we need any ounit-id. We have to use Institutions API for that, "
+            + "but the Catalogue doesn't contain entries for this API for any of hei-ids that we "
+            + "checked."
+    );
   }
 
   //FindBugs is not smart enough to infer that actual type of this.currentState
@@ -152,10 +77,25 @@ class OUnitsSetupValidationSuiteV2
       throws SuiteBroken {
     this.currentState.maxOunitIds = getMaxOunitIds();
     this.currentState.maxOunitCodes = getMaxOunitCodes();
-    this.currentState.ounitIds = new ArrayList<>();
 
-    getCoveredHeiIds();
-    findInstitutionThatCoversAnyOunit(securityDescription);
+    List<String> coveredHeiIds = new ArrayList<>();
+    if (this.currentState.parameters.contains(HEI_ID_PARAMETER)) {
+      coveredHeiIds.add(this.currentState.parameters.get(HEI_ID_PARAMETER));
+    } else {
+      coveredHeiIds = getCoveredHeiIds(this.currentState.url);
+    }
+
+    HeiIdAndString heiIdAndOunitId = new HeiIdAndString();
+    if (this.currentState.parameters.contains(OUNIT_ID_PARAMETER)) {
+      heiIdAndOunitId.heiId = this.currentState.parameters.get(HEI_ID_PARAMETER);
+      heiIdAndOunitId.string = this.currentState.parameters.get(OUNIT_ID_PARAMETER);
+    } else {
+      List<HeiIdAndUrl> heiIdsAndUrls = getInstitutionsUrl(coveredHeiIds);
+      heiIdAndOunitId = findInstitutionThatCoversAnyOUnit(securityDescription, heiIdsAndUrls);
+    }
+
+    this.currentState.selectedHeiId = heiIdAndOunitId.heiId;
+    this.currentState.selectedOunitId = heiIdAndOunitId.string;
   }
 
   @Override

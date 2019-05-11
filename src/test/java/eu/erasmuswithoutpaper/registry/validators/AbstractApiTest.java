@@ -9,7 +9,6 @@ import eu.erasmuswithoutpaper.registry.repository.ManifestRepositoryImpl;
 import eu.erasmuswithoutpaper.registry.sourceprovider.TestManifestSourceProvider;
 import eu.erasmuswithoutpaper.registry.updater.RegistryUpdater;
 import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus.Status;
-import eu.erasmuswithoutpaper.registry.validators.coursesvalidator.CoursesValidator;
 import eu.erasmuswithoutpaper.registry.web.SelfManifestProvider;
 import eu.erasmuswithoutpaper.registry.web.UiController;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
@@ -67,7 +66,7 @@ public abstract class AbstractApiTest<StateType extends SuiteState> extends WRTe
       SemanticVersion semanticVersion,
       HttpSecurityDescription security) {
     List<ValidationStepWithStatus> results =
-        GetValidator().runTests(url, semanticVersion, security);
+        GetValidator().runTests(url, semanticVersion, security, new ValidationParameters());
 
     StringBuilder sb = new StringBuilder();
     for (ValidationStepWithStatus result : results) {

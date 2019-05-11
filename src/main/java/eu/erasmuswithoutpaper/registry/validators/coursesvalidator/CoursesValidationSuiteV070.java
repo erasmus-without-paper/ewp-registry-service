@@ -64,7 +64,7 @@ class CoursesValidationSuiteV070
       @Override
       @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
       protected Optional<Response> innerRun() throws Failure {
-        String losId = CoursesValidationSuiteV070.this.currentState.losIds.get(0);
+        String losId = CoursesValidationSuiteV070.this.currentState.selectedLosId;
         Request request = createRequestWithParameters(this, combination,
             Arrays.asList(
                 new Parameter("hei_id", CoursesValidationSuiteV070.this.currentState.selectedHeiId),
@@ -73,7 +73,7 @@ class CoursesValidationSuiteV070
         );
 
         List<String> expectedIDs =
-            Collections.singletonList(CoursesValidationSuiteV070.this.currentState.losIds.get(0));
+            Collections.singletonList(CoursesValidationSuiteV070.this.currentState.selectedLosId);
         Response response = verifyResponse(
             this, combination, request, new CoursesIdsVerifier(expectedIDs)
         );
@@ -139,7 +139,7 @@ class CoursesValidationSuiteV070
     }
 
     generalTestsIdsAndCodes(combination, "los", this.currentState.selectedHeiId,
-        this.currentState.losIds.get(0), losCode,
+        this.currentState.selectedLosId, losCode,
         this.currentState.maxLosIds, this.currentState.maxLosCodes, CoursesIdsVerifier::new
     );
 
@@ -149,20 +149,20 @@ class CoursesValidationSuiteV070
         Arrays.asList(
             new Parameter("hei_id", this.currentState.selectedHeiId),
             new Parameter("hei_id", fakeId),
-            new Parameter("los_id", this.currentState.losIds.get(0))
+            new Parameter("los_id", this.currentState.selectedLosId)
         ),
         400
     );
 
     if (requestFields.startDate != null) {
-      String losId = this.currentState.losIds.get(0);
+      String losId = this.currentState.selectedLosId;
 
       testParameters200(
           combination,
           "Ask for LOIs after one of the courses started, expect it is not included in results.",
           Arrays.asList(
               new Parameter("hei_id", this.currentState.selectedHeiId),
-              new Parameter("los_id", this.currentState.losIds.get(0)),
+              new Parameter("los_id", this.currentState.selectedLosId),
               new Parameter("lois_after", requestFields.startDate.plusDays(1).toString())
           ),
           new LoiIdNotIncludedVerifier(losId, requestFields.loiId, Status.WARNING)
@@ -173,7 +173,7 @@ class CoursesValidationSuiteV070
           "Ask for LOIs before one of the courses ended, expect it is not included in results.",
           Arrays.asList(
               new Parameter("hei_id", this.currentState.selectedHeiId),
-              new Parameter("los_id", this.currentState.losIds.get(0)),
+              new Parameter("los_id", this.currentState.selectedLosId),
               new Parameter("lois_before", requestFields.endDate.minusDays(1).toString())
           ),
           new LoiIdNotIncludedVerifier(losId, requestFields.loiId, Status.WARNING)
@@ -185,7 +185,7 @@ class CoursesValidationSuiteV070
         "Multiple lois_before parameters, expect 400.",
         Arrays.asList(
             new Parameter("hei_id", this.currentState.selectedHeiId),
-            new Parameter("los_id", this.currentState.losIds.get(0)),
+            new Parameter("los_id", this.currentState.selectedLosId),
             new Parameter("lois_before", "2010-01-01"),
             new Parameter("lois_before", "2010-01-01")
         ),
@@ -197,7 +197,7 @@ class CoursesValidationSuiteV070
         "Multiple lois_after parameters, expect 400.",
         Arrays.asList(
             new Parameter("hei_id", this.currentState.selectedHeiId),
-            new Parameter("los_id", this.currentState.losIds.get(0)),
+            new Parameter("los_id", this.currentState.selectedLosId),
             new Parameter("lois_after", "2010-01-01"),
             new Parameter("lois_after", "2010-01-01")
         ),
@@ -209,7 +209,7 @@ class CoursesValidationSuiteV070
         "lois_before parameter is not a date, expect 400.",
         Arrays.asList(
             new Parameter("hei_id", this.currentState.selectedHeiId),
-            new Parameter("los_id", this.currentState.losIds.get(0)),
+            new Parameter("los_id", this.currentState.selectedLosId),
             new Parameter("lois_before", "abcd-ef-gh")
         ),
         400
@@ -220,7 +220,7 @@ class CoursesValidationSuiteV070
         "lois_before has format dd-MM-yyyy, expect 400.",
         Arrays.asList(
             new Parameter("hei_id", this.currentState.selectedHeiId),
-            new Parameter("los_id", this.currentState.losIds.get(0)),
+            new Parameter("los_id", this.currentState.selectedLosId),
             new Parameter("lois_before", "31-12-2019")
         ),
         400
@@ -231,7 +231,7 @@ class CoursesValidationSuiteV070
         "lois_before consists of date and time, expect 400.",
         Arrays.asList(
             new Parameter("hei_id", this.currentState.selectedHeiId),
-            new Parameter("los_id", this.currentState.losIds.get(0)),
+            new Parameter("los_id", this.currentState.selectedLosId),
             new Parameter("lois_before", "2009-12-31 23:59:59")
         ),
         400

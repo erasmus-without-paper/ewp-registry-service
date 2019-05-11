@@ -17,18 +17,21 @@ import org.slf4j.LoggerFactory;
 @Service
 public class InstitutionsValidator extends ApiValidator<InstitutionsSuiteState> {
   private static final Logger logger = LoggerFactory.getLogger(InstitutionsValidator.class);
-  private static ListMultimap<SemanticVersion, ValidationSuiteFactory<InstitutionsSuiteState>>
+  private static ListMultimap<SemanticVersion, ValidationSuiteInfo<InstitutionsSuiteState>>
       validationSuites;
 
   static {
     validationSuites = ApiValidator.createMultimap();
     validationSuites.put(
         new SemanticVersion(2, 0, 0),
-        InstitutionsSetupValidationSuiteV2::new
+        new ValidationSuiteInfo<>(
+            InstitutionsSetupValidationSuiteV2::new,
+            InstitutionsSetupValidationSuiteV2.getParameters()
+        )
     );
     validationSuites.put(
         new SemanticVersion(2, 0, 0),
-        InstitutionsValidationSuiteV200::new
+        new ValidationSuiteInfo<>(InstitutionsValidationSuiteV200::new)
     );
   }
 
@@ -43,7 +46,7 @@ public class InstitutionsValidator extends ApiValidator<InstitutionsSuiteState> 
   }
 
   @Override
-  protected ListMultimap<SemanticVersion, ValidationSuiteFactory<InstitutionsSuiteState>>
+  protected ListMultimap<SemanticVersion, ValidationSuiteInfo<InstitutionsSuiteState>>
       getValidationSuites() {
     return validationSuites;
   }

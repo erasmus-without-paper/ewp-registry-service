@@ -17,10 +17,12 @@
         </p>
 
         {% for api in apis %}
-            <h3 style="margin-bottom:5px;">{{ api.name }} v{{ api.version }} </h3>
+            <div class="api_entry">
+            <h3 style="margin-bottom:5px;">{{ api.name }} {{ api.version }}</h3>
             <code class='ewpst__bordered-code-larger'> {{ api.url }} </code> <br>
+            {% set api_index = loop.index %}
             {% for security in api.securities %}
-            <div style="padding-top:5px;">
+            <div class="security_entry" style="padding-top:5px;">
                 <code class='ewpst__bordered-code-larger'>{{ security }}</code> -
                 <span class='manifest_validator_validate_cell'>
                     <a class='manifest_validator_validate'
@@ -45,13 +47,40 @@
                             data-api-name="{{ api.name }}"
                             data-api-version="{{ api.version }}"
                             data-api-sec="{{ security }}">
-                        An error has occured, try again.
+                        An error has occurred, try again.
                     </a>
                 </span>
                 <br>
             </div>
             {% endfor %}
+            {% if not api.parameters.isEmpty() %}
+            <details class="validation_parameters">
+                <summary>Parameters</summary>
+                <p>
+                    Here you can override some of parameters that validator uses in its requests.<br />
+                    Correctness of provided parameters is not checked, tests will most probably fail if they are wrong.
+                </p>
+                <table>
+                {% for parameter in api.parameters %}
+                    <tr class="validation_parameter">
+                        <td>
+                        <label for="{{ parameter.name }}-{{ api_index }}">{{ parameter.name }}</label>
+                        </td>
+                        <td>
+                        <input name="{{ parameter.name }}" id="{{ parameter.name }}-{{ api_index }}"/>
+                        </td>
+                        <td>
+                        {% if not parameter.dependencies.isEmpty() %}
+                        <span>Requires: {{ parameter.dependencies }}</span>
+                        {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </table>
+            </details>
+            {% endif %}
         {% endfor %}
+        </div>
     </section>
 {% endblock %}
 

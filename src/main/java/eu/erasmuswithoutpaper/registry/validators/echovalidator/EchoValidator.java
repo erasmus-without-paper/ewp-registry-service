@@ -20,24 +20,28 @@ import org.slf4j.LoggerFactory;
 @Service
 public class EchoValidator extends ApiValidator<EchoSuiteState> {
   private static final Logger logger = LoggerFactory.getLogger(EchoValidator.class);
-  private static ListMultimap<SemanticVersion, ValidationSuiteFactory<EchoSuiteState>>
+  private static ListMultimap<SemanticVersion, ValidationSuiteInfo<EchoSuiteState>>
       validationSuites;
 
   static {
     validationSuites = ApiValidator.createMultimap();
 
-    validationSuites.put(new SemanticVersion(1, 0, 0),
-        EchoSetupValidationSuiteV1::new
+    validationSuites.put(
+        new SemanticVersion(1, 0, 0),
+        new ValidationSuiteInfo<>(EchoSetupValidationSuiteV1::new)
     );
-    validationSuites.put(new SemanticVersion(1, 0, 0),
-        EchoValidationSuiteV100::new
+    validationSuites.put(
+        new SemanticVersion(1, 0, 0),
+        new ValidationSuiteInfo<>(EchoValidationSuiteV100::new)
     );
 
-    validationSuites.put(new SemanticVersion(2, 0, 0),
-        EchoSetupValidationSuiteV2::new
+    validationSuites.put(
+        new SemanticVersion(2, 0, 0),
+        new ValidationSuiteInfo<>(EchoSetupValidationSuiteV2::new)
     );
-    validationSuites.put(new SemanticVersion(2, 0, 0),
-        EchoValidationSuiteV200::new
+    validationSuites.put(
+        new SemanticVersion(2, 0, 0),
+        new ValidationSuiteInfo<>(EchoValidationSuiteV200::new)
     );
   }
 
@@ -53,7 +57,7 @@ public class EchoValidator extends ApiValidator<EchoSuiteState> {
   }
 
   @Override
-  protected ListMultimap<SemanticVersion, ValidationSuiteFactory<EchoSuiteState>>
+  protected ListMultimap<SemanticVersion, ValidationSuiteInfo<EchoSuiteState>>
       getValidationSuites() {
     return validationSuites;
   }

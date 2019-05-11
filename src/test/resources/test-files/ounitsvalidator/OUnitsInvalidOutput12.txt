@@ -16,8 +16,9 @@ Notices:
 
 
 
-### SUCCESS: Get hei-ids covered by host managing this url.
-### SUCCESS: Use institutions API to obtain list of OUnits for one of covered HEI IDs.
+### SUCCESS: Check if this host covers any HEI.
+### SUCCESS: Find Institutions API for any of covered HEIs.
+### SUCCESS: Use Institutions API to obtain list of OUnits for one of covered HEI IDs.
 ### SUCCESS: Request for one of known ounit-ids, expect 200 OK.
 ### SUCCESS: Request for one of known ounit-codes, expect 200 OK.
 ### SUCCESS: Request one unknown ounit-id, expect 200 and empty response.

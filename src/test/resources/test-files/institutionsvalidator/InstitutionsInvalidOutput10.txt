@@ -16,7 +16,7 @@ Notices:
 
 
 
-### SUCCESS: Check if this host covers any institution.
+### SUCCESS: Check if this host covers any HEI.
 
 ### FAILURE: Request for one of known HEI IDs, expect 200 OK.
 
@@ -48,7 +48,6 @@ The response has proper HTTP status and it passed the schema validation. However
 
 ### SUCCESS: Trying Combination[-HTTT] with a PUT request. Expecting to receive a valid HTTP 405 error response.
 ### SUCCESS: Trying Combination[-HTTT] with a DELETE request. Expecting to receive a valid HTTP 405 error response.
-### SUCCESS: Check if this host covers any institution.
 
 ### FAILURE: Request for one of known HEI IDs, expect 200 OK.
 

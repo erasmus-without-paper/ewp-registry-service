@@ -1,6 +1,8 @@
 package eu.erasmuswithoutpaper.registry.validators;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
@@ -51,5 +53,22 @@ public class ApiValidatorsManager {
       }
     }
     return false;
+  }
+
+  /**
+   * Get parameters that can be passed when validating API `apiName` in version `version`.
+   * @param apiName
+   *    API which parameters will be returned.
+   * @param version
+   *    version of the API for which parameters will be returned.
+   * @return
+   *    List of parameters that can be used when validating API `apiName` in version `version`.
+   */
+  public List<ValidationParameter> getParameters(String apiName, SemanticVersion version) {
+    if (!registeredApiValidators.containsKey(apiName)) {
+      return new ArrayList<>();
+    }
+
+    return getApiValidator(apiName).getParameters(version);
   }
 }
