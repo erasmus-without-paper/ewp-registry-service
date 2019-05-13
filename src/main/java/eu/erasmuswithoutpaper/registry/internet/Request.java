@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -258,6 +259,23 @@ public class Request {
    */
   public void setBody(byte[] body) {
     this.body = Optional.ofNullable(body);
+  }
+
+  /**
+   * @param body Optional request body to be sent along the request (in case of POST requests, this
+   *        often contains x-www-form-urlencoded set of parameters). This method also sets
+   *        'Content-Length' header.
+   */
+  public void setBodyAndContentLength(byte[] body) {
+    setBody(body);
+    if (Objects.equals(this.getMethod(), "POST")
+        || Objects.equals(this.getMethod(), "PUT")) {
+      int length = 0;
+      if (this.body.isPresent()) {
+        length = this.body.get().length;
+      }
+      this.putHeader("Content-Length", Integer.toString(length));
+    }
   }
 
   /**

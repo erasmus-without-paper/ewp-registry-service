@@ -262,7 +262,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
 
     Request request = new Request(combination.getHttpMethod(), combination.getUrl());
     if (body != null) {
-      request.setBody(body);
+      request.setBodyAndContentLength(body);
     }
     if (combination.getHttpMethod().equals("POST") || combination.getHttpMethod().equals("PUT")) {
       request.putHeader("Content-Type", "application/x-www-form-urlencoded");

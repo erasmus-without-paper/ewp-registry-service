@@ -648,7 +648,7 @@ abstract class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSui
         byte[] body = request.getBody().get();
         // Truncate right after the encryptedAesKeyLength.
         body = Arrays.copyOf(body, 32 + 2);
-        request.setBody(body);
+        request.setBodyAndContentLength(body);
         EchoValidationSuiteCommon.this.getRequestSignerForCombination(this, request, combination)
             .sign(request);
         List<Integer> acceptableResponses = Lists.newArrayList(400);

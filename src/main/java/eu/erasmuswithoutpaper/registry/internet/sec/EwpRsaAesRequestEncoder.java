@@ -70,6 +70,6 @@ public class EwpRsaAesRequestEncoder implements RequestCodingEncoder {
     } else {
       input = new byte[0];
     }
-    request.setBody(this.encoder.encode(input));
+    request.setBodyAndContentLength(this.encoder.encode(input));
   }
 }
