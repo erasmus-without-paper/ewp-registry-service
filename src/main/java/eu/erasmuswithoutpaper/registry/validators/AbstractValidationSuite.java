@@ -150,7 +150,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
   }
 
   /**
-   * Add a new setup step and run it. Setup steps are required to finish without failure.
+   * Add a new setup step and run it. Setup steps are required to finish without even a notice.
    *
    * @param step
    *     Setup step to be added and run.
@@ -158,7 +158,8 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
    *     If setup step fails.
    */
   protected void setup(InlineValidationStep step) throws SuiteBroken {
-    addAndRun(true, step);
+    // Allow only success.
+    addAndRun(Status.NOTICE, step);
   }
 
   /**
@@ -172,10 +173,29 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
    *     If the step, which was required to succeed, fails.
    */
   protected void addAndRun(boolean requireSuccess, InlineValidationStep step) throws SuiteBroken {
+    Status failureStatus = null;
+    if (requireSuccess) {
+      // Note, that NOTICE and WARNING are still acceptable.
+      failureStatus = Status.FAILURE;
+    }
+    addAndRun(failureStatus, step);
+  }
+
+  /**
+   * Add a new step (to the public list of steps been run) and run it.
+   *
+   * @param failedStatus
+   *     If validation returns `failedStatus` or more severe status,
+   *     then a {@link SuiteBroken} exception will be raised.
+   * @param step
+   *     The step to be added and run.
+   * @throws SuiteBroken
+   *     If the step, which was required to succeed, fails.
+   */
+  protected void addAndRun(Status failedStatus, InlineValidationStep step) throws SuiteBroken {
     this.steps.add(step);
     Status status = step.run();
-    if (requireSuccess && (status.compareTo(Status.FAILURE) >= 0)) {
-      // Note, that NOTICE and WARNING are still acceptable.
+    if (failedStatus != null && status.compareTo(failedStatus) >= 0) {
       throw new SuiteBroken();
     }
   }

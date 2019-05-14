@@ -59,7 +59,7 @@ class OUnitsSetupValidationSuiteV2
         if (coveredHeiIds.isEmpty()) {
           throw new Failure(
               "Catalogue doesn't contain any hei-ids covered by this url. We cannot preform tests.",
-              Status.FAILURE, null
+              Status.NOTICE, null
           );
         }
 
@@ -135,7 +135,7 @@ class OUnitsSetupValidationSuiteV2
         if (OUnitsSetupValidationSuiteV2.this.currentState.ounitIds.isEmpty()) {
           throw new Failure(
               "Cannot fetch any ounits.",
-              Status.FAILURE, null
+              Status.NOTICE, null
           );
         }
 

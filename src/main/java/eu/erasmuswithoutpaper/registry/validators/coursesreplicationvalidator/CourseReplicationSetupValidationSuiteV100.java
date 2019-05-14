@@ -54,7 +54,7 @@ class CourseReplicationSetupValidationSuiteV100
         if (coveredHeiIds.isEmpty()) {
           throw new Failure(
               "Catalogue doesn't contain any hei-ids covered by this url. We cannot preform tests.",
-              Status.FAILURE, null
+              Status.NOTICE, null
           );
         }
 

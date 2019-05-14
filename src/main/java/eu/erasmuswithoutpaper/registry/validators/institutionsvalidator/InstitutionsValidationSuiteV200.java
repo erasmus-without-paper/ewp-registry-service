@@ -63,7 +63,7 @@ class InstitutionsValidationSuiteV200 extends InstitutionsValidationSuiteBase {
         if (coveredHeiIds.isEmpty()) {
           throw new InlineValidationStep.Failure(
               "Manifest file doesn't contain any <hei-id> field. We cannot preform tests.",
-              ValidationStepWithStatus.Status.FAILURE, null
+              ValidationStepWithStatus.Status.NOTICE, null
           );
         }
         heis.addAll(coveredHeiIds);

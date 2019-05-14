@@ -63,7 +63,7 @@ class CoursesSetupValidationSuiteV070
         if (coveredHeiIds.isEmpty()) {
           throw new Failure(
               "Catalogue doesn't contain any hei-ids covered by this url. We cannot preform tests.",
-              Status.FAILURE, null
+              Status.NOTICE, null
           );
         }
         return Optional.empty();
@@ -92,7 +92,7 @@ class CoursesSetupValidationSuiteV070
         }
 
         if (heis.isEmpty()) {
-          throw new Failure("Couldn't find Courses Replication API.", Status.FAILURE, null);
+          throw new Failure("Couldn't find Courses Replication API.", Status.NOTICE, null);
         }
 
         return Optional.empty();
@@ -159,7 +159,7 @@ class CoursesSetupValidationSuiteV070
         if (CoursesSetupValidationSuiteV070.this.currentState.losIds.isEmpty()) {
           throw new Failure(
               "Cannot fetch any losIds.",
-              Status.FAILURE, null
+              Status.NOTICE, null
           );
         }
         return Optional.empty();
