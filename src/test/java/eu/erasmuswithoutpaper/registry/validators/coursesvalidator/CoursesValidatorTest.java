@@ -521,6 +521,38 @@ public class CoursesValidatorTest extends AbstractApiTest {
     );
   }
 
+  /**
+   * Adds timezone to dates in response.
+   */
+  @Test
+  public void testAgainstCoursesInvalid23() {
+    serviceTest(
+        new CoursesServiceV070Valid(coursesUrlHTTT, this.client, GetCoursesReplication()) {
+          @Override
+          protected int getTimeZone() {
+            return 2;
+          }
+        },
+        coursesUrlHTTT, "coursesvalidator/CoursesValidOutput.txt"
+    );
+  }
+
+  /**
+   * Adds timezone to dates in response.
+   */
+  @Test
+  public void testAgainstCoursesInvalid24() {
+    serviceTest(
+        new CoursesServiceV070Valid(coursesUrlHTTT, this.client, GetCoursesReplication()) {
+          @Override
+          protected int getTimeZone() {
+            return 0;
+          }
+        },
+        coursesUrlHTTT, "coursesvalidator/CoursesValidOutput.txt"
+    );
+  }
+
   @Override
   protected ApiValidator GetValidator() {
     return validator;

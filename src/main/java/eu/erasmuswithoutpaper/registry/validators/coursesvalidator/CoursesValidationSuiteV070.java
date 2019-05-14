@@ -1,6 +1,7 @@
 package eu.erasmuswithoutpaper.registry.validators.coursesvalidator;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -122,8 +123,9 @@ class CoursesValidationSuiteV070
         );
 
         // Assuming there are start and end elements, as they are required.
-        LocalDate start = LocalDate.parse(startDates.get(0));
-        LocalDate end = LocalDate.parse(endDates.get(0));
+        DateTimeFormatter pattern = DateTimeFormatter.ofPattern("yyyy-MM-dd[XXX]");
+        LocalDate start = LocalDate.from(pattern.parse(startDates.get(0)));
+        LocalDate end = LocalDate.from(pattern.parse(endDates.get(0)));
         requestFields.startDate = start;
         requestFields.endDate = end;
 

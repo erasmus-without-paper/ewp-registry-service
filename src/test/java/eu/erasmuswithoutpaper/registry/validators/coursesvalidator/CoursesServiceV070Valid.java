@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
@@ -94,13 +93,13 @@ public class CoursesServiceV070Valid extends AbstractCoursesService {
 
     try {
       XMLGregorianCalendar startDate =
-          DatatypeFactory.newInstance().newXMLGregorianCalendar(2011, 1, 1, 0, 0, 0, 0, 0);
-      startDate.setTimezone(DatatypeConstants.FIELD_UNDEFINED);
+          DatatypeFactory.newInstance()
+              .newXMLGregorianCalendar(2011, 1, 1, 0, 0, 0, 0, getTimeZone());
       i1.setStart(startDate);
 
       XMLGregorianCalendar endDate =
-          DatatypeFactory.newInstance().newXMLGregorianCalendar(2011, 6, 20, 0, 0, 0, 0, 0);
-      endDate.setTimezone(DatatypeConstants.FIELD_UNDEFINED);
+          DatatypeFactory.newInstance()
+              .newXMLGregorianCalendar(2011, 6, 20, 0, 0, 0, 0, getTimeZone());
       i1.setEnd(endDate);
     } catch (DatatypeConfigurationException e) {
       // This should not happen.
@@ -116,13 +115,13 @@ public class CoursesServiceV070Valid extends AbstractCoursesService {
 
     try {
       XMLGregorianCalendar startDate =
-          DatatypeFactory.newInstance().newXMLGregorianCalendar(2010, 1, 1, 0, 0, 0, 0, 0);
-      startDate.setTimezone(DatatypeConstants.FIELD_UNDEFINED);
+          DatatypeFactory.newInstance()
+              .newXMLGregorianCalendar(2010, 1, 1, 0, 0, 0, 0, getTimeZone());
       i2.setStart(startDate);
 
       XMLGregorianCalendar endDate =
-          DatatypeFactory.newInstance().newXMLGregorianCalendar(2010, 6, 20, 0, 0, 0, 0, 0);
-      endDate.setTimezone(DatatypeConstants.FIELD_UNDEFINED);
+          DatatypeFactory.newInstance()
+              .newXMLGregorianCalendar(2010, 6, 20, 0, 0, 0, 0, getTimeZone());
       i2.setEnd(endDate);
     } catch (DatatypeConfigurationException e) {
       // This should not happen.
@@ -134,6 +133,10 @@ public class CoursesServiceV070Valid extends AbstractCoursesService {
     data.setSpecifies(specifies);
 
     return data;
+  }
+
+  protected int getTimeZone() {
+    return DatatypeConstants.FIELD_UNDEFINED;
   }
 
   @Override
@@ -325,14 +328,14 @@ public class CoursesServiceV070Valid extends AbstractCoursesService {
     if (requestData.loisBefore == null) {
       return true;
     }
-    return end.compare(requestData.loisBefore) < 0;
+    return end.toGregorianCalendar().compareTo(requestData.loisBefore.toGregorianCalendar()) < 0;
   }
 
   private boolean isAfter(RequestData requestData, XMLGregorianCalendar end) {
     if (requestData.loisAfter == null) {
       return true;
     }
-    return end.compare(requestData.loisAfter) > 0;
+    return end.toGregorianCalendar().compareTo(requestData.loisAfter.toGregorianCalendar()) > 0;
   }
 
   private List<CoursesResponse.LearningOpportunitySpecification> ProcessRequested(
