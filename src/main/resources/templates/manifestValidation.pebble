@@ -2,6 +2,330 @@
 
 {% block pageTitle %}Validate API Endpoints{% endblock %}
 
+{% block scripts %}
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.min.js"></script>
+
+
+{% verbatim %}
+
+<script type="text/x-template" id="help-popup-template">
+<div>
+    <div :class='classes'>
+        <div class="help-popup-popup">
+            <h2>{{ popup_name }}</h2>
+            <a class="help-popup-close" @click="hidePopup()">&times;</a>
+            <div class="help-popup-content">
+                <slot></slot>
+            </div>
+        </div>
+    </div>
+</div>
+</script>
+
+<script type="text/x-template" id="help-popup-button-template">
+    <a class="help-popup-button" @click="showPopup()">&#9432;</a>
+</script>
+
+<script type="text/x-template" id="security-radio-button-template">
+    <label>
+        <input type="radio"
+            :name="'security-' + group"
+            :value="name"
+            @click="onSelected(name)">
+        {{name}}
+        <br />
+    </label>
+</script>
+
+<script type="text/x-template" id="validation-entry-template">
+    <div class="validation-entry">
+        <span class="validation-entry-status">
+            <span v-if='entry.status === "IN_PROGRESS"'>In progress...</span>
+            <span v-else-if='entry.status === "ERROR"'>Error {{ entry.response.status }}</span>
+            <span v-else-if='entry.status === "DONE"'> <a href="#" @click="openResult">Show results</a> </span>
+        </span>
+        <span class="validation-entry-template-security"> {{entry.security}} </span>
+        <code v-for="param in entry.parameters">
+            <br /> <span class="validation-entry-param-name">{{ param.name }}</span> ← {{ param.value }}
+        </code>
+    </div>
+</script>
+
+<script type="text/x-template" id="validation-list-template">
+    <div class="validation-list">
+        <validation-entry v-for="entry in entries" :entry="entry"></validation-entry>
+    </div>
+</script>
+
+<script type="text/x-template" id="parameter-input-template">
+    <tr>
+        <td class="api-entry-parameter-name"> {{name}} </td>
+        <td class="api-entry-parameter-value"> <input type="text" :disabled=areDependenciesNotMet v-model="value"> </td>
+    </tr>
+</script>
+
+<script type="text/x-template" id="parameters-template">
+    <div class="parameters">
+        <div class="section-name">Parameters
+            <help-popup-button popup_id="parameters_popup"> </help-popup-button>
+        </div>
+        <table v-if="parameters && parameters.length > 0">
+            <parameter-input v-for="parameter in parameters"
+                             ref="parameter_input"
+                             :name="parameter.name"
+                             :dependencies="parameter.dependencies"
+                             @emptyChanged='emptyChanged'
+            ></parameter-input>
+        </table>
+        <div v-else>
+            No parameters available.
+        </div>
+    </div>
+</script>
+
+<script type="text/x-template" id="api-entry-template">
+    <div class="api-entry">
+        <div class="api-info">
+            <span class="api-name">{{name}}</span>
+            <span class="api-version">{{version}}</span>
+            <code class="api-url">{{ url }}</code>
+        </div>
+        <div class="api-entry-content">
+            <div class="securities">
+                <div class="section-name">Security method
+                    <help-popup-button popup_id="security_method_popup"> </help-popup-button>
+                </div>
+                <security-radio-button v-for="sec in security" :name="sec" :group="url" @selected='selectedSecurity'>
+                </security-radio-button>
+            </div>
+
+            <parameters ref="input_parameters" :parameters="parameters"></parameters>
+
+            <div class="validation">
+                <button class="validation-button" @click='validate' :disabled='selected_security == ""'> Validate </button>
+                <validation-list ref='validation_list'></validation-list>
+            </div>
+        </div>
+    </div>
+</script>
+
+<script>
+Vue.component('help-popup', {
+    props: ['popup_id', 'popup_name'],
+    data: function() {
+        return {
+            active: false
+        }
+    },
+    computed: {
+        classes: function () {
+            return {
+                'help-popup-overlay': true,
+                'help-popup-overlay-visible': this.active
+            }
+        }
+    },
+    methods: {
+        hidePopup: function() {
+            this.active = false;
+        }
+    },
+    template: '#help-popup-template'
+});
+
+Vue.component('help-popup-button', {
+    props: ['popup_id'],
+    methods: {
+        showPopup: function() {
+            this.$root.$refs[this.popup_id].active = true
+        }
+    },
+    template: '#help-popup-button-template'
+});
+
+Vue.component('security-radio-button', {
+    props: ['name', 'group'],
+    methods: {
+        onSelected: function(value) {
+            this.$emit('selected', value);
+        }
+    },
+    template: '#security-radio-button-template'
+});
+
+class ValidationRequest {
+    constructor(url, name, version, security, parameters) {
+        this.url = url;
+        this.name = name;
+        this.security = security;
+        this.version = version;
+        this.parameters = parameters;
+        this.text = "In progress...";
+        this.status = "IN_PROGRESS";
+        this.sendRequest();
+    }
+
+    sendRequest() {
+        $.ajax({
+            url: "/validateApi",
+            data: JSON.stringify({
+                url: this.url,
+                name: this.name,
+                version: this.version,
+                security: this.security,
+                parameters: this.parameters
+            }),
+            type: "POST",
+            contentType: 'application/json',
+            dataType: "html"
+        }).done((result) => this.onSuccess(result))
+          .fail((result) => this.onError(result));
+    }
+
+    onError(result) {
+        this.status = "ERROR";
+        this.response = result;
+    }
+
+    onSuccess(result) {
+        this.status = "DONE";
+        this.response = result;
+    }
+}
+
+Vue.component('validation-entry', {
+    props: ['entry'],
+    methods: {
+        openResult: function() {
+            var newWindow = window.open();
+            newWindow.document.write(this.entry.response);
+            newWindow.document.close();
+        }
+    },
+    template: '#validation-entry-template'
+});
+
+Vue.component('validation-list', {
+    data: function() {
+        return {
+            entries: []
+        }
+    },
+    methods: {
+        addEntry: function(url, name, version, security, parameters) {
+            this.entries.unshift(new ValidationRequest(url, name, version, security, parameters));
+            this.entries = this.entries.slice(0, 5);
+        }
+    },
+    template: '#validation-list-template'
+});
+
+Vue.component('parameter-input', {
+    props: {
+        name: String,
+        dependencies: Array
+    },
+    data: function() {
+        return {
+            dependencies_values: this.dependencies.reduce((map, obj) => {map[obj] = true; return map}, {}),
+            input_value: ''
+        }
+    },
+    methods: {
+        otherEmptyChanged: function(parameter_name, empty) {
+            if (this.dependencies.indexOf(parameter_name) !== -1) {
+                this.dependencies_values[parameter_name] = empty;
+            }
+        },
+        hasValue: function() {
+            return !this.areDependenciesNotMet && this.value !== '';
+        }
+    },
+    computed: {
+        areDependenciesNotMet: function() {
+            return Object.values(this.dependencies_values).some((x) => x);
+        },
+        value: {
+            get: function() {
+                return this.input_value;
+            },
+            set: function(value) {
+                if (value && !this.input_value) {
+                    this.$emit('emptyChanged', this.name, false);
+                } else if (!value && this.input_value) {
+                    this.$emit('emptyChanged', this.name, true);
+                }
+                this.input_value = value;
+            }
+        }
+    },
+    template: '#parameter-input-template'
+});
+
+Vue.component('parameters', {
+    props: {
+        parameters: Array
+    },
+    methods: {
+        emptyChanged: function(parameter_name, empty) {
+            this.$refs.parameter_input.forEach(
+                input => input.otherEmptyChanged(parameter_name, empty)
+            );
+        },
+        gatherParameters() {
+            if (this.$refs.parameter_input === undefined) {
+                return []
+            }
+            var inputs_with_values = this.$refs.parameter_input.filter(input => input.hasValue());
+            return inputs_with_values.map(input => {
+                    return {
+                        name: input.name,
+                        value: input.value
+                    }
+                });
+        }
+    },
+    template: "#parameters-template"
+});
+
+Vue.component('api-entry', {
+    props: {
+        'name': String,
+        'version': String,
+        'security': Array,
+        'url': String,
+        'parameters': Array
+    },
+    data: function() {
+        return {
+            'selected_security': ''
+        };
+    },
+    methods: {
+        selectedSecurity: function(value) {
+            this.selected_security = value;
+        },
+        validate: function() {
+            this.$refs.validation_list.addEntry(
+                this.url, this.name, this.version, this.selected_security, this.gatherParameters());
+        },
+        gatherParameters: function() {
+            return this.$refs.input_parameters.gatherParameters();
+        }
+    },
+    template: '#api-entry-template'
+});
+
+$(function() {
+    new Vue({
+        el: '#api-entry-set'
+    });
+});
+</script>
+{% endverbatim %}
+{% endblock %}
+
 {% block main %}
     <section class='ewp-section ewp-section-centered'>
         <h2 class='ewp-section-title'>API Validator</h2>
@@ -16,70 +340,68 @@
             <code class='ewpst__bordered-code-larger'><a href='{{ manifestUrl }}'>{{ manifestUrl }}</a></code>:
         </p>
 
+        <div id="api-entry-set">
         {% for api in apis %}
-            <div class="api_entry">
-            <h3 style="margin-bottom:5px;">{{ api.name }} {{ api.version }}</h3>
-            <code class='ewpst__bordered-code-larger'> {{ api.url }} </code> <br>
-            {% set api_index = loop.index %}
-            {% for security in api.securities %}
-            <div class="security_entry" style="padding-top:5px;">
-                <code class='ewpst__bordered-code-larger'>{{ security }}</code> -
-                <span class='manifest_validator_validate_cell'>
-                    <a class='manifest_validator_validate'
-                                data-api-url="{{ api.url }}"
-                                data-api-name="{{ api.name }}"
-                                data-api-version="{{ api.version }}"
-                                data-api-sec="{{ security }}">
-                        Validate
-                    </a>
-                </span>
-                <span class='manifest_validator_in_progress_cell' style="display:none;">
-                    Validation in progress...
-                </span>
-                <span class='manifest_validator_done_cell' style="display:none;">
-                    <a class='manifest_validator_done'>
-                        Show results
-                    </a>
-                </span>
-                <span class='manifest_validator_error_cell' style="display:none;">
-                    <a class='manifest_validator_error'
-                            data-api-url="{{ api.url }}"
-                            data-api-name="{{ api.name }}"
-                            data-api-version="{{ api.version }}"
-                            data-api-sec="{{ security }}">
-                        An error has occurred, try again.
-                    </a>
-                </span>
-                <br>
-            </div>
-            {% endfor %}
-            {% if not api.parameters.isEmpty() %}
-            <details class="validation_parameters">
-                <summary>Parameters</summary>
-                <p>
-                    Here you can override some of parameters that validator uses in its requests.<br />
-                    Correctness of provided parameters is not checked, tests will most probably fail if they are wrong.
-                </p>
-                <table>
-                {% for parameter in api.parameters %}
-                    <tr class="validation_parameter">
-                        <td>
-                        <label for="{{ parameter.name }}-{{ api_index }}">{{ parameter.name }}</label>
-                        </td>
-                        <td>
-                        <input name="{{ parameter.name }}" id="{{ parameter.name }}-{{ api_index }}"/>
-                        </td>
-                        <td>
-                        {% if not parameter.dependencies.isEmpty() %}
-                        <span>Requires: {{ parameter.dependencies }}</span>
-                        {% endif %}
-                        </td>
-                    </tr>
-                {% endfor %}
-                </table>
-            </details>
-            {% endif %}
+            <api-entry
+                    name="{{ api.name }}"
+                    version="{{ api.version }}"
+                    :security="[ {% for security in api.securities %} '{{ security }}', {% endfor %} ]"
+                    :parameters="[ {% for param in api.parameters %}
+                            {
+                                'name': '{{ param.name }}',
+                                'dependencies': [
+                                    {% for dependency in param.dependencies %}
+                                        '{{ dependency }}',
+                                    {% endfor %}
+                                ]
+                            },
+                        {% endfor %}]"
+                    url="{{ api.url }}"></api-entry>
         {% endfor %}
+
+        <help-popup ref="security_method_popup" popup_name="Security method">
+            Here you have to select security method that will be used to perform calls to validated API.
+            Security method consists of four letters, their meaning is described on the top of this page.
+        </help-popup>
+
+        <help-popup ref="parameters_popup" popup_name="Parameters">
+            <p>
+                Parameters are values used by validators when they perform calls to APIs.
+                <b>You should leave those fields empty</b>, validators are able to find proper values themselves.
+                However there are certain cases when you would like to fill those fields.
+            </p>
+            <p>
+            <h4>When should I fill those fields?</h4>
+            <ol>
+                <li>
+                    You would like to see if your API works with parameters different than ones found by the validator.
+                </li>
+                <li>
+                    Validator obtains its parameters using API you do not support. <br />
+                    E.g. if you want to validate Courses API, validator will use Course Replication API to find
+                    <code>los_id</code> parameters that can be used to query Courses API.
+                    If your host doesn't implement Replication API the validator will report that it cannot find
+                    required API and won't perform tests. In that case you can manually provide <code>hei_id</code>
+                    and <code>los_id</code> values from you database. Validator will run tests using that values.
+                </li>
+            </ol>
+            </p>
+            <p>
+                <h4>How to find out what parameters are used by the validator?</h4>
+                You should look at details of requests made by the validator, they are used as parameters for
+                HTTP requests with same names.
+            </p>
+            <p>
+            <h4>What is the meaning of parameter X?</h4>
+                Look at the specification of the API you are validating, parameters used here are subset of those
+                described there.
+            </p>
+            <p>
+                If you manually enter parameter please take care to provide correct values, they cannot be
+                verified and are assumed to be correct. Providing invalid parameters will result in failed tests.
+            </p>
+
+        </help-popup>
         </div>
     </section>
 {% endblock %}

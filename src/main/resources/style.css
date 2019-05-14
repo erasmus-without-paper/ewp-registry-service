@@ -539,7 +539,6 @@ td.ewpsrc__test_index {
     word-break: break-all;
 }
 
-
 .ewp-status {
     display: inline;
     padding: .2em .6em .3em;
@@ -564,4 +563,145 @@ td.ewpsrc__test_index {
 #xml_text {
     width: 100%;
     height: 300px;
+}
+
+.api-entry {
+    display: flow-root;
+    margin: 10px 0 10px 0;
+    padding: 5px 8px;
+    font-family: 'Lato', sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    box-sizing: border-box;
+    text-align: left;
+    color: #000;
+    border: 1px solid #b0b0b0;
+}
+
+.api-entry:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.api-entry-content {
+    border-top: 1px solid #b0b0b0;
+    margin-top: 6px;
+}
+
+.api-entry-parameter-name {
+    width: 5em;
+}
+
+.api-entry-parameter-value {
+    width: 15em;
+}
+
+.api-info {
+    outline: 0;
+}
+
+.api-info .api-name {
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.section-name {
+    font-weight: bold;
+}
+
+.parameters {
+    width: 35%;
+    float: left;
+}
+
+.securities {
+    width: 15%;
+    min-width: 100px;
+    float: left;
+}
+
+.validation {
+    width: 50%;
+    float: left;
+}
+
+.validation-entry {
+    border-top: solid 1px #b0b0b0;
+}
+
+.validation-entry-status {
+    width: 7em;
+    float: left;
+}
+
+.validation-button {
+    padding: 2px;
+    width: 30%;
+}
+
+.validation-entry:last-child {
+    border-bottom: solid 1px #b0b0b0;
+}
+
+.validation-entry-param-name {
+    width: 7em;
+    float: left;
+}
+
+.help-popup-overlay {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.7);
+    transition: opacity 500ms;
+    visibility: hidden;
+    opacity: 0;
+}
+
+.help-popup-overlay-visible {
+    visibility: visible;
+    opacity: 1;
+}
+
+.help-popup-button {
+    display: inline;
+}
+
+.help-popup-popup {
+    margin: 70px auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 5px;
+    width: 30%;
+    position: relative;
+    transition: all 5s ease-in-out;
+}
+
+.help-popup-popup h2 {
+    margin-top: 0;
+    color: #333;
+    font-family: Tahoma, Arial, sans-serif;
+}
+
+.help-popup-popup .help-popup-close {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    transition: all 200ms;
+    font-size: 30px;
+    font-weight: bold;
+    text-decoration: none;
+    color: #333;
+}
+
+.help-popup-popup .help-popup-close:hover {
+    color: #06D85F;
+}
+
+.help-popup-popup .help-popup-content {
+    max-height: 30%;
+    overflow: auto;
 }
