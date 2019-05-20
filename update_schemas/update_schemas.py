@@ -121,8 +121,8 @@ class RepoProcessor(object):
         else:
             version_marker = "stable-v" + str(self.version.major)
 
-        file = f"/{filename}" if filename else ""
-        return f"{self.uri_name_base}/{tree_or_blob}/{version_marker}{file}"
+        file = "/%s" % (filename, ) if filename else ""
+        return "%s/%s/%s%s" % (self.uri_name_base, tree_or_blob, version_marker, file)
 
     def create_copy_entry(self, filename):
         return (
@@ -160,7 +160,7 @@ class RepoProcessor(object):
         self.version_string = 'v' + str(version)
         self.files = git_list_files(self.repo)
 
-        self.uri_base = f"{self.name}-v{str(self.version)}/"
+        self.uri_base = "%s-v%s/" % (self.name, str(self.version))
         self.uri_name_base = GITHUB_EWP_PATH + self.name
 
     def __call__(self):
@@ -295,7 +295,8 @@ def create_copy_examples_entries(name, version):
         if re.match(".*example.*xml", filename) is not None:
             print("Found example file", cloned_dir + "/" + filename)
             result.append((
-                cloned_dir + "/" + filename, f"{TEST_FILES_DIR}{name}-{filename.replace('/', '-')}",
+                cloned_dir + "/" + filename,
+                "%s%s-%s" % (TEST_FILES_DIR, name, filename.replace('/', '-')),
                 cloned_dir, 'v' + str(version)
             ))
     return result
@@ -322,7 +323,7 @@ def create_index_entries(tags_dict):
 
 def construct_uri_entry(name, uri):
     indent = '    '
-    return ["<uri", indent + f'name="{name}"', indent + f'uri="{uri}" />']
+    return ["<uri", '%sname="%s"' % (indent, name), '%suri="%s" />' % (indent, uri)]
 
 
 def remove_dir(name):
