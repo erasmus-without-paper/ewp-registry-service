@@ -6,20 +6,23 @@
     <section class='ewp-section ewp-section-centered'>
         <h2 class='ewp-section-title'>XML Schema Validator</h2>
 
-        <p>This tool will help you with writing EWP XML documents. For example, you can paste
+        <p class="ewp-para">This tool will help you with writing EWP XML documents. For example, you can paste
         the contents of your <a href='https://github.com/erasmus-without-paper/ewp-specs-api-discovery'>Manifest
         file</a> here before you upload it onto your production site. You should be able to validate any
-        XML document described in all RELEASED, DEPRECATED and OBSOLETE specifications (plus,
+        XML document described in all
+        <span class='ewp-status ewp-status-latest-release'>RELEASED</span>,
+        <span class='ewp-status ewp-status-deprecated'>DEPRECATED</span> and
+        <span class='ewp-status ewp-status-obsolete'>OBSOLETE</span> specifications listed
+        on <a href="https://developers.erasmuswithoutpaper.eu/" target="_blank">Developers Hub</a> website (plus,
         perhaps, some of the <span class='ewp-status ewp-status-draft'>DRAFT</span> ones).</p>
 
-        <p>Note, that this tool will validate <b>against the schema only</b>! Even if such validation succeeds,
+        <p class="ewp-para">Note, that this tool will validate <b>against the schema only</b>! Even if such validation succeeds,
         your file <b>may still be invalid</b> (if, for example, you didn't adhere to the guidelines described in
         <code>&lt;xs:documentation&gt;</code> elements included in the XSD files).</p>
 
-        <form id="xml_form" action="javascript:void(0);">
-            <p>Paste your XML document below and press <button id="validate_button">Validate</button></p>
-
-            <textarea id="xml_text" name="xml" style="width: 100%; height: 300px;"></textarea>
+        <form id="xml_form">
+            <p class="ewp-para">Paste your XML document below and press <button id="validate_button">Validate</button></p>
+            <textarea id="xml_text" name="xml"></textarea>
         </form>
 
         <section id="result_section" hidden>
@@ -33,7 +36,7 @@
 
             <span id="correct" hidden>
                 This seems to be a valid <code id="correct_element_name"></code> element (from <code id="correct_namespace"></code>).
-            <span>
+            </span>
         </section>
         <span id="server_error" hidden>
             Server error, try again.

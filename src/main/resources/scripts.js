@@ -161,7 +161,8 @@ function showXMLValidationFailed(data) {
 }
 
 $(function() {
-    $("#validate_button").on("click", function() {
+    $("#validate_button").on("click", function(event) {
+        event.preventDefault();
         $.post("/validate", $("#xml_form").serialize())
          .done(function(data) {
             $("#errors").empty();
@@ -184,4 +185,4 @@ $(function() {
             window.location.hash = "#result_section";
           })
     });
-})
+});

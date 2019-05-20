@@ -519,8 +519,8 @@ td.ewpsrc__test_index {
 #result_ok {
     color: #0a0;
 }
+
 .ewp-manifest-validator-line-number {
-    font-style: italic;
     color: #aaa;
     font-style: monospace;
 }
@@ -537,4 +537,31 @@ td.ewpsrc__test_index {
     font-size: larger;
     white-space: pre-wrap;
     word-break: break-all;
+}
+
+
+.ewp-status {
+    display: inline;
+    padding: .2em .6em .3em;
+    font-size: 11.25px;
+    font-family: 'Lato', sans-serif;
+    font-weight: 700;
+    line-height: 1;
+    color: #fff;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: .25em;
+    text-shadow: 0 1px 1px rgba(0,0,0,0.4);
+    position: relative;
+    top: -1px;
+}
+.ewp-status-draft { background: #777; }
+.ewp-status-latest-release { background: #489048; }
+.ewp-status-obsolete { background: #bbb; }
+.ewp-status-deprecated { background: #999; }
+
+#xml_text {
+    width: 100%;
+    height: 300px;
 }
