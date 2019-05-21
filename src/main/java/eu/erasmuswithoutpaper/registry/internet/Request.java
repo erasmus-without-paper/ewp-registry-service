@@ -70,6 +70,9 @@ public class Request {
     this.clientCertificate = Optional.empty();
     this.clientCertificateKeyPair = Optional.empty();
     this.processingNoticesHtml = new ArrayList<>();
+    if (Objects.equals(method, "POST") || Objects.equals(method, "PUT")) {
+      this.headers.put("Content-Length", "0");
+    }
   }
 
   /**
