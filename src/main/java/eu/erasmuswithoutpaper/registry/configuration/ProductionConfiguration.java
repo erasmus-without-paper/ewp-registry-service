@@ -19,6 +19,15 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @Configuration
 public class ProductionConfiguration {
 
+  public ProductionConfiguration() {
+    // Allow manual setting of "Content-Length" header in requests
+    allowSettingRestrictedHeaders();
+  }
+
+  private void allowSettingRestrictedHeaders() {
+    System.setProperty("sun.net.http.allowRestrictedHeaders", "true");
+  }
+
   /**
    * Get {@link ManifestRepositoryImplProperties} to be used in production environment.
    *
