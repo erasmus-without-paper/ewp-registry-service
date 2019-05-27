@@ -8,12 +8,12 @@ from collections import defaultdict
 from git import Repo
 from git.exc import GitCommandError
 
-
+SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
 GITHUB_EWP_PATH = "https://github.com/erasmus-without-paper/"
 GITHUB_REPOS_PATH = "https://api.github.com/users/erasmus-without-paper/repos?per_page=100"
-TEMP_REPOS_DIR = "./temp/"
-OUTPUT_DIRECTORY = "../src/main/resources/schemas/"
-TEST_FILES_DIR = "../src/test/resources/test-files/latest-examples/"
+TEMP_REPOS_DIR = os.path.join(SCRIPT_DIR, "./temp/")
+OUTPUT_DIRECTORY = os.path.join(SCRIPT_DIR, "../src/main/resources/schemas/")
+TEST_FILES_DIR = os.path.join(SCRIPT_DIR, "../src/test/resources/test-files/latest-examples/")
 
 
 class GitHubException(Exception):
@@ -45,7 +45,8 @@ def download_whole_repository_list():
         print("Getting", current_page)
         response = requests.get(current_page)
         if response.status_code != 200:
-            raise GitHubException("Cannot obtain repositories list.")
+            raise GitHubException("Cannot obtain repositories list. "
+                                  "GitHub returned status %s." % (response.status_code))
         try:
             json = response.json()
             result.extend(json)
@@ -293,12 +294,17 @@ def create_copy_examples_entries(name, version):
     files = git_list_files(repo)
     for filename in files:
         if re.match(".*example.*xml", filename) is not None:
-            print("Found example file", cloned_dir + "/" + filename)
-            result.append((
-                cloned_dir + "/" + filename,
-                "%s%s-%s" % (TEST_FILES_DIR, name, filename.replace('/', '-')),
-                cloned_dir, 'v' + str(version)
-            ))
+            print("Found example file", cloned_dir + "/" + filename, end='')
+            if "/example-scenario/" in filename:
+                print(", but it is in example-scenario directory. It might be invalid "
+                      "and will be skipped.", end='')
+            else:
+                result.append((
+                    cloned_dir + "/" + filename,
+                    "%s%s-%s" % (TEST_FILES_DIR, name, filename.replace('/', '-')),
+                    cloned_dir, 'v' + str(version)
+                ))
+            print('')  # New line
     return result
 
 
@@ -374,6 +380,7 @@ index_lines.extend(index_epilog)
 
 # Remove old schemas
 remove_dir(OUTPUT_DIRECTORY)
+remove_dir(TEST_FILES_DIR)
 
 # Write index
 index_file_name = "__index__.xml"
@@ -392,7 +399,7 @@ for source, destination, repo_path, version in copy_entries:
     shutil.copyfile(source, destination)
 
 xml_xsd = "xml.xsd"
-source = xml_xsd
+source = os.path.join(SCRIPT_DIR, xml_xsd)
 destination = OUTPUT_DIRECTORY + xml_xsd
 os.makedirs(os.path.dirname(destination), exist_ok=True)
 shutil.copyfile(source, destination)

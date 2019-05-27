@@ -106,6 +106,7 @@ public class UiController {
   private final CatalogueDependantCache catcache;
   private final ApiValidatorsManager apiValidatorsManager;
   private final ValidatorKeyStore validatorKeyStore;
+  private final MyErrorController errorController;
 
   private byte[] cachedCss;
   private String cachedCssFingerprint;
@@ -154,7 +155,8 @@ public class UiController {
       CoverageMatrixGenerator matrixGenerator, RegistryClient regClient,
       CatalogueDependantCache catcache,
       ApiValidatorsManager apiValidatorsManager,
-      ValidatorKeyStore validatorKeyStore) {
+      ValidatorKeyStore validatorKeyStore,
+      MyErrorController errorController) {
     this.taskExecutor = taskExecutor;
     this.manifestStatusRepo = manifestUpdateStatuses;
     this.manifestRepository = manifestRepository;
@@ -170,6 +172,7 @@ public class UiController {
     this.catcache = catcache;
     this.apiValidatorsManager = apiValidatorsManager;
     this.validatorKeyStore = validatorKeyStore;
+    this.errorController = errorController;
   }
 
   /**
@@ -310,7 +313,7 @@ public class UiController {
    * @return A page describing the status of the manifest.
    */
   @RequestMapping(value = "/manifestValidation", params = "url", method = RequestMethod.GET)
-  public ModelAndView manifestValidate(HttpServletResponse response, @RequestParam String url) {
+  public Object manifestValidate(HttpServletResponse response, @RequestParam String url) {
     ModelAndView mav = new ModelAndView();
     this.initializeMavCommons(mav);
     mav.setViewName("manifestValidation");
@@ -324,8 +327,7 @@ public class UiController {
           .parseManifest(manifestRepository.getManifestFiltered(url), apiValidatorsManager);
       apis = apis.stream().filter(api -> api.available).collect(Collectors.toList());
     } catch (ManifestNotFound manifestNotFound) {
-      mav.setStatus(HttpStatus.BAD_REQUEST);
-      return mav;
+      return this.errorController.get404();
     }
     mav.addObject("apis", apis);
 
@@ -783,7 +785,7 @@ public class UiController {
    * @return HTML with validation results.
    */
   @RequestMapping(path = "/validateApi", method = RequestMethod.POST)
-  public ModelAndView validateApiVersion(@RequestBody ValidationRequestBody requestBody) {
+  public Object validateApiVersion(@RequestBody ValidationRequestBody requestBody) {
     ModelAndView mav = new ModelAndView();
     this.initializeMavCommons(mav);
     mav.setViewName("validationResult");
@@ -794,13 +796,11 @@ public class UiController {
       desc = new HttpSecurityDescription(requestBody.getSecurity());
       ver = new SemanticVersion(requestBody.getVersion());
     } catch (InvalidDescriptionString | InvalidVersionString ignored) {
-      mav.setStatus(HttpStatus.BAD_REQUEST);
-      return mav;
+      return this.errorController.get404();
     }
 
     if (!this.apiValidatorsManager.hasCompatibleTests(requestBody.getName(), ver)) {
-      mav.setStatus(HttpStatus.BAD_REQUEST);
-      return mav;
+      return this.errorController.get404();
     }
 
     ValidationParameters requestParameters = new ValidationParameters(requestBody.getParameters());
@@ -808,8 +808,7 @@ public class UiController {
         this.apiValidatorsManager.getParameters(requestBody.getName(), ver);
 
     if (!requestParameters.checkDependencies(availableParameters)) {
-      mav.setStatus(HttpStatus.BAD_REQUEST);
-      return mav;
+      return this.errorController.get404();
     }
 
     Date validationStartedDate = new Date();

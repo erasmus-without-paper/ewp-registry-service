@@ -9,6 +9,40 @@ import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 class CoverageMatrixRow {
 
+  private static String genRow(String text, int colorClass) {
+    return genRow(text, colorClass, 1, 1, "");
+  }
+
+  private static String genRow(String text, int colorClass, int rowspan, int colspan) {
+    return genRow(text, colorClass, rowspan, colspan, "");
+  }
+
+  private static String genRow(String text, int colorClass, int rowspan, int colspan,
+      String classes) {
+    StringBuilder sb = new StringBuilder();
+    sb.append("<th ");
+    if (colspan != 1) {
+      sb.append("colspan='");
+      sb.append(colspan);
+      sb.append('\'');
+    }
+    if (rowspan != 1) {
+      sb.append("rowspan='");
+      sb.append(rowspan);
+      sb.append('\'');
+    }
+    sb.append("class='ewpst__cell ewpst__cell--cc");
+    sb.append(colorClass);
+    if (!classes.isEmpty()) {
+      sb.append(' ');
+      sb.append(classes);
+    }
+    sb.append("'>");
+    sb.append(text);
+    sb.append("</th>");
+    return sb.toString();
+  }
+
   static void generateHtmlTableHeader(StringBuilder sb) {
 
     StringBuilder row1 = new StringBuilder();
@@ -20,52 +54,74 @@ class CoverageMatrixRow {
 
     /* Institution */
 
-    row1.append("<th rowspan='3' class='ewpst__cell ewpst__cell--cc1'>Institution</th>");
+    row1.append(genRow("Institution", NAME_COLOR_CLASS, 3, 1));
+
+    /* SCHAC */
+
+    row1.append(genRow("SCHAC", NAME_COLOR_CLASS, 3, 1, "ewpst__cell-schac"));
 
     /* General Purpose APIs */
 
-    row1.append("<th colspan='4' class='ewpst__cell ewpst__cell--cc3'>General Purpose APIs</th>");
-    row2.append("<th rowspan='2' class='ewpst__cell ewpst__cell--cc3'>inst.</th>");
-    row2.append("<th rowspan='2' class='ewpst__cell ewpst__cell--cc3'>ounits</th>");
-    row2.append("<th rowspan='2' class='ewpst__cell ewpst__cell--cc3'>courses</th>");
-    row2.append("<th rowspan='2' class='ewpst__cell ewpst__cell--cc3'>course replic.</th>");
+    int colorClass = getNextColorClass(NAME_COLOR_CLASS);
+
+    row1.append(genRow("General Purpose APIs", colorClass, 1, 4));
+    row2.append(genRow("inst.", colorClass, 2, 1));
+    row2.append(genRow("ounits", colorClass, 2, 1));
+    row2.append(genRow("courses", colorClass, 2, 1));
+    row2.append(genRow("course replic.", colorClass, 2, 1));
 
     /* IIAs */
+    colorClass = getNextColorClass(colorClass);
 
-    row1.append("<th colspan='3' class='ewpst__cell ewpst__cell--cc2'>IIAs</th>");
-    row2.append("<th rowspan='2' class='ewpst__cell ewpst__cell--cc2'>ver.</th>");
-    row2.append("<th colspan='2' class='ewpst__cell ewpst__cell--cc2'>CNR</th>");
-    row3.append("<th class='ewpst__cell ewpst__cell--cc2'>sends</th>");
-    row3.append("<th class='ewpst__cell ewpst__cell--cc2'>recv.</th>");
+    row1.append(genRow("IIAs", colorClass, 1, 3));
+    row2.append(genRow("ver.", colorClass, 2, 1));
+    row2.append(genRow("CNR", colorClass, 1, 2));
+    row3.append(genRow("sends", colorClass));
+    row3.append(genRow("recv.", colorClass));
 
     /* OMobilities */
+    colorClass = getNextColorClass(colorClass);
 
-    row1.append("<th colspan='4' class='ewpst__cell ewpst__cell--cc3'>OMobilities</th>");
-    row2.append("<th rowspan='2' class='ewpst__cell ewpst__cell--cc3'>ver.</th>");
-    row2.append("<th rowspan='2' class='ewpst__cell ewpst__cell--cc3'>update types</th>");
-    row2.append("<th colspan='2' class='ewpst__cell ewpst__cell--cc3'>CNR</th>");
-    row3.append("<th class='ewpst__cell ewpst__cell--cc3'>sends</th>");
-    row3.append("<th class='ewpst__cell ewpst__cell--cc3'>recv.</th>");
+    row1.append(genRow("OMobilities", colorClass, 1, 3));
+    row2.append(genRow("ver.", colorClass, 2, 1));
+    row2.append(genRow("CNR", colorClass, 1, 2));
+    row3.append(genRow("sends", colorClass));
+    row3.append(genRow("recv.", colorClass));
+
+    /* OMobility LAs */
+
+    colorClass = getNextColorClass(colorClass);
+
+    row1.append(genRow("OMobility LAs", colorClass, 1, 4));
+    row2.append(genRow("ver.", colorClass, 2, 1));
+    row2.append(genRow("update types", colorClass, 2, 1));
+    row2.append(genRow("CNR", colorClass, 1, 2));
+    row3.append(genRow("sends", colorClass));
+    row3.append(genRow("recv.", colorClass));
 
     /* IMobilities */
 
-    row1.append("<th colspan='3' class='ewpst__cell ewpst__cell--cc2'>IMobilities</th>");
-    row2.append("<th rowspan='2' class='ewpst__cell ewpst__cell--cc2'>ver.</th>");
-    row2.append("<th colspan='2' class='ewpst__cell ewpst__cell--cc2'>CNR</th>");
-    row3.append("<th class='ewpst__cell ewpst__cell--cc2'>sends</th>");
-    row3.append("<th class='ewpst__cell ewpst__cell--cc2'>recv.</th>");
+    colorClass = getNextColorClass(colorClass);
+
+    row1.append(genRow("IMobilities", colorClass, 1, 3));
+    row2.append(genRow("ver.", colorClass, 2, 1));
+    row2.append(genRow("CNR", colorClass, 1, 2));
+    row3.append(genRow("sends", colorClass));
+    row3.append(genRow("recv.", colorClass));
 
     /* IMobility ToRs */
 
-    row1.append("<th colspan='3' class='ewpst__cell ewpst__cell--cc3'>IMobility ToRs</th>");
-    row2.append("<th rowspan='2' class='ewpst__cell ewpst__cell--cc3'>ver.</th>");
-    row2.append("<th colspan='2' class='ewpst__cell ewpst__cell--cc3'>CNR</th>");
-    row3.append("<th class='ewpst__cell ewpst__cell--cc3'>sends</th>");
-    row3.append("<th class='ewpst__cell ewpst__cell--cc3'>recv.</th>");
+    colorClass = getNextColorClass(colorClass);
+
+    row1.append(genRow("IMobility ToRs", colorClass, 1, 3));
+    row2.append(genRow("ver.", colorClass, 2, 1));
+    row2.append(genRow("CNR", colorClass, 1, 2));
+    row3.append(genRow("sends", colorClass));
+    row3.append(genRow("recv.", colorClass));
 
     /* Other APIs */
 
-    row1.append("<th rowspan='3' class='ewpst__cell ewpst__cell--cc4'>Other APIs</th>");
+    row1.append(genRow("Other APIs", OTHER_APIS_COLOR_CLASS, 3, 1));
 
     /* Finalize */
 
@@ -77,109 +133,154 @@ class CoverageMatrixRow {
     sb.append(row3.toString());
   }
 
-  private final HeiEntry hei;
+  private static final int NAME_COLOR_CLASS = 1;
+  private static final int EVEN_COLOR_CLASS = 2;
+  private static final int ODD_COLOR_CLASS = 3;
+  private static final int OTHER_APIS_COLOR_CLASS = 4;
+
   private final List<CoverageMatrixCell> cells;
   private final OtherApisCell otherApisCell;
 
   CoverageMatrixRow(HeiEntry hei, RegistryClient client) {
-    this.hei = hei;
     this.cells = new ArrayList<>();
 
     CoverageMatrixCell cell;
 
     /* Institution */
 
-    cell = new CoverageMatrixCell(1);
+    cell = new CoverageMatrixCell(NAME_COLOR_CLASS);
     this.cells.add(cell);
-    cell.addContentLine(this.hei.getId());
+    cell.addContentLine(hei.getName());
+
+    /* SCHAC */
+
+    cell = new CoverageMatrixCell(NAME_COLOR_CLASS);
+    cell.addClass("ewpst__cell-schac");
+    this.cells.add(cell);
+    cell.addContentLine(hei.getId());
 
     /* General Purpose APIs */
 
+    int colorClass = getNextColorClass(NAME_COLOR_CLASS);
+
     // inst.
-    cell = new ApiVersionsCell(3, client, hei, KnownElement.APIENTRY_INSTITUTIONS_V1,
+    cell = new ApiVersionsCell(colorClass, client, hei, KnownElement.APIENTRY_INSTITUTIONS_V1,
         KnownElement.APIENTRY_INSTITUTIONS_V2);
     this.cells.add(cell);
 
     // ounits
-    cell = new ApiVersionsCell(3, client, hei, KnownElement.APIENTRY_OUNITS_V1,
+    cell = new ApiVersionsCell(colorClass, client, hei, KnownElement.APIENTRY_OUNITS_V1,
         KnownElement.APIENTRY_OUNITS_V2);
     this.cells.add(cell);
 
     // courses
-    cell = new ApiVersionsCell(3, client, hei, KnownElement.APIENTRY_COURSES_V1);
+    cell = new ApiVersionsCell(colorClass, client, hei, KnownElement.APIENTRY_COURSES_V1);
     this.cells.add(cell);
 
     // course replic.
-    cell = new ApiVersionsCell(3, client, hei, KnownElement.APIENTRY_COURSE_REPLICATION_V1);
+    cell = new ApiVersionsCell(colorClass, client, hei,
+        KnownElement.APIENTRY_COURSE_REPLICATION_V1);
     this.cells.add(cell);
 
     /* IIAs */
 
+    colorClass = getNextColorClass(colorClass);
+
     // ver. + CNR sends
-    cell = new ApiVersionsCell(2, client, hei, KnownElement.APIENTRY_IIAS_V1,
+    cell = new ApiVersionsCell(colorClass, client, hei, KnownElement.APIENTRY_IIAS_V1,
         KnownElement.APIENTRY_IIAS_V2);
     this.cells.add(cell);
 
     // CNR sends
-    cell = new ApiCnrSendsCell(2, client, hei, KnownElement.APIENTRY_IIAS_V1,
+    cell = new ApiCnrSendsCell(colorClass, client, hei, KnownElement.APIENTRY_IIAS_V1,
         KnownElement.APIENTRY_IIAS_V2);
     this.cells.add(cell);
 
     // CNR recv.
-    cell = new ApiVersionsCell(2, client, hei, KnownElement.APIENTRY_IIA_CNR_V1,
+    cell = new ApiVersionsCell(colorClass, client, hei, KnownElement.APIENTRY_IIA_CNR_V1,
         KnownElement.APIENTRY_IIA_CNR_V2);
     this.cells.add(cell);
 
     /* OMobilities */
 
-    // ver.
-    cell = new ApiVersionsCell(3, client, hei, KnownElement.APIENTRY_OMOBILITIES_V1);
-    this.cells.add(cell);
+    colorClass = getNextColorClass(colorClass);
 
-    // update types
-    cell = new OMobilityUpdateTypesCell(3, client, hei, KnownElement.APIENTRY_OMOBILITIES_V1);
+    // ver.
+    cell = new ApiVersionsCell(colorClass, client, hei, KnownElement.APIENTRY_OMOBILITIES_V1);
     this.cells.add(cell);
 
     // CNR sends
-    cell = new ApiCnrSendsCell(3, client, hei, KnownElement.APIENTRY_OMOBILITIES_V1);
+    cell = new ApiCnrSendsCell(colorClass, client, hei, KnownElement.APIENTRY_OMOBILITIES_V1);
     this.cells.add(cell);
 
     // CNR recv.
-    cell = new ApiVersionsCell(3, client, hei, KnownElement.APIENTRY_OMOBILITY_CNR_V1);
+    cell = new ApiVersionsCell(colorClass, client, hei, KnownElement.APIENTRY_OMOBILITY_CNR_V1);
+    this.cells.add(cell);
+
+    /* OMobility LAs */
+
+    colorClass = getNextColorClass(colorClass);
+
+    // ver.
+    cell = new ApiVersionsCell(colorClass, client, hei, KnownElement.APIENTRY_OMOBILITY_LAS_V1);
+    this.cells.add(cell);
+
+    // update types
+    cell = new OMobilityUpdateTypesCell(colorClass, client, hei,
+        KnownElement.APIENTRY_OMOBILITY_LAS_V1);
+    this.cells.add(cell);
+
+    // CNR sends
+    cell = new ApiCnrSendsCell(colorClass, client, hei, KnownElement.APIENTRY_OMOBILITY_LAS_V1);
+    this.cells.add(cell);
+
+    // CNR recv.
+    cell = new ApiVersionsCell(colorClass, client, hei, KnownElement.APIENTRY_OMOBILITY_LA_CNR_V1);
     this.cells.add(cell);
 
     /* IMobilities */
 
+    colorClass = getNextColorClass(colorClass);
+
     // ver.
-    cell = new ApiVersionsCell(2, client, hei, KnownElement.APIENTRY_IMOBILITIES_V1);
+    cell = new ApiVersionsCell(colorClass, client, hei, KnownElement.APIENTRY_IMOBILITIES_V1);
     this.cells.add(cell);
 
     // CNR sends
-    cell = new ApiCnrSendsCell(2, client, hei, KnownElement.APIENTRY_IMOBILITIES_V1);
+    cell = new ApiCnrSendsCell(colorClass, client, hei, KnownElement.APIENTRY_IMOBILITIES_V1);
     this.cells.add(cell);
 
     // CNR recv.
-    cell = new ApiVersionsCell(2, client, hei, KnownElement.APIENTRY_IMOBILITY_CNR_V1);
+    cell = new ApiVersionsCell(colorClass, client, hei, KnownElement.APIENTRY_IMOBILITY_CNR_V1);
     this.cells.add(cell);
 
     /* IMobility ToRs */
 
+    colorClass = getNextColorClass(colorClass);
+
     // ver.
-    cell = new ApiVersionsCell(3, client, hei, KnownElement.APIENTRY_IMOBILITY_TORS_V1);
+    cell = new ApiVersionsCell(colorClass, client, hei, KnownElement.APIENTRY_IMOBILITY_TORS_V1);
     this.cells.add(cell);
 
     // CNR sends
-    cell = new ApiCnrSendsCell(3, client, hei, KnownElement.APIENTRY_IMOBILITY_TORS_V1);
+    cell = new ApiCnrSendsCell(colorClass, client, hei, KnownElement.APIENTRY_IMOBILITY_TORS_V1);
     this.cells.add(cell);
 
     // CNR recv.
-    cell = new ApiVersionsCell(3, client, hei, KnownElement.APIENTRY_IMOBILITY_TOR_CNR_V1);
+    cell = new ApiVersionsCell(colorClass, client, hei, KnownElement.APIENTRY_IMOBILITY_TOR_CNR_V1);
     this.cells.add(cell);
 
     /* Other APIs */
 
-    this.otherApisCell = new OtherApisCell(4, client, hei);
+    this.otherApisCell = new OtherApisCell(OTHER_APIS_COLOR_CLASS, client, hei);
     this.cells.add(this.otherApisCell);
+  }
+
+  private static int getNextColorClass(int prevClass) {
+    if (prevClass == ODD_COLOR_CLASS) {
+      return EVEN_COLOR_CLASS;
+    }
+    return ODD_COLOR_CLASS;
   }
 
   void generateHtmlRow(StringBuilder sb) {

@@ -1,0 +1,187 @@
+<omobility-las-get-response
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-omobility-las/blob/stable-v1/endpoints/get-response.xsd"
+    xmlns:p="https://github.com/erasmus-without-paper/ewp-specs-types-phonenumber/tree/stable-v1"
+    xmlns:xml="http://www.w3.org/XML/1998/namespace"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        https://github.com/erasmus-without-paper/ewp-specs-api-omobility-las/blob/stable-v1/endpoints/get-response.xsd
+        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-omobility-las/master/endpoints/get-response.xsd
+    "
+>
+
+    <la>
+        <omobility-id>c442c289-5541-4cae-9edb-8ad83e133613</omobility-id>
+        <sending-hei>
+            <hei-id>uio.no</hei-id>
+            <ounit-name>Faculty of Mathematics and Natural Sciences</ounit-name>
+            <ounit-id>140</ounit-id>
+            <contact-person>
+                <given-names>Anders</given-names>
+                <family-name>Bardal</family-name>
+                <email>anders.bardal@example.com</email>
+            </contact-person>
+        </sending-hei>
+        <receiving-hei>
+            <hei-id>uw.edu.pl</hei-id>
+            <ounit-name>Faculty of Mathematics, Informatics and Mechanics</ounit-name>
+            <ounit-id>10000000</ounit-id>
+            <contact-person>
+                <given-names>Paweł Tomasz</given-names>
+                <family-name>Kowalski</family-name>
+                <email>pawel.kowalski@example.com</email>
+            </contact-person>
+        </receiving-hei>
+        <receiving-academic-year-id>2018/2019</receiving-academic-year-id>
+        <student>
+            <given-names>Ivan Petrovich</given-names>
+            <family-name>Sidorov</family-name>
+            <birth-date>1997-05-05</birth-date>
+            <citizenship>NO</citizenship>
+            <gender>1</gender>
+            <email>ivan@example.com</email>
+            <p:phone-number>
+                <p:e164>+4788888888</p:e164>
+            </p:phone-number>
+        </student>
+        <planned-mobility-start>2019-02</planned-mobility-start>
+        <planned-mobility-end>2019-06</planned-mobility-end>
+        <eqf-level-studied-at-departure>8</eqf-level-studied-at-departure>
+        <student-isced-f-code>0541</student-isced-f-code>
+        <student-language-skill>
+            <language>en</language>
+            <cefr-level>B2</cefr-level>
+        </student-language-skill>
+        <components-studied>
+            <before-mobility in-effect-since="2018-11-14T08:18:19+02:00">
+                <component>
+                    <title>Introductory calculus</title>
+                    <academic-term-display-name>Spring</academic-term-display-name>
+                    <credit>
+                        <scheme>ects</scheme>
+                        <value>6</value>
+                    </credit>
+                </component>
+                <approval>
+                    <by-party>student</by-party>
+                </approval>
+                <approval>
+                    <by-party>sending-hei</by-party>
+                    <timestamp>2018-11-13T14:03:23+02:00</timestamp>
+                </approval>
+                <approval>
+                    <by-party>receiving-hei</by-party>
+                    <timestamp>2018-11-14T08:18:19+02:00</timestamp>
+                </approval>
+            </before-mobility>
+            <!--
+            Changes in this element describe the differences between `before-mobility`
+            and `latest-approved`. (It may be used for generating
+            the "During Mobility exceptional changes" tables in the PDF LA.)
+            -->
+            <latest-approved in-effect-since="2019-03-03T12:54:00+02:00">
+                <component>
+                    <title>Introductory calculus</title>
+                    <academic-term-display-name>Spring</academic-term-display-name>
+                    <credit>
+                        <scheme>ects</scheme>
+                        <value>6</value>
+                    </credit>
+                </component>
+                <component status="inserted" reason-code="extending-mobility">
+                    <los-id>CR/f9c7677f-e3e3-4106-a865-1d1e8867830e</los-id>
+                    <los-code>KR502B</los-code>
+                    <title>Algebra</title>
+                    <loi-id>CRI/fbe7f54e-af18-4e3e-bc74-c3d3392131b3</loi-id>
+                    <academic-term-display-name>Autumn 2019/2020</academic-term-display-name>
+                    <credit>
+                        <scheme>ects</scheme>
+                        <value>6</value>
+                    </credit>
+                </component>
+                <approval>
+                    <by-party>student</by-party>
+                </approval>
+                <approval>
+                    <by-party>sending-hei</by-party>
+                    <timestamp>2019-03-03T10:11:58+02:00</timestamp>
+                </approval>
+                <approval>
+                    <by-party>receiving-hei</by-party>
+                    <timestamp>2019-03-03T12:54:00+02:00</timestamp>
+                </approval>
+            </latest-approved>
+            <!--
+            This API also allows exchanging unapproved versions of the LA components.
+            These two sections are not printed in the PDF version of the LA, but they can be reviewed
+            by the partner. After successful review, the `latest-proposal` section
+            is copied into the "latest-approved" section.
+            -->
+            <latest-changes>
+                <component status="deleted" reason-code="language-mismatch">
+                    <los-id>CR/f9c7677f-e3e3-4106-a865-1d1e8867830e</los-id>
+                    <los-code>KR502B</los-code>
+                    <title>Algebra</title>
+                    <loi-id>CRI/fbe7f54e-af18-4e3e-bc74-c3d3392131b3</loi-id>
+                    <academic-term-display-name>Autumn 2019/2020</academic-term-display-name>
+                    <credit>
+                        <scheme>ects</scheme>
+                        <value>6</value>
+                    </credit>
+                </component>
+                <component status="inserted" reason-code="substituting-deleted">
+                    <los-id>CR/dd5fa0b7-f036-4915-9898-8d683ded5738</los-id>
+                    <los-code>KR630</los-code>
+                    <title>Elementary Set Theory</title>
+                    <loi-id>CRI/76c42226-e89c-401f-ad1b-8ebffd909b50</loi-id>
+                    <academic-term-display-name>Autumn 2019/2020</academic-term-display-name>
+                    <credit>
+                        <scheme>ects</scheme>
+                        <value>6</value>
+                    </credit>
+                </component>
+            </latest-changes>
+            <latest-proposal id="59B15BAF222F868493C167125FA32452E946">
+                <component>
+                    <title>Introductory calculus</title>
+                    <academic-term-display-name>Spring</academic-term-display-name>
+                    <credit>
+                        <scheme>ects</scheme>
+                        <value>6</value>
+                    </credit>
+                </component>
+                <component status="inserted" reason-code="substituting-deleted">
+                    <los-id>CR/dd5fa0b7-f036-4915-9898-8d683ded5738</los-id>
+                    <los-code>KR630</los-code>
+                    <title>Elementary Set Theory</title>
+                    <loi-id>CRI/76c42226-e89c-401f-ad1b-8ebffd909b50</loi-id>
+                    <academic-term-display-name>Autumn 2019/2020</academic-term-display-name>
+                    <credit>
+                        <scheme>ects</scheme>
+                        <value>6</value>
+                    </credit>
+                </component>
+            </latest-proposal>
+        </components-studied>
+        <components-recognized>
+            <before-mobility>
+                <component>
+                    <los-id>CR/8f0d7dad-2bb6-d401-48c3-c7e0baf03efb</los-id>
+                    <title>Calculus</title>
+                    <loi-id>CRI/212419af-4326-3e21-30ba-c0b5041d89e2</loi-id>
+                </component>
+            </before-mobility>
+            <latest-approved>
+                <component>
+                    <los-id>CR/8f0d7dad-2bb6-d401-48c3-c7e0baf03efb</los-id>
+                    <title>Calculus</title>
+                    <loi-id>CRI/212419af-4326-3e21-30ba-c0b5041d89e2</loi-id>
+                </component>
+                <component>
+                    <los-id>CR/7fdg347d-h45g-h445-02md-mdkd02kch2h5</los-id>
+                    <title>Algebra with Geometry</title>
+                    <loi-id>CRI/mnj763c-83mf-7723-nvdp-03bdb64ja2mf3</loi-id>
+                </component>
+            </latest-approved>
+        </components-recognized>
+    </la>
+</omobility-las-get-response>

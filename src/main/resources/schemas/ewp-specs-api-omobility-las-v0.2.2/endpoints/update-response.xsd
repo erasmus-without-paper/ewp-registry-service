@@ -5,8 +5,8 @@
     xmlns:ewp="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
     elementFormDefault="qualified"
 
-    targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/blob/stable-v1/endpoints/update-response.xsd"
-    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/blob/stable-v1/endpoints/update-response.xsd"
+    targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-api-omobility-las/blob/stable-v1/endpoints/update-response.xsd"
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-omobility-las/blob/stable-v1/endpoints/update-response.xsd"
 >
     <xs:import
         schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-architecture/stable-v1/common-types.xsd"
@@ -22,11 +22,11 @@
         </xs:documentation>
     </xs:annotation>
 
-    <xs:element name="omobilities-update-response">
+    <xs:element name="omobility-las-update-response">
         <xs:annotation>
             <xs:documentation>
                 This describes the format of the response returned by the `update` endpoint of
-                EWP Outgoing Mobilities API.
+                EWP Outgoing Mobility Learning Agreements API.
             </xs:documentation>
         </xs:annotation>
         <xs:complexType>
@@ -34,7 +34,7 @@
                 <xs:element ref="ewp:success-user-message" minOccurs="0" maxOccurs="unbounded">
                     <xs:annotation>
                         <xs:documentation>
-                            There are lots of possible update types covered by this API, but this is what
+                            There are several possible update types covered by this API, but this is what
                             all of them have in common - for each of these requests, the server returns an
                             optional message to be displayed for the user, who initiated this request.
                         </xs:documentation>

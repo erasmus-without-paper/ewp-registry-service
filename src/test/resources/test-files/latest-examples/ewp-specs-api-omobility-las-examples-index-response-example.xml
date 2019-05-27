@@ -1,0 +1,14 @@
+<omobility-las-index-response
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-omobility-las/blob/stable-v1/endpoints/index-response.xsd"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        https://github.com/erasmus-without-paper/ewp-specs-api-omobility-las/blob/stable-v1/endpoints/index-response.xsd
+        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-omobility-las/master/endpoints/index-response.xsd
+    "
+>
+
+    <omobility-id>2a83d860-b9c9-4baf-81f4-5110d217d273</omobility-id>
+    <omobility-id>85912bfc-91d7-4379-b828-3324aab7140b</omobility-id>
+    <omobility-id>752c2e10-4d21-45d4-ba8e-0d3f6e5ff7ca</omobility-id>
+    
+</omobility-las-index-response>

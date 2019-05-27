@@ -1,0 +1,16 @@
+<req:omobility-las-update-request
+    xmlns:req="https://github.com/erasmus-without-paper/ewp-specs-api-omobility-las/blob/stable-v1/endpoints/update-request.xsd"
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-omobility-las/blob/stable-v1/endpoints/get-response.xsd"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        https://github.com/erasmus-without-paper/ewp-specs-api-omobility-las/blob/stable-v1/endpoints/update-request.xsd
+        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-omobility-las/master/endpoints/update-request.xsd
+    "
+>
+    <req:sending-hei-id>uw.edu.pl</req:sending-hei-id>
+    <req:approve-components-studied-proposal-v1>
+        <req:omobility-id>c442c289-5541-4cae-9edb-8ad83e133613</req:omobility-id>
+        <req:approving-party>receiving-hei</req:approving-party>
+        <req:latest-proposal-id>AE61266750D019063512516C7EE01968012C81F25A89</req:latest-proposal-id>
+    </req:approve-components-studied-proposal-v1>
+</req:omobility-las-update-request>

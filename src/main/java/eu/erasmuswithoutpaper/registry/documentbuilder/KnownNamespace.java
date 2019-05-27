@@ -250,12 +250,32 @@ public class KnownNamespace {
 
   /**
    * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-omobility-las/blob/master/manifest-entry.xsd'>
+   * here</a>.
+   */ // TODO: master->stable!
+  public static final KnownNamespace APIENTRY_OMOBILITY_LAS_V1 =
+      new KnownNamespace("oml1", "api-omobility-las/blob/stable-v1/manifest-entry.xsd",
+          "api-omobility-las/master/manifest-entry.xsd", false);
+  // TODO: 1. false->true 2. master->stable
+
+  /**
+   * As described <a href=
    * 'https://github.com/erasmus-without-paper/ewp-specs-api-omobility-cnr/blob/master/manifest-entry.xsd'>
    * here</a>.
    */ // TODO: master->stable!
   public static final KnownNamespace APIENTRY_OMOBILITY_CNR_V1 =
       new KnownNamespace("omc1", "api-omobility-cnr/blob/stable-v1/manifest-entry.xsd",
-          "api-omobility/master/manifest-entry.xsd", false);
+          "api-omobility-cnr/master/manifest-entry.xsd", false);
+  // TODO: 1. false->true 2. master->stable
+
+  /**
+   * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-omobility-la-cnr/blob/master/manifest-entry.xsd'>
+   * here</a>.
+   */ // TODO: master->stable!
+  public static final KnownNamespace APIENTRY_OMOBILITY_LA_CNR_V1 =
+      new KnownNamespace("omlc1", "api-omobility-la-cnr/blob/stable-v1/manifest-entry.xsd",
+          "api-omobility-la-cnr/master/manifest-entry.xsd", false);
   // TODO: 1. false->true 2. master->stable
 
   /**

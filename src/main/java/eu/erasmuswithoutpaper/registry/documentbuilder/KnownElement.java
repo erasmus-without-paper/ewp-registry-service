@@ -121,11 +121,25 @@ public class KnownElement {
           "API entry: Outgoing Mobilities API v1");
 
   /**
+   * API entry for Outgoing Mobility LAs API v1.
+   */
+  public static final KnownElement APIENTRY_OMOBILITY_LAS_V1 =
+      new KnownElement(KnownNamespace.APIENTRY_OMOBILITY_LAS_V1, "omobility-las",
+          "API entry: Outgoing Mobility LAs API v1");
+
+  /**
    * API entry for Outgoing Mobility CNR API v1.
    */
   public static final KnownElement APIENTRY_OMOBILITY_CNR_V1 =
       new KnownElement(KnownNamespace.APIENTRY_OMOBILITY_CNR_V1, "omobility-cnr",
           "API entry: Outgoing Mobility CNR API v1");
+
+  /**
+   * API entry for Outgoing Mobility CNR API v1.
+   */
+  public static final KnownElement APIENTRY_OMOBILITY_LA_CNR_V1 =
+      new KnownElement(KnownNamespace.APIENTRY_OMOBILITY_LA_CNR_V1, "omobility-la-cnr",
+          "API entry: Outgoing Mobility LA CNR API v1");
 
   /**
    * API entry for Incoming Mobilities API v1.

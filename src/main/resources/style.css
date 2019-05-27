@@ -312,6 +312,11 @@ a:hover {
     color: #000;
 }
 
+.ewpst__cell-schac {
+    width: 200px;
+    word-break: break-all;
+}
+
 /* Column appearance (cc stands for "column color") */
 
 .ewpst__cell.ewpst__cell--cc1 {

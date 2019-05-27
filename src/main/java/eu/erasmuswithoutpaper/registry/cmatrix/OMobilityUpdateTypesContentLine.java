@@ -16,10 +16,10 @@ class OMobilityUpdateTypesContentLine extends ContentLine {
 
     Match entry = $(apiEntry).namespaces(KnownNamespace.prefixMap());
     List<Boolean> items = new ArrayList<>();
-    boolean ut1 = entry.xpath("om1:supported-update-types/om1:approve-components-studied-draft-v1")
-        .size() > 0;
+    boolean ut1 = entry.xpath(
+        "oml1:supported-update-types/oml1:approve-components-studied-proposal-v1").size() > 0;
     boolean ut2 =
-        entry.xpath("om1:supported-update-types/om1:update-components-studied-v1").size() > 0;
+        entry.xpath("oml1:supported-update-types/oml1:update-components-studied-v1").size() > 0;
     items.add(ut1);
     items.add(ut2);
 
