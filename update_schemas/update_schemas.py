@@ -295,9 +295,8 @@ def create_copy_examples_entries(name, version):
     for filename in files:
         if re.match(".*example.*xml", filename) is not None:
             print("Found example file", cloned_dir + "/" + filename, end='')
-            if "/example-scenario/" in filename:
-                print(", but it is in example-scenario directory. It might be invalid "
-                      "and will be skipped.", end='')
+            if filename.endswith(".part.xml"):
+                print(", but we will skip it (it's a partial example).", end='')
             else:
                 result.append((
                     cloned_dir + "/" + filename,
