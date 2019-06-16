@@ -32,7 +32,7 @@ public class EchoValidator extends ApiValidator<EchoSuiteState> {
     );
     validationSuites.put(
         new SemanticVersion(1, 0, 0),
-        new ValidationSuiteInfo<>(EchoValidationSuiteV100::new)
+        new ValidationSuiteInfo<>(EchoValidationSuiteV1::new)
     );
 
     validationSuites.put(
@@ -41,7 +41,7 @@ public class EchoValidator extends ApiValidator<EchoSuiteState> {
     );
     validationSuites.put(
         new SemanticVersion(2, 0, 0),
-        new ValidationSuiteInfo<>(EchoValidationSuiteV200::new)
+        new ValidationSuiteInfo<>(EchoValidationSuiteV2::new)
     );
   }
 

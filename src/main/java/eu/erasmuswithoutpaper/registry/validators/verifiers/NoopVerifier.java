@@ -24,9 +24,4 @@ public class NoopVerifier extends Verifier {
   protected List<String> getSelector() {
     return null;
   }
-
-  @Override
-  protected String getParamName() {
-    return null;
-  }
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.springframework.stereotype.Service;
 
@@ -12,25 +13,60 @@ import org.slf4j.LoggerFactory;
 
 @Service
 public class ApiValidatorsManager {
-  private static final Logger logger = LoggerFactory.getLogger(ApiValidatorsManager.class);
-  private final Map<String, ApiValidator<?>> registeredApiValidators = new HashMap<>();
+  private static class ApiNameAndEndpoint {
+    public final String apiName;
+    public final String endpointName;
 
-  void registerApiValidator(String apiName, ApiValidator<?> validator) {
-    if (registeredApiValidators.containsKey(apiName)) {
-      logger.warn("ApiValidator for \"" + apiName + "\" overridden.");
+    private ApiNameAndEndpoint(String apiName, String endpointName) {
+      this.apiName = apiName;
+      this.endpointName = endpointName;
     }
-    registeredApiValidators.put(apiName, validator);
+
+    @Override
+    public boolean equals(Object other) {
+      if (this == other) {
+        return true;
+      }
+      if (other == null || getClass() != other.getClass()) {
+        return false;
+      }
+      ApiNameAndEndpoint that = (ApiNameAndEndpoint) other;
+      return Objects.equals(apiName, that.apiName)
+          && Objects.equals(endpointName, that.endpointName);
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(apiName, endpointName);
+    }
+  }
+
+  private static final Logger logger = LoggerFactory.getLogger(ApiValidatorsManager.class);
+  private final Map<ApiNameAndEndpoint, ApiValidator<?>> registeredApiValidators = new HashMap<>();
+
+  void registerApiValidator(String apiName, String endpointName, ApiValidator<?> validator) {
+    ApiNameAndEndpoint key = new ApiNameAndEndpoint(apiName, endpointName);
+
+    if (registeredApiValidators.containsKey(key)) {
+      logger.warn("ApiValidator for \""
+          + apiName
+          + (endpointName == null ? "" : ":" + endpointName)
+          + "\" overridden.");
+    }
+    registeredApiValidators.put(new ApiNameAndEndpoint(apiName, endpointName), validator);
   }
 
   /**
-   * Returns validator for provided api.
+   * Returns validator for provided api and endpoint.
    *
    * @param apiName
    *     name of api.
+   * @param endpointName
+   *     name of api's endpoint.
    * @return ApiValidator for api if it exists, null otherwise.
    */
-  public ApiValidator<?> getApiValidator(String apiName) {
-    return registeredApiValidators.get(apiName);
+  public ApiValidator<?> getApiValidator(String apiName, String endpointName) {
+    return registeredApiValidators.get(new ApiNameAndEndpoint(apiName, endpointName));
   }
 
   /**
@@ -42,11 +78,12 @@ public class ApiValidatorsManager {
    *     version of api to test.
    * @return true if there are any compatible tests.
    */
-  public boolean hasCompatibleTests(String apiName, SemanticVersion version) {
-    if (!registeredApiValidators.containsKey(apiName)) {
+  public boolean hasCompatibleTests(String apiName, String endpointName, SemanticVersion version) {
+    ApiValidator<?> validator = getApiValidator(apiName, endpointName);
+    if (validator == null) {
       return false;
     }
-    ApiValidator<?> validator = getApiValidator(apiName);
+
     for (SemanticVersion ver : validator.getCoveredApiVersions()) {
       if (version.isCompatible(ver)) {
         return true;
@@ -57,18 +94,21 @@ public class ApiValidatorsManager {
 
   /**
    * Get parameters that can be passed when validating API `apiName` in version `version`.
+   *
    * @param apiName
-   *    API which parameters will be returned.
+   *     API which parameters will be returned.
+   * @param endpointName
+   *     endpoint of the API.
    * @param version
-   *    version of the API for which parameters will be returned.
-   * @return
-   *    List of parameters that can be used when validating API `apiName` in version `version`.
+   *     version of the API for which parameters will be returned.
+   * @return List of parameters that can be used when validating API `apiName` in version `version`.
    */
-  public List<ValidationParameter> getParameters(String apiName, SemanticVersion version) {
-    if (!registeredApiValidators.containsKey(apiName)) {
+  public List<ValidationParameter> getParameters(String apiName, String endpointName,
+      SemanticVersion version) {
+    ApiValidator<?> validator = getApiValidator(apiName, endpointName);
+    if (validator == null) {
       return new ArrayList<>();
     }
-
-    return getApiValidator(apiName).getParameters(version);
+    return validator.getParameters(version);
   }
 }

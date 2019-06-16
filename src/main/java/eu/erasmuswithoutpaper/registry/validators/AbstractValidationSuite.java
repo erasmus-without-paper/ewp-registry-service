@@ -240,7 +240,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
   protected HttpSecuritySettings getSecuritySettings() {
     Element httpSecurityElem =
         $(this.currentState.matchedApiEntry).namespaces(KnownNamespace.prefixMap())
-            .xpath(getApiPrefix() + ":http-security").get(0);
+            .xpath(getApiInfo().getApiPrefix() + ":http-security").get(0);
     return new HttpSecuritySettings(httpSecurityElem);
   }
 
@@ -612,9 +612,15 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
   }
 
   protected Element makeXmlFromBytes(byte[] bytes) {
+    return makeXmlFromBytes(bytes, false);
+  }
+
+  protected Element makeXmlFromBytes(byte[] bytes, boolean namespaceAware) {
     try {
       final InputStream stream = new ByteArrayInputStream(bytes);
-      DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+      DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+      documentBuilderFactory.setNamespaceAware(namespaceAware);
+      DocumentBuilder builder = documentBuilderFactory.newDocumentBuilder();
       Document document = builder.parse(stream);
       return document.getDocumentElement();
     } catch (ParserConfigurationException | SAXException | IOException e) {
@@ -644,20 +650,29 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
     return ret;
   }
 
-  protected List<String> getApiUrlForHei(String api, String hei) {
+  protected List<String> selectApiUrlForHeiFromCatalogue(String api, String endpoint, String hei) {
     Match apis = getCatalogueMatcher().xpath(
         "/r:catalogue/r:host/r:institutions-covered/" + "r:hei-id[normalize-space(text())='" + hei
             + "']" + "/../../r:apis-implemented/*[local-name()='" + api
-            + "']/*[local-name()='url']");
+            + "']/*[local-name()='" + getUrlElementName(endpoint) + "']");
     if (apis.isEmpty()) {
       return null;
     }
     return apis.texts();
   }
 
-  protected Element getApiEntryFromUrl(String url) {
-    List<Element> apis = getCatalogueMatcher().xpath("/r:catalogue/r:host/r:apis-implemented/*/"
-        + "*[local-name()='url' and normalize-space(text())='" + url + "']" + "/..").get();
+  protected Element getApiEntryFromUrlFormCatalogue(String url, String endpointName) {
+    String endpointUrlElementName;
+    if (endpointName == null) { // use default endpoint for this validator
+      endpointUrlElementName = getUrlElementName();
+    } else {
+      endpointUrlElementName = getUrlElementName(endpointName);
+    }
+    String selector = "/r:catalogue/r:host/r:apis-implemented/*/*["
+        + "local-name()='" + endpointUrlElementName + "'"
+        + " and normalize-space(text())='" + url + "'"
+        + "]/..";
+    List<Element> apis = getCatalogueMatcher().xpath(selector).get();
     if (apis.isEmpty()) {
       return null;
     }
@@ -682,7 +697,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
 
   protected List<String> fetchHeiIdsCoveredByApiByUrl(String url) {
     return getCatalogueMatcher().xpath("/r:catalogue/r:host/r:apis-implemented/*/"
-        + "*[local-name()='url' and normalize-space(text())='" + url + "']"
+        + "*[local-name()='" + getUrlElementName() + "' and normalize-space(text())='" + url + "']"
         + "/../../../r:institutions-covered/r:hei-id").texts();
   }
 
@@ -696,7 +711,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
 
   protected Match getManifestParameter(String what) {
     return $(this.currentState.matchedApiEntry).namespaces(KnownNamespace.prefixMap())
-        .xpath(getApiPrefix() + ":" + what);
+        .xpath(getApiInfo().getApiPrefix() + ":" + what);
   }
 
   protected Request createRequestWithParameters(InlineValidationStep step, Combination combination,
@@ -774,7 +789,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
 
   protected void verifyContents(Response response, Verifier verifier) throws Failure {
     BuildParams params = new BuildParams(response.getBody());
-    params.setExpectedKnownElement(getKnownElement());
+    params.setExpectedKnownElement(getApiInfo().getKnownElement());
     BuildResult result = this.docBuilder.build(params);
     if (!result.isValid()) {
       throw new Failure(
@@ -840,27 +855,33 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
     });
   }
 
-  protected abstract String getApiNamespace();
+  public abstract ValidatedApiInfo getApiInfo();
 
-  protected abstract String getApiName();
+  protected void validateCombinationPost(Combination combination)
+      throws SuiteBroken {
+    this.addAndRun(
+        false,
+        this.createHttpMethodValidationStep(combination.withChangedHttpMethod("PUT"))
+    );
+    this.addAndRun(
+        false,
+        this.createHttpMethodValidationStep(combination.withChangedHttpMethod("DELETE"))
+    );
+    validateCombinationAny(combination);
+  }
 
-  protected abstract void validateCombinationPost(Combination combination)
-      throws SuiteBroken;
+  protected void validateCombinationGet(Combination combination)
+      throws SuiteBroken {
+    validateCombinationAny(combination);
+  }
 
-  protected abstract void validateCombinationGet(Combination combination)
-      throws SuiteBroken;
+  protected abstract void validateCombinationAny(Combination combination) throws SuiteBroken;
 
   protected abstract Logger getLogger();
-
-  protected abstract KnownElement getKnownElement();
 
   public List<ValidationStepWithStatus> getResults() {
     return this.steps;
   }
-
-  public abstract String getApiPrefix();
-
-  public abstract String getApiResponsePrefix();
 
   protected void generalTestsIdsAndCodes(Combination combination, String name, String selectedHeiId,
       String id, String code, int maxIds, int maxCodes, VerifierFactory verifier)
@@ -1069,6 +1090,17 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
         ),
         400
     );
+  }
+
+  String getUrlElementName(String endpoint) {
+    if (endpoint != null) {
+      return endpoint + "-url";
+    }
+    return "url";
+  }
+
+  String getUrlElementName() {
+    return getUrlElementName(this.getApiInfo().getEndpoint());
   }
 
 

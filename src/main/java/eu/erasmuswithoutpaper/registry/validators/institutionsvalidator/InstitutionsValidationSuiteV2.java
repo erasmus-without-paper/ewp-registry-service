@@ -10,6 +10,7 @@ import eu.erasmuswithoutpaper.registry.validators.AbstractValidationSuite;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.Combination;
 import eu.erasmuswithoutpaper.registry.validators.InlineValidationStep.Failure;
+import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
 import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus.Status;
 import eu.erasmuswithoutpaper.registry.validators.verifiers.ListEqualVerifier;
 
@@ -22,19 +23,27 @@ import org.slf4j.LoggerFactory;
  * Describes the set of test/steps to be run on an Institutions API implementation in order to
  * properly validate it.
  */
-class InstitutionsValidationSuiteV200 extends InstitutionsValidationSuiteBase {
+class InstitutionsValidationSuiteV2
+    extends AbstractValidationSuite<InstitutionsSuiteState> {
 
   private static final Logger logger =
-      LoggerFactory.getLogger(InstitutionsValidationSuiteV200.class);
+      LoggerFactory.getLogger(InstitutionsValidationSuiteV2.class);
 
-  InstitutionsValidationSuiteV200(ApiValidator<InstitutionsSuiteState> validator,
-      InstitutionsSuiteState state, ValidationSuiteConfig config) {
-    super(validator, state, config);
-  }
+  private static final ValidatedApiInfo apiInfo = new InstitutionsValidatedApiInfo();
 
   @Override
   protected Logger getLogger() {
     return logger;
+  }
+
+  @Override
+  public ValidatedApiInfo getApiInfo() {
+    return apiInfo;
+  }
+
+  InstitutionsValidationSuiteV2(ApiValidator<InstitutionsSuiteState> validator,
+      InstitutionsSuiteState state, ValidationSuiteConfig config) {
+    super(validator, state, config);
   }
 
   //FindBugs is not smart enough to infer that actual type of this.currentState
@@ -104,27 +113,6 @@ class InstitutionsValidationSuiteV200 extends InstitutionsValidationSuiteBase {
     );
   }
 
-  @Override
-  protected void validateCombinationPost(Combination combination)
-      throws SuiteBroken {
-    this.addAndRun(
-        false,
-        this.createHttpMethodValidationStep(combination.withChangedHttpMethod("PUT"))
-    );
-    this.addAndRun(
-        false,
-        this.createHttpMethodValidationStep(combination.withChangedHttpMethod("DELETE"))
-    );
-    validateCombinationAny(combination);
-  }
-
-  @Override
-  protected void validateCombinationGet(Combination combination)
-      throws SuiteBroken {
-    validateCombinationAny(combination);
-  }
-
-
   private static class InstitutionsVerifier extends ListEqualVerifier {
     private InstitutionsVerifier(List<String> expectedHeiIDs) {
       super(expectedHeiIDs, Status.FAILURE);
@@ -139,7 +127,7 @@ class InstitutionsValidationSuiteV200 extends InstitutionsValidationSuiteBase {
 
     private void verifyRootOUnitId(AbstractValidationSuite suite, Match root, Response response)
         throws Failure {
-      String nsPrefix = suite.getApiResponsePrefix() + ":";
+      String nsPrefix = suite.getApiInfo().getApiResponsePrefix() + ":";
 
       for (Match entry : root.xpath(nsPrefix + "hei").each()) {
         Match rootOunitId = entry.xpath(nsPrefix + "root-ounit-id").first();
@@ -168,11 +156,5 @@ class InstitutionsValidationSuiteV200 extends InstitutionsValidationSuiteBase {
     protected List<String> getSelector() {
       return Arrays.asList("hei", "hei-id");
     }
-
-    @Override
-    protected String getParamName() {
-      return null;
-    }
   }
-
 }

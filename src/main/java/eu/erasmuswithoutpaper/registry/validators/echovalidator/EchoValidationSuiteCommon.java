@@ -1155,7 +1155,7 @@ abstract class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSui
         this.decodeAndValidateResponseCommons(step, combination, request, response);
     verifyResponseStatus(response);
     BuildParams params = new BuildParams(response.getBody());
-    params.setExpectedKnownElement(getKnownElement());
+    params.setExpectedKnownElement(getApiInfo().getKnownElement());
     BuildResult result = this.docBuilder.build(params);
     if (!result.isValid()) {
       throw new Failure(
@@ -1164,7 +1164,7 @@ abstract class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSui
     }
     Match root = $(result.getDocument().get()).namespaces(KnownNamespace.prefixMap());
     List<String> heiIdsGot = new ArrayList<>();
-    String nsPrefix = getApiResponsePrefix() + ":";
+    String nsPrefix = getApiInfo().getApiResponsePrefix() + ":";
     for (Match entry : root.xpath(nsPrefix + "hei-id").each()) {
       heiIdsGot.add(entry.text());
     }
@@ -1227,8 +1227,7 @@ abstract class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSui
   }
 
   @Override
-  protected String getApiName() {
-    return "echo";
+  protected void validateCombinationAny(Combination combination) throws SuiteBroken {
+    // Intentionally left empty
   }
-
 }

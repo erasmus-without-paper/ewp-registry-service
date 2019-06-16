@@ -3,12 +3,8 @@ package eu.erasmuswithoutpaper.registry.validators.coursereplicationvalidator;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
-
-import javax.xml.bind.DatatypeConverter;
 
 import eu.erasmuswithoutpaper.registry.internet.InternetTestHelpers;
 import eu.erasmuswithoutpaper.registry.internet.Request;
@@ -65,23 +61,9 @@ public class CourseReplicationServiceV1Valid extends AbstractCourseReplicationSe
 
   private void CheckModifiedSince(RequestData requestData)
       throws ErrorResponseException {
-    // This pattern is taken from https://www.w3.org/TR/xmlschema11-2/#dateTime
-    String dateTimePattern = "-?([1-9][0-9]{3,}|0[0-9]{3})"
-        + "-(0[1-9]|1[0-2])"
-        + "-(0[1-9]|[12][0-9]|3[01])"
-        + "T(([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](\\.[0-9]+)?|(24:00:00(\\.0+)?))"
-        + "(Z|(\\+|-)((0[0-9]|1[0-3]):[0-5][0-9]|14:00))?";
-
     if (requestData.requestedModifiedSince != null) {
-      try {
-        Calendar cal = DatatypeConverter.parseDateTime(requestData.requestedModifiedSince);
-        if (!Pattern.matches(dateTimePattern, requestData.requestedModifiedSince)) {
-          throw new IllegalArgumentException();
-        }
-
-        requestData.requestedModifiedSinceDate =
-            ZonedDateTime.ofInstant(cal.toInstant(), cal.getTimeZone().toZoneId());
-      } catch (IllegalArgumentException e) {
+      ZonedDateTime modifiedSince = parseModifiedSince(requestData.requestedModifiedSince);
+      if (modifiedSince == null) {
         ErrorInvalidModifiedSince(requestData);
       }
     }

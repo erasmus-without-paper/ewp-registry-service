@@ -1,10 +1,9 @@
 package eu.erasmuswithoutpaper.registry.validators.echovalidator;
 
-import eu.erasmuswithoutpaper.registry.documentbuilder.KnownElement;
-import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.CombEntry;
 import eu.erasmuswithoutpaper.registry.validators.Combination;
+import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.slf4j.Logger;
@@ -13,12 +12,7 @@ import org.slf4j.LoggerFactory;
 public class EchoSetupValidationSuiteV1 extends EchoSetupValidationSuite {
   private static final Logger logger = LoggerFactory.getLogger(EchoSetupValidationSuiteV1.class);
 
-  protected EchoSetupValidationSuiteV1(
-      ApiValidator<EchoSuiteState> echoValidator,
-      EchoSuiteState state,
-      ValidationSuiteConfig config) {
-    super(echoValidator, state, config);
-  }
+  private static final ValidatedApiInfo apiInfo = new EchoValidatedApiInfoV1();
 
   @Override
   protected Logger getLogger() {
@@ -26,23 +20,15 @@ public class EchoSetupValidationSuiteV1 extends EchoSetupValidationSuite {
   }
 
   @Override
-  protected KnownElement getKnownElement() {
-    return KnownElement.RESPONSE_ECHO_V1;
+  public ValidatedApiInfo getApiInfo() {
+    return apiInfo;
   }
 
-  @Override
-  protected String getApiNamespace() {
-    return KnownNamespace.APIENTRY_ECHO_V1.getNamespaceUri();
-  }
-
-  @Override
-  public String getApiPrefix() {
-    return "e1";
-  }
-
-  @Override
-  public String getApiResponsePrefix() {
-    return "er1";
+  protected EchoSetupValidationSuiteV1(
+      ApiValidator<EchoSuiteState> echoValidator,
+      EchoSuiteState state,
+      ValidationSuiteConfig config) {
+    super(echoValidator, state, config);
   }
 
   //FindBugs is not smart enough to infer that actual type of this.currentState

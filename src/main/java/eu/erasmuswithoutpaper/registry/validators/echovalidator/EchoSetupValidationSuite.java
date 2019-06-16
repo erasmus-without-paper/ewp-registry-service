@@ -107,8 +107,4 @@ public abstract class EchoSetupValidationSuite
     return ret;
   }
 
-  @Override
-  protected String getApiName() {
-    return "echo";
-  }
 }

@@ -244,6 +244,24 @@ public class KnownElement {
       );
 
   /**
+   * The root of the IIAs API v2 index response.
+   */
+  public static final KnownElement RESPONSE_IIAS_INDEX_V2 =
+      new KnownElement(KnownNamespace.RESPONSE_IIAS_INDEX_V2,
+          "iias-index-response",
+          "IIAs API v2 Index Response"
+      );
+
+  /**
+   * The root of the IIAs API v2 get response.
+   */
+  public static final KnownElement RESPONSE_IIAS_GET_V2 =
+      new KnownElement(KnownNamespace.RESPONSE_IIAS_GET_V2,
+          "iias-get-response",
+          "IIAs API v2 Get Response"
+      );
+
+  /**
    * Support declaration for Anonymous Client Authentication.
    */
   public static final KnownElement SECENTRY_CLIAUTH_NONE_V1 =

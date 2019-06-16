@@ -357,6 +357,8 @@
                         <source>src/main/resources/schemas/ewp-specs-api-institutions-v2.1.0/response.xsd</source>
                         <source>src/main/resources/schemas/ewp-specs-api-ounits-v2.1.0/response.xsd</source>
                         <source>src/main/resources/schemas/ewp-specs-api-course-replication-v1.0.0-rc9/response.xsd</source>
+                        <source>src/main/resources/schemas/ewp-specs-api-iias-v2.1.0/endpoints/index-response.xsd</source>
+                        <source>src/main/resources/schemas/ewp-specs-api-iias-v2.1.0/endpoints/get-response.xsd</source>
                     </sources>
                 </configuration>
             </plugin>

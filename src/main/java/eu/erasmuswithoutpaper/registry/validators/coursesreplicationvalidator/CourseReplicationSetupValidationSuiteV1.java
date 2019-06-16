@@ -3,11 +3,10 @@ package eu.erasmuswithoutpaper.registry.validators.coursesreplicationvalidator;
 import java.util.Arrays;
 import java.util.List;
 
-import eu.erasmuswithoutpaper.registry.documentbuilder.KnownElement;
-import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
 import eu.erasmuswithoutpaper.registry.validators.AbstractSetupValidationSuite;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.HttpSecurityDescription;
+import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
 import eu.erasmuswithoutpaper.registry.validators.ValidationParameter;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -15,24 +14,37 @@ import org.joox.Match;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-class CourseReplicationSetupValidationSuiteV100
+class CourseReplicationSetupValidationSuiteV1
     extends AbstractSetupValidationSuite<CourseReplicationSuiteState> {
 
   private static final Logger logger =
-      LoggerFactory.getLogger(CourseReplicationSetupValidationSuiteV100.class);
-  private static final String HEI_ID_PARAMETER = "hei_id";
+      LoggerFactory.getLogger(CourseReplicationSetupValidationSuiteV1.class);
 
-  CourseReplicationSetupValidationSuiteV100(ApiValidator<CourseReplicationSuiteState> validator,
-      CourseReplicationSuiteState state, ValidationSuiteConfig config) {
-    super(validator, state, config);
+  private static final ValidatedApiInfo apiInfo = new CourseReplicationValidatedApiInfoV1();
+
+  @Override
+  protected Logger getLogger() {
+    return logger;
   }
+
+  @Override
+  public ValidatedApiInfo getApiInfo() {
+    return apiInfo;
+  }
+
+  private static final String HEI_ID_PARAMETER = "hei_id";
 
   public static List<ValidationParameter> getParameters() {
     return Arrays.asList(
         new ValidationParameter(HEI_ID_PARAMETER)
     );
   }
+
+  CourseReplicationSetupValidationSuiteV1(ApiValidator<CourseReplicationSuiteState> validator,
+      CourseReplicationSuiteState state, ValidationSuiteConfig config) {
+    super(validator, state, config);
+  }
+
 
   //PMD linter forces methods returning boolean to start with 'is', it's not want we want.
   private boolean getSupportsModifiedSince() { //NOPMD
@@ -55,35 +67,5 @@ class CourseReplicationSetupValidationSuiteV100
     } else {
       this.currentState.selectedHeiId = getCoveredHeiIds(this.currentState.url).get(0);
     }
-  }
-
-  @Override
-  protected Logger getLogger() {
-    return logger;
-  }
-
-  @Override
-  protected KnownElement getKnownElement() {
-    return KnownElement.RESPONSE_COURSE_REPLICATION_V1;
-  }
-
-  @Override
-  protected String getApiNamespace() {
-    return KnownNamespace.APIENTRY_COURSE_REPLICATION_V1.getNamespaceUri();
-  }
-
-  @Override
-  protected String getApiName() {
-    return "simple-course-replication";
-  }
-
-  @Override
-  public String getApiPrefix() {
-    return "cr1";
-  }
-
-  @Override
-  public String getApiResponsePrefix() {
-    return "crr1";
   }
 }

@@ -8,7 +8,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
 import javax.annotation.PostConstruct;
 
 import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
@@ -18,7 +17,6 @@ import eu.erasmuswithoutpaper.registry.validators.echovalidator.EchoValidator;
 import eu.erasmuswithoutpaper.registry.validators.githubtags.GitHubTagsGetter;
 import eu.erasmuswithoutpaper.registry.web.SelfManifestProvider;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
-
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.ListMultimap;
@@ -35,6 +33,7 @@ public abstract class ApiValidator<S extends SuiteState> {
   protected final Internet internet;
   private final String validatedApiName;
   private final ValidatorKeyStore validatorKeyStore;
+  private final String endpointName;
   @Autowired
   protected ApiValidatorsManager apiValidatorsManager;
   @Autowired
@@ -56,12 +55,32 @@ public abstract class ApiValidator<S extends SuiteState> {
    */
   public ApiValidator(EwpDocBuilder docBuilder, Internet internet, RegistryClient client,
       ValidatorKeyStore validatorKeyStore, String validatedApiName) {
+    this(docBuilder, internet, client, validatorKeyStore, validatedApiName, null);
+  }
+
+  /**
+   * @param docBuilder
+   *     Needed for validating Echo API responses against the schemas.
+   * @param internet
+   *     Needed to make Echo API requests across the network.
+   * @param client
+   *     Needed to fetch (and verify) Echo APIs' security settings.
+   * @param validatorKeyStore
+   *     Store providing keys, certificates and covered HEI IDs.
+   * @param validatedApiName
+   *     lowercase name of API validated by this class.
+   * @param endpointName
+   *     lowercase name API endpoint that is validated by this class.
+   */
+  public ApiValidator(EwpDocBuilder docBuilder, Internet internet, RegistryClient client,
+      ValidatorKeyStore validatorKeyStore, String validatedApiName, String endpointName) {
     this.docBuilder = docBuilder;
     this.internet = internet;
     this.client = client;
 
     this.validatorKeyStore = validatorKeyStore;
     this.validatedApiName = validatedApiName;
+    this.endpointName = endpointName;
   }
 
   protected static <K extends Comparable<? super K>, V> ListMultimap<K, V> createMultimap() {
@@ -82,8 +101,9 @@ public abstract class ApiValidator<S extends SuiteState> {
 
   /**
    * Get list of parameters for all validators compatible with version `version`.
+   *
    * @param version
-   *    version of the API for which parameters will be returned.
+   *     version of the API for which parameters will be returned.
    */
   public List<ValidationParameter> getParameters(SemanticVersion version) {
     List<ValidationParameter> parameters = new ArrayList<>();
@@ -95,7 +115,7 @@ public abstract class ApiValidator<S extends SuiteState> {
 
   @PostConstruct
   private void registerApiName() { //NOPMD
-    this.apiValidatorsManager.registerApiValidator(this.validatedApiName, this);
+    this.apiValidatorsManager.registerApiValidator(this.validatedApiName, this.endpointName, this);
   }
 
   /**

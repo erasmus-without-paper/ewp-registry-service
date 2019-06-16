@@ -1,83 +1,28 @@
 package eu.erasmuswithoutpaper.registry.validators.ounitsvalidator;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import eu.erasmuswithoutpaper.registry.internet.FakeInternetService;
-import eu.erasmuswithoutpaper.registry.sourceprovider.ManifestSource;
 import eu.erasmuswithoutpaper.registry.validators.AbstractApiTest;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.SemanticVersion;
 import eu.erasmuswithoutpaper.registry.validators.institutionsvalidator.InstitutionServiceV2Valid;
 import eu.erasmuswithoutpaper.registry.validators.types.OunitsResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.google.common.collect.Lists;
-import org.apache.xerces.impl.dv.util.Base64;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class OUnitsValidatorTest extends AbstractApiTest {
-  private static String institutionsUrlHTTT;
-  private static String ounitsUrlHTTT;
+  private static final String institutionsUrlHTTT =
+      "https://university.example.com/institutions/HTTT/";
+  private static final String ounitsUrlHTTT = "https://university.example.com/ounits/HTTT/";
   @Autowired
   private OUnitsValidator validator;
-  private SemanticVersion version2 = new SemanticVersion(2, 0, 0);
 
-  @BeforeClass
-  public static void setUpClass() {
-    selfManifestUrl = "https://registry.example.com/manifest.xml";
-    apiManifestUrl = "https://university.example.com/manifest.xml";
-    ounitsUrlHTTT = "https://university.example.com/ounits/HTTT/";
-    institutionsUrlHTTT = "https://university.example.com/institutions/HTTT/";
-    needsReinit = true;
-  }
-
-  @Before
-  public void setUp() {
-    if (needsReinit) {
-      /*
-       * Minimal setup for the services to guarantee that repo contains a valid catalogue,
-       * consistent with the certificates returned by the validator.
-       */
-      this.sourceProvider.clearSources();
-      this.repo.deleteAll();
-      this.internet.clearAll();
-
-      String myManifest = this.selfManifestProvider.getManifest();
-      this.internet.putURL(selfManifestUrl, myManifest);
-      this.sourceProvider.addSource(ManifestSource.newTrustedSource(selfManifestUrl));
-
-      String apiManifest = this.getFileAsString("ounitsvalidator/manifest.xml");
-      myKeyPair = this.validator.generateKeyPair();
-      apiManifest = apiManifest.replace(
-          "SERVER-KEY-PLACEHOLDER",
-          Base64.encode(myKeyPair.getPublic().getEncoded())
-      );
-      this.internet.putURL(apiManifestUrl, apiManifest);
-      this.sourceProvider
-          .addSource(ManifestSource.newRegularSource(apiManifestUrl, Lists.newArrayList()));
-
-      this.registryUpdater.reloadAllManifestSources();
-      needsReinit = false;
-    }
-  }
-
-  private void serviceTest(FakeInternetService service, String url, String filename) {
-    try {
-      this.internet.addFakeInternetService(service);
-      assertThat(this.getValidatorReport(url, version2, null))
-          .isEqualTo(this.getFileAsString(filename));
-      this.internet.removeFakeInternetService(service);
-
-    } finally {
-      this.internet.clearAll();
-    }
+  @Override
+  protected String getManifestFilename() {
+    return "ounitsvalidator/manifest.xml";
   }
 
   InstitutionServiceV2Valid GetInstitutions() {
@@ -96,7 +41,8 @@ public class OUnitsValidatorTest extends AbstractApiTest {
 
   @Test
   public void testAgainstOUnitsValid() {
-    serviceTest(new OUnitsServiceV2Valid(ounitsUrlHTTT, this.client, GetInstitutions()) {},
+    serviceTest(new OUnitsServiceV2Valid(ounitsUrlHTTT, this.client, GetInstitutions()) {
+                },
         ounitsUrlHTTT, "ounitsvalidator/OUnitsValidOutput.txt"
     );
   }
@@ -406,6 +352,11 @@ public class OUnitsValidatorTest extends AbstractApiTest {
   @Override
   protected ApiValidator GetValidator() {
     return validator;
+  }
+
+  @Override
+  protected SemanticVersion getVersion() {
+    return new SemanticVersion(2, 0, 0);
   }
 }
 

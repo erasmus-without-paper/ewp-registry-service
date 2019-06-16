@@ -31,7 +31,7 @@ public class InstitutionsValidator extends ApiValidator<InstitutionsSuiteState> 
     );
     validationSuites.put(
         new SemanticVersion(2, 0, 0),
-        new ValidationSuiteInfo<>(InstitutionsValidationSuiteV200::new)
+        new ValidationSuiteInfo<>(InstitutionsValidationSuiteV2::new)
     );
   }
 

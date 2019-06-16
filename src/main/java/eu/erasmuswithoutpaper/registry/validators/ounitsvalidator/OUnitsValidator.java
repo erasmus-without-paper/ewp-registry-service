@@ -37,7 +37,7 @@ public class OUnitsValidator extends ApiValidator<OUnitsSuiteState> {
     );
     validationSuites.put(
         new SemanticVersion(2, 0, 0),
-        new ValidationSuiteInfo<>(OUnitsValidationSuiteV200::new)
+        new ValidationSuiteInfo<>(OUnitsValidationSuiteV2::new)
     );
   }
 

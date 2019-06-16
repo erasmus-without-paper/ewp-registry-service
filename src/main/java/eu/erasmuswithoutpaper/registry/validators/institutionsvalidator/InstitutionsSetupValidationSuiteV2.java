@@ -3,11 +3,10 @@ package eu.erasmuswithoutpaper.registry.validators.institutionsvalidator;
 import java.util.Arrays;
 import java.util.List;
 
-import eu.erasmuswithoutpaper.registry.documentbuilder.KnownElement;
-import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
 import eu.erasmuswithoutpaper.registry.validators.AbstractSetupValidationSuite;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.HttpSecurityDescription;
+import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
 import eu.erasmuswithoutpaper.registry.validators.ValidationParameter;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -23,6 +22,19 @@ class InstitutionsSetupValidationSuiteV2
 
   private static final Logger logger =
       LoggerFactory.getLogger(InstitutionsSetupValidationSuiteV2.class);
+
+  private static final ValidatedApiInfo apiInfo = new InstitutionsValidatedApiInfo();
+
+  @Override
+  protected Logger getLogger() {
+    return logger;
+  }
+
+  @Override
+  public ValidatedApiInfo getApiInfo() {
+    return apiInfo;
+  }
+
   private static final String HEI_ID_PARAMETER = "hei_id";
 
   InstitutionsSetupValidationSuiteV2(ApiValidator<InstitutionsSuiteState> validator,
@@ -52,33 +64,4 @@ class InstitutionsSetupValidationSuiteV2
     }
   }
 
-  @Override
-  protected Logger getLogger() {
-    return logger;
-  }
-
-  @Override
-  protected KnownElement getKnownElement() {
-    return KnownElement.RESPONSE_INSTITUTIONS_V2;
-  }
-
-  @Override
-  protected String getApiNamespace() {
-    return KnownNamespace.APIENTRY_INSTITUTIONS_V2.getNamespaceUri();
-  }
-
-  @Override
-  protected String getApiName() {
-    return "institutions";
-  }
-
-  @Override
-  public String getApiPrefix() {
-    return "in2";
-  }
-
-  @Override
-  public String getApiResponsePrefix() {
-    return "inr2";
-  }
 }

@@ -16,7 +16,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
@@ -40,9 +39,7 @@ import eu.erasmuswithoutpaper.registry.updater.ManifestUpdateStatus;
 import eu.erasmuswithoutpaper.registry.updater.ManifestUpdateStatusRepository;
 import eu.erasmuswithoutpaper.registry.updater.RegistryUpdater;
 import eu.erasmuswithoutpaper.registry.updater.UptimeChecker;
-import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidatorsManager;
-import eu.erasmuswithoutpaper.registry.validators.Combination;
 import eu.erasmuswithoutpaper.registry.validators.HttpSecurityDescription;
 import eu.erasmuswithoutpaper.registry.validators.HttpSecurityDescription.InvalidDescriptionString;
 import eu.erasmuswithoutpaper.registry.validators.SemanticVersion;
@@ -74,8 +71,6 @@ import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -433,111 +428,6 @@ public class UiController {
   }
 
   /**
-   * Run validation tests on the Institutions API served at the given URL.
-   *
-   * <p>
-   * This is not part of the API and MAY be removed later on.
-   * </p>
-   *
-   * @param url
-   *     The URL at which the Institutions API is being served.
-   * @return An undocumented JSON object with the results of the validation (not guaranteed to stay
-   *     backward compatible).
-   */
-  @RequestMapping(path = "/validate-institutions", params = "url", method = RequestMethod.POST)
-  public ResponseEntity<String> validateInstitutions(@RequestParam String url) {
-    return validateApi(url, this.apiValidatorsManager.getApiValidator("institutions"));
-  }
-
-  /**
-   * Run validation tests on the Echo API served at the given URL.
-   *
-   * <p>
-   * This is not part of the API and MAY be removed later on.
-   * </p>
-   *
-   * @param url
-   *     The URL at which the Echo API is being served.
-   * @return An undocumented JSON object with the results of the validation (not guaranteed to stay
-   *     backward compatible).
-   */
-  @RequestMapping(path = "/validate-echo", params = "url", method = RequestMethod.POST)
-  public ResponseEntity<String> validateEcho(@RequestParam String url) {
-    return validateApi(url, this.apiValidatorsManager.getApiValidator("echo"));
-  }
-
-  /**
-   * Run validation on one of APIs served at the given URL. TODO: remove when validators are removed
-   * from developers website.
-   *
-   * <p>
-   * This is not part of the API and MAY be removed later on.
-   * </p>
-   *
-   * @param url
-   *     The URL at which the API is being served.
-   * @return An undocumented JSON object with the results of the validation (not guaranteed to stay
-   *     backward compatible).
-   */
-  private ResponseEntity<String> validateApi(String url, ApiValidator<?> tester) {
-    HttpHeaders headers = new HttpHeaders();
-    headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
-    headers.setCacheControl("max-age=0, must-revalidate");
-    headers.setExpires(0);
-
-    JsonObject responseObj = new JsonObject();
-    JsonObject info = new JsonObject();
-    responseObj.add("info", info);
-    DateFormat isoDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-    Date validationStarted = new Date();
-    info.addProperty("validationStarted", isoDateFormat.format(validationStarted));
-    Date clientKeysRegenerated = this.validatorKeyStore.getCredentialsGenerationDate();
-    info.addProperty("clientKeysRegenerated", isoDateFormat.format(clientKeysRegenerated));
-    info.addProperty(
-        "clientKeysAgeWhenValidationStartedInSeconds",
-        (validationStarted.getTime() - clientKeysRegenerated.getTime()) / 1000
-    );
-    info.addProperty("registryManifestBody", this.selfManifestProvider.getManifest());
-    JsonArray combinations = new JsonArray();
-    info.add("Combinations", combinations); // WRCLEANIT: backward compatibility
-    info.add("combinations", combinations);
-    for (Entry<String, String> entry : Combination.getCombinationLegend().entrySet()) {
-      JsonObject desc = new JsonObject();
-      desc.addProperty("code", entry.getKey());
-      desc.addProperty("name", entry.getValue());
-      combinations.add(desc);
-    }
-
-    JsonArray testsArray = new JsonArray();
-    Status worstStatus = Status.SUCCESS;
-    List<ValidationStepWithStatus> testResults =
-        tester.runTests(url, new SemanticVersion(2, 0, 0), null,
-            new ValidationParameters());
-    for (ValidationStepWithStatus testResult : testResults) {
-      JsonObject testObj = new JsonObject();
-      testObj.addProperty("name", testResult.getName());
-      testObj.addProperty("status", testResult.getStatus().toString());
-      if (worstStatus.compareTo(testResult.getStatus()) < 0) {
-        worstStatus = testResult.getStatus();
-      }
-      testObj.addProperty("message", testResult.getMessage());
-
-      JsonArray requestSnapshots = this.formatRequestSnapshots(testResult);
-      testObj.add("requestSnapshots", requestSnapshots);
-      JsonArray responseSnapshots = this.formatResponseSnapshots(testResult);
-      testObj.add("responseSnapshots", responseSnapshots);
-
-      testsArray.add(testObj);
-    }
-    responseObj.addProperty("success", worstStatus.equals(Status.SUCCESS));
-    responseObj.addProperty("status", worstStatus.toString());
-    responseObj.add("tests", testsArray);
-    Gson gson = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
-    String json = gson.toJson(responseObj);
-    return new ResponseEntity<>(json, headers, HttpStatus.OK);
-  }
-
-  /**
    * Validate a supplied XML document against all known EWP schemas.
    *
    * <p>
@@ -614,96 +504,6 @@ public class UiController {
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
-  }
-
-  private JsonElement formatRequestSnapshot(Request request) {
-    JsonObject result = new JsonObject();
-    if (request.getBody().isPresent()) {
-      byte[] body = request.getBody().get();
-      result.addProperty("rawBodyBase64", Base64.encode(body));
-      CharsetDecoder decoder = StandardCharsets.UTF_8.newDecoder();
-      try {
-        CharBuffer decoded = decoder.decode(ByteBuffer.wrap(body));
-        result.addProperty("body", decoded.toString());
-      } catch (CharacterCodingException e) {
-        result.add("body", JsonNull.INSTANCE);
-      }
-    } else {
-      result.add("rawBodyBase64", JsonNull.INSTANCE);
-      result.add("body", JsonNull.INSTANCE);
-    }
-    result.addProperty("url", request.getUrl());
-    result.addProperty("method", request.getMethod());
-    JsonObject headers = new JsonObject();
-    for (Entry<String, String> entry : request.getHeaders().entrySet()) {
-      headers.addProperty(entry.getKey(), entry.getValue());
-    }
-    result.add("headers", headers);
-    if (request.getClientCertificate().isPresent()) {
-      try {
-        result.addProperty(
-            "clientCertFingerprint",
-            DigestUtils.sha256Hex(request.getClientCertificate().get().getEncoded())
-        );
-      } catch (CertificateEncodingException e) {
-        throw new RuntimeException(e);
-      }
-    } else {
-      result.add("clientCertFingerprint", JsonNull.INSTANCE);
-    }
-    JsonArray noticesHtml = new JsonArray();
-    for (String noticeHtml : request.getProcessingNoticesHtml()) {
-      noticesHtml.add(noticeHtml);
-    }
-    result.add("processingNoticesHtml", noticesHtml);
-    return result;
-  }
-
-  private JsonArray formatRequestSnapshots(ValidationStepWithStatus testResult) {
-    JsonArray results = new JsonArray();
-    for (Request snapshot : testResult.getRequestSnapshots()) {
-      results.add(this.formatRequestSnapshot(snapshot));
-    }
-    return results;
-  }
-
-  private JsonObject formatResponseSnapshot(Response response) {
-    JsonObject result = new JsonObject();
-    result.addProperty("status", response.getStatus());
-    result.addProperty("rawBodyBase64", Base64.encode(response.getBody()));
-    BuildParams params = new BuildParams(response.getBody());
-    params.setMakingPretty(true);
-    BuildResult buildResult = this.docBuilder.build(params);
-    if (buildResult.getDocument().isPresent()) {
-      Match root = $(buildResult.getDocument().get()).namespaces(KnownNamespace.prefixMap());
-      result.addProperty(
-          "developerMessage",
-          root.xpath("/ewp:error-response/ewp:developer-message").text()
-      );
-      result.addProperty("prettyXml", buildResult.getPrettyXml().orElse(null));
-    } else {
-      result.add("developerMessage", JsonNull.INSTANCE);
-      result.addProperty("prettyXml", (String) null);
-    }
-    JsonObject headers = new JsonObject();
-    for (Entry<String, String> entry : response.getHeaders().entrySet()) {
-      headers.addProperty(entry.getKey(), entry.getValue());
-    }
-    result.add("headers", headers);
-    JsonArray noticesHtml = new JsonArray();
-    for (String noticeHtml : response.getProcessingNoticesHtml()) {
-      noticesHtml.add(noticeHtml);
-    }
-    result.add("processingNoticesHtml", noticesHtml);
-    return result;
-  }
-
-  private JsonArray formatResponseSnapshots(ValidationStepWithStatus testResult) {
-    JsonArray results = new JsonArray();
-    for (Response snapshot : testResult.getResponseSnapshots()) {
-      results.add(this.formatResponseSnapshot(snapshot));
-    }
-    return results;
   }
 
   private String getCoverageMatrixHtml() {
@@ -799,13 +599,14 @@ public class UiController {
       return this.errorController.get404();
     }
 
-    if (!this.apiValidatorsManager.hasCompatibleTests(requestBody.getName(), ver)) {
+    if (!this.apiValidatorsManager.hasCompatibleTests(
+        requestBody.getName(), requestBody.getEndpoint(), ver)) {
       return this.errorController.get404();
     }
 
     ValidationParameters requestParameters = new ValidationParameters(requestBody.getParameters());
-    List<ValidationParameter> availableParameters =
-        this.apiValidatorsManager.getParameters(requestBody.getName(), ver);
+    List<ValidationParameter> availableParameters = this.apiValidatorsManager.getParameters(
+        requestBody.getName(), requestBody.getEndpoint(), ver);
 
     if (!requestParameters.checkDependencies(availableParameters)) {
       return this.errorController.get404();
@@ -814,7 +615,7 @@ public class UiController {
     Date validationStartedDate = new Date();
 
     List<ValidationStepWithStatus> testResults = this.apiValidatorsManager
-        .getApiValidator(requestBody.getName())
+        .getApiValidator(requestBody.getName(), requestBody.getEndpoint())
         .runTests(requestBody.getUrl(), ver, desc, requestParameters);
 
     List<Map<String, Object>> testsArray =

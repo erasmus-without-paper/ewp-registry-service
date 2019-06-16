@@ -85,7 +85,7 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
   }
 
   private List<SemanticVersion> getGitHubTags() {
-    return this.gitHubTagsGetter.getTags(getApiName(), this.internet, getLogger());
+    return this.gitHubTagsGetter.getTags(getApiInfo().getApiName(), this.internet, getLogger());
   }
 
   protected void runApiSpecificTests(HttpSecurityDescription security) throws SuiteBroken {
@@ -293,10 +293,12 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
 
         ApiSearchConditions conds = new ApiSearchConditions();
         conds.setApiClassRequired(
-            AbstractSetupValidationSuite.this.getApiNamespace(),
-            AbstractSetupValidationSuite.this.getApiName(),
+            AbstractSetupValidationSuite.this.getApiInfo().getApiNamespace(),
+            AbstractSetupValidationSuite.this.getApiInfo().getApiName(),
             AbstractSetupValidationSuite.this.currentState.version.toString()
         );
+
+        String urlElement = AbstractSetupValidationSuite.this.getUrlElementName();
 
         String expectedVersionStr =
             AbstractSetupValidationSuite.this.currentState.version.toString();
@@ -304,7 +306,7 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
         Collection<Element> entries = AbstractSetupValidationSuite.this.regClient.findApis(conds);
         for (Element entry : entries) {
           String version = entry.getAttribute("version");
-          if ($(entry).find("url").text().equals(expectedUrl)
+          if ($(entry).find(urlElement).text().equals(expectedUrl)
               && version.equals(expectedVersionStr)) {
             AbstractSetupValidationSuite.this.currentState.matchedApiEntry = entry;
             matchedApiEntries++;
@@ -385,10 +387,14 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
     return ret;
   }
 
+  protected boolean shouldAnonymousClientBeAllowedToAccessThisApi() {
+    return true;
+  }
+
   protected List<CombEntry> getClientAuthenticationMethods(HttpSecuritySettings sec,
       List<String> notices, List<String> warnings, List<String> errors) {
     List<CombEntry> ret = new ArrayList<>();
-    if (!sec.supportsCliAuthNone()) {
+    if (!sec.supportsCliAuthNone() && shouldAnonymousClientBeAllowedToAccessThisApi()) {
       notices.add("You may consider allowing this API to be accessed by anonymous clients.");
     } else {
       ret.add(CombEntry.CLIAUTH_NONE);
@@ -440,9 +446,19 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
       throws SuiteBroken {
   }
 
-  protected List<HeiIdAndUrl> getApiUrlsForHeis(List<String> heiIds, String api, String testName,
-      String error)
+  @Override
+  protected void validateCombinationAny(Combination combination)
       throws SuiteBroken {
+  }
+
+
+  protected String getApiUrlForHei(String heiId,
+      String api, String endpoint, String testName, String error) throws SuiteBroken {
+    return getApiUrlsForHeis(Arrays.asList(heiId), api, endpoint, testName, error).get(0).url;
+  }
+
+  protected List<HeiIdAndUrl> getApiUrlsForHeis(List<String> heiIds,
+      String api, String endpoint, String testName, String error) throws SuiteBroken {
     List<HeiIdAndUrl> heiIdAndUrls = new ArrayList<>();
 
     this.setup(new InlineValidationStep() {
@@ -456,7 +472,7 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
       protected Optional<Response> innerRun() throws Failure {
         for (String hei : heiIds) {
           List<String> urls = AbstractSetupValidationSuite.this
-              .getApiUrlForHei(api, hei);
+              .selectApiUrlForHeiFromCatalogue(api, endpoint, hei);
           if (urls != null && !urls.isEmpty()) {
             heiIdAndUrls.add(new HeiIdAndUrl(hei, urls.get(0)));
           }
@@ -473,19 +489,30 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
     return heiIdAndUrls;
   }
 
-  private Request makeApiRequestWithPreferredSecurity(
-      InlineValidationStep step, HeiIdAndUrl heiIdAndUrl,
-      HttpSecurityDescription preferedSecurityDescription) {
-    Element apiEntry = AbstractSetupValidationSuite.this.getApiEntryFromUrl(heiIdAndUrl.url);
+  protected Request makeApiRequestWithPreferredSecurity(
+      InlineValidationStep step, String url, String endpointName,
+      HttpSecurityDescription preferredSecurityDescription,
+      List<Parameter> parameters) {
+    Element apiEntry = AbstractSetupValidationSuite.this
+        .getApiEntryFromUrlFormCatalogue(url, endpointName);
     if (apiEntry == null) {
       return null;
     }
 
     return createRequestWithParameters(
         step,
-        new Combination("GET", heiIdAndUrl.url, apiEntry,
-            getSecurityDescriptionFromApiEntry(apiEntry, preferedSecurityDescription)
+        new Combination("GET", url, apiEntry,
+            getSecurityDescriptionFromApiEntry(apiEntry, preferredSecurityDescription)
         ),
+        parameters
+    );
+  }
+
+  private Request makeApiRequestWithPreferredSecurity(
+      InlineValidationStep step, HeiIdAndUrl heiIdAndUrl,
+      HttpSecurityDescription preferredSecurityDescription) {
+    return makeApiRequestWithPreferredSecurity(
+        step, heiIdAndUrl.url, heiIdAndUrl.endpoint, preferredSecurityDescription,
         Arrays.asList(new Parameter("hei_id", heiIdAndUrl.heiId))
     );
   }
@@ -497,16 +524,16 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
    * element, then (heiId, first selected element as a string) pair is returned.
    *
    * @param heiIdAndUrls
-   *      List of (heiId, apiUrl) pairs.
+   *     List of (heiId, apiUrl) pairs.
    * @param securityDescription
-   *      This security method will be used in calls to url from apiUrls if it is possible.
-   *      If queried endpoint doesn't support this security method different one will be used.
+   *     This security method will be used in calls to url from apiUrls if it is possible.
+   *     If queried endpoint doesn't support this security method different one will be used.
    * @param selector
-   *      xpath selector that filters responses from apiUrls
+   *     xpath selector that filters responses from apiUrls
    * @param stepName
-   *      Name of generated validation step.
+   *     Name of generated validation step.
    * @param error
-   *      Error to report if not a single (heiId, string) pair can be found.
+   *     Error to report if not a single (heiId, string) pair can be found.
    */
   protected HeiIdAndString findResponseWithString(
       List<HeiIdAndUrl> heiIdAndUrls,
@@ -561,10 +588,17 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
   protected static class HeiIdAndUrl {
     public String heiId;
     public String url;
+    public String endpoint;
 
     public HeiIdAndUrl(String heiId, String url) {
       this.heiId = heiId;
       this.url = url;
+    }
+
+    public HeiIdAndUrl(String heiId, String url, String endpoint) {
+      this.heiId = heiId;
+      this.url = url;
+      this.endpoint = endpoint;
     }
   }
 

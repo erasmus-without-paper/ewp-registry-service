@@ -4,13 +4,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
 
-import eu.erasmuswithoutpaper.registry.documentbuilder.KnownElement;
-import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
 import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registry.validators.AbstractValidationSuite;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.Combination;
 import eu.erasmuswithoutpaper.registry.validators.InlineValidationStep;
+import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
 import eu.erasmuswithoutpaper.registry.validators.verifiers.NoopVerifier;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -21,14 +20,25 @@ import org.slf4j.LoggerFactory;
  * Describes the set of test/steps to be run on an Institutions API implementation in order to
  * properly validate it.
  */
-class CourseReplicationValidationSuiteV100
+class CourseReplicationValidationSuiteV1
     extends AbstractValidationSuite<CourseReplicationSuiteState> {
 
   private static final Logger logger =
-      LoggerFactory.getLogger(
-          CourseReplicationValidationSuiteV100.class);
+      LoggerFactory.getLogger(CourseReplicationValidationSuiteV1.class);
 
-  CourseReplicationValidationSuiteV100(ApiValidator<CourseReplicationSuiteState> validator,
+  private static final ValidatedApiInfo apiInfo = new CourseReplicationValidatedApiInfoV1();
+
+  @Override
+  protected Logger getLogger() {
+    return logger;
+  }
+
+  @Override
+  public ValidatedApiInfo getApiInfo() {
+    return apiInfo;
+  }
+
+  CourseReplicationValidationSuiteV1(ApiValidator<CourseReplicationSuiteState> validator,
       CourseReplicationSuiteState state, ValidationSuiteConfig config) {
     super(validator, state, config);
   }
@@ -98,7 +108,7 @@ class CourseReplicationValidationSuiteV100
       @Override
       @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
       protected Optional<Response> innerRun() throws Failure {
-        if (CourseReplicationValidationSuiteV100.this.currentState.supportsModifiedSince) {
+        if (CourseReplicationValidationSuiteV1.this.currentState.supportsModifiedSince) {
           return Optional.empty();
         } else {
           throw new Failure("modified_since is not supported, some tests won't be performed.",
@@ -149,55 +159,5 @@ class CourseReplicationValidationSuiteV100
           400
       );
     }
-  }
-
-  @Override
-  protected void validateCombinationPost(Combination combination)
-      throws SuiteBroken {
-    this.addAndRun(
-        false,
-        this.createHttpMethodValidationStep(combination.withChangedHttpMethod("PUT"))
-    );
-    this.addAndRun(
-        false,
-        this.createHttpMethodValidationStep(combination.withChangedHttpMethod("DELETE"))
-    );
-    validateCombinationAny(combination);
-  }
-
-  @Override
-  protected void validateCombinationGet(Combination combination)
-      throws SuiteBroken {
-    validateCombinationAny(combination);
-  }
-
-  @Override
-  protected Logger getLogger() {
-    return logger;
-  }
-
-  @Override
-  protected KnownElement getKnownElement() {
-    return KnownElement.RESPONSE_COURSE_REPLICATION_V1;
-  }
-
-  @Override
-  protected String getApiNamespace() {
-    return KnownNamespace.APIENTRY_COURSE_REPLICATION_V1.getNamespaceUri();
-  }
-
-  @Override
-  protected String getApiName() {
-    return "simple-course-replication";
-  }
-
-  @Override
-  public String getApiPrefix() {
-    return "cr1";
-  }
-
-  @Override
-  public String getApiResponsePrefix() {
-    return "crr1";
   }
 }

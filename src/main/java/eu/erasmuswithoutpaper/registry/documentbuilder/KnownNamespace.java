@@ -75,7 +75,7 @@ public class KnownNamespace {
    * here</a>.
    */
   public static final KnownNamespace RESPONSE_INSTITUTIONS_V2 = new KnownNamespace("inr2",
-          "api-institutions/tree/stable-v2", "api-institutions/stable-v2/response.xsd", false);
+      "api-institutions/tree/stable-v2", "api-institutions/stable-v2/response.xsd", false);
 
   /**
    * As described <a href=
@@ -103,6 +103,24 @@ public class KnownNamespace {
    */
   public static final KnownNamespace RESPONSE_OUNITS_V2 = new KnownNamespace("our2",
       "api-ounits/tree/stable-v2", "api-ounits/stable-v2/response.xsd", false);
+
+  /**
+   * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-iias/blob/stable-v2/manifest-entry.xsd'>
+   * here</a>.
+   */
+  public static final KnownNamespace RESPONSE_IIAS_INDEX_V2 = new KnownNamespace("iari2",
+      "api-iias/blob/stable-v2/endpoints/index-response.xsd",
+      "api-iias/stable-v2/endpoints/index-response.xsd", false);
+
+  /**
+   * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-iias/blob/stable-v2/manifest-entry.xsd'>
+   * here</a>.
+   */
+  public static final KnownNamespace RESPONSE_IIAS_GET_V2 = new KnownNamespace("iarg2",
+      "api-iias/blob/stable-v2/endpoints/get-response.xsd",
+      "api-iias/stable-v2/endpoints/get-response.xsd", false);
 
   /**
    * As described <a href=

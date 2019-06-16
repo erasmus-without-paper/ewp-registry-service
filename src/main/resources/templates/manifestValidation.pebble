@@ -88,6 +88,7 @@
     <div class="api-entry">
         <div class="api-info">
             <span class="api-name">{{name}}</span>
+            <span v-if='endpoint' class="api-name"> - {{endpoint}}</span>
             <span class="api-version">{{version}}</span>
             <code class="api-url">{{ url }}</code>
         </div>
@@ -155,9 +156,10 @@ Vue.component('security-radio-button', {
 });
 
 class ValidationRequest {
-    constructor(url, name, version, security, parameters) {
+    constructor(url, name, endpoint, version, security, parameters) {
         this.url = url;
         this.name = name;
+        this.endpoint = endpoint;
         this.security = security;
         this.version = version;
         this.parameters = parameters;
@@ -172,6 +174,7 @@ class ValidationRequest {
             data: JSON.stringify({
                 url: this.url,
                 name: this.name,
+                endpoint: this.endpoint,
                 version: this.version,
                 security: this.security,
                 parameters: this.parameters
@@ -213,8 +216,8 @@ Vue.component('validation-list', {
         }
     },
     methods: {
-        addEntry: function(url, name, version, security, parameters) {
-            this.entries.unshift(new ValidationRequest(url, name, version, security, parameters));
+        addEntry: function(url, name, endpoint, version, security, parameters) {
+            this.entries.unshift(new ValidationRequest(url, name, endpoint, version, security, parameters));
             this.entries = this.entries.slice(0, 5);
         }
     },
@@ -293,6 +296,7 @@ Vue.component('api-entry', {
     props: {
         'name': String,
         'version': String,
+        'endpoint': String,
         'security': Array,
         'url': String,
         'parameters': Array
@@ -308,7 +312,7 @@ Vue.component('api-entry', {
         },
         validate: function() {
             this.$refs.validation_list.addEntry(
-                this.url, this.name, this.version, this.selected_security, this.gatherParameters());
+                this.url, this.name, this.endpoint, this.version, this.selected_security, this.gatherParameters());
         },
         gatherParameters: function() {
             return this.$refs.input_parameters.gatherParameters();
@@ -345,6 +349,7 @@ $(function() {
             <api-entry
                     name="{{ api.name }}"
                     version="{{ api.version }}"
+                    endpoint="{{ api.endpoint }}"
                     :security="[ {% for security in api.securities %} '{{ security }}', {% endfor %} ]"
                     :parameters="[ {% for param in api.parameters %}
                             {

@@ -13,7 +13,6 @@ import com.google.common.collect.ListMultimap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 @Service
 public class CourseReplicationValidator extends ApiValidator<CourseReplicationSuiteState> {
   private static final Logger logger = LoggerFactory.getLogger(
@@ -26,14 +25,14 @@ public class CourseReplicationValidator extends ApiValidator<CourseReplicationSu
     validationSuites.put(
         new SemanticVersion(1, 0, 0, 9),
         new ValidationSuiteInfo<>(
-            CourseReplicationSetupValidationSuiteV100::new,
-            CourseReplicationSetupValidationSuiteV100.getParameters()
+            CourseReplicationSetupValidationSuiteV1::new,
+            CourseReplicationSetupValidationSuiteV1.getParameters()
         )
 
     );
     validationSuites.put(
         new SemanticVersion(1, 0, 0, 9),
-        new ValidationSuiteInfo<>(CourseReplicationValidationSuiteV100::new)
+        new ValidationSuiteInfo<>(CourseReplicationValidationSuiteV1::new)
     );
   }
 

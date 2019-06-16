@@ -23,15 +23,18 @@ public abstract class ListEqualVerifier extends Verifier {
   public void verify(AbstractValidationSuite suite, Match root, Response response)
       throws InlineValidationStep.Failure {
     List<String> actual =
-        select(root, suite.getApiResponsePrefix(), getSelector())
+        select(root, suite.getApiInfo().getApiResponsePrefix(), getSelector())
             .stream().map(Match::text).collect(Collectors.toList());
 
     ArrayList<String> unexpectedValues = new ArrayList<>(actual);
-    unexpectedValues.removeAll(expected);
+    for (String oneExpected : expected) {
+      unexpectedValues.remove(oneExpected);
+    }
 
     ArrayList<String> notReceivedValues = new ArrayList<>(expected);
-    notReceivedValues.removeAll(actual);
-
+    for (String oneActual : actual) {
+      notReceivedValues.remove(oneActual);
+    }
 
     if (!unexpectedValues.isEmpty()) {
       throw new InlineValidationStep.Failure(

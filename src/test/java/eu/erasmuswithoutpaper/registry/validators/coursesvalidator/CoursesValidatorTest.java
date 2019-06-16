@@ -1,100 +1,42 @@
 package eu.erasmuswithoutpaper.registry.validators.coursesvalidator;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import eu.erasmuswithoutpaper.registry.internet.FakeInternetService;
-import eu.erasmuswithoutpaper.registry.sourceprovider.ManifestSource;
 import eu.erasmuswithoutpaper.registry.validators.AbstractApiTest;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.SemanticVersion;
 import eu.erasmuswithoutpaper.registry.validators.coursereplicationvalidator.CourseReplicationServiceV1Valid;
 import eu.erasmuswithoutpaper.registry.validators.types.CoursesResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.google.common.collect.Lists;
-import org.apache.xerces.impl.dv.util.Base64;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class CoursesValidatorTest extends AbstractApiTest {
-  private static String replicationUrlHTTT;
-  private static String coursesUrlHTTT;
+  private static String replicationUrlHTTT = "https://university.example.com/creplication/HTTT/";
+  private static String coursesUrlHTTT = "https://university.example.com/courses/HTTT/";
   @Autowired
   protected CoursesValidator validator;
   private SemanticVersion version070 = new SemanticVersion(0, 7, 0);
 
-  @BeforeClass
-  public static void setUpClass() {
-    selfManifestUrl = "https://registry.example.com/manifest.xml";
-    apiManifestUrl = "https://university.example.com/manifest.xml";
-    coursesUrlHTTT = "https://university.example.com/courses/HTTT/";
-    replicationUrlHTTT = "https://university.example.com/creplication/HTTT/";
-    needsReinit = true;
+  @Override
+  protected String getManifestFilename() {
+    return "coursesvalidator/manifest.xml";
   }
 
-  @Before
-  public void setUp() {
-    if (needsReinit) {
-      /*
-       * Minimal setup for the services to guarantee that repo contains a valid catalogue,
-       * consistent with the certificates returned by the validator.
-       */
-      this.sourceProvider.clearSources();
-      this.repo.deleteAll();
-      this.internet.clearAll();
-
-      String myManifest = this.selfManifestProvider.getManifest();
-      this.internet.putURL(selfManifestUrl, myManifest);
-      this.sourceProvider.addSource(ManifestSource.newTrustedSource(selfManifestUrl));
-
-      String apiManifest = this.getFileAsString("coursesvalidator/manifest.xml");
-      myKeyPair = this.validator.generateKeyPair();
-      apiManifest = apiManifest.replace(
-          "SERVER-KEY-PLACEHOLDER",
-          Base64.encode(myKeyPair.getPublic().getEncoded())
-      );
-      this.internet.putURL(apiManifestUrl, apiManifest);
-      this.sourceProvider
-          .addSource(ManifestSource.newRegularSource(apiManifestUrl, Lists.newArrayList()));
-
-      this.registryUpdater.reloadAllManifestSources();
-      needsReinit = false;
-    }
+  @Override
+  protected SemanticVersion getVersion() {
+    return version070;
   }
 
-  private void serviceTestContains(FakeInternetService service, String url, List<String> expected) {
-    try {
-      this.internet.addFakeInternetService(service);
-      assertThat(this.getValidatorReport(url, version070, null)).contains(expected);
-      this.internet.removeFakeInternetService(service);
-
-    } finally {
-      this.internet.clearAll();
-    }
-  }
-
-  private void serviceTest(FakeInternetService service, String url, String filename) {
-    try {
-      this.internet.addFakeInternetService(service);
-      assertThat(this.getValidatorReport(url, version070, null))
-          .isEqualTo(this.getFileAsString(filename));
-      this.internet.removeFakeInternetService(service);
-
-    } finally {
-      this.internet.clearAll();
-    }
+  @Override
+  protected ApiValidator GetValidator() {
+    return validator;
   }
 
   private CourseReplicationServiceV1Valid GetCoursesReplication() {
@@ -553,9 +495,5 @@ public class CoursesValidatorTest extends AbstractApiTest {
     );
   }
 
-  @Override
-  protected ApiValidator GetValidator() {
-    return validator;
-  }
 }
 

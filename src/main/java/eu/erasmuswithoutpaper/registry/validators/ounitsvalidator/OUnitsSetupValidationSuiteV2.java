@@ -4,11 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import eu.erasmuswithoutpaper.registry.documentbuilder.KnownElement;
-import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
 import eu.erasmuswithoutpaper.registry.validators.AbstractSetupValidationSuite;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.HttpSecurityDescription;
+import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
 import eu.erasmuswithoutpaper.registry.validators.ValidationParameter;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -20,20 +19,33 @@ class OUnitsSetupValidationSuiteV2
 
   private static final Logger logger =
       LoggerFactory.getLogger(OUnitsSetupValidationSuiteV2.class);
+
+  private static final ValidatedApiInfo apiInfo = new OUnitsValidatedApiInfo();
+
+  @Override
+  public ValidatedApiInfo getApiInfo() {
+    return apiInfo;
+  }
+
+  @Override
+  protected Logger getLogger() {
+    return logger;
+  }
+
   private static final String HEI_ID_PARAMETER = "hei_id";
   private static final String OUNIT_ID_PARAMETER = "ounit_id";
-
-  OUnitsSetupValidationSuiteV2(ApiValidator<OUnitsSuiteState> validator,
-      OUnitsSuiteState state,
-      ValidationSuiteConfig config) {
-    super(validator, state, config);
-  }
 
   public static List<ValidationParameter> getParameters() {
     return Arrays.asList(
         new ValidationParameter(HEI_ID_PARAMETER),
         new ValidationParameter(OUNIT_ID_PARAMETER, Arrays.asList(HEI_ID_PARAMETER))
     );
+  }
+
+  OUnitsSetupValidationSuiteV2(ApiValidator<OUnitsSuiteState> validator,
+      OUnitsSuiteState state,
+      ValidationSuiteConfig config) {
+    super(validator, state, config);
   }
 
   private int getMaxOunitIds() {
@@ -62,6 +74,7 @@ class OUnitsSetupValidationSuiteV2
     return getApiUrlsForHeis(
         heiIds,
         "institutions",
+        null,
         "Find Institutions API for any of covered HEIs.",
         "To perform tests we need any ounit-id. We have to use Institutions API for that, "
             + "but the Catalogue doesn't contain entries for this API for any of hei-ids that we "
@@ -96,35 +109,5 @@ class OUnitsSetupValidationSuiteV2
 
     this.currentState.selectedHeiId = heiIdAndOunitId.heiId;
     this.currentState.selectedOunitId = heiIdAndOunitId.string;
-  }
-
-  @Override
-  protected Logger getLogger() {
-    return logger;
-  }
-
-  @Override
-  protected KnownElement getKnownElement() {
-    return KnownElement.RESPONSE_OUNITS_V2;
-  }
-
-  @Override
-  protected String getApiNamespace() {
-    return KnownNamespace.APIENTRY_OUNITS_V2.getNamespaceUri();
-  }
-
-  @Override
-  protected String getApiName() {
-    return "organizational-units";
-  }
-
-  @Override
-  public String getApiPrefix() {
-    return "ou2";
-  }
-
-  @Override
-  public String getApiResponsePrefix() {
-    return "our2";
   }
 }

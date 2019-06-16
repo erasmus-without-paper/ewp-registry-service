@@ -8,14 +8,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import eu.erasmuswithoutpaper.registry.documentbuilder.KnownElement;
-import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registry.validators.AbstractValidationSuite;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.Combination;
 import eu.erasmuswithoutpaper.registry.validators.InlineValidationStep;
+import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
 import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus.Status;
 import eu.erasmuswithoutpaper.registry.validators.verifiers.ListEqualVerifier;
 import eu.erasmuswithoutpaper.registry.validators.verifiers.NotInListVerifier;
@@ -33,8 +32,19 @@ class CoursesValidationSuiteV070
     extends AbstractValidationSuite<CoursesSuiteState> {
 
   private static final Logger logger =
-      LoggerFactory.getLogger(
-          CoursesValidationSuiteV070.class);
+      LoggerFactory.getLogger(CoursesSetupValidationSuiteV070.class);
+
+  private static final ValidatedApiInfo apiInfo = new CoursesValidatedApiInfoV070();
+
+  @Override
+  protected Logger getLogger() {
+    return logger;
+  }
+
+  @Override
+  public ValidatedApiInfo getApiInfo() {
+    return apiInfo;
+  }
 
   CoursesValidationSuiteV070(ApiValidator<CoursesSuiteState> validator,
       CoursesSuiteState state, ValidationSuiteConfig config) {
@@ -238,57 +248,6 @@ class CoursesValidationSuiteV070
     );
   }
 
-  @Override
-  protected void validateCombinationPost(Combination combination)
-      throws SuiteBroken {
-    this.addAndRun(
-        false,
-        this.createHttpMethodValidationStep(combination.withChangedHttpMethod("PUT"))
-    );
-    this.addAndRun(
-        false,
-        this.createHttpMethodValidationStep(combination.withChangedHttpMethod("DELETE"))
-    );
-    validateCombinationAny(combination);
-  }
-
-  @Override
-  protected void validateCombinationGet(Combination combination)
-      throws SuiteBroken {
-    validateCombinationAny(combination);
-  }
-
-  @Override
-  protected Logger getLogger() {
-    return logger;
-  }
-
-  @Override
-  protected KnownElement getKnownElement() {
-    return KnownElement.RESPONSE_COURSES_V1;
-  }
-
-  @Override
-  protected String getApiNamespace() {
-    return KnownNamespace.APIENTRY_COURSES_V1.getNamespaceUri();
-  }
-
-  @Override
-  protected String getApiName() {
-    return "courses";
-  }
-
-  @Override
-  public String getApiPrefix() {
-    return "co1";
-  }
-
-  @Override
-  public String getApiResponsePrefix() {
-    return "cor1";
-  }
-
-
   private static class CoursesIdsVerifier extends ListEqualVerifier {
     CoursesIdsVerifier(List<String> expected, Status status) {
       super(expected, status);
@@ -301,11 +260,6 @@ class CoursesValidationSuiteV070
     @Override
     protected List<String> getSelector() {
       return Arrays.asList("learningOpportunitySpecification", "los-id");
-    }
-
-    @Override
-    protected String getParamName() {
-      return "los-id";
     }
   }
 
@@ -327,11 +281,6 @@ class CoursesValidationSuiteV070
           "learningOpportunityInstance",
           "loi-id"
       );
-    }
-
-    @Override
-    protected String getParamName() {
-      return "los-id";
     }
   }
 }

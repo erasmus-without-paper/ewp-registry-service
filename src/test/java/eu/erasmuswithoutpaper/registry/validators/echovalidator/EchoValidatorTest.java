@@ -6,85 +6,34 @@ import java.security.KeyPair;
 
 import eu.erasmuswithoutpaper.registry.internet.FakeInternetService;
 import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigResponseSigner;
-import eu.erasmuswithoutpaper.registry.sourceprovider.ManifestSource;
 import eu.erasmuswithoutpaper.registry.validators.AbstractApiTest;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.SemanticVersion;
-
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.xerces.impl.dv.util.Base64;
 import org.assertj.core.util.Lists;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class EchoValidatorTest extends AbstractApiTest {
-  private static String echoManifestUrl;
-  private static String echoV1Url;
-  private static String echoUrlTTTT;
-  private static String echoUrlSTTT;
-  private static String echoUrlHTTT;
-  private static String echoUrlMTTT;
-  private static String echoUrlMHTT;
-  private static String echoUrlMMTT;
-  private static String echoUrlSTET;
-  private static String echoUrlSTTE;
-  private static String echoUrlMMMM;
-  /**
-   * KeyPair to be used for signing responses of our test services.
-   */
-  private static KeyPair myKeyPair;
+  private static final String echoV1Url = "https://university.example.com/echo/v1/";
+  private static final String echoUrlTTTT = "https://university.example.com/echo/TTTT/";
+  private static final String echoUrlSTTT = "https://university.example.com/echo/STTT/";
+  private static final String echoUrlHTTT = "https://university.example.com/echo/HTTT/";
+  private static final String echoUrlMTTT = "https://university.example.com/echo/MTTT/";
+  private static final String echoUrlMHTT = "https://university.example.com/echo/MHTT/";
+  private static final String echoUrlMMTT = "https://university.example.com/echo/MMTT/";
+  private static final String echoUrlSTET = "https://university.example.com/echo/STET/";
+  private static final String echoUrlSTTE = "https://university.example.com/echo/STTE/";
+  private static final String echoUrlMMMM = "https://university.example.com/echo/MMMM/";
   @Autowired
   private EchoValidator validator;
 
-  @BeforeClass
-  public static void setUpClass() {
-    selfManifestUrl = "https://registry.example.com/manifest.xml";
-    echoManifestUrl = "https://university.example.com/manifest.xml";
-    echoV1Url = "https://university.example.com/echo/v1/";
-    echoUrlTTTT = "https://university.example.com/echo/TTTT/";
-    echoUrlSTTT = "https://university.example.com/echo/STTT/";
-    echoUrlHTTT = "https://university.example.com/echo/HTTT/";
-    echoUrlMTTT = "https://university.example.com/echo/MTTT/";
-    echoUrlMHTT = "https://university.example.com/echo/MHTT/";
-    echoUrlMMTT = "https://university.example.com/echo/MMTT/";
-    echoUrlSTET = "https://university.example.com/echo/STET/";
-    echoUrlSTTE = "https://university.example.com/echo/STTE/";
-    echoUrlMMMM = "https://university.example.com/echo/MMMM/";
-    needsReinit = true;
-  }
-
-  @Before
-  public void setUp() {
-    if (needsReinit) {
-      /*
-       * Minimal setup for the services to guarantee that repo contains a valid catalogue,
-       * consistent with the certificates returned by the validator.
-       */
-      this.sourceProvider.clearSources();
-      this.repo.deleteAll();
-      this.internet.clearAll();
-
-      String myManifest = this.selfManifestProvider.getManifest();
-      this.internet.putURL(selfManifestUrl, myManifest);
-      this.sourceProvider.addSource(ManifestSource.newTrustedSource(selfManifestUrl));
-
-      String echoManifest = this.getFileAsString("echovalidator/manifest.xml");
-      myKeyPair = this.validator.generateKeyPair();
-      echoManifest = echoManifest.replace(
-          "SERVER-KEY-PLACEHOLDER",
-          Base64.encode(myKeyPair.getPublic().getEncoded())
-      );
-      this.internet.putURL(echoManifestUrl, echoManifest);
-      this.sourceProvider
-          .addSource(ManifestSource.newRegularSource(echoManifestUrl, Lists.newArrayList()));
-
-      this.registryUpdater.reloadAllManifestSources();
-      needsReinit = false;
-    }
+  @Override
+  protected String getManifestFilename() {
+    return "echovalidator/manifest.xml";
   }
 
   @Test
@@ -899,5 +848,10 @@ public class EchoValidatorTest extends AbstractApiTest {
   @Override
   protected ApiValidator<EchoSuiteState> GetValidator() {
     return validator;
+  }
+
+  @Override
+  protected SemanticVersion getVersion() {
+    return null;
   }
 }

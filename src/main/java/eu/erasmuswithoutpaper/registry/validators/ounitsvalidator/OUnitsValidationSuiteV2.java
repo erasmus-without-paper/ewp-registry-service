@@ -6,14 +6,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import eu.erasmuswithoutpaper.registry.documentbuilder.KnownElement;
-import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registry.validators.AbstractValidationSuite;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.Combination;
 import eu.erasmuswithoutpaper.registry.validators.InlineValidationStep;
+import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
 import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus.Status;
 import eu.erasmuswithoutpaper.registry.validators.verifiers.ListEqualVerifier;
 
@@ -25,13 +24,26 @@ import org.slf4j.LoggerFactory;
  * Describes the set of test/steps to be run on an Institutions API implementation in order to
  * properly validate it.
  */
-class OUnitsValidationSuiteV200
+class OUnitsValidationSuiteV2
     extends AbstractValidationSuite<OUnitsSuiteState> {
 
   private static final Logger logger =
-      LoggerFactory.getLogger(OUnitsValidationSuiteV200.class);
+      LoggerFactory.getLogger(OUnitsValidationSuiteV2.class);
 
-  OUnitsValidationSuiteV200(ApiValidator<OUnitsSuiteState> validator,
+  private static final ValidatedApiInfo apiInfo = new OUnitsValidatedApiInfo();
+
+  @Override
+  public ValidatedApiInfo getApiInfo() {
+    return apiInfo;
+  }
+
+  @Override
+  protected Logger getLogger() {
+    return logger;
+  }
+
+
+  OUnitsValidationSuiteV2(ApiValidator<OUnitsSuiteState> validator,
       OUnitsSuiteState state, ValidationSuiteConfig config) {
     super(validator, state, config);
   }
@@ -55,20 +67,20 @@ class OUnitsValidationSuiteV200
       protected Optional<Response> innerRun() throws Failure {
         Request request = createRequestWithParameters(this, combination,
             Arrays.asList(
-                new Parameter("hei_id", OUnitsValidationSuiteV200.this.currentState.selectedHeiId),
+                new Parameter("hei_id", OUnitsValidationSuiteV2.this.currentState.selectedHeiId),
                 new Parameter(
-                    "ounit_id", OUnitsValidationSuiteV200.this.currentState.selectedOunitId)
+                    "ounit_id", OUnitsValidationSuiteV2.this.currentState.selectedOunitId)
             )
         );
         List<String> expectedIDs =
-            Collections.singletonList(OUnitsValidationSuiteV200.this.currentState.selectedOunitId);
+            Collections.singletonList(OUnitsValidationSuiteV2.this.currentState.selectedOunitId);
         Response response = verifyResponse(
             this, combination, request, new OUnitIdsVerifier(expectedIDs)
         );
         List<String> codes = selectFromDocument(
             makeXmlFromBytes(response.getBody()),
             "/ounits-response/ounit/ounit-id[text()=\""
-                + OUnitsValidationSuiteV200.this.currentState.selectedOunitId
+                + OUnitsValidationSuiteV2.this.currentState.selectedOunitId
                 + "\"]/../ounit-code"
         );
         ounitCodes.add(codes.get(0));
@@ -88,63 +100,12 @@ class OUnitsValidationSuiteV200
         Arrays.asList(
             new Parameter("hei_id", this.currentState.selectedHeiId),
             new Parameter("hei_id", this.fakeId),
-            new Parameter("ounit_id", OUnitsValidationSuiteV200.this.currentState.selectedOunitId)
+            new Parameter("ounit_id", OUnitsValidationSuiteV2.this.currentState.selectedOunitId)
         ),
         400,
         Status.WARNING
     );
   }
-
-  @Override
-  protected void validateCombinationPost(Combination combination)
-      throws SuiteBroken {
-    this.addAndRun(
-        false,
-        this.createHttpMethodValidationStep(combination.withChangedHttpMethod("PUT"))
-    );
-    this.addAndRun(
-        false,
-        this.createHttpMethodValidationStep(combination.withChangedHttpMethod("DELETE"))
-    );
-    validateCombinationAny(combination);
-  }
-
-  @Override
-  protected void validateCombinationGet(Combination combination)
-      throws SuiteBroken {
-    validateCombinationAny(combination);
-  }
-
-  @Override
-  protected Logger getLogger() {
-    return logger;
-  }
-
-  @Override
-  protected KnownElement getKnownElement() {
-    return KnownElement.RESPONSE_OUNITS_V2;
-  }
-
-  @Override
-  protected String getApiNamespace() {
-    return KnownNamespace.APIENTRY_OUNITS_V2.getNamespaceUri();
-  }
-
-  @Override
-  protected String getApiName() {
-    return "ounits";
-  }
-
-  @Override
-  public String getApiPrefix() {
-    return "ou2";
-  }
-
-  @Override
-  public String getApiResponsePrefix() {
-    return "our2";
-  }
-
 
   private static class OUnitIdsVerifier extends ListEqualVerifier {
     OUnitIdsVerifier(List<String> expected) {
@@ -158,11 +119,6 @@ class OUnitsValidationSuiteV200
     @Override
     protected List<String> getSelector() {
       return Arrays.asList("ounit", "ounit-id");
-    }
-
-    @Override
-    protected String getParamName() {
-      return "ounid-id";
     }
   }
 }

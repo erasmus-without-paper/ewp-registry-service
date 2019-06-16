@@ -6,6 +6,7 @@ import eu.erasmuswithoutpaper.registry.validators.ValidationParameterValue;
 
 public class ValidationRequestBody {
   private String name;
+  private String endpoint;
   private String security;
   private String url;
   private String version;
@@ -13,6 +14,10 @@ public class ValidationRequestBody {
 
   public String getName() {
     return name;
+  }
+
+  public String getEndpoint() {
+    return endpoint;
   }
 
   public String getSecurity() {

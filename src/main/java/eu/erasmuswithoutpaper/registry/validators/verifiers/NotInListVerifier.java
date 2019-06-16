@@ -18,13 +18,14 @@ public abstract class NotInListVerifier extends Verifier {
   @Override
   public void verify(AbstractValidationSuite suite, Match root, Response response)
       throws InlineValidationStep.Failure {
-    boolean found = select(root, suite.getApiResponsePrefix(), getSelector())
+    boolean found = select(root, suite.getApiInfo().getApiResponsePrefix(), getSelector())
         .stream().anyMatch(x -> x.text().equals(notWantedValue));
 
     if (found) {
       throw new InlineValidationStep.Failure(
           "The response has proper HTTP status and it passed the schema validation. "
-              + "However the set of returned loi-ids doesn't match what we expect. "
+              + "However the set of returned <" + getParamName() + ">s "
+              + "doesn't match what we expect. "
               + "It should not contain <" + getParamName() + ">"
               + notWantedValue + "</" + getParamName() + ">, but it does.",
           this.status, response

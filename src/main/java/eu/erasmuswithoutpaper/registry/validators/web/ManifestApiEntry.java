@@ -19,7 +19,7 @@ import org.w3c.dom.Element;
 
 
 @SuppressFBWarnings(value = "URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD",
-                    justification = "Fields are referenced while rendering the webpage")
+    justification = "Fields are referenced while rendering the webpage")
 public class ManifestApiEntry {
   public final String name;
   public final String version;
@@ -27,12 +27,15 @@ public class ManifestApiEntry {
   public final List<HttpSecurityDescription> securities;
   public final boolean available;
   public final List<ValidationParameter> parameters;
+  public final String endpoint;
 
   /**
    * Description of API endpoint.
    *
    * @param name
    *     name of API, e.g. echo.
+   * @param endpoint
+   *     API endpoint, e.g. index.
    * @param version
    *     semantic version of this API.
    * @param url
@@ -44,10 +47,11 @@ public class ManifestApiEntry {
    * @param parameters
    *     parameters that can be passed to tests for this API in this version
    */
-  public ManifestApiEntry(String name, String version, String url,
+  public ManifestApiEntry(String name, String endpoint, String version, String url,
       List<HttpSecurityDescription> securities, boolean available,
       List<ValidationParameter> parameters) {
     this.name = name;
+    this.endpoint = endpoint;
     this.version = version;
     this.url = url;
     this.securities = securities;
@@ -72,7 +76,7 @@ public class ManifestApiEntry {
             .each();
     for (Match api : apis) {
       try {
-        ret.add(parseApiEntry(api, manager));
+        ret.addAll(parseApiEntry(api, manager));
       } catch (ParseException e) {
         //ignore
       }
@@ -80,30 +84,42 @@ public class ManifestApiEntry {
     return ret;
   }
 
-  private static ManifestApiEntry parseApiEntry(Match api, ApiValidatorsManager manager)
+  private static List<ManifestApiEntry> parseApiEntry(Match api, ApiValidatorsManager manager)
       throws ParseException {
+    final List<ManifestApiEntry> result = new ArrayList<>();
     final Element apiElement = api.get(0);
-
     final String apiName = apiElement.getLocalName();
-
     final String version = apiElement.getAttribute("version");
-    SemanticVersion semanticVersion = null;
+
+    SemanticVersion semanticVersion;
     try {
       semanticVersion = new SemanticVersion(version);
     } catch (SemanticVersion.InvalidVersionString invalidVersionString) {
       throw new ParseException("Cannot parse version " + version);
     }
 
-    final String url = api.xpath("*[local-name()='url']").text();
+    String[] urlElementNames = {"url", "index-url", "get-url"};
+    for (String urlElementName : urlElementNames) {
+      final String url = api.xpath("*[local-name()='" + urlElementName + "']").text();
+      if (url == null) {
+        continue;
+      }
 
-    final Element securityElement = api.xpath("*[local-name()='http-security']").get(0);
-    List<HttpSecurityDescription> securitySettings =
-        parseSecurity(new HttpSecuritySettings(securityElement));
+      String endpointName = null;
+      if (urlElementName.endsWith("-url")) {
+        endpointName = urlElementName.substring(0, urlElementName.length() - 4);
+      }
 
-    return new ManifestApiEntry(apiName, version, url, securitySettings,
-        manager.hasCompatibleTests(apiName, semanticVersion),
-        manager.getParameters(apiName, semanticVersion)
-    );
+      final Element securityElement = api.xpath("*[local-name()='http-security']").get(0);
+      List<HttpSecurityDescription> securitySettings =
+          parseSecurity(new HttpSecuritySettings(securityElement));
+
+      result.add(new ManifestApiEntry(apiName, endpointName, version, url, securitySettings,
+          manager.hasCompatibleTests(apiName, endpointName, semanticVersion),
+          manager.getParameters(apiName, endpointName, semanticVersion)
+      ));
+    }
+    return result;
   }
 
   private static List<CombEntry> getResponseEncryptionMethods(HttpSecuritySettings sec) {
