@@ -1,5 +1,7 @@
 package eu.erasmuswithoutpaper.registry.documentbuilder;
 
+import javax.xml.bind.ValidationEvent;
+
 import org.xml.sax.SAXParseException;
 
 /**
@@ -29,6 +31,11 @@ public class BuildError {
   BuildError(String message) {
     this.lineNumber = 1;
     this.message = message;
+  }
+
+  public BuildError(ValidationEvent validationEvent) {
+    this.lineNumber = validationEvent.getLocator().getLineNumber();
+    this.message = validationEvent.getMessage();
   }
 
   /**

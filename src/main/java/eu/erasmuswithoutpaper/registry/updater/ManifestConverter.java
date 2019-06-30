@@ -4,16 +4,15 @@ import static org.joox.JOOX.$;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
 import javax.xml.parsers.DocumentBuilder;
 
 import eu.erasmuswithoutpaper.registry.common.Utils;
+import eu.erasmuswithoutpaper.registry.documentbuilder.BuildError;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildParams;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildResult;
 import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownElement;
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -54,7 +53,7 @@ public class ManifestConverter {
 
     /**
      * @return {@link BuildResult} returned by the internal {@link EwpDocBuilder}. Note, that it MAY
-     *         be valid, but the parsed document might not be a manifest at all.
+     *     be valid, but the parsed document might not be a manifest at all.
      */
     @Override
     public List<String> getErrorList() {
@@ -84,7 +83,8 @@ public class ManifestConverter {
   private final EwpDocBuilder docBuilder;
 
   /**
-   * @param docBuilder Needed to run XML schema validation on the provided manifest documents.
+   * @param docBuilder
+   *     Needed to run XML schema validation on the provided manifest documents.
    */
   @Autowired
   public ManifestConverter(EwpDocBuilder docBuilder) {
@@ -95,20 +95,27 @@ public class ManifestConverter {
    * Take an XML manifest in ANY supported version and build a DOM {@link Document} with the most
    * recent version 5 of the manifest format.
    *
-   * @param manifestXmlContents XML contents of the presumed manifest file.
+   * @param manifestXmlContents
+   *     XML contents of the presumed manifest file.
    * @return A DOM {@link Document} with Manifest v5.
-   * @throws NotValidManifest If the provided document was not a valid Manifest (in any of its
-   *         supported versions).
+   * @throws NotValidManifest
+   *     If the provided document was not a valid Manifest (in any of its
+   *     supported versions).
    */
-  public Document buildToV5(byte[] manifestXmlContents) throws NotValidManifest {
+  public Document buildToV5(byte[] manifestXmlContents,
+      List<BuildError> nonLethalErrors) throws NotValidManifest {
 
     // Try to parse it.
 
     BuildParams params = new BuildParams(manifestXmlContents);
-    BuildResult result = this.docBuilder.build(params);
+    BuildResult result = this.docBuilder.buildManifest(params);
 
     if (!result.isValid()) {
       throw new NotValidEwpDocument(result);
+    }
+
+    if (nonLethalErrors != null) {
+      nonLethalErrors.addAll(result.getErrors());
     }
 
     // Verify the namespace.
@@ -130,8 +137,9 @@ public class ManifestConverter {
   /**
    * Convert the manifest from version 4 to version 5.
    *
-   * @param srcDoc DOM {@link Document} with a valid Manifest v4. It MUST be valid (according to v4
-   *        XSD).
+   * @param srcDoc
+   *     DOM {@link Document} with a valid Manifest v4. It MUST be valid (according to v4
+   *     XSD).
    * @return A new DOM {@link Document} with the converted Manifest v5.
    */
   public Document convertFromV4ToV5(Document srcDoc) {

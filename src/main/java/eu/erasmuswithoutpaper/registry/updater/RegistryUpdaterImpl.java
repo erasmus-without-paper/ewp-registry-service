@@ -18,6 +18,7 @@ import eu.erasmuswithoutpaper.registry.common.Severity.OneOfTheValuesIsUndetermi
 import eu.erasmuswithoutpaper.registry.common.Utils;
 import eu.erasmuswithoutpaper.registry.constraints.FailedConstraintNotice;
 import eu.erasmuswithoutpaper.registry.constraints.ManifestConstraint;
+import eu.erasmuswithoutpaper.registry.documentbuilder.BuildError;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildParams;
 import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
@@ -31,7 +32,6 @@ import eu.erasmuswithoutpaper.registry.sourceprovider.ManifestSource;
 import eu.erasmuswithoutpaper.registry.sourceprovider.ManifestSourceProvider;
 import eu.erasmuswithoutpaper.registry.updater.ManifestConverter.NotValidManifest;
 import eu.erasmuswithoutpaper.registry.xmlformatter.XmlFormatter;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -65,15 +65,23 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
   private final ManifestConverter converter;
 
   /**
-   * @param manifestSourceProvider to get the list of Manifest sources.
-   * @param manifestUpdateStatusRepository to manage the {@link ManifestUpdateStatus}es, for each of
-   *        the manifests.
-   * @param internet to fetch the manifest contents.
-   * @param repo to store the new content of the fetched manifests.
-   * @param docBuilder to parse the manifests.
-   * @param xmlFormatter to format the filtered versions of the manifests.
-   * @param notifier to register our custom {@link NotifierFlag}s.
-   * @param converter to be able to convert older manifests into the latest versions.
+   * @param manifestSourceProvider
+   *     to get the list of Manifest sources.
+   * @param manifestUpdateStatusRepository
+   *     to manage the {@link ManifestUpdateStatus}es, for each of
+   *     the manifests.
+   * @param internet
+   *     to fetch the manifest contents.
+   * @param repo
+   *     to store the new content of the fetched manifests.
+   * @param docBuilder
+   *     to parse the manifests.
+   * @param xmlFormatter
+   *     to format the filtered versions of the manifests.
+   * @param notifier
+   *     to register our custom {@link NotifierFlag}s.
+   * @param converter
+   *     to be able to convert older manifests into the latest versions.
    */
   @Autowired
   public RegistryUpdaterImpl(ManifestSourceProvider manifestSourceProvider,
@@ -106,7 +114,8 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
 
     Set<ManifestSource> sources = Sets.newLinkedHashSet(this.manifestSourceProvider.getAll());
     for (Iterator<Map.Entry<ManifestSource, ManifestUpdateStatusNotifierFlag>> iter =
-        this.notifierFlags.entrySet().iterator(); iter.hasNext();) {
+         this.notifierFlags.entrySet().iterator();
+         iter.hasNext(); ) {
       Map.Entry<ManifestSource, ManifestUpdateStatusNotifierFlag> entry = iter.next();
       ManifestSource source = entry.getKey();
       if (!sources.contains(source)) {
@@ -229,8 +238,9 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
         // Try to read it (and dynamically convert it to version 5).
 
         Document doc;
+        List<BuildError> nonLethalErrors = new ArrayList<>();
         try {
-          doc = this.converter.buildToV5(originalContents);
+          doc = this.converter.buildToV5(originalContents, nonLethalErrors);
         } catch (NotValidManifest e) {
           // The manifest failed basic validation. We cannot continue.
 
@@ -247,6 +257,18 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
           return;
         }
 
+        Severity noticesSeverity = Severity.OK;
+
+        if (!nonLethalErrors.isEmpty()) {
+          notices.add(new UpdateNotice(Severity.WARNING,
+              "This file contains some invalid elements inside one of <apis-implemented> elements."
+                  + " This manifest will be imported but those APIs will be ignored."));
+          for (BuildError error : nonLethalErrors) {
+            notices.add(new UpdateNotice(Severity.WARNING, Utils.escapeHtml(error.getMessage())));
+          }
+          noticesSeverity = Severity.WARNING;
+        }
+
         /*
          * The contents passed XML Schema validation, but they are still unsafe. We need to create
          * the filtered version of these contents. We do this by applying all the filters which has
@@ -257,7 +279,6 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
          * manifest document.
          */
 
-        Severity noticesSeverity = Severity.OK;
         for (ManifestConstraint constraint : source.getConstraints()) {
           for (FailedConstraintNotice notice : constraint.filter(doc)) {
             // We are converting one type of notice to another.
@@ -352,7 +373,7 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
          */
 
         try {
-          manifests.add(this.converter.buildToV5(xml));
+          manifests.add(this.converter.buildToV5(xml, null));
         } catch (NotValidManifest e) {
           logger.error("Ignoring {}, because couldn't load it (should not happen)", src);
           for (String err : e.getErrorList()) {

@@ -20,6 +20,17 @@ public class BuildResult {
   private final Optional<List<String>> prettyLines;
 
   BuildResult(boolean isValid, Document document, String rootNamespaceUri, String rootLocalName,
+      List<BuildError> buildErrors) {
+    this.valid = isValid;
+    this.document = Optional.ofNullable(document);
+    this.rootNamespaceUri = rootNamespaceUri;
+    this.rootLocalName = rootLocalName;
+    this.buildErrors = buildErrors;
+    this.prettyXml = Optional.empty();
+    this.prettyLines = Optional.empty();
+  }
+
+  BuildResult(boolean isValid, Document document, String rootNamespaceUri, String rootLocalName,
       List<BuildError> buildErrors, String prettyXml, List<String> prettyLines) {
     this.valid = isValid;
     this.document = Optional.ofNullable(document);

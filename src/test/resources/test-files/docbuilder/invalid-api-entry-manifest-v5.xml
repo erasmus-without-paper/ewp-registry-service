@@ -1,0 +1,31 @@
+<manifest
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/tree/stable-v5"
+    xmlns:r="https://github.com/erasmus-without-paper/ewp-specs-api-registry/tree/stable-v1"
+    xmlns:sec="https://github.com/erasmus-without-paper/ewp-specs-sec-intro/tree/stable-v2"
+>
+    <host>
+        <r:apis-implemented>
+            <discovery
+                xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/blob/stable-v4/manifest-entry.xsd"
+                version="4.1.0"
+            >
+                <url>https://university.example.com/manifest.xml</url>
+            </discovery>
+
+            <courses
+                xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-courses/blob/stable-v1/manifest-entry.xsd"
+                version="0.7.0"
+            >
+                <http-security>
+                    <sec:client-auth-methods>
+                        <httpsig xmlns="https://github.com/erasmus-without-paper/ewp-specs-sec-cliauth-httpsig/tree/stable-v1"/>
+                    </sec:client-auth-methods>
+                </http-security>
+                <url>https://university.example.com/courses/HTTT/</url>
+                <max-los-ids>2</max-los-ids>
+                <max-los-codes>2</max-los-codes>
+                <unexpected-element>2</unexpected-element>
+            </courses>
+        </r:apis-implemented>
+    </host>
+</manifest>

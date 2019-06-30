@@ -185,6 +185,16 @@
             <artifactId>ewp-rsa-aes</artifactId>
             <version>1.0.1</version>
         </dependency>
+        <dependency>
+            <groupId>javax.activation</groupId>
+            <artifactId>activation</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+            <version>2.3.2</version>
+        </dependency>
     </dependencies>
 
     <properties>
@@ -359,7 +369,12 @@
                         <source>src/main/resources/schemas/ewp-specs-api-course-replication-v1.0.0-rc9/response.xsd</source>
                         <source>src/main/resources/schemas/ewp-specs-api-iias-v2.1.0/endpoints/index-response.xsd</source>
                         <source>src/main/resources/schemas/ewp-specs-api-iias-v2.1.0/endpoints/get-response.xsd</source>
+                        <source>src/main/resources/schemas/ewp-specs-api-discovery-v4.1.1/manifest.xsd</source>
+                        <source>src/main/resources/schemas/ewp-specs-api-discovery-v5.0.0/manifest.xsd</source>
                     </sources>
+                    <xjbSources>
+                        <xjbSource>src/main/resources/schema-bindings/manifests.xjb</xjbSource>
+                    </xjbSources>
                 </configuration>
             </plugin>
         </plugins>
