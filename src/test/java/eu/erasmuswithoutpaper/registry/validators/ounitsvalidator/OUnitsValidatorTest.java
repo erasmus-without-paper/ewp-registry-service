@@ -1,5 +1,7 @@
 package eu.erasmuswithoutpaper.registry.validators.ounitsvalidator;
 
+import static eu.erasmuswithoutpaper.registry.validators.TestValidationReportAsset.assertThat;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -7,6 +9,7 @@ import java.util.List;
 import eu.erasmuswithoutpaper.registry.validators.AbstractApiTest;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.SemanticVersion;
+import eu.erasmuswithoutpaper.registry.validators.TestValidationReport;
 import eu.erasmuswithoutpaper.registry.validators.institutionsvalidator.InstitutionServiceV2Valid;
 import eu.erasmuswithoutpaper.registry.validators.types.OunitsResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +28,12 @@ public class OUnitsValidatorTest extends AbstractApiTest {
     return "ounitsvalidator/manifest.xml";
   }
 
-  InstitutionServiceV2Valid GetInstitutions() {
+  @Override
+  protected String getUrl() {
+    return ounitsUrlHTTT;
+  }
+
+  private InstitutionServiceV2Valid GetInstitutions() {
     return new InstitutionServiceV2Valid(institutionsUrlHTTT, client, validatorKeyStore) {
       @Override
       protected List<String> GetCoveredOUnits() {
@@ -40,51 +48,44 @@ public class OUnitsValidatorTest extends AbstractApiTest {
   }
 
   @Test
-  public void testAgainstOUnitsValid() {
-    serviceTest(new OUnitsServiceV2Valid(ounitsUrlHTTT, this.client, GetInstitutions()) {
-                },
-        ounitsUrlHTTT, "ounitsvalidator/OUnitsValidOutput.txt"
-    );
+  public void testValidationOnValidServiceIsSuccessful() {
+    OUnitsServiceV2Valid service =
+        new OUnitsServiceV2Valid(ounitsUrlHTTT, this.client, GetInstitutions());
+    TestValidationReport report = this.getRawReport(service);
+    assertThat(report).isCorrect();
   }
 
-  /**
-   * Doesn't validate length of ounit-id list.
-   */
   @Test
-  public void testAgainstOUnitsInvalid1() {
-    serviceTest(
+  public void testNotValidationLengthOfOunitIdListIsDetected() {
+    OUnitsServiceV2Valid service =
         new OUnitsServiceV2Valid(ounitsUrlHTTT, this.client, GetInstitutions()) {
           @Override
           protected void ErrorMaxOUnitIdsExceeded() throws ErrorResponseException {
             //Do nothing
           }
-        },
-        ounitsUrlHTTT, "ounitsvalidator/OUnitsInvalidOutput1.txt"
-    );
+        };
+    TestValidationReport report = this.getRawReport(service);
+    assertThat(report)
+        .containsFailure("Request more than <max-ounit-ids> known ounit-ids, expect 400.");
   }
 
-  /**
-   * Doesn't validate length of ounit-code list.
-   */
   @Test
-  public void testAgainstOUnitsInvalid2() {
-    serviceTest(
+  public void testNotValidatingLengthOfOunitCodeListIsDetected() {
+    OUnitsServiceV2Valid service =
         new OUnitsServiceV2Valid(ounitsUrlHTTT, this.client, GetInstitutions()) {
           @Override
           protected void ErrorMaxOUnitCodesExceeded() throws ErrorResponseException {
             //Do nothing
           }
-        },
-        ounitsUrlHTTT, "ounitsvalidator/OUnitsInvalidOutput2.txt"
-    );
+        };
+    TestValidationReport report = this.getRawReport(service);
+    assertThat(report)
+        .containsFailure("Request more than <max-ounit-codes> known ounit-codes, expect 400.");
   }
 
-  /**
-   * Return 200 when no parameters are provided.
-   */
   @Test
-  public void testAgainstOUnitsInvalid3() {
-    serviceTest(
+  public void testAcceptingRequestWithoutParametersIsDetected() {
+    OUnitsServiceV2Valid service =
         new OUnitsServiceV2Valid(ounitsUrlHTTT, this.client, GetInstitutions()) {
           @Override
           protected void ErrorNoParams()
@@ -93,17 +94,14 @@ public class OUnitsValidatorTest extends AbstractApiTest {
                 createOUnitsResponse(new ArrayList<>())
             );
           }
-        },
-        ounitsUrlHTTT, "ounitsvalidator/OUnitsInvalidOutput3.txt"
-    );
+        };
+    TestValidationReport report = this.getRawReport(service);
+    assertThat(report).containsFailure("Request without hei-ids and ounit-ids, expect 400.");
   }
 
-  /**
-   * Return 400 when unknown parameters are passed.
-   */
   @Test
-  public void testAgainstOUnitsInvalid4() {
-    serviceTest(
+  public void testNotAcceptingUnknownParametersIsDetected() {
+    OUnitsServiceV2Valid service =
         new OUnitsServiceV2Valid(ounitsUrlHTTT, this.client, GetInstitutions()) {
           @Override
           protected void HandleUnexpectedParams() throws ErrorResponseException {
@@ -111,17 +109,15 @@ public class OUnitsValidatorTest extends AbstractApiTest {
                 createErrorResponse(this.currentRequest, 400, "Unknown parameter")
             );
           }
-        },
-        ounitsUrlHTTT, "ounitsvalidator/OUnitsInvalidOutput4.txt"
-    );
+        };
+    TestValidationReport report = this.getRawReport(service);
+    assertThat(report).containsFailure(
+        "Request with additional parameter, expect 200 and one ounit in response.");
   }
 
-  /**
-   * Returns 200 when hei-id is not passed.
-   */
   @Test
-  public void testAgainstOUnitsInvalid5() {
-    serviceTest(
+  public void testNotReportingAnErrorWhenNoHeiIdIsPassedIsDetected() {
+    OUnitsServiceV2Valid service =
         new OUnitsServiceV2Valid(ounitsUrlHTTT, this.client, GetInstitutions()) {
           @Override
           protected void ErrorNoHeiId() throws ErrorResponseException {
@@ -129,17 +125,14 @@ public class OUnitsValidatorTest extends AbstractApiTest {
                 createOUnitsResponse(new ArrayList<>())
             );
           }
-        },
-        ounitsUrlHTTT, "ounitsvalidator/OUnitsInvalidOutput5.txt"
-    );
+        };
+    TestValidationReport report = this.getRawReport(service);
+    assertThat(report).containsFailure("Request without hei-ids, expect 400.");
   }
 
-  /**
-   * Returns 200 when ounit-code and ounit-id is not passed.
-   */
   @Test
-  public void testAgainstOUnitsInvalid6() {
-    serviceTest(
+  public void testNotReportingAnErrorWhenNeitherOunitIdNorOunitCodeArePassedIsDetected() {
+    OUnitsServiceV2Valid service =
         new OUnitsServiceV2Valid(ounitsUrlHTTT, this.client, GetInstitutions()) {
           @Override
           protected void ErrorNoIdsNorCodes() throws ErrorResponseException {
@@ -147,97 +140,84 @@ public class OUnitsValidatorTest extends AbstractApiTest {
                 createOUnitsResponse(new ArrayList<>())
             );
           }
-        },
-        ounitsUrlHTTT, "ounitsvalidator/OUnitsInvalidOutput6.txt"
-    );
+        };
+    TestValidationReport report = this.getRawReport(service);
+    assertThat(report).containsFailure("Request without ounit-ids and ounit-codes, expect 400.");
   }
 
-  /**
-   * Ignores additional hei-ids.
-   */
   @Test
-  public void testAgainstOUnitsInvalid7() {
-    serviceTest(
+  public void testNotReturningAnErrorWhenAdditionalHeiIdsArePassedIsDetected() {
+    OUnitsServiceV2Valid service =
         new OUnitsServiceV2Valid(ounitsUrlHTTT, this.client, GetInstitutions()) {
           @Override
           protected void ErrorMultipleHeiIds() throws ErrorResponseException {
             //Ignore
           }
-        },
-        ounitsUrlHTTT, "ounitsvalidator/OUnitsInvalidOutput7.txt"
-    );
+        };
+    TestValidationReport report = this.getRawReport(service);
+    assertThat(report).containsFailure("Request with correct hei_id twice, expect 400.");
+    assertThat(report)
+        .containsFailure("Request with correct hei_id and incorrect hei_id, expect 400.");
   }
 
-  /**
-   * Handles both ids and codes.
-   */
   @Test
-  public void testAgainstOUnitsInvalid8() {
-    serviceTest(
+  public void testHandlingBothOunitIdsAndOunitCodesIsDetected() {
+    OUnitsServiceV2Valid service =
         new OUnitsServiceV2Valid(ounitsUrlHTTT, this.client, GetInstitutions()) {
           @Override
           protected void ErrorIdsAndCodes() throws ErrorResponseException {
             //Ignore
           }
-        },
-        ounitsUrlHTTT, "ounitsvalidator/OUnitsInvalidOutput8.txt"
-    );
+        };
+    TestValidationReport report = this.getRawReport(service);
+    assertThat(report)
+        .containsFailure("Request with correct ounit_id and correct ounit_code, expect 400.");
   }
 
-  /**
-   * When ids and codes are passed, ignored codes.
-   */
   @Test
-  public void testAgainstOUnitsInvalid9() {
-    serviceTest(
+  public void testHandlingIdsWhenBothIdsAndCodesArePassedIsDetected() {
+    OUnitsServiceV2Valid service =
         new OUnitsServiceV2Valid(ounitsUrlHTTT, this.client, GetInstitutions()) {
           @Override
           protected void ErrorIdsAndCodes() throws ErrorResponseException {
             this.requestedOUnitCodes.clear();
           }
-        },
-        ounitsUrlHTTT, "ounitsvalidator/OUnitsInvalidOutput9.txt"
-    );
+        };
+    TestValidationReport report = this.getRawReport(service);
+    assertThat(report)
+        .containsFailure("Request with correct ounit_id and correct ounit_code, expect 400.");
   }
 
-  /**
-   * When ids and codes are passed, ignored ids.
-   */
   @Test
-  public void testAgainstOUnitsInvalid10() {
-    serviceTest(
+  public void testHandlingCodesWhenBothIdsAndCodesArePassedIsDetected() {
+    OUnitsServiceV2Valid service =
         new OUnitsServiceV2Valid(ounitsUrlHTTT, this.client, GetInstitutions()) {
           @Override
           protected void ErrorIdsAndCodes() throws ErrorResponseException {
             this.requestedOUnitIds.clear();
           }
-        },
-        ounitsUrlHTTT, "ounitsvalidator/OUnitsInvalidOutput10.txt"
-    );
+        };
+    TestValidationReport report = this.getRawReport(service);
+    assertThat(report)
+        .containsFailure("Request with correct ounit_id and correct ounit_code, expect 400.");
   }
 
-  /**
-   * When hei-id is not provided first covered hei is used.
-   */
   @Test
-  public void testAgainstOUnitsInvalid11() {
-    serviceTest(
+  public void testReturningNonEmptyResponseWhenNoHeiIdIsPassedIsDetected() {
+    OUnitsServiceV2Valid service =
         new OUnitsServiceV2Valid(ounitsUrlHTTT, this.client, GetInstitutions()) {
           @Override
           protected void ErrorNoHeiId() throws ErrorResponseException {
             this.requestedHeiId = this.institutionsServiceV2.GetCoveredHeiIds().get(0);
           }
-        },
-        ounitsUrlHTTT, "ounitsvalidator/OUnitsInvalidOutput11.txt"
-    );
+        };
+    TestValidationReport report = this.getRawReport(service);
+    assertThat(report).containsFailure("Request without hei-ids, expect 400.");
   }
 
-  /**
-   * When ounit-id is not provided first covered is used.
-   */
   @Test
-  public void testAgainstOUnitsInvalid12() {
-    serviceTest(
+  public void testReturningNonEmptyResponseWhenNoOunitIdIsPassedIsDetected() {
+    OUnitsServiceV2Valid service =
         new OUnitsServiceV2Valid(ounitsUrlHTTT, this.client, GetInstitutions()) {
           @Override
           protected void ErrorNoIdsNorCodes() throws ErrorResponseException {
@@ -245,17 +225,14 @@ public class OUnitsValidatorTest extends AbstractApiTest {
             this.requestedOUnitIds = Arrays.asList(id);
             this.requestedOUnitCodes = new ArrayList<>();
           }
-        },
-        ounitsUrlHTTT, "ounitsvalidator/OUnitsInvalidOutput12.txt"
-    );
+        };
+    TestValidationReport report = this.getRawReport(service);
+    assertThat(report).containsFailure("Request without ounit-ids and ounit-codes, expect 400.");
   }
 
-  /**
-   * When passed unknown hei-id returns 200 and empty response.
-   */
   @Test
-  public void testAgainstOUnitsInvalid13() {
-    serviceTest(
+  public void testNotReturningAnErrorWhenUnknownHeiIdsIsPassedIsDetected() {
+    OUnitsServiceV2Valid service =
         new OUnitsServiceV2Valid(ounitsUrlHTTT, this.client, GetInstitutions()) {
           @Override
           protected void ErrorUnknownHeiId() throws ErrorResponseException {
@@ -263,90 +240,81 @@ public class OUnitsValidatorTest extends AbstractApiTest {
                 createOUnitsResponse(new ArrayList<>())
             );
           }
-        },
-        ounitsUrlHTTT, "ounitsvalidator/OUnitsInvalidOutput13.txt"
-    );
+        };
+    TestValidationReport report = this.getRawReport(service);
+    assertThat(report)
+        .containsFailure("Request for one of known ounit-ids with unknown hei-id, expect 400.");
   }
 
-  /**
-   * When passed unknown hei-id uses one of covered hei-ids.
-   */
   @Test
-  public void testAgainstOUnitsInvalid14() {
-    serviceTest(
+  public void testReturningNonEmptyResponseWhenUnknownHeiIdsIsPassedIsDetected() {
+    OUnitsServiceV2Valid service =
         new OUnitsServiceV2Valid(ounitsUrlHTTT, this.client, GetInstitutions()) {
           @Override
           protected void ErrorUnknownHeiId() throws ErrorResponseException {
             this.requestedHeiId = this.institutionsServiceV2.GetCoveredHeiIds().get(0);
           }
-        },
-        ounitsUrlHTTT, "ounitsvalidator/OUnitsInvalidOutput14.txt"
-    );
+        };
+    TestValidationReport report = this.getRawReport(service);
+    assertThat(report)
+        .containsFailure("Request for one of known ounit-ids with unknown hei-id, expect 400.");
   }
 
-  /**
-   * Returns wrong ounit-ids.
-   */
   @Test
-  public void testAgainstOUnitsInvalid15() {
-    serviceTest(
+  public void testReturningWrongOunitIdIsDetected() {
+    OUnitsServiceV2Valid service =
         new OUnitsServiceV2Valid(ounitsUrlHTTT, this.client, GetInstitutions()) {
           @Override
           protected OunitsResponse.Ounit HandleKnownOUnit(OunitsResponse.Ounit data) {
             data.setOunitId("invalid-id");
             return data;
           }
-        },
-        ounitsUrlHTTT, "ounitsvalidator/OUnitsInvalidOutput15.txt"
-    );
+        };
+    TestValidationReport report = this.getRawReport(service);
+    assertThat(report).containsFailure("Request for one of known ounit-ids, expect 200 OK.");
   }
 
-  /**
-   * Returns some data for unknown ounit-ids.
-   */
   @Test
-  public void testAgainstOUnitsInvalid16() {
-    serviceTest(
+  public void testReturningNonEmptyResponseWhenUnknownOunitIdIsPassedIsDetected() {
+    OUnitsServiceV2Valid service =
         new OUnitsServiceV2Valid(ounitsUrlHTTT, this.client, GetInstitutions()) {
           @Override
           protected OunitsResponse.Ounit HandleUnknownOUnit() {
             return this.coveredOUnitsIds.values().iterator().next();
           }
-        },
-        ounitsUrlHTTT, "ounitsvalidator/OUnitsInvalidOutput16.txt"
-    );
+        };
+    TestValidationReport report = this.getRawReport(service);
+    assertThat(report)
+        .containsFailure("Request one unknown ounit-id, expect 200 and empty response.");
   }
 
-  /**
-   * Too large max-ounit-ids in manifest.
-   */
   @Test
-  public void testAgainstOUnitsInvalid17() {
-    serviceTest(
+  public void testTooLargeMaxOunitIdsInManifestIsDetected() {
+    OUnitsServiceV2Valid service =
         new OUnitsServiceV2Valid(ounitsUrlHTTT, this.client, GetInstitutions()) {
           @Override
           protected int getMaxOunitIds() {
             return super.getMaxOunitIds() - 1;
           }
-        },
-        ounitsUrlHTTT, "ounitsvalidator/OUnitsInvalidOutput17.txt"
-    );
+        };
+    TestValidationReport report = this.getRawReport(service);
+    assertThat(report).containsFailure("Request exactly <max-ounit-ids> known ounit-ids,"
+        + " expect 200 and <max-ounit-ids> ounit-ids in response.");
   }
 
-  /**
-   * Too large max-ounit-codes in manifest.
-   */
   @Test
-  public void testAgainstOUnitsInvalid18() {
-    serviceTest(
+  public void testTooLargeMaxOunitCodesInManifestIsDetected() {
+    OUnitsServiceV2Valid service =
         new OUnitsServiceV2Valid(ounitsUrlHTTT, this.client, GetInstitutions()) {
           @Override
           protected int getMaxOunitCodes() {
             return super.getMaxOunitCodes() - 1;
           }
-        },
-        ounitsUrlHTTT, "ounitsvalidator/OUnitsInvalidOutput18.txt"
-    );
+        };
+    TestValidationReport report = this.getRawReport(service);
+    assertThat(report).containsFailure(
+        "Request exactly <max-ounit-codes> known ounit-codes,"
+            + " expect 200 and <max-ounit-codes> ounit-codes in response.");
   }
 
   @Override

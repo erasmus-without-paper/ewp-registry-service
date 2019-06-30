@@ -1,5 +1,7 @@
 package eu.erasmuswithoutpaper.registry.validators.institutionsvalidator;
 
+import static eu.erasmuswithoutpaper.registry.validators.TestValidationReportAsset.assertThat;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -9,6 +11,7 @@ import java.util.Map;
 import eu.erasmuswithoutpaper.registry.validators.AbstractApiTest;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.SemanticVersion;
+import eu.erasmuswithoutpaper.registry.validators.TestValidationReport;
 import eu.erasmuswithoutpaper.registry.validators.types.InstitutionsResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -25,61 +28,56 @@ public class InstitutionValidatorTest extends AbstractApiTest {
   }
 
   @Override
+  protected String getUrl() {
+    return institutionsUrlHTTT;
+  }
+
+  @Override
   protected SemanticVersion getVersion() {
     return new SemanticVersion(2, 0, 0);
   }
 
   @Test
-  public void testAgainstInstitutionsValid() {
-    String url = institutionsUrlHTTT;
-    serviceTest(new InstitutionServiceV2Valid(url, this.client, validatorKeyStore),
-        url, "institutionsvalidator/InstitutionsValidOutput.txt"
-    );
+  public void testValidationOnValidServiceIsSuccessful() {
+    InstitutionServiceV2Valid service =
+        new InstitutionServiceV2Valid(institutionsUrlHTTT, this.client, validatorKeyStore);
+    TestValidationReport report = this.getRawReport(service);
+    assertThat(report).isCorrect();
   }
 
-  /**
-   * Doesn't validate length of hei-id list.
-   */
   @Test
-  public void testAgainstInstitutionsInvalid1() {
-    String url = institutionsUrlHTTT;
-    serviceTest(
-        new InstitutionServiceV2Valid(url, this.client, validatorKeyStore) {
+  public void testNotValidatingLengthOfHeiIdListIsDetected() {
+    InstitutionServiceV2Valid service =
+        new InstitutionServiceV2Valid(institutionsUrlHTTT, this.client, validatorKeyStore) {
           @Override
           protected void CheckHeis(List<String> heis) throws ErrorResponseException {
             //Do nothing.
           }
-        },
-        url, "institutionsvalidator/InstitutionsInvalidOutput1.txt"
-    );
+        };
+    TestValidationReport report = this.getRawReport(service);
+    assertThat(report)
+        .containsFailure("Request more than <max-hei-ids> known HEIs, expect 400.")
+        .containsFailure("Request more than <max-hei-ids> unknown HEI IDs, expect 400.");
   }
 
-  /**
-   * Counts unique hei-id parameters.
-   */
   @Test
-  public void testAgainstInstitutionsInvalid2() {
-    String url = institutionsUrlHTTT;
-    serviceTest(
-        new InstitutionServiceV2Valid(url, this.client, validatorKeyStore) {
+  public void testCountingUniqueHeiIdParametersIsDetected() {
+    InstitutionServiceV2Valid service =
+        new InstitutionServiceV2Valid(institutionsUrlHTTT, this.client, validatorKeyStore) {
           @Override
           protected void CheckHeis(List<String> heis) throws ErrorResponseException {
             ArrayList<String> unique_heis = new ArrayList<>(new HashSet<>(heis));
             super.CheckHeis(unique_heis);
           }
-        },
-        url, "institutionsvalidator/InstitutionsInvalidOutput2.txt"
-    );
+        };
+    TestValidationReport report = this.getRawReport(service);
+    assertThat(report).containsFailure("Request more than <max-hei-ids> known HEIs, expect 400.");
   }
 
-  /**
-   * Reports wrong max-hei-id in its manifest.
-   */
   @Test
-  public void testAgainstInstitutionsInvalid3() {
-    String url = institutionsUrlHTTT;
-    serviceTest(
-        new InstitutionServiceV2Valid(url, this.client, validatorKeyStore) {
+  public void testWrongMaxHeiIdInManifestIsDetected() {
+    InstitutionServiceV2Valid service =
+        new InstitutionServiceV2Valid(institutionsUrlHTTT, this.client, validatorKeyStore) {
           @Override
           protected void CheckHeis(List<String> heis) throws ErrorResponseException {
             if (heis.size() > max_hei_ids - 1) {
@@ -88,19 +86,16 @@ public class InstitutionValidatorTest extends AbstractApiTest {
               );
             }
           }
-        },
-        url, "institutionsvalidator/InstitutionsInvalidOutput3.txt"
-    );
+        };
+    TestValidationReport report = this.getRawReport(service);
+    assertThat(report).containsFailure(
+        "Request one known and one unknown HEI ID, expect 200 and only one HEI in response.");
   }
 
-  /**
-   * Returns 400 if passed parameters other than "hei_id"
-   */
   @Test
-  public void testAgainstInstitutionsInvalid4() {
-    String url = institutionsUrlHTTT;
-    serviceTest(
-        new InstitutionServiceV2Valid(url, this.client, validatorKeyStore) {
+  public void testReportsAnErrorWhenPassedUnknownParametersIsDetected() {
+    InstitutionServiceV2Valid service =
+        new InstitutionServiceV2Valid(institutionsUrlHTTT, this.client, validatorKeyStore) {
           @Override
           protected void ExtractParamsMultipleParams(Map<String, List<String>> params)
               throws ErrorResponseException {
@@ -108,87 +103,70 @@ public class InstitutionValidatorTest extends AbstractApiTest {
                 createErrorResponse(this.currentRequest, 400, "Expected only hei_id parameters")
             );
           }
-        },
-        url, "institutionsvalidator/InstitutionsInvalidOutput4.txt"
-    );
+        };
+    TestValidationReport report = this.getRawReport(service);
+    assertThat(report)
+        .containsFailure("Request with additional parameter, expect 200 and one hei_id response.");
   }
 
-  /**
-   * Returns 200 OK empty response when no parameters are provided.
-   */
   @Test
-  public void testAgainstInstitutionsInvalid5() {
-    String url = institutionsUrlHTTT;
-    serviceTest(
-        new InstitutionServiceV2Valid(url, this.client, validatorKeyStore) {
+  public void testNotReportingAnErrorWhenInvalidHttpMethodIsUsedIsDetected() {
+    InstitutionServiceV2Valid service =
+        new InstitutionServiceV2Valid(institutionsUrlHTTT, this.client, validatorKeyStore) {
           @Override
           protected void CheckRequestMethod() throws ErrorResponseException {
           }
-        },
-        url, "institutionsvalidator/InstitutionsInvalidOutput5.txt"
-    );
+        };
+    TestValidationReport report = this.getRawReport(service);
+    assertThat(report).containsWarning(
+        "Trying Combination[-HTTT] with a PUT request. Expecting to receive a valid HTTP 405 error response.");
   }
 
-  /**
-   * Returns 200 OK empty response when no parameters are provided.
-   */
   @Test
-  public void testAgainstInstitutionsInvalid6() {
-    String url = institutionsUrlHTTT;
-    serviceTest(
-        new InstitutionServiceV2Valid(url, this.client, validatorKeyStore) {
+  public void testNotReportingAnErrorWhenNotPassingAnyParameterIsDetected() {
+    InstitutionServiceV2Valid service =
+        new InstitutionServiceV2Valid(institutionsUrlHTTT, this.client, validatorKeyStore) {
           @Override
           protected void ExtractParamsNoParams(Map<String, List<String>> params)
               throws ErrorResponseException {
           }
-        },
-        url, "institutionsvalidator/InstitutionsInvalidOutput6.txt"
-    );
+        };
+    TestValidationReport report = this.getRawReport(service);
+    assertThat(report).containsFailure("Request without HEI IDs, expect 400.");
   }
 
-  /**
-   * Returns 200 OK empty response when there are some parameters, but they aren't hei-id.
-   */
   @Test
-  public void testAgainstInstitutionsInvalid7() {
-    String url = institutionsUrlHTTT;
-    serviceTest(
-        new InstitutionServiceV2Valid(url, this.client, validatorKeyStore) {
+  public void testReturningEmptyResponseWhenParametersOtherThanHeiIdArePassedIsDetected() {
+    InstitutionServiceV2Valid service =
+        new InstitutionServiceV2Valid(institutionsUrlHTTT, this.client, validatorKeyStore) {
           @Override
           protected void ExtractParamsNoHeiIds(Map<String, List<String>> params)
               throws ErrorResponseException {
           }
-        },
-        url, "institutionsvalidator/InstitutionsInvalidOutput7.txt"
-    );
+        };
+    TestValidationReport report = this.getRawReport(service);
+    assertThat(report).containsFailure("Request with single incorrect parameter, expect 400.");
   }
 
-  /**
-   * Returns some data even for HEIs it shouldn't know.
-   */
   @Test
-  public void testAgainstInstitutionsInvalid8() {
-    String url = institutionsUrlHTTT;
-    serviceTest(
-        new InstitutionServiceV2Valid(url, this.client, validatorKeyStore) {
+  public void testReturningNonEmptyResponseForUnknownHeiIdIsDetected() {
+    InstitutionServiceV2Valid service =
+        new InstitutionServiceV2Valid(institutionsUrlHTTT, this.client, validatorKeyStore) {
           @Override
           protected void ProcessNotCoveredHei(String hei, List<InstitutionsResponse.Hei> heis)
               throws ErrorResponseException {
             heis.add(createFakeHeiData(hei));
           }
-        },
-        url, "institutionsvalidator/InstitutionsInvalidOutput8.txt"
-    );
+        };
+    TestValidationReport report = this.getRawReport(service);
+    assertThat(report)
+        .containsFailure("Request one unknown HEI ID, expect 200 and empty response.");
   }
 
-  /**
-   * Returns 400 when passed unknown HEI ID.
-   */
   @Test
-  public void testAgainstInstitutionsInvalid9() {
-    String url = institutionsUrlHTTT;
-    serviceTest(
-        new InstitutionServiceV2Valid(url, this.client, validatorKeyStore) {
+  public void testReportingAnErrorWhenUnknownHeiIdIsPassedIsDetected() {
+    InstitutionServiceV2Valid service =
+        new InstitutionServiceV2Valid(institutionsUrlHTTT, this.client, validatorKeyStore) {
           @Override
           protected void ProcessNotCoveredHei(String hei, List<InstitutionsResponse.Hei> heis)
               throws ErrorResponseException {
@@ -196,19 +174,16 @@ public class InstitutionValidatorTest extends AbstractApiTest {
                 this.createErrorResponse(this.currentRequest, 400, "Unknown HEI ID encountered")
             );
           }
-        },
-        url, "institutionsvalidator/InstitutionsInvalidOutput9.txt"
-    );
+        };
+    TestValidationReport report = this.getRawReport(service);
+    assertThat(report).containsFailure(
+        "Request one known and one unknown HEI ID, expect 200 and only one HEI in response.");
   }
 
-  /**
-   * root-ounit-id is not in ounit-id list
-   */
   @Test
-  public void testAgainstInstitutionsInvalid10() {
-    String url = institutionsUrlHTTT;
-    serviceTest(
-        new InstitutionServiceV2Valid(url, this.client, validatorKeyStore) {
+  public void testReturningResponseWhereRootOunitIdInNotOnOunitIdListIsDetected() {
+    InstitutionServiceV2Valid service =
+        new InstitutionServiceV2Valid(institutionsUrlHTTT, this.client, validatorKeyStore) {
           @Override
           protected List<String> GetCoveredOUnits() {
             return Arrays.asList("1", "2", "3");
@@ -218,9 +193,9 @@ public class InstitutionValidatorTest extends AbstractApiTest {
           protected String GetRootOUnit() {
             return "4";
           }
-        },
-        url, "institutionsvalidator/InstitutionsInvalidOutput10.txt"
-    );
+        };
+    TestValidationReport report = this.getRawReport(service);
+    assertThat(report).containsFailure("Request for one of known HEI IDs, expect 200 OK.");
   }
 
   @Override

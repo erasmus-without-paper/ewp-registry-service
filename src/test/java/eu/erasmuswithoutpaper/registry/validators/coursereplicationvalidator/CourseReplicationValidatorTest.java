@@ -1,5 +1,7 @@
 package eu.erasmuswithoutpaper.registry.validators.coursereplicationvalidator;
 
+import static eu.erasmuswithoutpaper.registry.validators.TestValidationReportAsset.assertThat;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -8,6 +10,7 @@ import java.util.Map;
 import eu.erasmuswithoutpaper.registry.validators.AbstractApiTest;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.SemanticVersion;
+import eu.erasmuswithoutpaper.registry.validators.TestValidationReport;
 import eu.erasmuswithoutpaper.registry.validators.coursesreplicationvalidator.CourseReplicationValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -30,159 +33,122 @@ public class CourseReplicationValidatorTest extends AbstractApiTest {
     return "coursesvalidator/manifest.xml";
   }
 
-  @Test
-  public void testAgainstCourseReplicationValid() {
-    serviceTest(
-        new CourseReplicationServiceV1Valid(
-            courseReplicationUrlHTTT, this.client, this.validatorKeyStore),
-        courseReplicationUrlHTTT, "coursereplicationvalidator/CourseReplicationValidOutput.txt"
-    );
+  @Override
+  protected String getUrl() {
+    return courseReplicationUrlHTTT;
   }
 
-  /**
-   * Return 200 when no parameters are provided.
-   */
   @Test
-  public void testAgainstCourseReplicationInvalid1() {
-    serviceTest(
-        new CourseReplicationServiceV1Valid(
-            courseReplicationUrlHTTT, this.client, this.validatorKeyStore) {
-          @Override
-          protected void ErrorNoParameters(RequestData requestData,
-              Map<String, List<String>> params)
-              throws ErrorResponseException {
-            throw new ErrorResponseException(
-                createCourseReplicationResponse(new ArrayList<>())
-            );
-          }
-        },
-        courseReplicationUrlHTTT, "coursereplicationvalidator/CourseReplicationInvalidOutput1.txt"
-    );
+  public void testValidationOnValidServiceIsSuccessful() {
+    CourseReplicationServiceV1Valid service = new CourseReplicationServiceV1Valid(
+        getUrl(), this.client, this.validatorKeyStore);
+    TestValidationReport report = this.getRawReport(service);
+    assertThat(report).isCorrect();
   }
 
-  /**
-   * Return 400 when unknown parameters are passed.
-   */
   @Test
-  public void testAgainstCourseReplicationInvalid2() {
-    serviceTest(
-        new CourseReplicationServiceV1Valid(
-            courseReplicationUrlHTTT, this.client, this.validatorKeyStore) {
-          @Override
-          protected void ErrorAdditionalParameters(RequestData requestData,
-              Map<String, List<String>> params)
-              throws ErrorResponseException {
-            throw new ErrorResponseException(
-                createErrorResponse(requestData.request, 400, "Unknown parameter")
-            );
-          }
-        },
-        courseReplicationUrlHTTT, "coursereplicationvalidator/CourseReplicationInvalidOutput2.txt"
-    );
+  public void testNotReportingErrorWhenNoParametersAreProvidedIsDetected() {
+    CourseReplicationServiceV1Valid service = new CourseReplicationServiceV1Valid(
+        courseReplicationUrlHTTT, this.client, this.validatorKeyStore) {
+      @Override
+      protected void ErrorNoParameters(RequestData requestData,
+          Map<String, List<String>> params)
+          throws ErrorResponseException {
+        throw new ErrorResponseException(
+            createCourseReplicationResponse(new ArrayList<>())
+        );
+      }
+    };
+    TestValidationReport report = this.getRawReport(service);
+    assertThat(report).containsFailure("Request without any parameter, expect 400.");
   }
 
-  /**
-   * Ignores additional hei-ids.
-   */
   @Test
-  public void testAgainstCourseReplicationInvalid3() {
-    serviceTest(
-        new CourseReplicationServiceV1Valid(
-            courseReplicationUrlHTTT, this.client, this.validatorKeyStore) {
-          @Override
-          protected void ErrorMultipleHeiIds(RequestData requestData)
-              throws ErrorResponseException {
-            //Ignore
-          }
-        },
-        courseReplicationUrlHTTT, "coursereplicationvalidator/CourseReplicationInvalidOutput3.txt"
-    );
+  public void testReportingAnErrorWhenUnknownParametersArePassedIsDetected() {
+    CourseReplicationServiceV1Valid service = new CourseReplicationServiceV1Valid(
+        courseReplicationUrlHTTT, this.client, this.validatorKeyStore) {
+      @Override
+      protected void ErrorAdditionalParameters(RequestData requestData,
+          Map<String, List<String>> params)
+          throws ErrorResponseException {
+        throw new ErrorResponseException(
+            createErrorResponse(requestData.request, 400, "Unknown parameter")
+        );
+      }
+    };
+    TestValidationReport report = this.getRawReport(service);
+    assertThat(report)
+        .containsFailure("Request with known hei_id and invalid parameter, expect 200.");
   }
 
-  /**
-   * When passed unknown hei-id returns 200 and empty response.
-   */
   @Test
-  public void testAgainstCourseReplicationInvalid4() {
-    serviceTest(
-        new CourseReplicationServiceV1Valid(
-            courseReplicationUrlHTTT, this.client, this.validatorKeyStore) {
-          @Override
-          protected List<String> ProcessNotCoveredHei(RequestData requestData)
-              throws ErrorResponseException {
-            return new ArrayList<>();
-          }
-        },
-        courseReplicationUrlHTTT, "coursereplicationvalidator/CourseReplicationInvalidOutput4.txt"
-    );
+  public void testIgnoringAdditionalHeiIdsIsDetected() {
+    CourseReplicationServiceV1Valid service = new CourseReplicationServiceV1Valid(
+        courseReplicationUrlHTTT, this.client, this.validatorKeyStore) {
+      @Override
+      protected void ErrorMultipleHeiIds(RequestData requestData)
+          throws ErrorResponseException {
+        //Ignore
+      }
+    };
+    TestValidationReport report = this.getRawReport(service);
+    assertThat(report).containsFailure("Request with correct hei_id twice, expect 400.");
   }
 
-  /**
-   * When passed unknown hei-id uses one of covered hei-ids.
-   */
   @Test
-  public void testAgainstCourseReplicationInvalid5() {
-    serviceTest(
-        new CourseReplicationServiceV1Valid(
-            courseReplicationUrlHTTT, this.client, this.validatorKeyStore) {
-          @Override
-          protected List<String> ProcessNotCoveredHei(RequestData requestData)
-              throws ErrorResponseException {
-            requestData.requestedHeiId = this.coveredHeiIds.get(0);
-            return ProcessCoveredHei(requestData);
-          }
-        },
-        courseReplicationUrlHTTT, "coursereplicationvalidator/CourseReplicationInvalidOutput5.txt"
-    );
+  public void testNotReportingUnknownHeiIdAsAnErrorIsDetected() {
+    CourseReplicationServiceV1Valid service = new CourseReplicationServiceV1Valid(
+        courseReplicationUrlHTTT, this.client, this.validatorKeyStore) {
+      @Override
+      protected List<String> ProcessNotCoveredHei(RequestData requestData)
+          throws ErrorResponseException {
+        return new ArrayList<>();
+      }
+    };
+    TestValidationReport report = this.getRawReport(service);
+    assertThat(report).containsFailure("Request with unknown hei_id parameter, expect 400.");
   }
 
-  /**
-   * Returns invalid los-ids.
-   * <p>
-   * This test is performed in a different manner than all the others. We do not check if whole
-   * response is what we expect, but only if it contains info about error of parsing LosID. This is
-   * due to the fact that document parser assigns different names to XML namespaces each run. This
-   * doesn't happen in any other test of the same kind (e.g. OUnits) and it seems to be too arcane
-   * to debug it swiftly.
-   */
   @Test
-  public void testAgainstCourseReplicationInvalid6() {
-    serviceTestContains(
-        new CourseReplicationServiceV1Valid(
-            courseReplicationUrlHTTT, this.client, this.validatorKeyStore) {
-          @Override
-          protected List<String> ProcessCoveredHei(RequestData requestData)
-              throws ErrorResponseException {
-            return Arrays.asList("invalid-id", "invalid-invalid-id");
-          }
-        },
-        courseReplicationUrlHTTT,
-        Arrays.asList(
-            "HTTP response status was okay, but the content has failed Schema validation. Our "
-                + "document parser has reported the following errors:",
-            "cvc-pattern-valid: Value 'invalid-id' is not facet-valid with respect to"
-                + " pattern '(CR|CLS|MOD|DEP)/(.{1,40})' for type 'LosID'.",
-            "cvc-pattern-valid: Value 'invalid-invalid-id' is not facet-valid with respect to"
-                + " pattern '(CR|CLS|MOD|DEP)/(.{1,40})' for type 'LosID'."
-        )
-    );
+  public void testReturningCorrectResponseWhenUnknownHeiIdIsPassedIsDetected() {
+    CourseReplicationServiceV1Valid service = new CourseReplicationServiceV1Valid(
+        courseReplicationUrlHTTT, this.client, this.validatorKeyStore) {
+      @Override
+      protected List<String> ProcessNotCoveredHei(RequestData requestData)
+          throws ErrorResponseException {
+        requestData.requestedHeiId = this.coveredHeiIds.get(0);
+        return ProcessCoveredHei(requestData);
+      }
+    };
+    TestValidationReport report = this.getRawReport(service);
+    assertThat(report).containsFailure("Request with unknown hei_id parameter, expect 400.");
   }
 
-  /**
-   * Accepts invalid dates.
-   */
   @Test
-  public void testAgainstCourseReplicationInvalid7() {
-    serviceTest(
-        new CourseReplicationServiceV1Valid(
-            courseReplicationUrlHTTT, this.client, this.validatorKeyStore) {
-          protected void ErrorInvalidModifiedSince(RequestData requestData)
-              throws ErrorResponseException {
-            requestData.requestedModifiedSinceDate = null;
-          }
-        },
-        courseReplicationUrlHTTT, "coursereplicationvalidator/CourseReplicationInvalidOutput7.txt"
-    );
+  public void testReturningInvalidLosIdsIsDetected() {
+    CourseReplicationServiceV1Valid service = new CourseReplicationServiceV1Valid(
+        courseReplicationUrlHTTT, this.client, this.validatorKeyStore) {
+      @Override
+      protected List<String> ProcessCoveredHei(RequestData requestData)
+          throws ErrorResponseException {
+        return Arrays.asList("invalid-id", "invalid-invalid-id");
+      }
+    };
+    TestValidationReport report = this.getRawReport(service);
+    assertThat(report).containsFailure("Request with known hei_id, expect 200.");
+  }
+
+  @Test
+  public void testAcceptingInvalidDatesIsDetected() {
+    CourseReplicationServiceV1Valid service = new CourseReplicationServiceV1Valid(
+        courseReplicationUrlHTTT, this.client, this.validatorKeyStore) {
+      protected void ErrorInvalidModifiedSince(RequestData requestData)
+          throws ErrorResponseException {
+        requestData.requestedModifiedSinceDate = null;
+      }
+    };
+    TestValidationReport report = this.getRawReport(service);
+    assertThat(report).containsFailure("Request with invalid value of modified_since, expect 400.");
   }
 
   @Override

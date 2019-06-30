@@ -8,6 +8,7 @@ import eu.erasmuswithoutpaper.registry.internet.FakeInternetService;
 import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigResponseSigner;
 import eu.erasmuswithoutpaper.registry.validators.AbstractApiTest;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
+import eu.erasmuswithoutpaper.registry.validators.HttpSecurityDescription;
 import eu.erasmuswithoutpaper.registry.validators.SemanticVersion;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -34,6 +35,17 @@ public class EchoValidatorTest extends AbstractApiTest {
   @Override
   protected String getManifestFilename() {
     return "echovalidator/manifest.xml";
+  }
+
+  @Override
+  protected String getUrl() {
+    // We don't have a single URL here and we don't use getRawReport in tests here
+    return null;
+  }
+
+  @Override
+  protected HttpSecurityDescription getSecurity() {
+    return null;
   }
 
   @Test

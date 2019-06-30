@@ -108,12 +108,6 @@ public abstract class AbstractApiTest<StateType extends SuiteState> extends WRTe
         .isEqualTo(this.getFileAsString(filename));
   }
 
-  protected HttpSecurityDescription getSecurity() {
-    return null;
-  }
-
-  protected abstract SemanticVersion getVersion();
-
   /*
   `needsReinit` static variable is shared among all classes inherited from AbstractApiTest.
   We need to reset it to `true` between running tests from different classes to perform
@@ -155,4 +149,31 @@ public abstract class AbstractApiTest<StateType extends SuiteState> extends WRTe
   }
 
   protected abstract String getManifestFilename();
+
+  protected TestValidationReport getRawReport(FakeInternetService service) {
+    String url = getUrl();
+    SemanticVersion semanticVersion = getVersion();
+    HttpSecurityDescription security = getSecurity();
+    this.internet.addFakeInternetService(service);
+    List<ValidationStepWithStatus> results =
+        getValidationReportSteps(url, semanticVersion, security);
+    this.internet.removeFakeInternetService(service);
+    this.internet.clearAll();
+    return new TestValidationReport(results);
+  }
+
+  protected abstract String getUrl();
+
+  protected HttpSecurityDescription getSecurity() {
+    // By default we use HTTT in tests, it doesn't matter except in Echo, but there tests are more
+    // fine grained and don't use this API.
+    return new HttpSecurityDescription(
+        CombEntry.CLIAUTH_HTTPSIG,
+        CombEntry.SRVAUTH_TLSCERT,
+        CombEntry.REQENCR_TLS,
+        CombEntry.RESENCR_TLS
+    );
+  }
+
+  protected abstract SemanticVersion getVersion();
 }

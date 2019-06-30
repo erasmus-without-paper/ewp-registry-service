@@ -17,7 +17,12 @@
             <http-security>
                 <sec:client-auth-methods>
                     <httpsig xmlns="https://github.com/erasmus-without-paper/ewp-specs-sec-cliauth-httpsig/tree/stable-v1"/>
+                    <anonymous xmlns="https://github.com/erasmus-without-paper/ewp-specs-sec-cliauth-none/tree/stable-v1"/>
                 </sec:client-auth-methods>
+                <sec:server-auth-methods>
+                    <httpsig xmlns="https://github.com/erasmus-without-paper/ewp-specs-sec-srvauth-httpsig/tree/stable-v1"/>
+                    <tlscert xmlns="https://github.com/erasmus-without-paper/ewp-specs-sec-srvauth-tlscert/tree/stable-v1"/>
+                </sec:server-auth-methods>
             </http-security>
             <url>https://university.example.com/institutions/HTTT/</url>
             <max-hei-ids>2</max-hei-ids>
