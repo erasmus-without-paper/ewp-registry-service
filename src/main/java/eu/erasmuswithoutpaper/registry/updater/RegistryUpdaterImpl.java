@@ -261,8 +261,9 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
 
         if (!nonLethalErrors.isEmpty()) {
           notices.add(new UpdateNotice(Severity.WARNING,
-              "This file contains some invalid elements inside one of <apis-implemented> elements."
-                  + " This manifest will be imported but those APIs will be ignored."));
+              "This file contains some invalid elements inside one of "
+                  + "<code>&lt;apis-implemented&gt;<code> elements."
+                  + " This manifest will be imported but incorrect APIs will be ignored."));
           for (BuildError error : nonLethalErrors) {
             notices.add(new UpdateNotice(Severity.WARNING, Utils.escapeHtml(error.getMessage())));
           }
