@@ -135,6 +135,17 @@ public class KnownNamespace {
 
   /**
    * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-mt-institutions/tree/master/manifest-entry.xsd'>
+   * here</a>.
+   */ // TODO: master->stable!
+  public static final KnownNamespace RESPONSE_MT_INSTITUTIONS_V1 = new KnownNamespace("mtir1",
+      "api-mt-institutions/tree/stable-v1",
+      "api-mt-institutions/master/response.xsd",
+      false);
+  // TODO master -> stable!
+
+  /**
+   * As described <a href=
    * 'https://github.com/erasmus-without-paper/ewp-specs-api-discovery/blob/stable-v4/manifest-entry.xsd'>
    * here</a>.
    */
@@ -355,6 +366,16 @@ public class KnownNamespace {
   public static final KnownNamespace APIENTRY_MT_PROJECTS_V1 =
       new KnownNamespace("mtp1", "api-mt-projects/blob/stable-v1/manifest-entry.xsd",
           "api-mt-projects/master/manifest-entry.xsd", false);
+  // TODO: 1. false->true 2. master->stable
+
+  /**
+   * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-mt-institutions/blob/master/manifest-entry.xsd'>
+   * here</a>.
+   */ // TODO: master->stable!
+  public static final KnownNamespace APIENTRY_MT_INSTITUTIONS_V1 =
+      new KnownNamespace("mti1", "api-mt-institutions/blob/stable-v1/manifest-entry.xsd",
+          "api-mt-institutions/master/manifest-entry.xsd", false);
   // TODO: 1. false->true 2. master->stable
 
   /**

@@ -271,6 +271,15 @@ public class KnownElement {
       );
 
   /**
+   * The root of the MT+ Institutions API v1 response.
+   */
+  public static final KnownElement RESPONSE_MT_INSTITUTIONS_V1 =
+      new KnownElement(KnownNamespace.RESPONSE_MT_INSTITUTIONS_V1,
+          "mt-institutions-response",
+          "MT+ Institutions v1 API Response"
+      );
+
+  /**
    * Support declaration for Anonymous Client Authentication.
    */
   public static final KnownElement SECENTRY_CLIAUTH_NONE_V1 =
