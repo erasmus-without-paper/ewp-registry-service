@@ -1,5 +1,7 @@
 package eu.erasmuswithoutpaper.registry.web;
 
+import static eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo.NO_ENDPOINT;
+
 import java.util.List;
 
 import eu.erasmuswithoutpaper.registry.validators.ValidationParameterValue;
@@ -16,7 +18,15 @@ public class ValidationRequestBody {
     return name;
   }
 
+  /**
+   * Gets API endpoint received in the request.
+   *
+   * @return endpoint if it is non-empty string, NO_ENDPOINT otherwise.
+   */
   public String getEndpoint() {
+    if (endpoint == null || endpoint.isEmpty()) {
+      return NO_ENDPOINT;
+    }
     return endpoint;
   }
 
