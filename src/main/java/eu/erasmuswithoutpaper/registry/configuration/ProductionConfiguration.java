@@ -18,10 +18,19 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @Profile({ "production", "development" })
 @Configuration
 public class ProductionConfiguration {
-
   public ProductionConfiguration() {
+    setSystemProperties();
+  }
+
+  private void setSystemProperties() {
     // Allow manual setting of "Content-Length" header in requests
     allowSettingRestrictedHeaders();
+    // Some of the partners require AIA extension to be used to verify theirs certificate chain.
+    enableAuthorityInformationAccessCertificateExtension();
+  }
+
+  private void enableAuthorityInformationAccessCertificateExtension() {
+    System.setProperty("com.sun.security.enableAIAcaIssuers", "true");
   }
 
   private void allowSettingRestrictedHeaders() {
