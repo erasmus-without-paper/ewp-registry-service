@@ -262,6 +262,15 @@ public class KnownElement {
       );
 
   /**
+   * The root of the MT+ Projects API v1 response.
+   */
+  public static final KnownElement RESPONSE_MT_PROJECTS_V1 =
+      new KnownElement(KnownNamespace.RESPONSE_MT_PROJECTS_V1,
+          "mt-projects-response",
+          "MT+ Projects v1 API Response"
+      );
+
+  /**
    * Support declaration for Anonymous Client Authentication.
    */
   public static final KnownElement SECENTRY_CLIAUTH_NONE_V1 =

@@ -371,6 +371,7 @@
                         <source>src/main/resources/schemas/ewp-specs-api-iias-v2.1.0/endpoints/get-response.xsd</source>
                         <source>src/main/resources/schemas/ewp-specs-api-discovery-v4.1.1/manifest.xsd</source>
                         <source>src/main/resources/schemas/ewp-specs-api-discovery-v5.0.0/manifest.xsd</source>
+                        <source>src/main/resources/schemas/ewp-specs-api-mt-projects-v0.1.0/response.xsd</source>
                     </sources>
                     <xjbSources>
                         <xjbSource>src/main/resources/schema-bindings/manifests.xjb</xjbSource>

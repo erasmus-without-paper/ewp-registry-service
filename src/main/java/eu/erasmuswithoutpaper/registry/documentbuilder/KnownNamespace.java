@@ -124,6 +124,17 @@ public class KnownNamespace {
 
   /**
    * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-mt-projects/tree/master/manifest-entry.xsd'>
+   * here</a>.
+   */ // TODO: master->stable!
+  public static final KnownNamespace RESPONSE_MT_PROJECTS_V1 = new KnownNamespace("mtpr1",
+      "api-mt-projects/tree/stable-v1",
+      "api-mt-projects/master/response.xsd",
+      false);
+  // TODO master -> stable!
+
+  /**
+   * As described <a href=
    * 'https://github.com/erasmus-without-paper/ewp-specs-api-discovery/blob/stable-v4/manifest-entry.xsd'>
    * here</a>.
    */
@@ -338,6 +349,16 @@ public class KnownNamespace {
 
   /**
    * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-mt-projects/blob/master/manifest-entry.xsd'>
+   * here</a>.
+   */ // TODO: master->stable!
+  public static final KnownNamespace APIENTRY_MT_PROJECTS_V1 =
+      new KnownNamespace("mtp1", "api-mt-projects/blob/stable-v1/manifest-entry.xsd",
+          "api-mt-projects/master/manifest-entry.xsd", false);
+  // TODO: 1. false->true 2. master->stable
+
+  /**
+   * As described <a href=
    * 'https://github.com/erasmus-without-paper/ewp-specs-sec-intro/blob/stable-v2/schema.xsd'>here
    * </a>.
    */
@@ -448,9 +469,10 @@ public class KnownNamespace {
   /**
    * Try to find a {@link KnownNamespace} instance for a given namespaceURI.
    *
-   * @param namespaceUri namespaceURI to search for.
+   * @param namespaceUri
+   *     namespaceURI to search for.
    * @return {@link Optional} with the found {@link KnownNamespace} element, or any
-   *         {@link Optional#empty()} if not found.
+   *     {@link Optional#empty()} if not found.
    */
   public static Optional<KnownNamespace> findByNamespaceUri(String namespaceUri) {
     return Optional.ofNullable(map_uri2ns.get(namespaceUri));
@@ -491,11 +513,14 @@ public class KnownNamespace {
   private final boolean includeInCatalogueXmlns;
 
   /**
-   * @param preferredPrefix see {@link #getPreferredPrefix()}.
-   * @param uriEnding String to be appended to {@link #COMMON_URI_PREFIX} when building namespace
-   *        URI.
-   * @param schemaLocEnding An extra string to be appended to {@link #COMMON_SCHEMA_LOCATION_PREFIX}
-   *        , when building schema location URL.
+   * @param preferredPrefix
+   *     see {@link #getPreferredPrefix()}.
+   * @param uriEnding
+   *     String to be appended to {@link #COMMON_URI_PREFIX} when building namespace
+   *     URI.
+   * @param schemaLocEnding
+   *     An extra string to be appended to {@link #COMMON_SCHEMA_LOCATION_PREFIX}
+   *     , when building schema location URL.
    */
   private KnownNamespace(String preferredPrefix, String uriEnding, String schemaLocEnding,
       boolean includeInCatalogueXmlns) {
@@ -536,7 +561,7 @@ public class KnownNamespace {
 
   /**
    * @return True, if this namespace is supposed to be included in catalogue's root xmlns
-   *         declarations.
+   *     declarations.
    */
   public boolean isToBeIncludedInCatalogueXmlns() {
     return this.includeInCatalogueXmlns;

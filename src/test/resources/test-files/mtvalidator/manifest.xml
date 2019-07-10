@@ -1,0 +1,41 @@
+<manifest
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/tree/stable-v4"
+    xmlns:r="https://github.com/erasmus-without-paper/ewp-specs-api-registry/tree/stable-v1"
+    xmlns:sec="https://github.com/erasmus-without-paper/ewp-specs-sec-intro/tree/stable-v2"
+>
+    <r:apis-implemented>
+        <discovery
+            xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/blob/stable-v4/manifest-entry.xsd"
+            version="4.1.0"
+        >
+            <url>https://university.example.com/manifest.xml</url>
+        </discovery>
+        <mt-projects
+            xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-mt-projects/blob/stable-v1/manifest-entry.xsd"
+            version="0.1.0"
+        >
+            <http-security>
+                <sec:client-auth-methods>
+                    <httpsig xmlns="https://github.com/erasmus-without-paper/ewp-specs-sec-cliauth-httpsig/tree/stable-v1"/>
+                    <anonymous xmlns="https://github.com/erasmus-without-paper/ewp-specs-sec-cliauth-none/tree/stable-v1"/>
+                </sec:client-auth-methods>
+                <sec:server-auth-methods>
+                    <httpsig xmlns="https://github.com/erasmus-without-paper/ewp-specs-sec-srvauth-httpsig/tree/stable-v1"/>
+                    <tlscert xmlns="https://github.com/erasmus-without-paper/ewp-specs-sec-srvauth-tlscert/tree/stable-v1"/>
+                </sec:server-auth-methods>
+            </http-security>
+            <url>https://university.example.com/mt_projects</url>
+        </mt-projects>
+    </r:apis-implemented>
+    <institutions-covered>
+        <r:hei id="hei01.developers.erasmuswithoutpaper.eu">
+            <r:name xml:lang="en">University of Warsaw test 01</r:name>
+        </r:hei>
+        <r:hei id="hei02.developers.erasmuswithoutpaper.eu">
+            <r:name xml:lang="en">University of Warsaw test 02</r:name>
+        </r:hei>
+    </institutions-covered>
+    <server-credentials-in-use>
+        <rsa-public-key>SERVER-KEY-PLACEHOLDER</rsa-public-key>
+    </server-credentials-in-use>
+</manifest>
