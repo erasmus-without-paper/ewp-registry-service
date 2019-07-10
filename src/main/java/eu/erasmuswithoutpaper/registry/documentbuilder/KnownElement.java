@@ -280,6 +280,15 @@ public class KnownElement {
       );
 
   /**
+   * The root of the MT+ Dictionaries API v1 response.
+   */
+  public static final KnownElement RESPONSE_MT_DICTIONARIES_V1 =
+      new KnownElement(KnownNamespace.RESPONSE_MT_DICTIONARIES_V1,
+          "mt-dictionaries-response",
+          "MT+ Dictionaries v1 API Response"
+      );
+
+  /**
    * Support declaration for Anonymous Client Authentication.
    */
   public static final KnownElement SECENTRY_CLIAUTH_NONE_V1 =
