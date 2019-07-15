@@ -622,7 +622,7 @@ public class UiController {
         testResults.stream().map(this::createTestStepDescription).collect(Collectors.toList());
 
     Status worstStatus =
-        testResults.stream().map(ValidationStepWithStatus::getStatus).min(Status::compareTo)
+        testResults.stream().map(ValidationStepWithStatus::getStatus).max(Status::compareTo)
             .orElse(Status.SUCCESS);
 
     mav.addObject("info", createValidationInfo(requestBody, desc, validationStartedDate));
