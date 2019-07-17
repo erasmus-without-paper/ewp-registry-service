@@ -48,10 +48,10 @@
         </simple-course-replication>
     </r:apis-implemented>
     <institutions-covered>
-        <r:hei id="hei01.developers.erasmuswithoutpaper.eu">
+        <r:hei id="validator-hei01.developers.erasmuswithoutpaper.eu">
             <r:name xml:lang="en">University of Warsaw test 01</r:name>
         </r:hei>
-        <r:hei id="hei02.developers.erasmuswithoutpaper.eu">
+        <r:hei id="validator-hei02.developers.erasmuswithoutpaper.eu">
             <r:name xml:lang="en">University of Warsaw test 02</r:name>
         </r:hei>
     </institutions-covered>

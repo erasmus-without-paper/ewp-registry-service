@@ -46,7 +46,7 @@ public class IiasServiceV2Valid extends AbstractIiasService {
 
   private void fillDataBase() throws DatatypeConfigurationException {
     final String THIS_SERVICE_HEI_ID = "test.hei01.uw.edu.pl";
-    final String VALIDATOR_HEI_ID = "hei01.developers.erasmuswithoutpaper.eu";
+    final String VALIDATOR_HEI_ID = "validator-hei01.developers.erasmuswithoutpaper.eu";
 
     Iia iia1 = new Iia();
     Iia.Partner iia1Partner1 = new Iia.Partner();

@@ -76,7 +76,7 @@ public class ValidatorKeyStore {
       // We will never introduce artificial HEIs in the official registry.
     } else {
       for (int i = 1; i <= 2; i++) {
-        this.myCoveredHeiIDs.add("hei0" + i + ".developers.erasmuswithoutpaper.eu");
+        this.myCoveredHeiIDs.add("validator-hei0" + i + ".developers.erasmuswithoutpaper.eu");
       }
     }
   }
