@@ -47,6 +47,7 @@ class MtInstitutionsValidationSuiteV1 extends AbstractValidationSuite<MtInstitut
   @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
   protected void validateCombinationAny(Combination combination)
       throws SuiteBroken {
+    final String fakePic = "000000001";
     testParameters200(
         combination,
         "Request with known pic and eche_at_date, expect 200 and non empty response.",
@@ -68,16 +69,18 @@ class MtInstitutionsValidationSuiteV1 extends AbstractValidationSuite<MtInstitut
         new MtInstitutionsVerifier(Collections.singletonList(this.currentState.selectedPic))
     );
 
-    testParameters200(
-        combination,
-        "Request with correct pic twice, expect 200 and two elements in response.",
-        Arrays.asList(
-            new Parameter("pic", this.currentState.selectedPic),
-            new Parameter("pic", this.currentState.selectedPic),
-            new Parameter("eche_at_date", this.currentState.selectedEcheAtDate)
-        ),
-        new MtInstitutionsVerifier(Collections.nCopies(2, this.currentState.selectedPic))
-    );
+    if (this.currentState.maxIds > 1) {
+      testParameters200(
+          combination,
+          "Request with correct pic twice, expect 200 and two elements in response.",
+          Arrays.asList(
+              new Parameter("pic", this.currentState.selectedPic),
+              new Parameter("pic", this.currentState.selectedPic),
+              new Parameter("eche_at_date", this.currentState.selectedEcheAtDate)
+          ),
+          new MtInstitutionsVerifier(Collections.nCopies(2, this.currentState.selectedPic))
+      );
+    }
 
     testParametersError(
         combination,
@@ -90,7 +93,7 @@ class MtInstitutionsValidationSuiteV1 extends AbstractValidationSuite<MtInstitut
         combination,
         "Request with unknown pic parameter, expect 200 and empty response.",
         Arrays.asList(
-            new Parameter("pic", fakeId),
+            new Parameter("pic", fakePic),
             new Parameter("eche_at_date", this.currentState.selectedEcheAtDate)
         ),
         new MtInstitutionsVerifier(new ArrayList<>())
@@ -139,7 +142,7 @@ class MtInstitutionsValidationSuiteV1 extends AbstractValidationSuite<MtInstitut
           "Request one known and one unknown pic, expect 200 and only one pic in response.",
           Arrays.asList(
               new Parameter("pic", this.currentState.selectedPic),
-              new Parameter("pic", fakeId),
+              new Parameter("pic", fakePic),
               new Parameter("eche_at_date", this.currentState.selectedEcheAtDate)
           ),
           new MtInstitutionsVerifier(Collections.singletonList(this.currentState.selectedPic))
@@ -180,7 +183,7 @@ class MtInstitutionsValidationSuiteV1 extends AbstractValidationSuite<MtInstitut
         "Request more than <max-ids> unknown PICs, expect 400.",
         concatArrays(
             Arrays.asList(new Parameter("eche_at_date", this.currentState.selectedEcheAtDate)),
-            Collections.nCopies(this.currentState.maxIds + 1, new Parameter("pic", fakeId))
+            Collections.nCopies(this.currentState.maxIds + 1, new Parameter("pic", fakePic))
         ),
         400
     );
