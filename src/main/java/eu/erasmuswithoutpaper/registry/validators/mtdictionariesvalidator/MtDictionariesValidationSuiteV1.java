@@ -139,24 +139,24 @@ class MtDictionariesValidationSuiteV1 extends AbstractValidationSuite<MtDictiona
         400
     );
 
-    testParametersError(
+    testParameters200(
         combination,
-        "Request with invalid value of call_year - zero, expect 400.",
+        "Request with call_year equal zero, expect 200.",
         Arrays.asList(
             new Parameter("dictionary", this.currentState.selectedDictionary),
             new Parameter("call_year", "0")
         ),
-        400
+        new NoopVerifier()
     );
 
-    testParametersError(
+    testParameters200(
         combination,
-        "Request with invalid value of call_year - negative, expect 400.",
+        "Request with negative call_year, expect 200.",
         Arrays.asList(
             new Parameter("dictionary", this.currentState.selectedDictionary),
             new Parameter("call_year", "-2019")
         ),
-        400
+        new NoopVerifier()
     );
 
     testParametersError(

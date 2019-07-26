@@ -66,7 +66,7 @@ class MtProjectsSetupValidationSuiteV1
   }
 
   private String getCallYear() {
-    return Integer.toString(2019);
+    return Integer.toString(2016);
   }
 
   private String getPicParameter() {

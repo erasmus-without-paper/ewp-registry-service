@@ -126,34 +126,38 @@ public class MtProjectsValidatorTest extends AbstractApiTest {
   }
 
   @Test
-  public void testDefaultDateIsUsedWhenCallYearIsZeroIsDetected() {
+  public void testNotAcceptingCallYearIsZeroIsDetected() {
     MtProjectsV010Valid service = new MtProjectsV010Valid(mtProjectsUrl, this.client) {
       @Override
-      protected int ErrorInvalidCallYearZero(
+      protected void HandleCallYearZero(
           RequestData requestData) throws ErrorResponseException {
-        return 2000;
+        throw new ErrorResponseException(
+            createErrorResponse(requestData.request, 400, "Invalid call_year - zero")
+        );
       }
     };
 
     TestValidationReport report = this.getRawReport(service);
     assertThat(report).containsFailure(
-        "Request with invalid value of call_year - zero, expect 400."
+        "Request with call_year equal zero, expect 200."
     );
   }
 
   @Test
-  public void testDefaultDateIsUsedWhenCallYearIsNegativeIsDetected() {
+  public void testNotAcceptingCallYearIsNegativeIsDetected() {
     MtProjectsV010Valid service = new MtProjectsV010Valid(mtProjectsUrl, this.client) {
       @Override
-      protected int ErrorInvalidCallYearNegative(
+      protected void HandleCallYearNegative(
           RequestData requestData) throws ErrorResponseException {
-        return 2000;
+        throw new ErrorResponseException(
+            createErrorResponse(requestData.request, 400, "Invalid call_year - negative")
+        );
       }
     };
 
     TestValidationReport report = this.getRawReport(service);
     assertThat(report).containsFailure(
-        "Request with invalid value of call_year - negative, expect 400."
+        "Request with negative call_year, expect 200."
     );
   }
 

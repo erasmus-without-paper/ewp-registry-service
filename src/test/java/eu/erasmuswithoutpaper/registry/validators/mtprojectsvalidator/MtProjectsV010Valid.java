@@ -189,11 +189,11 @@ public class MtProjectsV010Valid extends AbstractMtProjectsService {
     }
 
     if (parsed == 0) {
-      return ErrorInvalidCallYearZero(requestData);
+      HandleCallYearZero(requestData);
     }
 
     if (parsed < 0) {
-      return ErrorInvalidCallYearNegative(requestData);
+      HandleCallYearNegative(requestData);
     }
 
     return AdditionalCallYearCheck(requestData, parsed);
@@ -209,16 +209,12 @@ public class MtProjectsV010Valid extends AbstractMtProjectsService {
     );
   }
 
-  protected int ErrorInvalidCallYearZero(RequestData requestData) throws ErrorResponseException {
-    throw new ErrorResponseException(
-        createErrorResponse(requestData.request, 400, "Invalid call_year - zero")
-    );
+  protected void HandleCallYearZero(RequestData requestData) throws ErrorResponseException {
+    // do nothing
   }
 
-  protected int ErrorInvalidCallYearNegative(RequestData requestData) throws ErrorResponseException {
-    throw new ErrorResponseException(
-        createErrorResponse(requestData.request, 400, "Invalid call_year - negative")
-    );
+  protected void HandleCallYearNegative(RequestData requestData) throws ErrorResponseException {
+    // do nothing
   }
 
   protected void CheckParamsEncoding(RequestData requestData) throws ErrorResponseException {
