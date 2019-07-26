@@ -14,8 +14,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import eu.erasmuswithoutpaper.registry.Application;
-
 import eu.erasmuswithoutpaper.registry.web.SelfManifestProvider;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +31,6 @@ import org.bouncycastle.operator.DefaultSignatureAlgorithmIdentifierFinder;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.bc.BcContentSignerBuilder;
 import org.bouncycastle.operator.bc.BcRSAContentSignerBuilder;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,12 +69,9 @@ public class ValidatorKeyStore {
     this.myUnregisteredKeyPair = this.generateKeyPair();
 
     this.myCoveredHeiIDs = new ArrayList<>();
-    if (Application.isProductionSite()) {
-      // We will never introduce artificial HEIs in the official registry.
-    } else {
-      for (int i = 1; i <= 2; i++) {
-        this.myCoveredHeiIDs.add("validator-hei0" + i + ".developers.erasmuswithoutpaper.eu");
-      }
+    // Add artificial HEIs that are used by validators.
+    for (int i = 1; i <= 2; i++) {
+      this.myCoveredHeiIDs.add("validator-hei0" + i + ".developers.erasmuswithoutpaper.eu");
     }
   }
 
