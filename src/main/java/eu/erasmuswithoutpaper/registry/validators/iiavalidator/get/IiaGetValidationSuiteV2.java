@@ -58,7 +58,7 @@ class IiaGetValidationSuiteV2
     this.addAndRun(true, new InlineValidationStep() {
       @Override
       public String getName() {
-        return "Request for one of known iia-ids, expect 200 OK.";
+        return "Request for one of known iia_ids, expect 200 OK.";
       }
 
       @Override
@@ -87,9 +87,11 @@ class IiaGetValidationSuiteV2
       }
     });
 
-    generalTestsIdsAndCodes(
-        combination, "iia", this.currentState.selectedHeiId, this.currentState.selectedIiaId,
-        iiaCodes.get(0), this.currentState.maxIiaIds, this.currentState.maxIiaCodes,
+    generalTestsIdsAndCodes(combination,
+        this.currentState.selectedHeiId,
+        "iia",
+        this.currentState.selectedIiaId, this.currentState.maxIiaIds,
+        iiaCodes.get(0), this.currentState.maxIiaCodes,
         IiaIdsVerifier::new,
         InListIiaIdsVerifier::new
     );

@@ -289,6 +289,24 @@ public class KnownElement {
       );
 
   /**
+   * The root of the Incoming Mobility ToRs API v1 index response.
+   */
+  public static final KnownElement RESPONSE_IMOBILITY_TORS_INDEX_V1 =
+      new KnownElement(KnownNamespace.RESPONSE_IMOBILITY_TORS_INDEX_V1,
+          "imobility-tors-index-response",
+          "IIAs API v2 Index Response"
+      );
+
+  /**
+   * The root of the Incoming Mobility ToRs API v1 get response.
+   */
+  public static final KnownElement RESPONSE_IMOBILITY_TORS_GET_V1 =
+      new KnownElement(KnownNamespace.RESPONSE_IMOBILITY_TORS_GET_V1,
+          "imobility-tors-get-response",
+          "IIAs API v2 Get Response"
+      );
+
+  /**
    * Support declaration for Anonymous Client Authentication.
    */
   public static final KnownElement SECENTRY_CLIAUTH_NONE_V1 =

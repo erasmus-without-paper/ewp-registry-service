@@ -374,6 +374,8 @@
                         <source>src/main/resources/schemas/ewp-specs-api-mt-projects-v0.1.0/response.xsd</source>
                         <source>src/main/resources/schemas/ewp-specs-api-mt-institutions-v0.1.0/response.xsd</source>
                         <source>src/main/resources/schemas/ewp-specs-api-mt-dictionaries-v0.1.0/response.xsd</source>
+                        <source>src/main/resources/schemas/ewp-specs-api-imobility-tors-v0.7.0/endpoints/index-response.xsd</source>
+                        <source>src/main/resources/schemas/ewp-specs-api-imobility-tors-v0.7.0/endpoints/get-response.xsd</source>
                     </sources>
                     <xjbSources>
                         <xjbSource>src/main/resources/schema-bindings/manifests.xjb</xjbSource>

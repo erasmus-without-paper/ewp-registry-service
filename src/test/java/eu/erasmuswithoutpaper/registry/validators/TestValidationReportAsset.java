@@ -13,7 +13,7 @@ public class TestValidationReportAsset extends AbstractAssert<TestValidationRepo
 
   public TestValidationReportAsset isCorrect() {
     isNotNull();
-    if (!actual.isCorrect()) {
+    if (actual.toString().isEmpty() || !actual.isCorrect()) {
       failWithMessage("Report is not correct. Actual: <%s>", actual.toString());
     }
     return this;

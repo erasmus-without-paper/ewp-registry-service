@@ -68,7 +68,7 @@ public class OUnitsValidatorTest extends AbstractApiTest {
         };
     TestValidationReport report = this.getRawReport(service);
     assertThat(report)
-        .containsFailure("Request more than <max-ounit-ids> known ounit-ids, expect 400.");
+        .containsFailure("Request more than <max-ounit-ids> known ounit_ids, expect 400.");
   }
 
   @Test
@@ -82,7 +82,7 @@ public class OUnitsValidatorTest extends AbstractApiTest {
         };
     TestValidationReport report = this.getRawReport(service);
     assertThat(report)
-        .containsFailure("Request more than <max-ounit-codes> known ounit-codes, expect 400.");
+        .containsFailure("Request more than <max-ounit-codes> known ounit_codes, expect 400.");
   }
 
   @Test
@@ -98,7 +98,7 @@ public class OUnitsValidatorTest extends AbstractApiTest {
           }
         };
     TestValidationReport report = this.getRawReport(service);
-    assertThat(report).containsFailure("Request without hei-ids and ounit-ids, expect 400.");
+    assertThat(report).containsFailure("Request without hei_id and ounit_ids, expect 400.");
   }
 
   @Test
@@ -129,7 +129,7 @@ public class OUnitsValidatorTest extends AbstractApiTest {
           }
         };
     TestValidationReport report = this.getRawReport(service);
-    assertThat(report).containsFailure("Request without hei-ids, expect 400.");
+    assertThat(report).containsFailure("Request without hei_id, expect 400.");
   }
 
   @Test
@@ -144,7 +144,7 @@ public class OUnitsValidatorTest extends AbstractApiTest {
           }
         };
     TestValidationReport report = this.getRawReport(service);
-    assertThat(report).containsFailure("Request without ounit-ids and ounit-codes, expect 400.");
+    assertThat(report).containsFailure("Request without ounit_ids and ounit_codes, expect 400.");
   }
 
   @Test
@@ -214,7 +214,7 @@ public class OUnitsValidatorTest extends AbstractApiTest {
           }
         };
     TestValidationReport report = this.getRawReport(service);
-    assertThat(report).containsFailure("Request without hei-ids, expect 400.");
+    assertThat(report).containsFailure("Request without hei_id, expect 400.");
   }
 
   @Test
@@ -229,7 +229,7 @@ public class OUnitsValidatorTest extends AbstractApiTest {
           }
         };
     TestValidationReport report = this.getRawReport(service);
-    assertThat(report).containsFailure("Request without ounit-ids and ounit-codes, expect 400.");
+    assertThat(report).containsFailure("Request without ounit_ids and ounit_codes, expect 400.");
   }
 
   @Test
@@ -245,7 +245,7 @@ public class OUnitsValidatorTest extends AbstractApiTest {
         };
     TestValidationReport report = this.getRawReport(service);
     assertThat(report)
-        .containsFailure("Request for one of known ounit-ids with unknown hei-id, expect 400.");
+        .containsFailure("Request for one of known ounit_ids with unknown hei_id, expect 400.");
   }
 
   @Test
@@ -259,7 +259,7 @@ public class OUnitsValidatorTest extends AbstractApiTest {
         };
     TestValidationReport report = this.getRawReport(service);
     assertThat(report)
-        .containsFailure("Request for one of known ounit-ids with unknown hei-id, expect 400.");
+        .containsFailure("Request for one of known ounit_ids with unknown hei_id, expect 400.");
   }
 
   @Test
@@ -287,7 +287,7 @@ public class OUnitsValidatorTest extends AbstractApiTest {
         };
     TestValidationReport report = this.getRawReport(service);
     assertThat(report)
-        .containsFailure("Request one unknown ounit-id, expect 200 and empty response.");
+        .containsFailure("Request one unknown ounit_id, expect 200 and empty response.");
   }
 
   @Test
@@ -315,8 +315,8 @@ public class OUnitsValidatorTest extends AbstractApiTest {
           }
         };
     TestValidationReport report = this.getRawReport(service);
-    assertThat(report).containsFailure("Request exactly <max-ounit-ids> known ounit-ids,"
-        + " expect 200 and non empty response.");
+    assertThat(report).containsFailure("Request exactly <max-ounit-ids> known ounit_ids,"
+        + " expect 200 and non-empty response.");
   }
 
   @Test
@@ -330,8 +330,8 @@ public class OUnitsValidatorTest extends AbstractApiTest {
         };
     TestValidationReport report = this.getRawReport(service);
     assertThat(report).containsFailure(
-        "Request exactly <max-ounit-codes> known ounit-codes,"
-            + " expect 200 and non empty response.");
+        "Request exactly <max-ounit-codes> known ounit_codes,"
+            + " expect 200 and non-empty response.");
   }
 
   @Override

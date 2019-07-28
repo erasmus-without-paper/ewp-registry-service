@@ -76,25 +76,31 @@ class IiaGetSetupValidationSuiteV2
 
     this.currentState.selectedHeiId = coveredHeiIds.get(0);
 
+    if (this.currentState.parameters.contains(IIA_ID_PARAMETER)) {
+      this.currentState.selectedIiaId = this.currentState.parameters.get(IIA_ID_PARAMETER);
+    } else {
+      this.currentState.selectedIiaId = getIiaId(securityDescription);
+    }
+  }
+
+  @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
+  private String getIiaId(HttpSecurityDescription securityDescription) throws SuiteBroken {
     String indexUrl = getApiUrlForHei(
         this.currentState.selectedHeiId, this.getApiInfo().getApiName(), ApiEndpoint.Index,
         "Retrieving 'index' endpoint url from catalogue.",
         "Couldn't find 'index' endpoint url in the catalogue. Is manifest correct?");
 
-    if (this.currentState.parameters.contains(IIA_ID_PARAMETER)) {
-      this.currentState.selectedIiaId = this.currentState.parameters.get(IIA_ID_PARAMETER);
-    } else {
-      this.currentState.selectedIiaId = getCoveredIiaIds(
-          Collections.singletonList(
-              new HeiIdAndUrl(
-                  this.currentState.selectedHeiId,
-                  indexUrl,
-                  ApiEndpoint.Index
-              )
-          ),
-          securityDescription
-      ).string;
-    }
+    HeiIdAndString foundIiaId = getCoveredIiaIds(
+        Collections.singletonList(
+            new HeiIdAndUrl(
+                this.currentState.selectedHeiId,
+                indexUrl,
+                ApiEndpoint.Index
+            )
+        ),
+        securityDescription
+    );
+    return foundIiaId.string;
   }
 
   private HeiIdAndString getCoveredIiaIds(

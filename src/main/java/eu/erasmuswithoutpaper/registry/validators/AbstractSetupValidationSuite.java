@@ -317,7 +317,8 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
           throw new Failure("Could not find this URL and version in the Registry Catalogue. "
               + "Make sure that it is properly registered "
               + "(as declared in API's `manifest-entry.xsd` file): "
-              + AbstractSetupValidationSuite.this.currentState.url, Status.FAILURE, null);
+              + urlElement + " " + AbstractSetupValidationSuite.this.currentState.url
+              + ", v" + expectedVersionStr, Status.FAILURE, null);
         }
 
         if (matchedApiEntries > 1) {
@@ -513,7 +514,7 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
       HttpSecurityDescription preferredSecurityDescription) {
     return makeApiRequestWithPreferredSecurity(
         step, heiIdAndUrl.url, heiIdAndUrl.endpoint, preferredSecurityDescription,
-        Arrays.asList(new Parameter("hei_id", heiIdAndUrl.heiId))
+        Arrays.asList(new Parameter(heiIdAndUrl.heiIdParameterName, heiIdAndUrl.heiId))
     );
   }
 
@@ -586,11 +587,20 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
 
 
   protected static class HeiIdAndUrl {
+    public String heiIdParameterName;
     public String heiId;
     public String url;
     public ApiEndpoint endpoint;
 
     public HeiIdAndUrl(String heiId, String url, ApiEndpoint endpoint) {
+      this.heiIdParameterName = "hei_id";
+      this.heiId = heiId;
+      this.url = url;
+      this.endpoint = endpoint;
+    }
+
+    public HeiIdAndUrl(String heiIdParameterName, String heiId, String url, ApiEndpoint endpoint) {
+      this.heiIdParameterName = heiIdParameterName;
       this.heiId = heiId;
       this.url = url;
       this.endpoint = endpoint;

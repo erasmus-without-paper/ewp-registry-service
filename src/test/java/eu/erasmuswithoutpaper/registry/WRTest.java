@@ -21,7 +21,7 @@ import org.junit.runner.RunWith;
 public abstract class WRTest {
 
   @Autowired
-  private ResourceLoader res;
+  protected ResourceLoader resourceLoader;
 
   /**
    * Quick way of fetching files from resources.
@@ -31,8 +31,9 @@ public abstract class WRTest {
    */
   protected byte[] getFile(String filename) {
     try {
-      return IOUtils
-          .toByteArray(this.res.getResource("classpath:test-files/" + filename).getInputStream());
+      return IOUtils.toByteArray(
+          this.resourceLoader.getResource("classpath:test-files/" + filename).getInputStream()
+      );
     } catch (IOException e) {
       throw new RuntimeException(e);
     }

@@ -18,7 +18,6 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -603,7 +602,9 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
   protected String formatDocBuildErrors(List<BuildError> errors) {
     StringBuilder sb = new StringBuilder();
     sb.append("Our document parser has reported the following errors:");
-    for (int i = 0; i < errors.size(); i++) {
+    for (int i = 0;
+         i < errors.size();
+         i++) {
       sb.append('\n').append(i + 1).append(". ");
       sb.append("(Line ").append(errors.get(i).getLineNumber()).append(") ");
       sb.append(errors.get(i).getMessage());
@@ -644,7 +645,9 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
 
   private List<String> getTextFromNodeList(NodeList nodeList) {
     ArrayList<String> ret = new ArrayList<>();
-    for (int i = 0; i < nodeList.getLength(); i++) {
+    for (int i = 0;
+         i < nodeList.getLength();
+         i++) {
       ret.add(nodeList.item(i).getTextContent());
     }
     return ret;
@@ -822,7 +825,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
 
   protected void testParametersError(Combination combination, String name, List<Parameter> params,
       int error) throws SuiteBroken {
-    testParametersError(combination, name, params, Arrays.asList(error), Status.FAILURE);
+    testParametersError(combination, name, params, Arrays.asList(error), null);
   }
 
   protected void testParametersError(Combination combination, String name, List<Parameter> params,
@@ -837,7 +840,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
 
   protected void testParametersError(Combination combination, String name, List<Parameter> params,
       List<Integer> errors, Status status) throws SuiteBroken {
-    this.addAndRun(false, new InlineValidationStep() {
+    this.addAndRun(status, new InlineValidationStep() {
       @Override
       public String getName() {
         return name;
@@ -879,18 +882,50 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
     return this.steps;
   }
 
-  protected void generalTestsIdsAndCodes(Combination combination, String name, String selectedHeiId,
-      String id, String code, int maxIds, int maxCodes,
+  protected void generalTestsIds(Combination combination,
+      String heiParameterName, String heiId,
+      String secondParameterNamePrefix,
+      String id, int maxIds,
+      boolean shouldUnknownHeiIdsFail,
       VerifierFactory exactListVerifier,
-      VerifierFactory inListVerifier)
-      throws SuiteBroken {
+      VerifierFactory inListVerifier) throws SuiteBroken {
+    generalTestsIdsAndCodes(combination,
+        heiParameterName, heiId,
+        secondParameterNamePrefix,
+        id, maxIds,
+        null, 0,
+        shouldUnknownHeiIdsFail,
+        exactListVerifier,
+        inListVerifier);
+  }
+
+  protected void generalTestsIdsAndCodes(Combination combination, String heiId,
+      String secondParameterNamePrefix,
+      String id, int maxIds, String code, int maxCodes,
+      VerifierFactory exactListVerifier, VerifierFactory inListVerifier) throws SuiteBroken {
+    generalTestsIdsAndCodes(combination,
+        "hei_id", heiId,
+        secondParameterNamePrefix,
+        id, maxIds,
+        code, maxCodes,
+        true,
+        exactListVerifier, inListVerifier);
+  }
+
+  protected void generalTestsIdsAndCodes(Combination combination,
+      String heiParameterName, String heiId,
+      String secondParameterNamePrefix,
+      String id, int maxIds,
+      String code, int maxCodes,
+      boolean shouldUnknownHeiIdsFail,
+      VerifierFactory exactListVerifier, VerifierFactory inListVerifier) throws SuiteBroken {
     if (code != null) {
       testParameters200(
           combination,
-          "Request for one of known " + name + "-codes, expect 200 OK.",
+          "Request for one of known " + secondParameterNamePrefix + "_codes, expect 200 OK.",
           Arrays.asList(
-              new Parameter("hei_id", selectedHeiId),
-              new Parameter(name + "_code", code)
+              new Parameter(heiParameterName, heiId),
+              new Parameter(secondParameterNamePrefix + "_code", code)
           ),
           exactListVerifier.create(Collections.singletonList(id))
       );
@@ -898,10 +933,10 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
 
     testParameters200(
         combination,
-        "Request one unknown " + name + "-id, expect 200 and empty response.",
+        "Request one unknown " + secondParameterNamePrefix + "_id, expect 200 and empty response.",
         Arrays.asList(
-            new Parameter("hei_id", selectedHeiId),
-            new Parameter(name + "_id", fakeId)
+            new Parameter(heiParameterName, heiId),
+            new Parameter(secondParameterNamePrefix + "_id", fakeId)
         ),
         exactListVerifier.create(new ArrayList<>())
     );
@@ -909,12 +944,12 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
     if (maxIds > 1) {
       testParameters200(
           combination,
-          "Request one known and one unknown " + name + "-id, expect 200 and only one " + name
-              + " in response.",
+          "Request one known and one unknown " + secondParameterNamePrefix
+              + "_id, expect 200 and only one " + secondParameterNamePrefix + " in response.",
           Arrays.asList(
-              new Parameter("hei_id", selectedHeiId),
-              new Parameter(name + "_id", id),
-              new Parameter(name + "_id", fakeId)
+              new Parameter(heiParameterName, heiId),
+              new Parameter(secondParameterNamePrefix + "_id", id),
+              new Parameter(secondParameterNamePrefix + "_id", fakeId)
           ),
           exactListVerifier.create(Collections.singletonList(id))
       );
@@ -923,12 +958,12 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
     if (maxCodes > 1 && code != null) {
       testParameters200(
           combination,
-          "Request one known and one unknown " + name + "-code, expect 200 and only one " + name
-              + " in response.",
+          "Request one known and one unknown " + secondParameterNamePrefix
+              + "_code, expect 200 and only one " + secondParameterNamePrefix + " in response.",
           Arrays.asList(
-              new Parameter("hei_id", selectedHeiId),
-              new Parameter(name + "_code", code),
-              new Parameter(name + "_code", fakeId)
+              new Parameter(heiParameterName, heiId),
+              new Parameter(secondParameterNamePrefix + "_code", code),
+              new Parameter(secondParameterNamePrefix + "_code", fakeId)
           ),
           exactListVerifier.create(Collections.singletonList(id))
       );
@@ -936,42 +971,59 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
 
     testParametersError(
         combination,
-        "Request without hei-ids and " + name + "-ids, expect 400.",
+        "Request without " + heiParameterName + " and "
+            + secondParameterNamePrefix + "_ids, expect 400.",
         new ArrayList<>(),
         400
     );
 
     testParametersError(
         combination,
-        "Request without hei-ids, expect 400.",
-        Arrays.asList(new Parameter(name + "_id", id)),
+        "Request without " + heiParameterName + ", expect 400.",
+        Arrays.asList(new Parameter(secondParameterNamePrefix + "_id", id)),
         400
     );
 
     testParametersError(
         combination,
-        "Request without " + name + "-ids and " + name + "-codes, expect 400.",
-        Arrays.asList(new Parameter("hei_id", selectedHeiId)),
+        "Request without " + secondParameterNamePrefix + "_ids and "
+            + secondParameterNamePrefix + "_codes, expect 400.",
+        Arrays.asList(new Parameter(heiParameterName, heiId)),
         400
     );
 
-    testParametersError(
-        combination,
-        "Request for one of known " + name + "-ids with unknown hei-id, expect 400.",
-        Arrays.asList(
-            new Parameter("hei_id", fakeId),
-            new Parameter(name + "_id", id)
-        ),
-        400
-    );
+    if (shouldUnknownHeiIdsFail) {
+      testParametersError(
+          combination,
+          "Request for one of known " + secondParameterNamePrefix + "_ids with unknown "
+              + heiParameterName + ", expect 400.",
+          Arrays.asList(
+              new Parameter(heiParameterName, fakeId),
+              new Parameter(secondParameterNamePrefix + "_id", id)
+          ),
+          400
+      );
+    } else {
+      testParameters200(
+          combination,
+          "Request for one of known " + secondParameterNamePrefix + "_ids with unknown "
+              + heiParameterName + ", expect 200 and empty response.",
+          Arrays.asList(
+              new Parameter(heiParameterName, fakeId),
+              new Parameter(secondParameterNamePrefix + "_id", id)
+          ),
+          exactListVerifier.create(new ArrayList<>())
+      );
+    }
 
     if (code != null) {
       testParametersError(
           combination,
-          "Request for one of known " + name + "-codes with unknown hei-id, expect 400.",
+          "Request for one of known " + secondParameterNamePrefix + "_codes with unknown "
+              + heiParameterName + ", expect 400.",
           Arrays.asList(
-              new Parameter("hei_id", fakeId),
-              new Parameter(name + "_code", code)
+              new Parameter(heiParameterName, fakeId),
+              new Parameter(secondParameterNamePrefix + "_code", code)
           ),
           400
       );
@@ -979,10 +1031,13 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
 
     testParametersError(
         combination,
-        "Request more than <max-" + name + "-ids> known " + name + "-ids, expect 400.",
+        "Request more than <max-" + secondParameterNamePrefix + "-ids> known "
+            + secondParameterNamePrefix + "_ids, expect 400.",
         concatArrays(
-            Arrays.asList(new Parameter("hei_id", selectedHeiId)),
-            Collections.nCopies(maxIds + 1, new Parameter(name + "_id", id))
+            Arrays.asList(new Parameter(heiParameterName, heiId)),
+            Collections.nCopies(
+                maxIds + 1, new Parameter(secondParameterNamePrefix + "_id", id)
+            )
         ),
         400
     );
@@ -990,12 +1045,13 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
     if (code != null) {
       testParametersError(
           combination,
-          "Request more than <max-" + name + "-codes> known " + name + "-codes, expect 400.",
+          "Request more than <max-" + secondParameterNamePrefix + "-codes> known "
+              + secondParameterNamePrefix + "_codes, expect 400.",
           concatArrays(
-              Arrays.asList(new Parameter("hei_id", selectedHeiId)),
+              Arrays.asList(new Parameter(heiParameterName, heiId)),
               Collections.nCopies(
                   maxCodes + 1,
-                  new Parameter(name + "_code", code)
+                  new Parameter(secondParameterNamePrefix + "_code", code)
               )
           ),
           400
@@ -1004,31 +1060,39 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
 
     testParametersError(
         combination,
-        "Request more than <max-" + name + "-ids> unknown " + name + "-ids, expect 400.",
+        "Request more than <max-" + secondParameterNamePrefix + "-ids> unknown "
+            + secondParameterNamePrefix + "_ids, expect 400.",
         concatArrays(
-            Arrays.asList(new Parameter("hei_id", selectedHeiId)),
-            Collections.nCopies(maxIds + 1, new Parameter(name + "_id", fakeId))
+            Arrays.asList(new Parameter(heiParameterName, heiId)),
+            Collections.nCopies(
+                maxIds + 1, new Parameter(secondParameterNamePrefix + "_id", fakeId)
+            )
         ),
         400
     );
 
     testParametersError(
         combination,
-        "Request more than <max-" + name + "-codes> unknown " + name + "-codes, expect 400.",
+        "Request more than <max-" + secondParameterNamePrefix + "-codes> unknown "
+            + secondParameterNamePrefix + "_codes, expect 400.",
         concatArrays(
-            Arrays.asList(new Parameter("hei_id", selectedHeiId)),
-            Collections.nCopies(maxCodes + 1, new Parameter(name + "_code", fakeId))
+            Arrays.asList(new Parameter(heiParameterName, heiId)),
+            Collections.nCopies(
+                maxCodes + 1, new Parameter(secondParameterNamePrefix + "_code", fakeId)
+            )
         ),
         400
     );
 
     testParameters200(
         combination,
-        "Request exactly <max-" + name + "-ids> known " + name + "-ids, expect 200"
-            + " and non empty response.",
+        "Request exactly "
+            + "<max-" + secondParameterNamePrefix + "-ids> "
+            + "known " + secondParameterNamePrefix + "_ids, "
+            + "expect 200 and non-empty response.",
         concatArrays(
-            Arrays.asList(new Parameter("hei_id", selectedHeiId)),
-            Collections.nCopies(maxIds, new Parameter(name + "_id", id))
+            Arrays.asList(new Parameter(heiParameterName, heiId)),
+            Collections.nCopies(maxIds, new Parameter(secondParameterNamePrefix + "_id", id))
         ),
         inListVerifier.create(Collections.singletonList(id))
     );
@@ -1036,11 +1100,14 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
     if (code != null) {
       testParameters200(
           combination,
-          "Request exactly <max-" + name + "-codes> known " + name + "-codes, expect 200"
-              + " and non empty response.",
+          "Request exactly "
+              + "<max-" + secondParameterNamePrefix + "-codes> "
+              + "known " + secondParameterNamePrefix + "_codes, "
+              + "expect 200 and non-empty response.",
           concatArrays(
-              Arrays.asList(new Parameter("hei_id", selectedHeiId)),
-              Collections.nCopies(maxCodes, new Parameter(name + "_code", code)
+              Arrays.asList(new Parameter(heiParameterName, heiId)),
+              Collections.nCopies(
+                  maxCodes, new Parameter(secondParameterNamePrefix + "_code", code)
               )
           ),
           inListVerifier.create(Collections.singletonList(id))
@@ -1050,17 +1117,18 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
     testParametersError(
         combination,
         "Request with single incorrect parameter, expect 400.",
-        Arrays.asList(new Parameter(name + "_id_param", id)),
+        Arrays.asList(new Parameter(secondParameterNamePrefix + "_id_param", id)),
         400
     );
 
     testParameters200(
         combination,
-        "Request with additional parameter, expect 200 and one " + name + " in response.",
+        "Request with additional parameter, expect 200 and one "
+            + secondParameterNamePrefix + " in response.",
         Arrays.asList(
-            new Parameter("hei_id", selectedHeiId),
-            new Parameter(name + "_id", id),
-            new Parameter(name + "_id_param", id)
+            new Parameter(heiParameterName, heiId),
+            new Parameter(secondParameterNamePrefix + "_id", id),
+            new Parameter(secondParameterNamePrefix + "_id_param", id)
         ),
         exactListVerifier.create(Collections.singletonList(id))
     );
@@ -1068,11 +1136,12 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
     if (code != null) {
       testParametersError(
           combination,
-          "Request with correct " + name + "_id and correct " + name + "_code, expect 400.",
+          "Request with correct " + secondParameterNamePrefix + "_id and correct "
+              + secondParameterNamePrefix + "_code, expect 400.",
           Arrays.asList(
-              new Parameter("hei_id", selectedHeiId),
-              new Parameter(name + "_id", id),
-              new Parameter(name + "_code", code)
+              new Parameter(heiParameterName, heiId),
+              new Parameter(secondParameterNamePrefix + "_id", id),
+              new Parameter(secondParameterNamePrefix + "_code", code)
           ),
           400
       );
@@ -1080,11 +1149,11 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
 
     testParametersError(
         combination,
-        "Request with correct hei_id twice, expect 400.",
+        "Request with correct " + heiParameterName + " twice, expect 400.",
         Arrays.asList(
-            new Parameter("hei_id", selectedHeiId),
-            new Parameter("hei_id", selectedHeiId),
-            new Parameter(name + "_id", id)
+            new Parameter(heiParameterName, heiId),
+            new Parameter(heiParameterName, heiId),
+            new Parameter(secondParameterNamePrefix + "_id", id)
         ),
         400
     );
@@ -1188,7 +1257,8 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
    * Thrown when a validation step fails so badly, that no other steps should be run.
    */
   @SuppressWarnings("serial")
-  public static class SuiteBroken extends Exception {}
+  public static class SuiteBroken extends Exception {
+  }
 
 
   protected static class Parameter {

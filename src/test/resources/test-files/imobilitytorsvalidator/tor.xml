@@ -1,0 +1,182 @@
+<imobility-tors-get-response
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-imobility-tors/blob/stable-v1/endpoints/get-response.xsd"
+    xmlns:xml="http://www.w3.org/XML/1998/namespace"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        https://github.com/erasmus-without-paper/ewp-specs-api-imobility-tors/blob/stable-v1/endpoints/get-response.xsd
+        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-imobility-tors/master/endpoints/get-response.xsd
+    "
+>
+    <tor>
+        <omobility-id>b1ab0888-a5ce-45e8-8c51-e3c6f677b58f</omobility-id>
+        <elmo xmlns="https://github.com/emrex-eu/elmo-schemas/tree/v1">
+            <generatedDate>2015-10-31T12:00:00+02:00</generatedDate>
+            <learner>
+                <citizenship>PL</citizenship>
+                <identifier type="nationalIdentifier">83041234567</identifier>
+                <identifier type="someOtherCustomIdentifierType">ABC000000</identifier>
+                <givenNames>Jan Łukasz</givenNames>
+                <familyName>Kowalski</familyName>
+                <bday>1983-01-01</bday>
+            </learner>
+            <report>
+                <issuer>
+                    <country>PL</country>
+                    <identifier type="pic">999572294</identifier>
+                    <identifier type="erasmus">PL WARSZAW01</identifier>
+                    <identifier type="schac">uw.edu.pl</identifier>
+                    <title xml:lang="pl">Uniwersytet Warszawski</title>
+                    <title xml:lang="en">University of Warsaw</title>
+                    <url>http://www.uw.edu.pl</url>
+                </issuer>
+                <learningOpportunitySpecification>
+                    <identifier type="ewp-los-id">CR/19560ed8-5183-4842-9bb0-2b7e23f56522</identifier>
+                    <title>The importance of &lt;b<![CDATA[r> in HTML]]></title>
+                    <specifies>
+                        <learningOpportunityInstance>
+                            <!--
+                            Requested field. https://github.com/emrex-eu/elmo-schemas/issues/10
+                            <identifier type="ewp-loi-id">CRI/4edc6717-c616-430a-96b6-b6cdefee8b0b</identifier>
+                            -->
+                            <resultLabel>C</resultLabel>
+                            <resultDistribution>
+                                <category count="3" label="F"/>
+                                <category count="92" label="E"/>
+                                <category count="98" label="D"/>
+                                <category count="135" label="C"/>
+                                <category count="37" label="B"/>
+                                <category count="7" label="A"/>
+                            </resultDistribution>
+                        </learningOpportunityInstance>
+                    </specifies>
+                </learningOpportunitySpecification>
+                <issueDate>2015-10-31T07:00:00+02:00</issueDate>
+                <attachment>
+                    <title xml:lang="en">Transcript of Records</title>
+                    <type>Transcript of Records</type>
+                    <content>data:application/pdf;base64,iiNhz6QfDnnDybjHLBF2...</content>
+                </attachment>
+            </report>
+            <Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
+                <SignedInfo>
+                    <CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
+                    <SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+                    <Reference URI="">
+                        <Transforms>
+                            <Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+                        </Transforms>
+                        <DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+                        <DigestValue>vKIjYDBEhQxFnLC233qn0rrZ0+I=</DigestValue>
+                    </Reference>
+                </SignedInfo>
+                <SignatureValue>
+                    oekgEiYwLKbtEZri6zo5CKgmK/umAS2aNfUsyPQspkGBdP9H0XE+ITOrD7PKVBgZQ5Y56KghaziF
+                    48a27hHFcPrvHizPXINlVXo6hwgje1SPM9QzjmdyQrhftUWJvpgaGmC4/r8o1yaPGqnkNoylEVUo
+                    wJTWJHaSPcYjNB7eDVY=
+                </SignatureValue>
+                <KeyInfo>
+                    <X509Data>
+                        <X509SubjectName>O=UiO,L=Oslo,ST=Some-State,C=NO</X509SubjectName>
+                        <X509Certificate>
+                            MIIB9TCCAV4CCQDzcL/uks2ttjANBgkqhkiG9w0BAQUFADA/MQswCQYDVQQGEwJOTzETMBEGA1UE
+                            CAwKU29tZS1TdGF0ZTENMAsGA1UEBwwET3NsbzEMMAoGA1UECgwDVWlPMB4XDTE1MDIwNTEzNDE1
+                            MloXDTE4MDUyMDEzNDE1MlowPzELMAkGA1UEBhMCTk8xEzARBgNVBAgMClNvbWUtU3RhdGUxDTAL
+                            BgNVBAcMBE9zbG8xDDAKBgNVBAoMA1VpTzCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEAsnI3
+                            V1JKOl6Ghgzu5AOSsUFcJfefKP3y4lkVzW18T8AXkLKjNWQxJpW7h7kqeEYpcijAIV/xRMu8vEeb
+                            roadh9joOOD+ePL95VnAxcMxy3SdrGxRJ5RZwNf1l5UBxm416acIR78frlFX2kKz8kz0gmOmqFFe
+                            y3zZm7ZdiKw9fTsCAwEAATANBgkqhkiG9w0BAQUFAAOBgQBn6MlnleclAG/BVF4irljHag7OOopx
+                            TlQzb1V/mR0kYtsr6PZzCTJdwwU5YYWPG2hdqYRzyydlEGid5OPeCVtNQNQG8yKDCYeCS571jSbQ
+                            7Q0n0IR4mv7SeLq537mVBaaftV3HdnyoSLcXQpDep/akUOa8TpPwVg/+2U7TWNGJeQ==
+                        </X509Certificate>
+                    </X509Data>
+                </KeyInfo>
+            </Signature>
+        </elmo>
+    </tor>
+    <tor>
+        <omobility-id>b1ab0888-a5ce-45e8-8c51-11122233358f</omobility-id>
+        <elmo xmlns="https://github.com/emrex-eu/elmo-schemas/tree/v1">
+            <generatedDate>2015-10-31T12:00:00+03:00</generatedDate>
+            <learner>
+                <citizenship>PL</citizenship>
+                <identifier type="nationalIdentifier">83041234567</identifier>
+                <identifier type="someOtherCustomIdentifierType">ABC000000</identifier>
+                <givenNames>Piotr Paweł</givenNames>
+                <familyName>Nowak</familyName>
+                <bday>1983-01-01</bday>
+            </learner>
+            <report>
+                <issuer>
+                    <country>PL</country>
+                    <identifier type="pic">999572294</identifier>
+                    <identifier type="erasmus">PL WARSZAW01</identifier>
+                    <identifier type="schac">uw.edu.pl</identifier>
+                    <title xml:lang="pl">Uniwersytet Warszawski</title>
+                    <title xml:lang="en">University of Warsaw</title>
+                    <url>http://www.uw.edu.pl</url>
+                </issuer>
+                <learningOpportunitySpecification>
+                    <identifier type="ewp-los-id">CR/19560ed8-5183-4842-9bb0-2b7e23f56522</identifier>
+                    <title>The importance of &lt;b<![CDATA[r> in HTML]]></title>
+                    <specifies>
+                        <learningOpportunityInstance>
+                            <!--
+                            Requested field. https://github.com/emrex-eu/elmo-schemas/issues/10
+                            <identifier type="ewp-loi-id">CRI/4edc6717-c616-430a-96b6-b6cdefee8b0b</identifier>
+                            -->
+                            <resultLabel>C</resultLabel>
+                            <resultDistribution>
+                                <category count="3" label="F"/>
+                                <category count="92" label="E"/>
+                                <category count="98" label="D"/>
+                                <category count="135" label="C"/>
+                                <category count="37" label="B"/>
+                                <category count="7" label="A"/>
+                            </resultDistribution>
+                        </learningOpportunityInstance>
+                    </specifies>
+                </learningOpportunitySpecification>
+                <issueDate>2015-10-31T07:00:00+02:00</issueDate>
+                <attachment>
+                    <title xml:lang="en">Transcript of Records</title>
+                    <type>Transcript of Records</type>
+                    <content>data:application/pdf;base64,iiNhz6QfDnnDybjHLBF2...</content>
+                </attachment>
+            </report>
+            <Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
+                <SignedInfo>
+                    <CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
+                    <SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+                    <Reference URI="">
+                        <Transforms>
+                            <Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+                        </Transforms>
+                        <DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+                        <DigestValue>vKIjYDBEhQxFnLC233qn0rrZ0+I=</DigestValue>
+                    </Reference>
+                </SignedInfo>
+                <SignatureValue>
+                    oekgEiYwLKbtEZri6zo5CKgmK/umAS2aNfUsyPQspkGBdP9H0XE+ITOrD7PKVBgZQ5Y56KghaziF
+                    48a27hHFcPrvHizPXINlVXo6hwgje1SPM9QzjmdyQrhftUWJvpgaGmC4/r8o1yaPGqnkNoylEVUo
+                    wJTWJHaSPcYjNB7eDVY=
+                </SignatureValue>
+                <KeyInfo>
+                    <X509Data>
+                        <X509SubjectName>O=UiO,L=Oslo,ST=Some-State,C=NO</X509SubjectName>
+                        <X509Certificate>
+                            MIIB9TCCAV4CCQDzcL/uks2ttjANBgkqhkiG9w0BAQUFADA/MQswCQYDVQQGEwJOTzETMBEGA1UE
+                            CAwKU29tZS1TdGF0ZTENMAsGA1UEBwwET3NsbzEMMAoGA1UECgwDVWlPMB4XDTE1MDIwNTEzNDE1
+                            MloXDTE4MDUyMDEzNDE1MlowPzELMAkGA1UEBhMCTk8xEzARBgNVBAgMClNvbWUtU3RhdGUxDTAL
+                            BgNVBAcMBE9zbG8xDDAKBgNVBAoMA1VpTzCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEAsnI3
+                            V1JKOl6Ghgzu5AOSsUFcJfefKP3y4lkVzW18T8AXkLKjNWQxJpW7h7kqeEYpcijAIV/xRMu8vEeb
+                            roadh9joOOD+ePL95VnAxcMxy3SdrGxRJ5RZwNf1l5UBxm416acIR78frlFX2kKz8kz0gmOmqFFe
+                            y3zZm7ZdiKw9fTsCAwEAATANBgkqhkiG9w0BAQUFAAOBgQBn6MlnleclAG/BVF4irljHag7OOopx
+                            TlQzb1V/mR0kYtsr6PZzCTJdwwU5YYWPG2hdqYRzyydlEGid5OPeCVtNQNQG8yKDCYeCS571jSbQ
+                            7Q0n0IR4mv7SeLq537mVBaaftV3HdnyoSLcXQpDep/akUOa8TpPwVg/+2U7TWNGJeQ==
+                        </X509Certificate>
+                    </X509Data>
+                </KeyInfo>
+            </Signature>
+        </elmo>
+    </tor>
+</imobility-tors-get-response>

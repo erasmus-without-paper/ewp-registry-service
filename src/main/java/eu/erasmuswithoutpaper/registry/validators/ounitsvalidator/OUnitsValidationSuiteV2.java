@@ -89,9 +89,11 @@ class OUnitsValidationSuiteV2
       }
     });
 
-    generalTestsIdsAndCodes(
-        combination, "ounit", this.currentState.selectedHeiId, this.currentState.selectedOunitId,
-        ounitCodes.get(0), this.currentState.maxOunitIds, this.currentState.maxOunitCodes,
+    generalTestsIdsAndCodes(combination,
+        this.currentState.selectedHeiId,
+        "ounit",
+        this.currentState.selectedOunitId, this.currentState.maxOunitIds,
+        ounitCodes.get(0), this.currentState.maxOunitCodes,
         OUnitIdsVerifier::new,
         InListOUnitIdsVerifier::new
     );

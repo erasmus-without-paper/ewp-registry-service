@@ -149,9 +149,11 @@ class CoursesValidationSuiteV070
       losCode = losCodes.get(0);
     }
 
-    generalTestsIdsAndCodes(combination, "los", this.currentState.selectedHeiId,
-        this.currentState.selectedLosId, losCode,
-        this.currentState.maxLosIds, this.currentState.maxLosCodes,
+    generalTestsIdsAndCodes(combination,
+        this.currentState.selectedHeiId,
+        "los",
+        this.currentState.selectedLosId, this.currentState.maxLosIds,
+        losCode, this.currentState.maxLosCodes,
         CoursesIdsVerifier::new,
         InListCoursesIdsVerifier::new
     );

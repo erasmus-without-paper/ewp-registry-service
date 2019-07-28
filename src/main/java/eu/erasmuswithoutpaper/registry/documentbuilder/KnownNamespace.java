@@ -158,6 +158,26 @@ public class KnownNamespace {
 
   /**
    * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-imobility-tors/tree/master/manifest-entry.xsd'>
+   * here</a>.
+   */ // TODO: master->stable!
+  public static final KnownNamespace RESPONSE_IMOBILITY_TORS_INDEX_V1 = new KnownNamespace("imtri1",
+      "api-imobility-tors/blob/stable-v1/endpoints/index-response.xsd",
+      "api-imobility-tors/master/endpoints/index-response.xsd", false);
+  // TODO master -> stable!
+
+  /**
+   * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-imobility-tors/tree/master/manifest-entry.xsd'>
+   * here</a>.
+   */ // TODO: master->stable!
+  public static final KnownNamespace RESPONSE_IMOBILITY_TORS_GET_V1 = new KnownNamespace("imtrg1",
+      "api-imobility-tors/blob/stable-v1/endpoints/get-response.xsd",
+      "api-imobility-tors/master/endpoints/get-response.xsd", false);
+  // TODO master -> stable!
+
+  /**
+   * As described <a href=
    * 'https://github.com/erasmus-without-paper/ewp-specs-api-discovery/blob/stable-v4/manifest-entry.xsd'>
    * here</a>.
    */

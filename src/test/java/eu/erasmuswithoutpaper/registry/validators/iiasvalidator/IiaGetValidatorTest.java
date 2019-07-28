@@ -49,7 +49,7 @@ public class IiaGetValidatorTest extends IiaValidatorTestBase {
     };
     TestValidationReport report = this.getRawReport(service);
     assertThat(report)
-        .containsFailure("Request more than <max-iia-ids> known iia-ids, expect 400.");
+        .containsFailure("Request more than <max-iia-ids> known iia_ids, expect 400.");
   }
 
   @Test
@@ -63,7 +63,7 @@ public class IiaGetValidatorTest extends IiaValidatorTestBase {
     };
     TestValidationReport report = this.getRawReport(service);
     assertThat(report)
-        .containsFailure("Request more than <max-iia-codes> known iia-codes, expect 400.");
+        .containsFailure("Request more than <max-iia-codes> known iia_codes, expect 400.");
   }
 
   @Test
@@ -77,7 +77,7 @@ public class IiaGetValidatorTest extends IiaValidatorTestBase {
     };
     TestValidationReport report = this.getRawReport(service);
     assertThat(report)
-        .containsFailure("Request without hei-ids and iia-ids, expect 400.");
+        .containsFailure("Request without hei_id and iia_ids, expect 400.");
   }
 
   @Test
@@ -108,7 +108,7 @@ public class IiaGetValidatorTest extends IiaValidatorTestBase {
     };
     TestValidationReport report = this.getRawReport(service);
     assertThat(report)
-        .containsFailure("Request without hei-ids, expect 400.");
+        .containsFailure("Request without hei_id, expect 400.");
   }
 
   @Test
@@ -123,7 +123,7 @@ public class IiaGetValidatorTest extends IiaValidatorTestBase {
     };
     TestValidationReport report = this.getRawReport(service);
     assertThat(report)
-        .containsFailure("Request without iia-ids and iia-codes, expect 400.");
+        .containsFailure("Request without iia_ids and iia_codes, expect 400.");
   }
 
   @Test
@@ -188,7 +188,7 @@ public class IiaGetValidatorTest extends IiaValidatorTestBase {
     };
     TestValidationReport report = this.getRawReport(service);
     assertThat(report)
-        .containsFailure("Request without hei-ids, expect 400.");
+        .containsFailure("Request without hei_id, expect 400.");
   }
 
   @Test
@@ -202,7 +202,7 @@ public class IiaGetValidatorTest extends IiaValidatorTestBase {
     };
     TestValidationReport report = this.getRawReport(service);
     assertThat(report)
-        .containsFailure("Request without iia-ids and iia-codes, expect 400.");
+        .containsFailure("Request without iia_ids and iia_codes, expect 400.");
   }
 
   @Test
@@ -217,7 +217,7 @@ public class IiaGetValidatorTest extends IiaValidatorTestBase {
     };
     TestValidationReport report = this.getRawReport(service);
     assertThat(report)
-        .containsFailure("Request for one of known iia-ids with unknown hei-id, expect 400.");
+        .containsFailure("Request for one of known iia_ids with unknown hei_id, expect 400.");
   }
 
   @Test
@@ -230,7 +230,7 @@ public class IiaGetValidatorTest extends IiaValidatorTestBase {
     };
     TestValidationReport report = this.getRawReport(service);
     assertThat(report)
-        .containsFailure("Request for one of known iia-ids with unknown hei-id, expect 400.");
+        .containsFailure("Request for one of known iia_ids with unknown hei_id, expect 400.");
   }
 
   @Test
@@ -245,7 +245,7 @@ public class IiaGetValidatorTest extends IiaValidatorTestBase {
     };
     TestValidationReport report = this.getRawReport(service);
     assertThat(report)
-        .containsFailure("Request for one of known iia-ids, expect 200 OK.");
+        .containsFailure("Request for one of known iia_ids, expect 200 OK.");
   }
 
   @Test
@@ -259,9 +259,9 @@ public class IiaGetValidatorTest extends IiaValidatorTestBase {
     };
     TestValidationReport report = this.getRawReport(service);
     assertThat(report).containsFailure(
-        "Request one unknown iia-id, expect 200 and empty response.");
+        "Request one unknown iia_id, expect 200 and empty response.");
     assertThat(report).containsFailure(
-        "Request one known and one unknown iia-id, expect 200 and only one iia in response.");
+        "Request one known and one unknown iia_id, expect 200 and only one iia in response.");
   }
 
   @Test
@@ -275,7 +275,7 @@ public class IiaGetValidatorTest extends IiaValidatorTestBase {
     };
     TestValidationReport report = this.getRawReport(service);
     assertThat(report).containsFailure(
-        "Request one known and one unknown iia-code, expect 200 and only one iia in response.");
+        "Request one known and one unknown iia_code, expect 200 and only one iia in response.");
   }
 
   @Test
@@ -301,8 +301,8 @@ public class IiaGetValidatorTest extends IiaValidatorTestBase {
     };
     TestValidationReport report = this.getRawReport(service);
     assertThat(report)
-        .containsFailure("Request exactly <max-iia-ids> known iia-ids, "
-            + "expect 200 and non empty response.");
+        .containsFailure("Request exactly <max-iia-ids> known iia_ids, "
+            + "expect 200 and non-empty response.");
   }
 
   @Test
@@ -315,7 +315,7 @@ public class IiaGetValidatorTest extends IiaValidatorTestBase {
     };
     TestValidationReport report = this.getRawReport(service);
     assertThat(report)
-        .containsFailure("Request exactly <max-iia-codes> known iia-codes, "
-            + "expect 200 and non empty response.");
+        .containsFailure("Request exactly <max-iia-codes> known iia_codes, "
+            + "expect 200 and non-empty response.");
   }
 }

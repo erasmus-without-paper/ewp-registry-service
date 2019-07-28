@@ -74,7 +74,7 @@ public class CoursesValidatorTest extends AbstractApiTest {
         };
     TestValidationReport report = this.getRawReport(service);
     assertThat(report)
-        .containsFailure("Request more than <max-los-ids> known los-ids, expect 400.");
+        .containsFailure("Request more than <max-los-ids> known los_ids, expect 400.");
   }
 
   @Test
@@ -89,7 +89,7 @@ public class CoursesValidatorTest extends AbstractApiTest {
         };
     TestValidationReport report = this.getRawReport(service);
     assertThat(report)
-        .containsFailure("Request more than <max-los-codes> known los-codes, expect 400.");
+        .containsFailure("Request more than <max-los-codes> known los_codes, expect 400.");
   }
 
   @Test
@@ -106,7 +106,7 @@ public class CoursesValidatorTest extends AbstractApiTest {
           }
         };
     TestValidationReport report = this.getRawReport(service);
-    assertThat(report).containsFailure("Request without hei-ids and los-ids, expect 400.");
+    assertThat(report).containsFailure("Request without hei_id and los_ids, expect 400.");
   }
 
   @Test
@@ -138,7 +138,7 @@ public class CoursesValidatorTest extends AbstractApiTest {
           }
         };
     TestValidationReport report = this.getRawReport(service);
-    assertThat(report).containsFailure("Request without hei-ids, expect 400.");
+    assertThat(report).containsFailure("Request without hei_id, expect 400.");
   }
 
   @Test
@@ -153,7 +153,7 @@ public class CoursesValidatorTest extends AbstractApiTest {
           }
         };
     TestValidationReport report = this.getRawReport(service);
-    assertThat(report).containsFailure("Request without los-ids and los-codes, expect 400.");
+    assertThat(report).containsFailure("Request without los_ids and los_codes, expect 400.");
   }
 
   @Test
@@ -222,7 +222,7 @@ public class CoursesValidatorTest extends AbstractApiTest {
           }
         };
     TestValidationReport report = this.getRawReport(service);
-    assertThat(report).containsFailure("Request without hei-ids, expect 400.");
+    assertThat(report).containsFailure("Request without hei_id, expect 400.");
   }
 
   @Test
@@ -237,7 +237,7 @@ public class CoursesValidatorTest extends AbstractApiTest {
           }
         };
     TestValidationReport report = this.getRawReport(service);
-    assertThat(report).containsFailure("Request without los-ids and los-codes, expect 400.");
+    assertThat(report).containsFailure("Request without los_ids and los_codes, expect 400.");
   }
 
   @Test
@@ -253,7 +253,7 @@ public class CoursesValidatorTest extends AbstractApiTest {
         };
     TestValidationReport report = this.getRawReport(service);
     assertThat(report)
-        .containsFailure("Request for one of known los-ids with unknown hei-id, expect 400.");
+        .containsFailure("Request for one of known los_ids with unknown hei_id, expect 400.");
   }
 
   @Test
@@ -267,7 +267,7 @@ public class CoursesValidatorTest extends AbstractApiTest {
         };
     TestValidationReport report = this.getRawReport(service);
     assertThat(report)
-        .containsFailure("Request for one of known los-ids with unknown hei-id, expect 400.");
+        .containsFailure("Request for one of known los_ids with unknown hei_id, expect 400.");
   }
 
   @Test
@@ -299,7 +299,7 @@ public class CoursesValidatorTest extends AbstractApiTest {
         };
     TestValidationReport report = this.getRawReport(service);
     assertThat(report)
-        .containsFailure("Request one unknown los-id, expect 200 and empty response.");
+        .containsFailure("Request one unknown los_id, expect 200 and empty response.");
   }
 
   @Test
@@ -329,8 +329,8 @@ public class CoursesValidatorTest extends AbstractApiTest {
           }
         };
     TestValidationReport report = this.getRawReport(service);
-    assertThat(report).containsFailure("Request exactly <max-los-ids> known los-ids,"
-        + " expect 200 and non empty response.");
+    assertThat(report).containsFailure("Request exactly <max-los-ids> known los_ids,"
+        + " expect 200 and non-empty response.");
   }
 
   @Test
@@ -343,8 +343,8 @@ public class CoursesValidatorTest extends AbstractApiTest {
           }
         };
     TestValidationReport report = this.getRawReport(service);
-    assertThat(report).containsFailure("Request exactly <max-los-codes> known los-codes,"
-        + " expect 200 and non empty response.");
+    assertThat(report).containsFailure("Request exactly <max-los-codes> known los_codes,"
+        + " expect 200 and non-empty response.");
   }
 
   @Test
