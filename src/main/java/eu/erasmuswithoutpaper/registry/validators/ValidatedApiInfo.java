@@ -1,19 +1,26 @@
 package eu.erasmuswithoutpaper.registry.validators;
 
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownElement;
+import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
 
 public interface ValidatedApiInfo {
-  String NO_ENDPOINT = null;
+  KnownElement getResponseKnownElement();
 
-  KnownElement getKnownElement();
-
-  String getApiNamespace();
+  KnownNamespace getApiEntryKnownNamespace();
 
   String getApiName();
 
-  String getApiPrefix();
+  ApiEndpoint getEndpoint();
 
-  String getApiResponsePrefix();
+  default String getApiNamespace() {
+    return getApiEntryKnownNamespace().getNamespaceUri();
+  }
 
-  String getEndpoint();
+  default String getApiPrefix() {
+    return getApiEntryKnownNamespace().getPreferredPrefix();
+  }
+
+  default String getResponsePrefix() {
+    return getResponseKnownElement().getNamespacePreferredPrefix();
+  }
 }

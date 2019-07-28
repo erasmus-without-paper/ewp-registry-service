@@ -650,7 +650,8 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
     return ret;
   }
 
-  protected List<String> selectApiUrlForHeiFromCatalogue(String api, String endpoint, String hei) {
+  protected List<String> selectApiUrlForHeiFromCatalogue(String api, ApiEndpoint endpoint,
+      String hei) {
     Match apis = getCatalogueMatcher().xpath(
         "/r:catalogue/r:host/r:institutions-covered/" + "r:hei-id[normalize-space(text())='" + hei
             + "']" + "/../../r:apis-implemented/*[local-name()='" + api
@@ -661,13 +662,8 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
     return apis.texts();
   }
 
-  protected Element getApiEntryFromUrlFormCatalogue(String url, String endpointName) {
-    String endpointUrlElementName;
-    if (endpointName == null) { // use default endpoint for this validator
-      endpointUrlElementName = getUrlElementName();
-    } else {
-      endpointUrlElementName = getUrlElementName(endpointName);
-    }
+  protected Element getApiEntryFromUrlFormCatalogue(String url, ApiEndpoint endpoint) {
+    String endpointUrlElementName = getUrlElementName(endpoint);
     String selector = "/r:catalogue/r:host/r:apis-implemented/*/*["
         + "local-name()='" + endpointUrlElementName + "'"
         + " and normalize-space(text())='" + url + "'"
@@ -789,7 +785,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
 
   protected void verifyContents(Response response, Verifier verifier) throws Failure {
     BuildParams params = new BuildParams(response.getBody());
-    params.setExpectedKnownElement(getApiInfo().getKnownElement());
+    params.setExpectedKnownElement(getApiInfo().getResponseKnownElement());
     BuildResult result = this.docBuilder.build(params);
     if (!result.isValid()) {
       throw new Failure(
@@ -1092,11 +1088,11 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
     );
   }
 
-  String getUrlElementName(String endpoint) {
-    if (endpoint != null) {
-      return endpoint + "-url";
+  String getUrlElementName(ApiEndpoint endpoint) {
+    if (endpoint == ApiEndpoint.NoEndpoint) {
+      return "url";
     }
-    return "url";
+    return endpoint.getName() + "-url";
   }
 
   String getUrlElementName() {

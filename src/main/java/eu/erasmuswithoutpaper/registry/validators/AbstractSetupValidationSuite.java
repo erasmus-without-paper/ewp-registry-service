@@ -453,12 +453,12 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
 
 
   protected String getApiUrlForHei(String heiId,
-      String api, String endpoint, String testName, String error) throws SuiteBroken {
+      String api, ApiEndpoint endpoint, String testName, String error) throws SuiteBroken {
     return getApiUrlsForHeis(Arrays.asList(heiId), api, endpoint, testName, error).get(0).url;
   }
 
   protected List<HeiIdAndUrl> getApiUrlsForHeis(List<String> heiIds,
-      String api, String endpoint, String testName, String error) throws SuiteBroken {
+      String api, ApiEndpoint endpoint, String testName, String error) throws SuiteBroken {
     List<HeiIdAndUrl> heiIdAndUrls = new ArrayList<>();
 
     this.setup(new InlineValidationStep() {
@@ -474,7 +474,7 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
           List<String> urls = AbstractSetupValidationSuite.this
               .selectApiUrlForHeiFromCatalogue(api, endpoint, hei);
           if (urls != null && !urls.isEmpty()) {
-            heiIdAndUrls.add(new HeiIdAndUrl(hei, urls.get(0)));
+            heiIdAndUrls.add(new HeiIdAndUrl(hei, urls.get(0), endpoint));
           }
         }
 
@@ -490,11 +490,11 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
   }
 
   protected Request makeApiRequestWithPreferredSecurity(
-      InlineValidationStep step, String url, String endpointName,
+      InlineValidationStep step, String url, ApiEndpoint endpoint,
       HttpSecurityDescription preferredSecurityDescription,
       List<Parameter> parameters) {
     Element apiEntry = AbstractSetupValidationSuite.this
-        .getApiEntryFromUrlFormCatalogue(url, endpointName);
+        .getApiEntryFromUrlFormCatalogue(url, endpoint);
     if (apiEntry == null) {
       return null;
     }
@@ -588,14 +588,9 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
   protected static class HeiIdAndUrl {
     public String heiId;
     public String url;
-    public String endpoint;
+    public ApiEndpoint endpoint;
 
-    public HeiIdAndUrl(String heiId, String url) {
-      this.heiId = heiId;
-      this.url = url;
-    }
-
-    public HeiIdAndUrl(String heiId, String url, String endpoint) {
+    public HeiIdAndUrl(String heiId, String url, ApiEndpoint endpoint) {
       this.heiId = heiId;
       this.url = url;
       this.endpoint = endpoint;

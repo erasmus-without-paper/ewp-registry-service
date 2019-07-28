@@ -14,6 +14,7 @@ import javax.xml.bind.Unmarshaller;
 
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
+import eu.erasmuswithoutpaper.registry.validators.ApiEndpoint;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.HttpSecurityDescription;
 import eu.erasmuswithoutpaper.registry.validators.InlineValidationStep;
@@ -76,7 +77,8 @@ public class IiaIndexComplexSetupValidationSuiteV2 extends IiaIndexBasicSetupVal
           Collections.singletonList(
               new HeiIdAndUrl(
                   this.currentState.selectedHeiId,
-                  this.currentState.url
+                  this.currentState.url,
+                  ApiEndpoint.Index
               )
           ),
           securityDescription
@@ -84,7 +86,7 @@ public class IiaIndexComplexSetupValidationSuiteV2 extends IiaIndexBasicSetupVal
       this.currentState.selectedIiaId = foundIiaId.string;
     }
     String getUrl = getApiUrlForHei(
-        this.currentState.selectedHeiId, this.getApiInfo().getApiName(), "get",
+        this.currentState.selectedHeiId, this.getApiInfo().getApiName(), ApiEndpoint.Get,
         "Retrieving 'get' endpoint url from catalogue.",
         "Couldn't find 'get' endpoint url in the catalogue. Is manifest correct?");
 
@@ -112,7 +114,7 @@ public class IiaIndexComplexSetupValidationSuiteV2 extends IiaIndexBasicSetupVal
       protected Optional<Response> innerRun() throws Failure {
         Request request = makeApiRequestWithPreferredSecurity(
             this,
-            url, "get", securityDescription,
+            url, ApiEndpoint.Get, securityDescription,
             Arrays.asList(
                 new Parameter("hei_id", heiId),
                 new Parameter("iia_id", iiaId)

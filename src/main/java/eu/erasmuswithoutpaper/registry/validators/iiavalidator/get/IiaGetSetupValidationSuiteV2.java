@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 import eu.erasmuswithoutpaper.registry.validators.AbstractSetupValidationSuite;
+import eu.erasmuswithoutpaper.registry.validators.ApiEndpoint;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.HttpSecurityDescription;
 import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
@@ -76,7 +77,7 @@ class IiaGetSetupValidationSuiteV2
     this.currentState.selectedHeiId = coveredHeiIds.get(0);
 
     String indexUrl = getApiUrlForHei(
-        this.currentState.selectedHeiId, this.getApiInfo().getApiName(), "index",
+        this.currentState.selectedHeiId, this.getApiInfo().getApiName(), ApiEndpoint.Index,
         "Retrieving 'index' endpoint url from catalogue.",
         "Couldn't find 'index' endpoint url in the catalogue. Is manifest correct?");
 
@@ -85,7 +86,7 @@ class IiaGetSetupValidationSuiteV2
             new HeiIdAndUrl(
                 this.currentState.selectedHeiId,
                 indexUrl,
-                "index"
+                ApiEndpoint.Index
             )
         ),
         securityDescription

@@ -2,17 +2,18 @@ package eu.erasmuswithoutpaper.registry.validators.iiavalidator.get;
 
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownElement;
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
+import eu.erasmuswithoutpaper.registry.validators.ApiEndpoint;
 import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
 
 class IiaGetValidatedApiInfo implements ValidatedApiInfo {
   @Override
-  public KnownElement getKnownElement() {
+  public KnownElement getResponseKnownElement() {
     return KnownElement.RESPONSE_IIAS_GET_V2;
   }
 
   @Override
-  public String getApiNamespace() {
-    return KnownNamespace.APIENTRY_IIAS_V2.getNamespaceUri();
+  public KnownNamespace getApiEntryKnownNamespace() {
+    return KnownNamespace.APIENTRY_IIAS_V2;
   }
 
   @Override
@@ -21,17 +22,7 @@ class IiaGetValidatedApiInfo implements ValidatedApiInfo {
   }
 
   @Override
-  public String getApiPrefix() {
-    return "ia2";
-  }
-
-  @Override
-  public String getApiResponsePrefix() {
-    return "iarg2";
-  }
-
-  @Override
-  public String getEndpoint() {
-    return "get";
+  public ApiEndpoint getEndpoint() {
+    return ApiEndpoint.Get;
   }
 }

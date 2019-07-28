@@ -39,6 +39,7 @@ import eu.erasmuswithoutpaper.registry.updater.ManifestUpdateStatus;
 import eu.erasmuswithoutpaper.registry.updater.ManifestUpdateStatusRepository;
 import eu.erasmuswithoutpaper.registry.updater.RegistryUpdater;
 import eu.erasmuswithoutpaper.registry.updater.UptimeChecker;
+import eu.erasmuswithoutpaper.registry.validators.ApiEndpoint;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidatorsManager;
 import eu.erasmuswithoutpaper.registry.validators.HttpSecurityDescription;
 import eu.erasmuswithoutpaper.registry.validators.HttpSecurityDescription.InvalidDescriptionString;
@@ -592,21 +593,22 @@ public class UiController {
 
     HttpSecurityDescription desc;
     SemanticVersion ver;
+    ApiEndpoint endpoint;
     try {
       desc = new HttpSecurityDescription(requestBody.getSecurity());
       ver = new SemanticVersion(requestBody.getVersion());
-    } catch (InvalidDescriptionString | InvalidVersionString ignored) {
+      endpoint = ApiEndpoint.fromEndpointName(requestBody.getEndpoint());
+    } catch (InvalidDescriptionString | IllegalArgumentException | InvalidVersionString ignored) {
       return this.errorController.get404();
     }
 
-    if (!this.apiValidatorsManager.hasCompatibleTests(
-        requestBody.getName(), requestBody.getEndpoint(), ver)) {
+    if (!this.apiValidatorsManager.hasCompatibleTests(requestBody.getName(), endpoint, ver)) {
       return this.errorController.get404();
     }
 
     ValidationParameters requestParameters = new ValidationParameters(requestBody.getParameters());
     List<ValidationParameter> availableParameters = this.apiValidatorsManager.getParameters(
-        requestBody.getName(), requestBody.getEndpoint(), ver);
+        requestBody.getName(), endpoint, ver);
 
     if (!requestParameters.checkDependencies(availableParameters)) {
       return this.errorController.get404();
@@ -615,7 +617,7 @@ public class UiController {
     Date validationStartedDate = new Date();
 
     List<ValidationStepWithStatus> testResults = this.apiValidatorsManager
-        .getApiValidator(requestBody.getName(), requestBody.getEndpoint())
+        .getApiValidator(requestBody.getName(), endpoint)
         .runTests(requestBody.getUrl(), ver, desc, requestParameters);
 
     List<Map<String, Object>> testsArray =

@@ -2,6 +2,7 @@ package eu.erasmuswithoutpaper.registry.validators.iiavalidator.index;
 
 import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
 import eu.erasmuswithoutpaper.registry.internet.Internet;
+import eu.erasmuswithoutpaper.registry.validators.ApiEndpoint;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.SemanticVersion;
 import eu.erasmuswithoutpaper.registry.validators.ValidatorKeyStore;
@@ -48,7 +49,8 @@ public class IiaIndexValidator extends ApiValidator<IiaSuiteState> {
 
   public IiaIndexValidator(EwpDocBuilder docBuilder, Internet internet, RegistryClient client,
       ValidatorKeyStore validatorKeyStore) {
-    super(docBuilder, internet, client, validatorKeyStore, "iias", "index");
+    super(docBuilder, internet, client, validatorKeyStore, "iias",
+        ApiEndpoint.Index);
   }
 
   @Override

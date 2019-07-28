@@ -1155,7 +1155,7 @@ abstract class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSui
         this.decodeAndValidateResponseCommons(step, combination, request, response);
     verifyResponseStatus(response);
     BuildParams params = new BuildParams(response.getBody());
-    params.setExpectedKnownElement(getApiInfo().getKnownElement());
+    params.setExpectedKnownElement(getApiInfo().getResponseKnownElement());
     BuildResult result = this.docBuilder.build(params);
     if (!result.isValid()) {
       throw new Failure(
@@ -1164,7 +1164,7 @@ abstract class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSui
     }
     Match root = $(result.getDocument().get()).namespaces(KnownNamespace.prefixMap());
     List<String> heiIdsGot = new ArrayList<>();
-    String nsPrefix = getApiInfo().getApiResponsePrefix() + ":";
+    String nsPrefix = getApiInfo().getResponsePrefix() + ":";
     for (Match entry : root.xpath(nsPrefix + "hei-id").each()) {
       heiIdsGot.add(entry.text());
     }

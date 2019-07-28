@@ -2,6 +2,7 @@ package eu.erasmuswithoutpaper.registry.validators.echovalidator;
 
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownElement;
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
+import eu.erasmuswithoutpaper.registry.validators.ApiEndpoint;
 import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
 
 class EchoValidatedApiInfoV1 implements ValidatedApiInfo {
@@ -11,27 +12,17 @@ class EchoValidatedApiInfoV1 implements ValidatedApiInfo {
   }
 
   @Override
-  public KnownElement getKnownElement() {
+  public KnownElement getResponseKnownElement() {
     return KnownElement.RESPONSE_ECHO_V1;
   }
 
   @Override
-  public String getApiNamespace() {
-    return KnownNamespace.APIENTRY_ECHO_V1.getNamespaceUri();
+  public KnownNamespace getApiEntryKnownNamespace() {
+    return KnownNamespace.APIENTRY_ECHO_V1;
   }
 
   @Override
-  public String getApiPrefix() {
-    return "e1";
-  }
-
-  @Override
-  public String getApiResponsePrefix() {
-    return "er1";
-  }
-
-  @Override
-  public String getEndpoint() {
-    return NO_ENDPOINT;
+  public ApiEndpoint getEndpoint() {
+    return ApiEndpoint.NoEndpoint;
   }
 }

@@ -2,17 +2,18 @@ package eu.erasmuswithoutpaper.registry.validators.coursesreplicationvalidator;
 
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownElement;
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
+import eu.erasmuswithoutpaper.registry.validators.ApiEndpoint;
 import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
 
 class CourseReplicationValidatedApiInfoV1 implements ValidatedApiInfo {
   @Override
-  public KnownElement getKnownElement() {
+  public KnownElement getResponseKnownElement() {
     return KnownElement.RESPONSE_COURSE_REPLICATION_V1;
   }
 
   @Override
-  public String getApiNamespace() {
-    return KnownNamespace.APIENTRY_COURSE_REPLICATION_V1.getNamespaceUri();
+  public KnownNamespace getApiEntryKnownNamespace() {
+    return KnownNamespace.APIENTRY_COURSE_REPLICATION_V1;
   }
 
   @Override
@@ -21,17 +22,7 @@ class CourseReplicationValidatedApiInfoV1 implements ValidatedApiInfo {
   }
 
   @Override
-  public String getApiPrefix() {
-    return "cr1";
-  }
-
-  @Override
-  public String getApiResponsePrefix() {
-    return "crr1";
-  }
-
-  @Override
-  public String getEndpoint() {
-    return NO_ENDPOINT;
+  public ApiEndpoint getEndpoint() {
+    return ApiEndpoint.NoEndpoint;
   }
 }

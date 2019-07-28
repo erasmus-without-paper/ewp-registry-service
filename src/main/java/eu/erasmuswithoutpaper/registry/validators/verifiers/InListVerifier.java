@@ -22,7 +22,7 @@ public abstract class InListVerifier extends Verifier {
   public void verify(AbstractValidationSuite suite, Match root, Response response)
       throws InlineValidationStep.Failure {
     List<String> foundElements =
-        select(root, suite.getApiInfo().getApiResponsePrefix(), getSelector())
+        select(root, suite.getApiInfo().getResponsePrefix(), getSelector())
         .stream().map(Match::text).collect(Collectors.toList());
 
     if (!foundElements.containsAll(wantedValue)) {

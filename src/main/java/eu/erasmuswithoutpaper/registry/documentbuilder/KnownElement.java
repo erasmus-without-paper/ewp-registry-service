@@ -404,6 +404,13 @@ public class KnownElement {
   }
 
   /**
+   * @return The namespace preferred prefix of the element.
+   */
+  public String getNamespacePreferredPrefix() {
+    return this.namespace.getPreferredPrefix();
+  }
+
+  /**
    * @param element XML element to compare to.
    * @return True, if the given element's root name matches this {@link KnownElement}.
    */

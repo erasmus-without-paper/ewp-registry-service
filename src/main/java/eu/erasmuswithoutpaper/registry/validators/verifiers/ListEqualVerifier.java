@@ -23,7 +23,7 @@ public abstract class ListEqualVerifier extends Verifier {
   public void verify(AbstractValidationSuite suite, Match root, Response response)
       throws InlineValidationStep.Failure {
     List<String> actual =
-        select(root, suite.getApiInfo().getApiResponsePrefix(), getSelector())
+        select(root, suite.getApiInfo().getResponsePrefix(), getSelector())
             .stream().map(Match::text).collect(Collectors.toList());
 
     ArrayList<String> unexpectedValues = new ArrayList<>(actual);

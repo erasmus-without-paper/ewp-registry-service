@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
+import eu.erasmuswithoutpaper.registry.validators.ApiEndpoint;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidatorsManager;
 import eu.erasmuswithoutpaper.registry.validators.CombEntry;
 import eu.erasmuswithoutpaper.registry.validators.HttpSecurityDescription;
@@ -27,7 +28,7 @@ public class ManifestApiEntry {
   public final List<HttpSecurityDescription> securities;
   public final boolean available;
   public final List<ValidationParameter> parameters;
-  public final String endpoint;
+  public final ApiEndpoint endpoint;
 
   /**
    * Description of API endpoint.
@@ -47,7 +48,7 @@ public class ManifestApiEntry {
    * @param parameters
    *     parameters that can be passed to tests for this API in this version
    */
-  public ManifestApiEntry(String name, String endpoint, String version, String url,
+  public ManifestApiEntry(String name, ApiEndpoint endpoint, String version, String url,
       List<HttpSecurityDescription> securities, boolean available,
       List<ValidationParameter> parameters) {
     this.name = name;
@@ -84,6 +85,13 @@ public class ManifestApiEntry {
     return ret;
   }
 
+  private static String getEndpointXmlElementName(ApiEndpoint endpoint) {
+    if (endpoint == ApiEndpoint.NoEndpoint) {
+      return "url";
+    }
+    return endpoint.getName() + "-url";
+  }
+
   private static List<ManifestApiEntry> parseApiEntry(Match api, ApiValidatorsManager manager)
       throws ParseException {
     final List<ManifestApiEntry> result = new ArrayList<>();
@@ -98,25 +106,20 @@ public class ManifestApiEntry {
       throw new ParseException("Cannot parse version " + version);
     }
 
-    String[] urlElementNames = {"url", "index-url", "get-url"};
-    for (String urlElementName : urlElementNames) {
+    final Element securityElement = api.xpath("*[local-name()='http-security']").get(0);
+    List<HttpSecurityDescription> securitySettings =
+        parseSecurity(new HttpSecuritySettings(securityElement));
+
+    for (ApiEndpoint endpoint : ApiEndpoint.values()) {
+      final String urlElementName = getEndpointXmlElementName(endpoint);
       final String url = api.xpath("*[local-name()='" + urlElementName + "']").text();
       if (url == null) {
         continue;
       }
 
-      String endpointName = null;
-      if (urlElementName.endsWith("-url")) {
-        endpointName = urlElementName.substring(0, urlElementName.length() - 4);
-      }
-
-      final Element securityElement = api.xpath("*[local-name()='http-security']").get(0);
-      List<HttpSecurityDescription> securitySettings =
-          parseSecurity(new HttpSecuritySettings(securityElement));
-
-      result.add(new ManifestApiEntry(apiName, endpointName, version, url, securitySettings,
-          manager.hasCompatibleTests(apiName, endpointName, semanticVersion),
-          manager.getParameters(apiName, endpointName, semanticVersion)
+      result.add(new ManifestApiEntry(apiName, endpoint, version, url, securitySettings,
+          manager.hasCompatibleTests(apiName, endpoint, semanticVersion),
+          manager.getParameters(apiName, endpoint, semanticVersion)
       ));
     }
     return result;

@@ -33,7 +33,7 @@ public abstract class ApiValidator<S extends SuiteState> {
   protected final Internet internet;
   private final String validatedApiName;
   private final ValidatorKeyStore validatorKeyStore;
-  private final String endpointName;
+  private final ApiEndpoint endpoint;
   @Autowired
   protected ApiValidatorsManager apiValidatorsManager;
   @Autowired
@@ -55,7 +55,7 @@ public abstract class ApiValidator<S extends SuiteState> {
    */
   public ApiValidator(EwpDocBuilder docBuilder, Internet internet, RegistryClient client,
       ValidatorKeyStore validatorKeyStore, String validatedApiName) {
-    this(docBuilder, internet, client, validatorKeyStore, validatedApiName, null);
+    this(docBuilder, internet, client, validatorKeyStore, validatedApiName, ApiEndpoint.NoEndpoint);
   }
 
   /**
@@ -69,18 +69,18 @@ public abstract class ApiValidator<S extends SuiteState> {
    *     Store providing keys, certificates and covered HEI IDs.
    * @param validatedApiName
    *     lowercase name of API validated by this class.
-   * @param endpointName
+   * @param endpoint
    *     lowercase name API endpoint that is validated by this class.
    */
   public ApiValidator(EwpDocBuilder docBuilder, Internet internet, RegistryClient client,
-      ValidatorKeyStore validatorKeyStore, String validatedApiName, String endpointName) {
+      ValidatorKeyStore validatorKeyStore, String validatedApiName, ApiEndpoint endpoint) {
     this.docBuilder = docBuilder;
     this.internet = internet;
     this.client = client;
 
     this.validatorKeyStore = validatorKeyStore;
     this.validatedApiName = validatedApiName;
-    this.endpointName = endpointName;
+    this.endpoint = endpoint;
   }
 
   protected static <K extends Comparable<? super K>, V> ListMultimap<K, V> createMultimap() {
@@ -115,7 +115,7 @@ public abstract class ApiValidator<S extends SuiteState> {
 
   @PostConstruct
   private void registerApiName() { //NOPMD
-    this.apiValidatorsManager.registerApiValidator(this.validatedApiName, this.endpointName, this);
+    this.apiValidatorsManager.registerApiValidator(this.validatedApiName, this.endpoint, this);
   }
 
   /**

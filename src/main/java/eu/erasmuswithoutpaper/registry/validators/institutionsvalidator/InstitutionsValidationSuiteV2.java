@@ -127,7 +127,7 @@ class InstitutionsValidationSuiteV2
 
     private void verifyRootOUnitId(AbstractValidationSuite suite, Match root, Response response)
         throws Failure {
-      String nsPrefix = suite.getApiInfo().getApiResponsePrefix() + ":";
+      String nsPrefix = suite.getApiInfo().getResponsePrefix() + ":";
 
       for (Match entry : root.xpath(nsPrefix + "hei").each()) {
         Match rootOunitId = entry.xpath(nsPrefix + "root-ounit-id").first();

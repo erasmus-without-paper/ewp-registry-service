@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import eu.erasmuswithoutpaper.registry.validators.AbstractSetupValidationSuite;
+import eu.erasmuswithoutpaper.registry.validators.ApiEndpoint;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.HttpSecurityDescription;
 import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
@@ -74,7 +75,7 @@ class OUnitsSetupValidationSuiteV2
     return getApiUrlsForHeis(
         heiIds,
         "institutions",
-        null,
+        ApiEndpoint.NoEndpoint,
         "Find Institutions API for any of covered HEIs.",
         "To perform tests we need any ounit-id. We have to use Institutions API for that, "
             + "but the Catalogue doesn't contain entries for this API for any of hei-ids that we "

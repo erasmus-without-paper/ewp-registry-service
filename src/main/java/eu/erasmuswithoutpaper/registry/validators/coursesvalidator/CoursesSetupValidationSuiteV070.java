@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import eu.erasmuswithoutpaper.registry.validators.AbstractSetupValidationSuite;
+import eu.erasmuswithoutpaper.registry.validators.ApiEndpoint;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.HttpSecurityDescription;
 import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
@@ -60,7 +61,7 @@ class CoursesSetupValidationSuiteV070
     return getApiUrlsForHeis(
         heiIds,
         "simple-course-replication",
-        null,
+        ApiEndpoint.NoEndpoint,
         "Find Courses Replication API for any of covered HEIs.",
         "To perform tests we need any los-id. We have to use Courses Replication API for that, "
             + "but the Catalogue doesn't contain entries for this API for any of hei-ids that we "
