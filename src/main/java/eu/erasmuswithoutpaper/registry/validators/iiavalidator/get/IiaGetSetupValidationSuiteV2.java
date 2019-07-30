@@ -81,17 +81,20 @@ class IiaGetSetupValidationSuiteV2
         "Retrieving 'index' endpoint url from catalogue.",
         "Couldn't find 'index' endpoint url in the catalogue. Is manifest correct?");
 
-    HeiIdAndString foundIiaId = getCoveredIiaIds(
-        Collections.singletonList(
-            new HeiIdAndUrl(
-                this.currentState.selectedHeiId,
-                indexUrl,
-                ApiEndpoint.Index
-            )
-        ),
-        securityDescription
-    );
-    this.currentState.selectedIiaId = foundIiaId.string;
+    if (this.currentState.parameters.contains(IIA_ID_PARAMETER)) {
+      this.currentState.selectedIiaId = this.currentState.parameters.get(IIA_ID_PARAMETER);
+    } else {
+      this.currentState.selectedIiaId = getCoveredIiaIds(
+          Collections.singletonList(
+              new HeiIdAndUrl(
+                  this.currentState.selectedHeiId,
+                  indexUrl,
+                  ApiEndpoint.Index
+              )
+          ),
+          securityDescription
+      ).string;
+    }
   }
 
   private HeiIdAndString getCoveredIiaIds(
