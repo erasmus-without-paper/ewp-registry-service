@@ -63,6 +63,7 @@ public class IiaIndexValidatorTest extends IiaValidatorTestBase {
         .containsFailure("Request with unknown hei_id, expect 400.");
   }
 
+  /*
   @Test
   public void testNotAcceptingSouthernHemisphereAcademicYearIdFormatIsDetected() {
     IiasServiceV2Valid service = new IiasServiceV2Valid(iiaIndexUrl, iiaGetUrl, this.client) {
@@ -83,6 +84,7 @@ public class IiaIndexValidatorTest extends IiaValidatorTestBase {
         "Request with known hei_id and receiving_academic_year_id in southern hemisphere format, "
             + "expect 200 OK.");
   }
+  */
 
   @Test
   public void testNotCheckingAcademicYearIdIsDetected() {

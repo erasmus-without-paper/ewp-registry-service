@@ -75,6 +75,7 @@ class IiaIndexBasicValidationSuiteV2 extends AbstractValidationSuite<IiaSuiteSta
         400
     );
 
+    /*
     testParameters200(
         combination,
         "Request with known hei_id and receiving_academic_year_id in southern hemisphere "
@@ -85,6 +86,7 @@ class IiaIndexBasicValidationSuiteV2 extends AbstractValidationSuite<IiaSuiteSta
         ),
         new IiaIndexVerifier()
     );
+     */
 
     testParameters200(
         combination,
