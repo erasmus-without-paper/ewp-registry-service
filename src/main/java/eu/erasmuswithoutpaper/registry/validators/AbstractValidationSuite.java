@@ -1111,11 +1111,11 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
      * Creates data structure with all configurations required for AbstractValidationSuite to work.
      *
      * @param docBuilder
-     *     Needed for validating Echo API responses against the schemas.
+     *     Needed for validating API responses against the schemas.
      * @param internet
-     *     Needed to make Echo API requests across the network.
+     *     Needed to make API requests across the network.
      * @param regClient
-     *     Needed to fetch (and verify) Echo APIs' security settings.
+     *     Needed to fetch (and verify) APIs' security settings.
      * @param repo
      *     to store the new content of the fetched manifests.
      * @param gitHubTagsGetter

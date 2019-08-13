@@ -143,7 +143,7 @@ public class SelfManifestProvider {
       heiElem.setAttribute("id", heiId);
       Element nameElem =
           doc.createElementNS(KnownNamespace.RESPONSE_REGISTRY_V1.getNamespaceUri(), "name");
-      nameElem.setTextContent("Artificial HEI for testing Echo APIs");
+      nameElem.setTextContent("Artificial HEI for testing APIs");
       heiElem.appendChild(nameElem);
       heisCoveredElem.appendChild(heiElem);
     }

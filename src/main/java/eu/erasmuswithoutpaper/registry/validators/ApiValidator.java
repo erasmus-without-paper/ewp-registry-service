@@ -43,11 +43,11 @@ public abstract class ApiValidator<S extends SuiteState> {
 
   /**
    * @param docBuilder
-   *     Needed for validating Echo API responses against the schemas.
+   *     Needed for validating API responses against the schemas.
    * @param internet
-   *     Needed to make Echo API requests across the network.
+   *     Needed to make API requests across the network.
    * @param client
-   *     Needed to fetch (and verify) Echo APIs' security settings.
+   *     Needed to fetch (and verify) APIs' security settings.
    * @param validatorKeyStore
    *     Store providing keys, certificates and covered HEI IDs.
    * @param validatedApiName
@@ -60,11 +60,11 @@ public abstract class ApiValidator<S extends SuiteState> {
 
   /**
    * @param docBuilder
-   *     Needed for validating Echo API responses against the schemas.
+   *     Needed for validating API responses against the schemas.
    * @param internet
-   *     Needed to make Echo API requests across the network.
+   *     Needed to make API requests across the network.
    * @param client
-   *     Needed to fetch (and verify) Echo APIs' security settings.
+   *     Needed to fetch (and verify) APIs' security settings.
    * @param validatorKeyStore
    *     Store providing keys, certificates and covered HEI IDs.
    * @param validatedApiName
@@ -129,7 +129,7 @@ public abstract class ApiValidator<S extends SuiteState> {
 
   /**
    * The TLS client certificate published for the {@link EchoValidator} needs to cover a specific
-   * set of virtual HEIs (so that the tester can expect Echo APIs to think that the request comes
+   * set of virtual HEIs (so that the tester can expect APIs to think that the request comes
    * from these HEIs). This method allows other services (in particular, the {@link
    * SelfManifestProvider}) to fetch these HEIs from us.
    *

@@ -86,7 +86,7 @@ public class ValidatorKeyStore {
 
   /**
    * The TLS client certificate published for the {@link ApiValidator} needs to cover a specific
-   * set of virtual HEIs (so that the tester can expect Echo APIs to think that the request comes
+   * set of virtual HEIs (so that the tester can expect APIs to think that the request comes
    * from these HEIs). This method allows other services (in particular, the
    * {@link SelfManifestProvider}) to fetch these HEIs from us.
    *
@@ -138,7 +138,7 @@ public class ValidatorKeyStore {
       BigInteger serial = BigInteger.valueOf(12345);
       Date notBefore = new Date(System.currentTimeMillis() - 1000L * 60 * 60 * 24 * 30);
       Date notAfter = new Date(System.currentTimeMillis() + (1000L * 60 * 60 * 24 * 365 * 10));
-      X500Name subject = new X500Name("CN=Dynamically Generated Certificate for testing Echo APIs, "
+      X500Name subject = new X500Name("CN=Dynamically Generated Certificate for testing APIs, "
           + "OU=None, O=None L=None, C=None");
       SubjectPublicKeyInfo publicKeyInfo =
           SubjectPublicKeyInfo.getInstance(keyPair.getPublic().getEncoded());
