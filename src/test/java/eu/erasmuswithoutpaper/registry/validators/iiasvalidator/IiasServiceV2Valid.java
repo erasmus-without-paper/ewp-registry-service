@@ -305,7 +305,7 @@ public class IiasServiceV2Valid extends AbstractIiasService {
     return null;
   }
 
-  private List<Iia> filterIiasByCode(List<Iia> selectedIias, RequestData requestData) {
+  protected List<Iia> filterIiasByCode(List<Iia> selectedIias, RequestData requestData) {
     List<String> selectedIiaCodes = selectedIias.stream()
         .map(i -> i.getPartner().get(0).getIiaCode())
         .collect(Collectors.toList());

@@ -6,6 +6,9 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -300,6 +303,23 @@ public class CoursesValidatorTest extends AbstractApiTest {
   }
 
   @Test
+  public void testReturningSingleLosForMultipleEqualLosIdsIsAccepted() {
+    CoursesServiceV070Valid service =
+        new CoursesServiceV070Valid(coursesUrlHTTT, this.client, GetCoursesReplication()) {
+          @Override
+          protected List<CoursesResponse.LearningOpportunitySpecification> ProcessRequested(
+              RequestData requestData, List<String> requested,
+              Map<String, CoursesResponse.LearningOpportunitySpecification> covered) {
+            return new ArrayList<>(
+                new HashSet<>(super.ProcessRequested(requestData, requested, covered)));
+          }
+        };
+    TestValidationReport report = this.getRawReport(service);
+    assertThat(report).isCorrect();
+  }
+
+
+  @Test
   public void testTooLargeMaxLosIdsInManifestIsDetected() {
     CoursesServiceV070Valid service =
         new CoursesServiceV070Valid(coursesUrlHTTT, this.client, GetCoursesReplication()) {
@@ -310,7 +330,7 @@ public class CoursesValidatorTest extends AbstractApiTest {
         };
     TestValidationReport report = this.getRawReport(service);
     assertThat(report).containsFailure("Request exactly <max-los-ids> known los-ids,"
-        + " expect 200 and <max-los-ids> los-ids in response.");
+        + " expect 200 and non empty response.");
   }
 
   @Test
@@ -324,7 +344,7 @@ public class CoursesValidatorTest extends AbstractApiTest {
         };
     TestValidationReport report = this.getRawReport(service);
     assertThat(report).containsFailure("Request exactly <max-los-codes> known los-codes,"
-        + " expect 200 and <max-los-codes> los-codes in response.");
+        + " expect 200 and non empty response.");
   }
 
   @Test

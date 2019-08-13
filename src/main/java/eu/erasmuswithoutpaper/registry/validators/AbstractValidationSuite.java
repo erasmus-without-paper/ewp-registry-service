@@ -880,7 +880,9 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
   }
 
   protected void generalTestsIdsAndCodes(Combination combination, String name, String selectedHeiId,
-      String id, String code, int maxIds, int maxCodes, VerifierFactory verifier)
+      String id, String code, int maxIds, int maxCodes,
+      VerifierFactory exactListVerifier,
+      VerifierFactory inListVerifier)
       throws SuiteBroken {
     if (code != null) {
       testParameters200(
@@ -890,7 +892,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
               new Parameter("hei_id", selectedHeiId),
               new Parameter(name + "_code", code)
           ),
-          verifier.create(Collections.singletonList(id))
+          exactListVerifier.create(Collections.singletonList(id))
       );
     }
 
@@ -901,7 +903,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
             new Parameter("hei_id", selectedHeiId),
             new Parameter(name + "_id", fakeId)
         ),
-        verifier.create(new ArrayList<>())
+        exactListVerifier.create(new ArrayList<>())
     );
 
     if (maxIds > 1) {
@@ -914,7 +916,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
               new Parameter(name + "_id", id),
               new Parameter(name + "_id", fakeId)
           ),
-          verifier.create(Collections.singletonList(id))
+          exactListVerifier.create(Collections.singletonList(id))
       );
     }
 
@@ -928,7 +930,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
               new Parameter(name + "_code", code),
               new Parameter(name + "_code", fakeId)
           ),
-          verifier.create(Collections.singletonList(id))
+          exactListVerifier.create(Collections.singletonList(id))
       );
     }
 
@@ -1022,26 +1024,26 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
 
     testParameters200(
         combination,
-        "Request exactly <max-" + name + "-ids> known " + name + "-ids, expect 200 and <max-" + name
-            + "-ids> " + name + "-ids in response.",
+        "Request exactly <max-" + name + "-ids> known " + name + "-ids, expect 200"
+            + " and non empty response.",
         concatArrays(
             Arrays.asList(new Parameter("hei_id", selectedHeiId)),
             Collections.nCopies(maxIds, new Parameter(name + "_id", id))
         ),
-        verifier.create(Collections.nCopies(maxIds, id))
+        inListVerifier.create(Collections.singletonList(id))
     );
 
     if (code != null) {
       testParameters200(
           combination,
-          "Request exactly <max-" + name + "-codes> known " + name + "-codes, expect 200 and <max-"
-              + name + "-codes> " + name + "-codes in response.",
+          "Request exactly <max-" + name + "-codes> known " + name + "-codes, expect 200"
+              + " and non empty response.",
           concatArrays(
               Arrays.asList(new Parameter("hei_id", selectedHeiId)),
               Collections.nCopies(maxCodes, new Parameter(name + "_code", code)
               )
           ),
-          verifier.create(Collections.nCopies(maxCodes, id))
+          inListVerifier.create(Collections.singletonList(id))
       );
     }
 
@@ -1060,7 +1062,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
             new Parameter(name + "_id", id),
             new Parameter(name + "_id_param", id)
         ),
-        verifier.create(Collections.singletonList(id))
+        exactListVerifier.create(Collections.singletonList(id))
     );
 
     if (code != null) {

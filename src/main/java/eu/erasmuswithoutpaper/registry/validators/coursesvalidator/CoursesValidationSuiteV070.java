@@ -16,6 +16,7 @@ import eu.erasmuswithoutpaper.registry.validators.Combination;
 import eu.erasmuswithoutpaper.registry.validators.InlineValidationStep;
 import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
 import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus.Status;
+import eu.erasmuswithoutpaper.registry.validators.verifiers.InListVerifier;
 import eu.erasmuswithoutpaper.registry.validators.verifiers.ListEqualVerifier;
 import eu.erasmuswithoutpaper.registry.validators.verifiers.NotInListVerifier;
 
@@ -150,7 +151,9 @@ class CoursesValidationSuiteV070
 
     generalTestsIdsAndCodes(combination, "los", this.currentState.selectedHeiId,
         this.currentState.selectedLosId, losCode,
-        this.currentState.maxLosIds, this.currentState.maxLosCodes, CoursesIdsVerifier::new
+        this.currentState.maxLosIds, this.currentState.maxLosCodes,
+        CoursesIdsVerifier::new,
+        InListCoursesIdsVerifier::new
     );
 
     testParametersError(
@@ -249,12 +252,19 @@ class CoursesValidationSuiteV070
   }
 
   private static class CoursesIdsVerifier extends ListEqualVerifier {
-    CoursesIdsVerifier(List<String> expected, Status status) {
-      super(expected, status);
+    CoursesIdsVerifier(List<String> expected) {
+      super(expected);
     }
 
-    CoursesIdsVerifier(List<String> expected) {
-      super(expected, Status.FAILURE);
+    @Override
+    protected List<String> getSelector() {
+      return Arrays.asList("learningOpportunitySpecification", "los-id");
+    }
+  }
+
+  private static class InListCoursesIdsVerifier extends InListVerifier {
+    public InListCoursesIdsVerifier(List<String> wantedValue) {
+      super(wantedValue);
     }
 
     @Override

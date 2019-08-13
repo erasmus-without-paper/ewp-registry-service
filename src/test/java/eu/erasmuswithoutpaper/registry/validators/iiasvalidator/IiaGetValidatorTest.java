@@ -5,6 +5,7 @@ import static eu.erasmuswithoutpaper.registry.validators.TestValidationReportAss
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
@@ -278,6 +279,19 @@ public class IiaGetValidatorTest extends IiaValidatorTestBase {
   }
 
   @Test
+  public void testReturningSingleOunitForMultipleEqualOunitIdsIsAccepted() {
+    IiasServiceV2Valid service = new IiasServiceV2Valid(iiaIndexUrl, iiaGetUrl, this.client) {
+      @Override
+      protected List<IiasGetResponse.Iia> filterIiasByCode(List<IiasGetResponse.Iia> selectedIias,
+          RequestData requestData) {
+        return new ArrayList<>(new HashSet<>(super.filterIiasByCode(selectedIias, requestData)));
+      }
+    };
+    TestValidationReport report = this.getRawReport(service);
+    assertThat(report).isCorrect();
+  }
+
+  @Test
   public void testTooLargeMaxIiaIdsInManifestIsDetected() {
     IiasServiceV2Valid service = new IiasServiceV2Valid(iiaIndexUrl, iiaGetUrl, this.client) {
       @Override
@@ -288,7 +302,7 @@ public class IiaGetValidatorTest extends IiaValidatorTestBase {
     TestValidationReport report = this.getRawReport(service);
     assertThat(report)
         .containsFailure("Request exactly <max-iia-ids> known iia-ids, "
-            + "expect 200 and <max-iia-ids> iia-ids in response.");
+            + "expect 200 and non empty response.");
   }
 
   @Test
@@ -302,6 +316,6 @@ public class IiaGetValidatorTest extends IiaValidatorTestBase {
     TestValidationReport report = this.getRawReport(service);
     assertThat(report)
         .containsFailure("Request exactly <max-iia-codes> known iia-codes, "
-            + "expect 200 and <max-iia-codes> iia-codes in response.");
+            + "expect 200 and non empty response.");
   }
 }

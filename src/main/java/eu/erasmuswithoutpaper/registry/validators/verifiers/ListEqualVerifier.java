@@ -14,6 +14,10 @@ import org.joox.Match;
 public abstract class ListEqualVerifier extends Verifier {
   private final List<String> expected;
 
+  protected ListEqualVerifier(List<String> expected) {
+    this(expected, ValidationStepWithStatus.Status.FAILURE);
+  }
+
   protected ListEqualVerifier(List<String> expected, ValidationStepWithStatus.Status status) {
     super(status);
     this.expected = expected;

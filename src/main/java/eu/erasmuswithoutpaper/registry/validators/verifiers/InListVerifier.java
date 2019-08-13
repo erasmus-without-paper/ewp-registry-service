@@ -13,6 +13,10 @@ import org.joox.Match;
 public abstract class InListVerifier extends Verifier {
   private final List<String> wantedValue;
 
+  public InListVerifier(List<String> wantedValue) {
+    this(wantedValue, ValidationStepWithStatus.Status.FAILURE);
+  }
+
   public InListVerifier(List<String> wantedValue, ValidationStepWithStatus.Status status) {
     super(status);
     this.wantedValue = wantedValue;

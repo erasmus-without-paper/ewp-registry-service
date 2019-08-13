@@ -4,7 +4,9 @@ import static eu.erasmuswithoutpaper.registry.validators.TestValidationReportAss
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import eu.erasmuswithoutpaper.registry.validators.AbstractApiTest;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
@@ -289,6 +291,21 @@ public class OUnitsValidatorTest extends AbstractApiTest {
   }
 
   @Test
+  public void testReturningSingleOunitForMultipleEqualOunitIdsIsAccepted() {
+    OUnitsServiceV2Valid service =
+        new OUnitsServiceV2Valid(ounitsUrlHTTT, this.client, GetInstitutions()) {
+          @Override
+          protected List<OunitsResponse.Ounit> ProcessRequested(
+              List<String> requested,
+              Map<String, OunitsResponse.Ounit> covered) {
+            return new ArrayList<>(new HashSet<>(super.ProcessRequested(requested, covered)));
+          }
+        };
+    TestValidationReport report = this.getRawReport(service);
+    assertThat(report).isCorrect();
+  }
+
+  @Test
   public void testTooLargeMaxOunitIdsInManifestIsDetected() {
     OUnitsServiceV2Valid service =
         new OUnitsServiceV2Valid(ounitsUrlHTTT, this.client, GetInstitutions()) {
@@ -299,7 +316,7 @@ public class OUnitsValidatorTest extends AbstractApiTest {
         };
     TestValidationReport report = this.getRawReport(service);
     assertThat(report).containsFailure("Request exactly <max-ounit-ids> known ounit-ids,"
-        + " expect 200 and <max-ounit-ids> ounit-ids in response.");
+        + " expect 200 and non empty response.");
   }
 
   @Test
@@ -314,7 +331,7 @@ public class OUnitsValidatorTest extends AbstractApiTest {
     TestValidationReport report = this.getRawReport(service);
     assertThat(report).containsFailure(
         "Request exactly <max-ounit-codes> known ounit-codes,"
-            + " expect 200 and <max-ounit-codes> ounit-codes in response.");
+            + " expect 200 and non empty response.");
   }
 
   @Override

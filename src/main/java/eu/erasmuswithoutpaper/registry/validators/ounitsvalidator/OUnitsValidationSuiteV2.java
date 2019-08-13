@@ -14,6 +14,7 @@ import eu.erasmuswithoutpaper.registry.validators.Combination;
 import eu.erasmuswithoutpaper.registry.validators.InlineValidationStep;
 import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
 import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus.Status;
+import eu.erasmuswithoutpaper.registry.validators.verifiers.InListVerifier;
 import eu.erasmuswithoutpaper.registry.validators.verifiers.ListEqualVerifier;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -91,7 +92,8 @@ class OUnitsValidationSuiteV2
     generalTestsIdsAndCodes(
         combination, "ounit", this.currentState.selectedHeiId, this.currentState.selectedOunitId,
         ounitCodes.get(0), this.currentState.maxOunitIds, this.currentState.maxOunitCodes,
-        OUnitIdsVerifier::new
+        OUnitIdsVerifier::new,
+        InListOUnitIdsVerifier::new
     );
 
     testParametersError(
@@ -109,11 +111,18 @@ class OUnitsValidationSuiteV2
 
   private static class OUnitIdsVerifier extends ListEqualVerifier {
     OUnitIdsVerifier(List<String> expected) {
-      super(expected, Status.FAILURE);
+      super(expected);
     }
 
-    OUnitIdsVerifier(List<String> expected, Status status) {
-      super(expected, status);
+    @Override
+    protected List<String> getSelector() {
+      return Arrays.asList("ounit", "ounit-id");
+    }
+  }
+
+  private static class InListOUnitIdsVerifier extends InListVerifier {
+    InListOUnitIdsVerifier(List<String> expected) {
+      super(expected);
     }
 
     @Override

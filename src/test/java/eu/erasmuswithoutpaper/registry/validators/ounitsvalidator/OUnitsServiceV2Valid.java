@@ -244,7 +244,7 @@ public class OUnitsServiceV2Valid extends AbstractOUnitsService {
     return ProcessRequested(this.requestedOUnitIds, coveredOUnitsIds);
   }
 
-  private List<OunitsResponse.Ounit> ProcessRequested(
+  protected List<OunitsResponse.Ounit> ProcessRequested(
       List<String> requested,
       Map<String, OunitsResponse.Ounit> covered) {
     List<OunitsResponse.Ounit> ret = new ArrayList<>();

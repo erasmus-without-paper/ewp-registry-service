@@ -338,7 +338,7 @@ public class CoursesServiceV070Valid extends AbstractCoursesService {
     return end.toGregorianCalendar().compareTo(requestData.loisAfter.toGregorianCalendar()) > 0;
   }
 
-  private List<CoursesResponse.LearningOpportunitySpecification> ProcessRequested(
+  protected List<CoursesResponse.LearningOpportunitySpecification> ProcessRequested(
       RequestData requestData, List<String> requested,
       Map<String, CoursesResponse.LearningOpportunitySpecification> covered) {
     List<CoursesResponse.LearningOpportunitySpecification> ret = new ArrayList<>();

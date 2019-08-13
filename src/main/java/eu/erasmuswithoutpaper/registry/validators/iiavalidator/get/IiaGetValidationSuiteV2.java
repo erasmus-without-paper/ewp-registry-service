@@ -15,6 +15,7 @@ import eu.erasmuswithoutpaper.registry.validators.InlineValidationStep;
 import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
 import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus.Status;
 import eu.erasmuswithoutpaper.registry.validators.iiavalidator.IiaSuiteState;
+import eu.erasmuswithoutpaper.registry.validators.verifiers.InListVerifier;
 import eu.erasmuswithoutpaper.registry.validators.verifiers.ListEqualVerifier;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -89,7 +90,8 @@ class IiaGetValidationSuiteV2
     generalTestsIdsAndCodes(
         combination, "iia", this.currentState.selectedHeiId, this.currentState.selectedIiaId,
         iiaCodes.get(0), this.currentState.maxIiaIds, this.currentState.maxIiaCodes,
-        IiaIdsVerifier::new
+        IiaIdsVerifier::new,
+        InListIiaIdsVerifier::new
     );
 
     testParametersError(
@@ -107,11 +109,18 @@ class IiaGetValidationSuiteV2
 
   private static class IiaIdsVerifier extends ListEqualVerifier {
     IiaIdsVerifier(List<String> expected) {
-      super(expected, Status.FAILURE);
+      super(expected);
     }
 
-    IiaIdsVerifier(List<String> expected, Status status) {
-      super(expected, status);
+    @Override
+    protected List<String> getSelector() {
+      return Arrays.asList("iia", "partner[1]", "iia-id");
+    }
+  }
+
+  private static class InListIiaIdsVerifier extends InListVerifier {
+    InListIiaIdsVerifier(List<String> expected) {
+      super(expected);
     }
 
     @Override
