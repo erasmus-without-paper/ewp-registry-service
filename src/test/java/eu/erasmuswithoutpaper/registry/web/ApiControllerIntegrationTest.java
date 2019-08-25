@@ -219,7 +219,7 @@ public class ApiControllerIntegrationTest extends WRIntegrationTest {
         .contains("One of your TLS client certificates (2nd of 3) uses an insecure "
             + "MD-based signature algorithm (MD5withRSA)");
     assertThat(this.status(urlSE))
-        .contains("One of your TLS client certificates (3rd of 3) uses a SHA-1-based "
+        .doesNotContain("One of your TLS client certificates (3rd of 3) uses a SHA-1-based "
             + "signature algorithm (SHA1withRSA). Consider upgrading to SHA-256.");
 
     /* [Test G] Replace certificate with a valid one. */

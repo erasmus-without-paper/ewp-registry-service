@@ -74,16 +74,6 @@ public class TlsClientCertificateSecurityConstraint implements ManifestConstrain
         continue;
       }
 
-      if (cert.getSigAlgName().startsWith("SHA1with")) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("One of your TLS client certificates (").append(name).append(") ");
-        sb.append("uses a SHA-1-based signature algorithm ");
-        sb.append('(').append(cert.getSigAlgName()).append("). ");
-        sb.append("Consider upgrading to SHA-256.");
-        notices.add(new FailedConstraintNotice(Severity.WARNING, sb.toString()));
-        continue;
-      }
-
       RSAPublicKey publicKey = (RSAPublicKey) cert.getPublicKey();
       if (publicKey.getModulus().bitLength() < this.minKeyLength) {
         certElem.remove();
