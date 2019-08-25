@@ -38,7 +38,7 @@ public class MtDictionariesValidatorTest extends AbstractApiTest {
   }
 
   @Override
-  protected ApiValidator GetValidator() {
+  protected ApiValidator getValidator() {
     return validator;
   }
 
@@ -53,7 +53,7 @@ public class MtDictionariesValidatorTest extends AbstractApiTest {
   public void testNotReportingAnErrorWhenNoDictionaryIsProvidedIsDetected() {
     MtDictionariesV010Valid service = new MtDictionariesV010Valid(mtDictionariesUrl, this.client) {
       @Override
-      protected void ErrorNoDictionary(RequestData requestData) throws ErrorResponseException {
+      protected void errorNoDictionary(RequestData requestData) throws ErrorResponseException {
         requestData.dictionary = coveredTerms.keySet().iterator().next().dictionary;
       }
     };
@@ -68,7 +68,7 @@ public class MtDictionariesValidatorTest extends AbstractApiTest {
   public void testNotReportingAnErrorWhenMultipleDictionariesAreProvidedIsDetected() {
     MtDictionariesV010Valid service = new MtDictionariesV010Valid(mtDictionariesUrl, this.client) {
       @Override
-      protected void ErrorMultipleDictionaries(
+      protected void errorMultipleDictionaries(
           RequestData requestData) throws ErrorResponseException {
         // ignore
       }
@@ -84,7 +84,7 @@ public class MtDictionariesValidatorTest extends AbstractApiTest {
   public void testNotReportingAnErrorWhenUnknownDictionaryIsProvidedIsDetected() {
     MtDictionariesV010Valid service = new MtDictionariesV010Valid(mtDictionariesUrl, this.client) {
       @Override
-      protected void ErrorInvalidDictionary(RequestData requestData) throws ErrorResponseException {
+      protected void errorInvalidDictionary(RequestData requestData) throws ErrorResponseException {
         // ignore
       }
     };
@@ -99,7 +99,7 @@ public class MtDictionariesValidatorTest extends AbstractApiTest {
   public void testDefaultDateIsUsedWhenCallYearIsNotProvidedIsDetected() {
     MtDictionariesV010Valid service = new MtDictionariesV010Valid(mtDictionariesUrl, this.client) {
       @Override
-      protected void ErrorNoCallYear(RequestData requestData) throws ErrorResponseException {
+      protected void errorNoCallYear(RequestData requestData) throws ErrorResponseException {
         requestData.callYear = 2019;
       }
     };
@@ -114,7 +114,7 @@ public class MtDictionariesValidatorTest extends AbstractApiTest {
   public void testDefaultDateIsUsedWhenCallYearIsInvalidIsDetected() {
     MtDictionariesV010Valid service = new MtDictionariesV010Valid(mtDictionariesUrl, this.client) {
       @Override
-      protected int ErrorInvalidCallYearFormat(
+      protected int errorInvalidCallYearFormat(
           RequestData requestData) throws ErrorResponseException {
         return 2019;
       }
@@ -130,7 +130,7 @@ public class MtDictionariesValidatorTest extends AbstractApiTest {
   public void testDefaultDateIsUsedWhenCallYearIsZeroIsDetected() {
     MtDictionariesV010Valid service = new MtDictionariesV010Valid(mtDictionariesUrl, this.client) {
       @Override
-      protected void HandleCallYearZero(
+      protected void handleCallYearZero(
           RequestData requestData) throws ErrorResponseException {
         throw new ErrorResponseException(
             createErrorResponse(requestData.request, 400, "Invalid call_year - zero")
@@ -148,7 +148,7 @@ public class MtDictionariesValidatorTest extends AbstractApiTest {
   public void testDefaultDateIsUsedWhenCallYearIsNegativeIsDetected() {
     MtDictionariesV010Valid service = new MtDictionariesV010Valid(mtDictionariesUrl, this.client) {
       @Override
-      protected void HandleCallYearNegative(
+      protected void handleCallYearNegative(
           RequestData requestData) throws ErrorResponseException {
         throw new ErrorResponseException(
             createErrorResponse(requestData.request, 400, "Invalid call_year - negative")
@@ -166,12 +166,12 @@ public class MtDictionariesValidatorTest extends AbstractApiTest {
   public void testAcceptingAFullDateAsCallYearIsDetected() {
     MtDictionariesV010Valid service = new MtDictionariesV010Valid(mtDictionariesUrl, this.client) {
       @Override
-      protected int ParseCallYear(RequestData requestData,
+      protected int parseCallYear(RequestData requestData,
           String callYear) throws ErrorResponseException {
         try {
           return LocalDate.parse(callYear).getYear();
         } catch (DateTimeParseException | IllegalArgumentException e) {
-          return super.ParseCallYear(requestData, callYear);
+          return super.parseCallYear(requestData, callYear);
         }
       }
     };
@@ -186,13 +186,13 @@ public class MtDictionariesValidatorTest extends AbstractApiTest {
   public void testAcceptingDateTimeAsCallYearIsDetected() {
     MtDictionariesV010Valid service = new MtDictionariesV010Valid(mtDictionariesUrl, this.client) {
       @Override
-      protected int ParseCallYear(RequestData requestData,
+      protected int parseCallYear(RequestData requestData,
           String callYear) throws ErrorResponseException {
         try {
           DatatypeFactory datatypeFactory = DatatypeFactory.newInstance();
           return datatypeFactory.newXMLGregorianCalendar(callYear).getYear();
         } catch (DatatypeConfigurationException | IllegalArgumentException e) {
-          return super.ParseCallYear(requestData, callYear);
+          return super.parseCallYear(requestData, callYear);
         }
       }
     };
@@ -207,7 +207,7 @@ public class MtDictionariesValidatorTest extends AbstractApiTest {
   public void testNotReportingAnErrorWhenNoCallYearIsProvidedIsDetected() {
     MtDictionariesV010Valid service = new MtDictionariesV010Valid(mtDictionariesUrl, this.client) {
       @Override
-      protected void ErrorNoCallYear(RequestData requestData) throws ErrorResponseException {
+      protected void errorNoCallYear(RequestData requestData) throws ErrorResponseException {
         requestData.callYear = 2019;
       }
     };
@@ -222,7 +222,7 @@ public class MtDictionariesValidatorTest extends AbstractApiTest {
   public void testNotReportingAnErrorWhenMultipleCallYearsAreProvidedIsDetected() {
     MtDictionariesV010Valid service = new MtDictionariesV010Valid(mtDictionariesUrl, this.client) {
       @Override
-      protected void ErrorMultipleCallYears(RequestData requestData) throws ErrorResponseException {
+      protected void errorMultipleCallYears(RequestData requestData) throws ErrorResponseException {
         //ignore
       }
     };
@@ -237,7 +237,7 @@ public class MtDictionariesValidatorTest extends AbstractApiTest {
   public void testAcceptingOnlyFourDigitCallYearIsDetected() {
     MtDictionariesV010Valid service = new MtDictionariesV010Valid(mtDictionariesUrl, this.client) {
       @Override
-      protected int AdditionalCallYearCheck(RequestData requestData,
+      protected int additionalCallYearCheck(RequestData requestData,
           Integer parsed) throws ErrorResponseException {
         if (1000 <= parsed && parsed <= 9999) {
           return parsed;
@@ -260,7 +260,7 @@ public class MtDictionariesValidatorTest extends AbstractApiTest {
   public void testNotIgnoringUnknownParamsIsDetected() {
     MtDictionariesV010Valid service = new MtDictionariesV010Valid(mtDictionariesUrl, this.client) {
       @Override
-      protected void HandleUnexpectedParams(RequestData requestData) throws ErrorResponseException {
+      protected void handleUnexpectedParams(RequestData requestData) throws ErrorResponseException {
         throw new ErrorResponseException(
             createErrorResponse(requestData.request, 400, "Unknown param")
         );
@@ -277,17 +277,17 @@ public class MtDictionariesValidatorTest extends AbstractApiTest {
   public void testNotReportingAnErrorWhenOnlyUnknownParametersAreProvidedIsDetected() {
     MtDictionariesV010Valid service = new MtDictionariesV010Valid(mtDictionariesUrl, this.client) {
       @Override
-      protected void ErrorNoDictionary(RequestData requestData) throws ErrorResponseException {
+      protected void errorNoDictionary(RequestData requestData) throws ErrorResponseException {
         // ignore
       }
 
       @Override
-      protected void ErrorNoCallYear(RequestData requestData) throws ErrorResponseException {
+      protected void errorNoCallYear(RequestData requestData) throws ErrorResponseException {
         // ignore
       }
 
       @Override
-      protected void HandleUnexpectedParams(RequestData requestData) throws ErrorResponseException {
+      protected void handleUnexpectedParams(RequestData requestData) throws ErrorResponseException {
         if (requestData.callYear == null && requestData.dictionary == null) {
           throw new ErrorResponseException(createMtDictionariesReponse(new ArrayList<>()));
         }
@@ -304,7 +304,7 @@ public class MtDictionariesValidatorTest extends AbstractApiTest {
   public void testNotReportingAnErrorWhenNoParametersAreProvidedIsDetected() {
     MtDictionariesV010Valid service = new MtDictionariesV010Valid(mtDictionariesUrl, this.client) {
       @Override
-      protected void ErrorNoParams(RequestData requestData) throws ErrorResponseException {
+      protected void errorNoParams(RequestData requestData) throws ErrorResponseException {
         throw new ErrorResponseException(createMtDictionariesReponse(new ArrayList<>()));
       }
     };

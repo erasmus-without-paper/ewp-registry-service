@@ -11,20 +11,17 @@ import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus;
 
 import org.joox.Match;
 
-public abstract class ListEqualVerifier extends Verifier {
+public class ListEqualVerifier extends Verifier {
   private final List<String> expected;
 
-  protected ListEqualVerifier(List<String> expected) {
-    this(expected, ValidationStepWithStatus.Status.FAILURE);
-  }
-
-  protected ListEqualVerifier(List<String> expected, ValidationStepWithStatus.Status status) {
-    super(status);
+  protected ListEqualVerifier(List<String> expected, List<String> selector) {
+    super(selector);
     this.expected = expected;
   }
 
   @Override
-  public void verify(AbstractValidationSuite suite, Match root, Response response)
+  public void verify(AbstractValidationSuite suite, Match root, Response response,
+      ValidationStepWithStatus.Status failureStatus)
       throws InlineValidationStep.Failure {
     List<String> actual =
         select(root, suite.getApiInfo().getResponsePrefix(), getSelector())
@@ -46,7 +43,7 @@ public abstract class ListEqualVerifier extends Verifier {
               + "the set of returned " + getParamName() + "s doesn't match what we expect. "
               + "It contains those unexpected values: " + unexpectedValues + " "
               + "It should contain the following values: " + expected,
-          this.status, response
+          failureStatus, response
       );
     }
 
@@ -56,7 +53,7 @@ public abstract class ListEqualVerifier extends Verifier {
               + "the set of returned " + getParamName() + "s doesn't match what we expect. "
               + "It does not contain those expected values: " + notReceivedValues + " "
               + "It should contain the following values: " + expected,
-          this.status, response
+          failureStatus, response
       );
     }
   }

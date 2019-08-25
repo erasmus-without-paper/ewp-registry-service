@@ -222,23 +222,23 @@ public class IiasServiceV2Valid extends AbstractIiasService {
 
   private void checkCodes(RequestData requestData) throws ErrorResponseException {
     if (requestData.iiaCodes.size() > getMaxIiaCodes()) {
-      ErrorMaxCodesExceeded(requestData);
+      errorMaxCodesExceeded(requestData);
     }
   }
 
   private void checkIds(RequestData requestData) throws ErrorResponseException {
     if (requestData.iiaIds.size() > getMaxIiaIds()) {
-      ErrorMaxIdsExceeded(requestData);
+      errorMaxIdsExceeded(requestData);
     }
   }
 
-  protected void ErrorMaxCodesExceeded(RequestData requestData) throws ErrorResponseException {
+  protected void errorMaxCodesExceeded(RequestData requestData) throws ErrorResponseException {
     throw new ErrorResponseException(
         createErrorResponse(requestData.request, 400, "max-iia-codes exceeded")
     );
   }
 
-  protected void ErrorMaxIdsExceeded(RequestData requestData) throws ErrorResponseException {
+  protected void errorMaxIdsExceeded(RequestData requestData) throws ErrorResponseException {
     throw new ErrorResponseException(
         createErrorResponse(requestData.request, 400, "max-iia-ids exceeded")
     );
@@ -395,7 +395,7 @@ public class IiasServiceV2Valid extends AbstractIiasService {
   }
 
   private void extractGetParams(RequestData requestData) throws ErrorResponseException {
-    CheckParamsEncoding(requestData.request);
+    checkParamsEncoding(requestData.request);
     Map<String, List<String>> params = InternetTestHelpers.extractAllParams(requestData.request);
 
     ParameterInfo heiId = ParameterInfo.readParam(params, "hei_id");
@@ -450,7 +450,7 @@ public class IiasServiceV2Valid extends AbstractIiasService {
   }
 
   private void extractIndexParams(RequestData requestData) throws ErrorResponseException {
-    CheckParamsEncoding(requestData.request);
+    checkParamsEncoding(requestData.request);
     Map<String, List<String>> params = InternetTestHelpers.extractAllParams(requestData.request);
 
     ParameterInfo heiId = ParameterInfo.readParam(params, "hei_id");

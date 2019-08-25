@@ -120,10 +120,10 @@ public class MtDictionariesV010Valid extends AbstractMtDictionariesService {
       Request request) throws IOException, ErrorResponseException {
     try {
       RequestData requestData = new RequestData(request);
-      VerifyCertificate(requestData);
-      CheckRequestMethod(requestData);
-      ExtractParams(requestData);
-      List<MtDictionariesResponse.Term> terms = ProcessDictionaries(requestData);
+      verifyCertificate(requestData);
+      checkRequestMethod(requestData);
+      extractParams(requestData);
+      List<MtDictionariesResponse.Term> terms = processDictionaries(requestData);
       return createMtDictionariesReponse(terms);
     } catch (ErrorResponseException e) {
       return e.response;
@@ -131,11 +131,11 @@ public class MtDictionariesV010Valid extends AbstractMtDictionariesService {
 
   }
 
-  protected List<MtDictionariesResponse.Term> ProcessDictionaries(
+  protected List<MtDictionariesResponse.Term> processDictionaries(
       RequestData requestData) throws ErrorResponseException {
 
     if (!coveredDictionaries.contains(requestData.dictionary)) {
-      ErrorInvalidDictionary(requestData);
+      errorInvalidDictionary(requestData);
     }
 
     DictionaryAndYear dictionaryAndYear = new DictionaryAndYear(
@@ -145,13 +145,13 @@ public class MtDictionariesV010Valid extends AbstractMtDictionariesService {
 
   }
 
-  protected void ErrorInvalidDictionary(RequestData requestData) throws ErrorResponseException {
+  protected void errorInvalidDictionary(RequestData requestData) throws ErrorResponseException {
     throw new ErrorResponseException(
         createErrorResponse(requestData.request, 400, "No dictionary parameter")
     );
   }
 
-  private void VerifyCertificate(RequestData requestData) throws ErrorResponseException {
+  private void verifyCertificate(RequestData requestData) throws ErrorResponseException {
     try {
       this.myAuthorizer.authorize(requestData.request);
     } catch (Http4xx e) {
@@ -161,7 +161,7 @@ public class MtDictionariesV010Valid extends AbstractMtDictionariesService {
     }
   }
 
-  protected void CheckRequestMethod(RequestData requestData) throws ErrorResponseException {
+  protected void checkRequestMethod(RequestData requestData) throws ErrorResponseException {
     if (!(requestData.request.getMethod().equals("GET")
         || requestData.request.getMethod().equals("POST"))) {
       throw new ErrorResponseException(
@@ -170,8 +170,8 @@ public class MtDictionariesV010Valid extends AbstractMtDictionariesService {
     }
   }
 
-  private void ExtractParams(RequestData requestData) throws ErrorResponseException {
-    CheckParamsEncoding(requestData);
+  private void extractParams(RequestData requestData) throws ErrorResponseException {
+    checkParamsEncoding(requestData);
     Map<String, List<String>> params =
         InternetTestHelpers.extractAllParams(requestData.request);
 
@@ -184,19 +184,19 @@ public class MtDictionariesV010Valid extends AbstractMtDictionariesService {
     boolean multipleCallYears = callYears.size() > 1;
 
     if (params.size() == 0) {
-      ErrorNoParams(requestData);
+      errorNoParams(requestData);
     }
     if (!hasDictionary) {
-      ErrorNoDictionary(requestData);
+      errorNoDictionary(requestData);
     }
     if (!hasCallYear) {
-      ErrorNoCallYear(requestData);
+      errorNoCallYear(requestData);
     }
     if (multipleCallYears) {
-      ErrorMultipleCallYears(requestData);
+      errorMultipleCallYears(requestData);
     }
     if (multipleDictionaries) {
-      ErrorMultipleDictionaries(requestData);
+      errorMultipleDictionaries(requestData);
     }
 
     if (hasDictionary) {
@@ -204,14 +204,14 @@ public class MtDictionariesV010Valid extends AbstractMtDictionariesService {
     }
 
     if (hasCallYear) {
-      requestData.callYear = ParseCallYear(requestData, callYears.get(0));
+      requestData.callYear = parseCallYear(requestData, callYears.get(0));
     }
 
     int expectedParams = 0;
     expectedParams += hasDictionary ? 1 : 0;
     expectedParams += hasCallYear ? 1 : 0;
     if (params.size() > expectedParams) {
-      HandleUnexpectedParams(requestData);
+      handleUnexpectedParams(requestData);
     }
 
     if (requestData.dictionary == null || requestData.callYear == null) {
@@ -220,47 +220,47 @@ public class MtDictionariesV010Valid extends AbstractMtDictionariesService {
     }
   }
 
-  protected int ParseCallYear(RequestData requestData,
+  protected int parseCallYear(RequestData requestData,
       String callYear) throws ErrorResponseException {
     int parsed;
     try {
       parsed = Integer.parseInt(callYear);
     } catch (NumberFormatException e) {
-      return ErrorInvalidCallYearFormat(requestData);
+      return errorInvalidCallYearFormat(requestData);
     }
 
     if (parsed == 0) {
-      HandleCallYearZero(requestData);
+      handleCallYearZero(requestData);
     }
 
     if (parsed < 0) {
-      HandleCallYearNegative(requestData);
+      handleCallYearNegative(requestData);
     }
 
-    return AdditionalCallYearCheck(requestData, parsed);
+    return additionalCallYearCheck(requestData, parsed);
   }
 
-  protected int AdditionalCallYearCheck(RequestData requestData,
+  protected int additionalCallYearCheck(RequestData requestData,
       Integer parsed) throws ErrorResponseException {
     return parsed;
   }
 
-  protected int ErrorInvalidCallYearFormat(RequestData requestData) throws ErrorResponseException {
+  protected int errorInvalidCallYearFormat(RequestData requestData) throws ErrorResponseException {
     throw new ErrorResponseException(
         createErrorResponse(requestData.request, 400, "Invalid call_year format")
     );
   }
 
-  protected void HandleCallYearZero(RequestData requestData) throws ErrorResponseException {
+  protected void handleCallYearZero(RequestData requestData) throws ErrorResponseException {
     // do nothing
   }
 
-  protected void HandleCallYearNegative(
+  protected void handleCallYearNegative(
       RequestData requestData) throws ErrorResponseException {
     // do nothing
   }
 
-  protected void CheckParamsEncoding(RequestData requestData) throws ErrorResponseException {
+  protected void checkParamsEncoding(RequestData requestData) throws ErrorResponseException {
     if (requestData.request.getMethod().equals("POST")
         && !requestData.request.getHeader("content-type")
         .equals("application/x-www-form-urlencoded")) {
@@ -270,37 +270,37 @@ public class MtDictionariesV010Valid extends AbstractMtDictionariesService {
     }
   }
 
-  protected void ErrorNoParams(RequestData requestData) throws ErrorResponseException {
+  protected void errorNoParams(RequestData requestData) throws ErrorResponseException {
     throw new ErrorResponseException(
         createErrorResponse(requestData.request, 400, "No parameters provided")
     );
   }
 
-  protected void ErrorNoDictionary(RequestData requestData) throws ErrorResponseException {
+  protected void errorNoDictionary(RequestData requestData) throws ErrorResponseException {
     throw new ErrorResponseException(
         createErrorResponse(requestData.request, 400, "No dictionary parameter")
     );
   }
 
-  protected void ErrorNoCallYear(RequestData requestData) throws ErrorResponseException {
+  protected void errorNoCallYear(RequestData requestData) throws ErrorResponseException {
     throw new ErrorResponseException(
         createErrorResponse(requestData.request, 400, "No call_year parameter")
     );
   }
 
-  protected void ErrorMultipleCallYears(RequestData requestData) throws ErrorResponseException {
+  protected void errorMultipleCallYears(RequestData requestData) throws ErrorResponseException {
     throw new ErrorResponseException(
         createErrorResponse(requestData.request, 400, "Multiple call_year parameters")
     );
   }
 
-  protected void ErrorMultipleDictionaries(RequestData requestData) throws ErrorResponseException {
+  protected void errorMultipleDictionaries(RequestData requestData) throws ErrorResponseException {
     throw new ErrorResponseException(
         createErrorResponse(requestData.request, 400, "Multiple dictionary parameters")
     );
   }
 
-  protected void HandleUnexpectedParams(RequestData requestData) throws ErrorResponseException {
+  protected void handleUnexpectedParams(RequestData requestData) throws ErrorResponseException {
     //Ignore
   }
 }

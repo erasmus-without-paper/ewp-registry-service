@@ -57,11 +57,12 @@ class InstitutionsSetupValidationSuiteV2
   protected void runApiSpecificTests(HttpSecurityDescription securityDescription)
       throws SuiteBroken {
     this.currentState.maxHeiIds = getMaxHeiIds();
-    if (this.currentState.parameters.contains(HEI_ID_PARAMETER)) {
-      this.currentState.selectedHeiId = this.currentState.parameters.get(HEI_ID_PARAMETER);
-    } else {
-      this.currentState.selectedHeiId = getCoveredHeiIds(this.currentState.url).get(0);
-    }
+    this.currentState.selectedHeiId = getParameterValue(HEI_ID_PARAMETER, this::getSelectedHeiId);
+  }
+
+  @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
+  private String getSelectedHeiId() throws SuiteBroken {
+    return getCoveredHeiIds(this.currentState.url).get(0);
   }
 
 }

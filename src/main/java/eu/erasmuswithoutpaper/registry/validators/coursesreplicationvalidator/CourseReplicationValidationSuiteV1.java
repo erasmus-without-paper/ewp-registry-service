@@ -10,7 +10,7 @@ import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.Combination;
 import eu.erasmuswithoutpaper.registry.validators.InlineValidationStep;
 import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
-import eu.erasmuswithoutpaper.registry.validators.verifiers.NoopVerifier;
+import eu.erasmuswithoutpaper.registry.validators.verifiers.CorrectResponseVerifier;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.slf4j.Logger;
@@ -54,7 +54,7 @@ class CourseReplicationValidationSuiteV1
         Arrays.asList(
             new Parameter("hei_id", this.currentState.selectedHeiId)
         ),
-        new NoopVerifier()
+        new CorrectResponseVerifier()
     );
 
     testParameters200(
@@ -64,7 +64,7 @@ class CourseReplicationValidationSuiteV1
             new Parameter("hei_id", this.currentState.selectedHeiId),
             new Parameter("param_hei_id", this.currentState.selectedHeiId)
         ),
-        new NoopVerifier()
+        new CorrectResponseVerifier()
     );
 
 
@@ -126,7 +126,7 @@ class CourseReplicationValidationSuiteV1
               new Parameter("hei_id", this.currentState.selectedHeiId),
               new Parameter("modified_since", "2004-02-12T15:19:21+01:00")
           ),
-          new NoopVerifier()
+          new CorrectResponseVerifier()
       );
 
       testParametersError(

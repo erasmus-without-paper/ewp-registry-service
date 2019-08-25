@@ -1,6 +1,5 @@
 package eu.erasmuswithoutpaper.registry.validators.iiavalidator.get;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -66,21 +65,14 @@ class IiaGetSetupValidationSuiteV2
       throws SuiteBroken {
     this.currentState.maxIiaIds = getMaxIiaIds();
     this.currentState.maxIiaCodes = getMaxIiaCodes();
+    this.currentState.selectedHeiId = getParameterValue(HEI_ID_PARAMETER, this::getSelectedHeiId);
+    this.currentState.selectedIiaId = getParameterValue(IIA_ID_PARAMETER,
+        () -> getIiaId(securityDescription));
+  }
 
-    List<String> coveredHeiIds = new ArrayList<>();
-    if (this.currentState.parameters.contains(HEI_ID_PARAMETER)) {
-      coveredHeiIds.add(this.currentState.parameters.get(HEI_ID_PARAMETER));
-    } else {
-      coveredHeiIds = getCoveredHeiIds(this.currentState.url);
-    }
-
-    this.currentState.selectedHeiId = coveredHeiIds.get(0);
-
-    if (this.currentState.parameters.contains(IIA_ID_PARAMETER)) {
-      this.currentState.selectedIiaId = this.currentState.parameters.get(IIA_ID_PARAMETER);
-    } else {
-      this.currentState.selectedIiaId = getIiaId(securityDescription);
-    }
+  @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
+  private String getSelectedHeiId() throws SuiteBroken {
+    return getCoveredHeiIds(this.currentState.url).get(0);
   }
 
   @SuppressFBWarnings("BC_UNCONFIRMED_CAST")

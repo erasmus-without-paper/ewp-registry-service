@@ -13,10 +13,8 @@ import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.Combination;
 import eu.erasmuswithoutpaper.registry.validators.InlineValidationStep;
 import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
-import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus.Status;
 import eu.erasmuswithoutpaper.registry.validators.iiavalidator.IiaSuiteState;
-import eu.erasmuswithoutpaper.registry.validators.verifiers.InListVerifier;
-import eu.erasmuswithoutpaper.registry.validators.verifiers.ListEqualVerifier;
+import eu.erasmuswithoutpaper.registry.validators.verifiers.VerifierFactory;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.slf4j.Logger;
@@ -73,8 +71,9 @@ class IiaGetValidationSuiteV2
         );
         List<String> expectedIDs =
             Collections.singletonList(IiaGetValidationSuiteV2.this.currentState.selectedIiaId);
-        Response response = verifyResponse(
-            this, combination, request, new IiaIdsVerifier(expectedIDs)
+        Response response = makeRequestAndVerifyResponse(
+            this, combination, request,
+            partnerIiaIdVerifierFactory.expectResponseToContainExactly(expectedIDs)
         );
         List<String> codes = selectFromDocument(
             makeXmlFromBytes(response.getBody()),
@@ -92,8 +91,7 @@ class IiaGetValidationSuiteV2
         "iia",
         this.currentState.selectedIiaId, this.currentState.maxIiaIds,
         iiaCodes.get(0), this.currentState.maxIiaCodes,
-        IiaIdsVerifier::new,
-        InListIiaIdsVerifier::new
+        partnerIiaIdVerifierFactory
     );
 
     testParametersError(
@@ -104,30 +102,10 @@ class IiaGetValidationSuiteV2
             new Parameter("hei_id", fakeId),
             new Parameter("iia_id", IiaGetValidationSuiteV2.this.currentState.selectedIiaId)
         ),
-        400,
-        Status.WARNING
+        400
     );
   }
 
-  private static class IiaIdsVerifier extends ListEqualVerifier {
-    IiaIdsVerifier(List<String> expected) {
-      super(expected);
-    }
-
-    @Override
-    protected List<String> getSelector() {
-      return Arrays.asList("iia", "partner[1]", "iia-id");
-    }
-  }
-
-  private static class InListIiaIdsVerifier extends InListVerifier {
-    InListIiaIdsVerifier(List<String> expected) {
-      super(expected);
-    }
-
-    @Override
-    protected List<String> getSelector() {
-      return Arrays.asList("iia", "partner[1]", "iia-id");
-    }
-  }
+  private VerifierFactory partnerIiaIdVerifierFactory
+      = new VerifierFactory(Arrays.asList("iia", "partner[1]", "iia-id"));
 }

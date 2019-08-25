@@ -10,13 +10,14 @@ import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus;
 
 import org.joox.Match;
 
-public abstract class NonEmptyVerifier extends Verifier {
-  public NonEmptyVerifier(ValidationStepWithStatus.Status status) {
-    super(status);
+public final class NonEmptyVerifier extends Verifier {
+  public NonEmptyVerifier(List<String> selector) {
+    super(selector);
   }
 
   @Override
-  public void verify(AbstractValidationSuite suite, Match root, Response response)
+  public void verify(AbstractValidationSuite suite, Match root, Response response,
+      ValidationStepWithStatus.Status failureStatus)
       throws InlineValidationStep.Failure {
     List<Match> foundElements =
         new ArrayList<>(select(root, suite.getApiInfo().getResponsePrefix(), getSelector()));
@@ -27,7 +28,7 @@ public abstract class NonEmptyVerifier extends Verifier {
               + "However the set of returned <" + getParamName() + ">s "
               + "doesn't match what we expect. "
               + "It should be non-empty but it is empty",
-          this.status, response
+          failureStatus, response
       );
     }
   }

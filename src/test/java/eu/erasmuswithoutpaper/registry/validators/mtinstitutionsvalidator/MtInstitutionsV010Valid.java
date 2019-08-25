@@ -24,7 +24,7 @@ import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 public class MtInstitutionsV010Valid extends AbstractMtInstitutionsService {
   private final EwpHttpSigRequestAuthorizer myAuthorizer;
-  protected final int maxIds = 2;
+  protected static final int maxIds = 2;
 
   protected List<MtInstitutionsResponse.Hei> coveredPics = new ArrayList<>();
 
@@ -118,11 +118,11 @@ public class MtInstitutionsV010Valid extends AbstractMtInstitutionsService {
       Request request) throws IOException, ErrorResponseException {
     try {
       RequestData requestData = new RequestData(request);
-      VerifyCertificate(requestData);
-      CheckRequestMethod(requestData);
-      ExtractParams(requestData);
-      CheckPics(requestData);
-      List<MtInstitutionsResponse.Hei> heis = ProcessPics(requestData);
+      verifyCertificate(requestData);
+      checkRequestMethod(requestData);
+      extractParams(requestData);
+      checkPics(requestData);
+      List<MtInstitutionsResponse.Hei> heis = processPics(requestData);
       return createMtInstitutionsReponse(heis);
     } catch (ErrorResponseException e) {
       return e.response;
@@ -130,7 +130,7 @@ public class MtInstitutionsV010Valid extends AbstractMtInstitutionsService {
 
   }
 
-  protected List<MtInstitutionsResponse.Hei> ProcessPics(
+  protected List<MtInstitutionsResponse.Hei> processPics(
       RequestData requestData) throws ErrorResponseException {
     List<MtInstitutionsResponse.Hei> result = new ArrayList<>();
     for (String pic : requestData.pic) {
@@ -151,7 +151,7 @@ public class MtInstitutionsV010Valid extends AbstractMtInstitutionsService {
 
   }
 
-  private void VerifyCertificate(RequestData requestData) throws ErrorResponseException {
+  private void verifyCertificate(RequestData requestData) throws ErrorResponseException {
     try {
       this.myAuthorizer.authorize(requestData.request);
     } catch (Http4xx e) {
@@ -161,7 +161,7 @@ public class MtInstitutionsV010Valid extends AbstractMtInstitutionsService {
     }
   }
 
-  protected void CheckRequestMethod(RequestData requestData) throws ErrorResponseException {
+  protected void checkRequestMethod(RequestData requestData) throws ErrorResponseException {
     if (!(requestData.request.getMethod().equals("GET")
         || requestData.request.getMethod().equals("POST"))) {
       throw new ErrorResponseException(
@@ -170,8 +170,8 @@ public class MtInstitutionsV010Valid extends AbstractMtInstitutionsService {
     }
   }
 
-  private void ExtractParams(RequestData requestData) throws ErrorResponseException {
-    CheckParamsEncoding(requestData);
+  private void extractParams(RequestData requestData) throws ErrorResponseException {
+    checkParamsEncoding(requestData);
     Map<String, List<String>> params =
         InternetTestHelpers.extractAllParams(requestData.request);
 
@@ -183,27 +183,27 @@ public class MtInstitutionsV010Valid extends AbstractMtInstitutionsService {
     boolean multipleEcheAtDate = echeAtDates.size() > 1;
 
     if (params.size() == 0) {
-      ErrorNoParams(requestData);
+      errorNoParams(requestData);
     }
     if (!hasPics) {
-      ErrorNoPic(requestData);
+      errorNoPic(requestData);
     }
     if (!hasEcheAtDate) {
-      ErrorNoEcheAtDate(requestData);
+      errorNoEcheAtDate(requestData);
     }
     if (multipleEcheAtDate) {
-      ErrorMultipleEcheAtDates(requestData);
+      errorMultipleEcheAtDates(requestData);
     }
 
     if (hasEcheAtDate) {
-      requestData.echeAtDate = CheckDateFormat(requestData, echeAtDates.get(0));
+      requestData.echeAtDate = checkDateFormat(requestData, echeAtDates.get(0));
     }
 
     int expectedParams = 0;
     expectedParams += hasPics ? 1 : 0;
     expectedParams += hasEcheAtDate ? 1 : 0;
     if (params.size() > expectedParams) {
-      HandleUnexpectedParams(requestData);
+      handleUnexpectedParams(requestData);
     }
 
     if (requestData.pic == null || requestData.echeAtDate == null) {
@@ -212,7 +212,7 @@ public class MtInstitutionsV010Valid extends AbstractMtInstitutionsService {
     }
   }
 
-  protected void CheckParamsEncoding(RequestData requestData) throws ErrorResponseException {
+  protected void checkParamsEncoding(RequestData requestData) throws ErrorResponseException {
     if (requestData.request.getMethod().equals("POST")
         && !requestData.request.getHeader("content-type")
         .equals("application/x-www-form-urlencoded")) {
@@ -222,60 +222,60 @@ public class MtInstitutionsV010Valid extends AbstractMtInstitutionsService {
     }
   }
 
-  protected XMLGregorianCalendar CheckDateFormat(RequestData requestData, String date)
+  protected XMLGregorianCalendar checkDateFormat(RequestData requestData, String date)
       throws ErrorResponseException {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     try {
       formatter.parse(date);
       return DatatypeFactory.newInstance().newXMLGregorianCalendar(date);
     } catch (DateTimeParseException | DatatypeConfigurationException e) {
-      return ErrorDateFormat(requestData);
+      return errorDateFormat(requestData);
     }
   }
 
-  protected XMLGregorianCalendar ErrorDateFormat(RequestData requestData)
+  protected XMLGregorianCalendar errorDateFormat(RequestData requestData)
       throws ErrorResponseException {
     throw new ErrorResponseException(
         createErrorResponse(requestData.request, 400, "Invalid date format.")
     );
   }
 
-  protected void ErrorNoParams(RequestData requestData) throws ErrorResponseException {
+  protected void errorNoParams(RequestData requestData) throws ErrorResponseException {
     throw new ErrorResponseException(
         createErrorResponse(requestData.request, 400, "No parameters provided")
     );
   }
 
-  protected void ErrorNoPic(RequestData requestData) throws ErrorResponseException {
+  protected void errorNoPic(RequestData requestData) throws ErrorResponseException {
     throw new ErrorResponseException(
         createErrorResponse(requestData.request, 400, "No pic parameter")
     );
   }
 
-  protected void ErrorNoEcheAtDate(RequestData requestData) throws ErrorResponseException {
+  protected void errorNoEcheAtDate(RequestData requestData) throws ErrorResponseException {
     throw new ErrorResponseException(
         createErrorResponse(requestData.request, 400, "No eche_at_date parameter")
     );
   }
 
-  protected void ErrorMultipleEcheAtDates(RequestData requestData) throws ErrorResponseException {
+  protected void errorMultipleEcheAtDates(RequestData requestData) throws ErrorResponseException {
     throw new ErrorResponseException(
         createErrorResponse(requestData.request, 400, "Multiple eche_at_date parameters")
     );
   }
 
-  protected void HandleUnexpectedParams(RequestData requestData) throws ErrorResponseException {
+  protected void handleUnexpectedParams(RequestData requestData) throws ErrorResponseException {
     //Ignore
   }
 
 
-  private void CheckPics(RequestData requestData) throws ErrorResponseException {
+  private void checkPics(RequestData requestData) throws ErrorResponseException {
     if (requestData.pic.size() > getMaxIds()) {
-      ErrorMaxPicsExceeded(requestData);
+      errorMaxPicsExceeded(requestData);
     }
   }
 
-  protected void ErrorMaxPicsExceeded(RequestData requestData) throws ErrorResponseException {
+  protected void errorMaxPicsExceeded(RequestData requestData) throws ErrorResponseException {
     throw new ErrorResponseException(
         createErrorResponse(requestData.request, 400, "<max-ids> exceeded")
     );

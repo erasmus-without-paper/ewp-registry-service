@@ -20,7 +20,7 @@ import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 public class InstitutionServiceV2Valid extends AbstractInstitutionService {
 
-  protected final int max_hei_ids = 2;
+  protected static final int max_hei_ids = 2;
   private final EwpHttpSigRequestAuthorizer myAuthorizer;
   private final List<String> coveredHeiIds;
   protected Request currentRequest;
@@ -47,8 +47,8 @@ public class InstitutionServiceV2Valid extends AbstractInstitutionService {
 
     StringWithOptionalLang stringWithOptionalLang3 = new StringWithOptionalLang();
     stringWithOptionalLang3.setValue("Test1");
-    stringWithOptionalLang1.setLang("EN");
-    data.getName().add(stringWithOptionalLang1);
+    stringWithOptionalLang3.setLang("EN");
+    data.getName().add(stringWithOptionalLang3);
 
     data.setAbbreviation("TST");
     data.setLogoUrl("https://logo.url");
@@ -75,8 +75,8 @@ public class InstitutionServiceV2Valid extends AbstractInstitutionService {
     httpWithOptionalLang1.setValue("https://test.1");
     data.getMobilityFactsheetUrl().add(httpWithOptionalLang1);
 
-    data.getOunitId().addAll(GetCoveredOUnits());
-    data.setRootOunitId(GetRootOUnit());
+    data.getOunitId().addAll(getCoveredOUnits());
+    data.setRootOunitId(getRootOUnit());
 
     HTTPWithOptionalLang httpWithOptionalLang2 = new HTTPWithOptionalLang();
     httpWithOptionalLang2.setValue("https://test.1");
@@ -85,15 +85,15 @@ public class InstitutionServiceV2Valid extends AbstractInstitutionService {
     return data;
   }
 
-  protected String GetRootOUnit() {
+  protected String getRootOUnit() {
     return "2";
   }
 
-  protected List<String> GetCoveredOUnits() {
+  protected List<String> getCoveredOUnits() {
     return Arrays.asList("1", "2", "3");
   }
 
-  public List<String> GetCoveredHeiIds() {
+  public List<String> getCoveredHeiIds() {
     return coveredHeiIds;
   }
 
@@ -128,18 +128,18 @@ public class InstitutionServiceV2Valid extends AbstractInstitutionService {
     }
     try {
       currentRequest = request;
-      VerifyCertificate();
-      CheckRequestMethod();
-      List<String> heis = ExtractParams();
-      CheckHeis(heis);
-      List<InstitutionsResponse.Hei> heis_data = ProcessHeis(heis);
+      verifyCertificate();
+      checkRequestMethod();
+      List<String> heis = extractParams();
+      checkHeis(heis);
+      List<InstitutionsResponse.Hei> heis_data = processHeis(heis);
       return createInstitutionsResponse(heis_data);
     } catch (ErrorResponseException e) {
       return e.response;
     }
   }
 
-  private void VerifyCertificate() throws ErrorResponseException {
+  private void verifyCertificate() throws ErrorResponseException {
     try {
       this.myAuthorizer.authorize(this.currentRequest);
     } catch (Http4xx e) {
@@ -147,24 +147,24 @@ public class InstitutionServiceV2Valid extends AbstractInstitutionService {
     }
   }
 
-  protected void CheckHeis(List<String> heis) throws ErrorResponseException {
+  protected void checkHeis(List<String> heis) throws ErrorResponseException {
     if (heis.size() > max_hei_ids) {
       throw new ErrorResponseException(
           createErrorResponse(this.currentRequest, 400, "Exceeded max-hei-ids"));
     }
   }
 
-  private List<String> ExtractParams() throws ErrorResponseException {
-    CheckParamsEncoding();
+  private List<String> extractParams() throws ErrorResponseException {
+    checkParamsEncoding();
     Map<String, List<String>> params = InternetTestHelpers.extractAllParams(this.currentRequest);
     if (params.size() == 0) {
-      ExtractParamsNoParams(params);
+      extractParamsNoParams(params);
     }
     if (params.size() == 1 && !params.containsKey("hei_id")) {
-      ExtractParamsNoHeiIds(params);
+      extractParamsNoHeiIds(params);
     }
     if (params.size() > 1) {
-      ExtractParamsMultipleParams(params);
+      extractParamsMultipleParams(params);
     }
     List<String> ret = params.get("hei_id");
     if (ret != null) {
@@ -173,7 +173,7 @@ public class InstitutionServiceV2Valid extends AbstractInstitutionService {
     return new ArrayList<>();
   }
 
-  protected void CheckParamsEncoding() throws ErrorResponseException {
+  protected void checkParamsEncoding() throws ErrorResponseException {
     if (this.currentRequest.getMethod().equals("POST")
         && !this.currentRequest.getHeader("content-type").equals("application/x-www-form-urlencoded")) {
       throw new ErrorResponseException(
@@ -181,24 +181,24 @@ public class InstitutionServiceV2Valid extends AbstractInstitutionService {
     }
   }
 
-  protected void ExtractParamsMultipleParams(Map<String, List<String>> params)
+  protected void extractParamsMultipleParams(Map<String, List<String>> params)
       throws ErrorResponseException {
     //Ignore unknown parameters
   }
 
-  protected void ExtractParamsNoHeiIds(Map<String, List<String>> params)
+  protected void extractParamsNoHeiIds(Map<String, List<String>> params)
       throws ErrorResponseException {
     throw new ErrorResponseException(
         createErrorResponse(this.currentRequest, 400, "Expected \"hei_id\" parameters"));
   }
 
-  protected void ExtractParamsNoParams(Map<String, List<String>> params)
+  protected void extractParamsNoParams(Map<String, List<String>> params)
       throws ErrorResponseException {
     throw new ErrorResponseException(
         createErrorResponse(this.currentRequest, 400, "No parameters provided"));
   }
 
-  protected void CheckRequestMethod() throws ErrorResponseException {
+  protected void checkRequestMethod() throws ErrorResponseException {
     if (!(this.currentRequest.getMethod().equals("GET")
         || this.currentRequest.getMethod().equals("POST"))) {
       throw new ErrorResponseException(
@@ -206,24 +206,24 @@ public class InstitutionServiceV2Valid extends AbstractInstitutionService {
     }
   }
 
-  protected void ProcessCoveredHei(String hei, List<InstitutionsResponse.Hei> heis)
+  protected void processCoveredHei(String hei, List<InstitutionsResponse.Hei> heis)
       throws ErrorResponseException {
     heis.add(coveredHeis.get(hei));
   }
 
-  protected void ProcessNotCoveredHei(String hei, List<InstitutionsResponse.Hei> heis)
+  protected void processNotCoveredHei(String hei, List<InstitutionsResponse.Hei> heis)
       throws ErrorResponseException {
     //Ignore
   }
 
-  protected List<InstitutionsResponse.Hei> ProcessHeis(List<String> heis)
+  protected List<InstitutionsResponse.Hei> processHeis(List<String> heis)
       throws ErrorResponseException {
     List<InstitutionsResponse.Hei> ret = new ArrayList<>();
     for (String hei : heis) {
       if (coveredHeis.containsKey(hei)) {
-        ProcessCoveredHei(hei, ret);
+        processCoveredHei(hei, ret);
       } else {
-        ProcessNotCoveredHei(hei, ret);
+        processNotCoveredHei(hei, ret);
       }
     }
     return ret;

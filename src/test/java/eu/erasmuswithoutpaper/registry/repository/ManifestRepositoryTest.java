@@ -3,8 +3,9 @@ package eu.erasmuswithoutpaper.registry.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
-import eu.erasmuswithoutpaper.registry.WRTest;
+import java.nio.charset.StandardCharsets;
 
+import eu.erasmuswithoutpaper.registry.WRTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.junit.After;
@@ -108,7 +109,7 @@ public class ManifestRepositoryTest extends WRTest {
   public void testDeleteAll() {
     this.repo.deleteAll();
     assertThat(this.repo.getAllFilePaths()).containsExactly("index.xml");
-    this.repo.putOriginalManifest(manifestUrl1, "some string".getBytes());
+    this.repo.putOriginalManifest(manifestUrl1, "some string".getBytes(StandardCharsets.UTF_8));
     this.repo.putFilteredManifest(manifestUrl2, "some string");
     assertThat(this.repo.getAllFilePaths()).containsExactlyInAnyOrder("index.xml",
         "manifests/com/example.com/51d9ca82ce863381a7648647ab688b966f3b2260-filtered.xml",
@@ -141,7 +142,7 @@ public class ManifestRepositoryTest extends WRTest {
     // accept any string as a valid manifest. It's not the repository's duty to
     // verify the manifests.
 
-    this.repo.putOriginalManifest(manifestUrl1, "some string".getBytes());
+    this.repo.putOriginalManifest(manifestUrl1, "some string".getBytes(StandardCharsets.UTF_8));
     this.repo.putFilteredManifest(manifestUrl1, "some filtered string");
     assertThat(this.repo.getAllFilteredManifestUrls()).containsExactly(manifestUrl1);
 
@@ -155,7 +156,7 @@ public class ManifestRepositoryTest extends WRTest {
     } catch (ManifestNotFound e) {
       throw new RuntimeException(e);
     }
-    assertThat(ro).isEqualTo("some string".getBytes());
+    assertThat(ro).isEqualTo("some string".getBytes(StandardCharsets.UTF_8));
     assertThat(rf).isEqualTo("some filtered string");
 
     // Verify that the file exists in the fileSystem.
@@ -167,7 +168,7 @@ public class ManifestRepositoryTest extends WRTest {
     // Call setManifest again, with exactly the same content. Repository should
     // ignore such calls silently.
 
-    this.repo.putOriginalManifest(manifestUrl1, "some string".getBytes());
+    this.repo.putOriginalManifest(manifestUrl1, "some string".getBytes(StandardCharsets.UTF_8));
     this.repo.putFilteredManifest(manifestUrl1, "some filtered string");
 
     // Delete the manifest from the repo.

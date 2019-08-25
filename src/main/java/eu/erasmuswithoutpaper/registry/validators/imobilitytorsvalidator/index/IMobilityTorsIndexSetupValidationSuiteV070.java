@@ -61,27 +61,19 @@ class IMobilityTorsIndexSetupValidationSuiteV070
   @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
   protected void runApiSpecificTests(HttpSecurityDescription securityDescription)
       throws SuiteBroken {
-    if (this.currentState.parameters.contains(RECEIVING_HEI_ID_PARAMETER)) {
-      this.currentState.receivingHeiId = this.currentState.parameters
-          .get(RECEIVING_HEI_ID_PARAMETER);
-    } else {
-      getReceivingHeiId();
-    }
-
-    if (this.currentState.parameters.contains(SENDING_HEI_ID_PARAMETER)) {
-      this.currentState.sendingHeiId = this.currentState.parameters.get(SENDING_HEI_ID_PARAMETER);
-    } else {
-      getSendingHeiId();
-    }
+    this.currentState.receivingHeiId = getParameterValue(RECEIVING_HEI_ID_PARAMETER,
+        this::getReceivingHeiId);
+    this.currentState.sendingHeiId = getParameterValue(SENDING_HEI_ID_PARAMETER,
+        this::getSendingHeiId);
   }
 
   @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
-  private void getReceivingHeiId() throws SuiteBroken {
-    this.currentState.receivingHeiId = "test.hei01.uw.edu.pl";
+  private String getReceivingHeiId() throws SuiteBroken {
+    return "test.hei01.uw.edu.pl";
   }
 
   @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
-  private void getSendingHeiId() throws SuiteBroken {
-    this.currentState.sendingHeiId = "validator-hei01.developers.erasmuswithoutpaper.eu";
+  private String getSendingHeiId() throws SuiteBroken {
+    return "validator-hei01.developers.erasmuswithoutpaper.eu";
   }
 }

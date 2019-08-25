@@ -22,7 +22,7 @@ public class IiaGetValidatorTest extends IiaValidatorTestBase {
   protected IiaGetValidator validator;
 
   @Override
-  protected ApiValidator<IiaSuiteState> GetValidator() {
+  protected ApiValidator<IiaSuiteState> getValidator() {
     return validator;
   }
 
@@ -42,7 +42,7 @@ public class IiaGetValidatorTest extends IiaValidatorTestBase {
   public void testNotValidatingIiaIdListIsDetected() {
     IiasServiceV2Valid service = new IiasServiceV2Valid(iiaIndexUrl, iiaGetUrl, this.client) {
       @Override
-      protected void ErrorMaxIdsExceeded(RequestData requestData)
+      protected void errorMaxIdsExceeded(RequestData requestData)
           throws ErrorResponseException {
         //Do nothing
       }
@@ -56,7 +56,7 @@ public class IiaGetValidatorTest extends IiaValidatorTestBase {
   public void testNotValidatingIiaCodeListIsDetected() {
     IiasServiceV2Valid service = new IiasServiceV2Valid(iiaIndexUrl, iiaGetUrl, this.client) {
       @Override
-      protected void ErrorMaxCodesExceeded(RequestData requestData)
+      protected void errorMaxCodesExceeded(RequestData requestData)
           throws ErrorResponseException {
         //Do nothing
       }

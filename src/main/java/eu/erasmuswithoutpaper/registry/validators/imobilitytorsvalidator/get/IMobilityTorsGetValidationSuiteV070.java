@@ -1,16 +1,14 @@
 package eu.erasmuswithoutpaper.registry.validators.imobilitytorsvalidator.get;
 
 import java.util.Arrays;
-import java.util.List;
 
 import eu.erasmuswithoutpaper.registry.validators.AbstractValidationSuite;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.Combination;
 import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
 import eu.erasmuswithoutpaper.registry.validators.imobilitytorsvalidator.IMobilityTorsSuiteState;
-import eu.erasmuswithoutpaper.registry.validators.verifiers.InListVerifier;
-import eu.erasmuswithoutpaper.registry.validators.verifiers.ListEqualVerifier;
-import eu.erasmuswithoutpaper.registry.validators.verifiers.NoopVerifier;
+import eu.erasmuswithoutpaper.registry.validators.verifiers.CorrectResponseVerifier;
+import eu.erasmuswithoutpaper.registry.validators.verifiers.VerifierFactory;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.slf4j.Logger;
@@ -59,7 +57,7 @@ class IMobilityTorsGetValidationSuiteV070
                 "omobility_id",
                 IMobilityTorsGetValidationSuiteV070.this.currentState.omobilityId)
         ),
-        new NoopVerifier()
+        new CorrectResponseVerifier()
     );
 
     generalTestsIds(combination,
@@ -67,8 +65,7 @@ class IMobilityTorsGetValidationSuiteV070
         "omobility",
         this.currentState.omobilityId, this.currentState.maxOmobilityIds,
         false,
-        IMobilityTorsEqualVerifier::new,
-        IMobilityTorsInListVerifier::new
+        omobilityIdVerifierFactory
     );
 
     testParametersError(
@@ -84,26 +81,6 @@ class IMobilityTorsGetValidationSuiteV070
     );
   }
 
-  private static class IMobilityTorsEqualVerifier extends ListEqualVerifier {
-
-    protected IMobilityTorsEqualVerifier(List<String> expected) {
-      super(expected);
-    }
-
-    @Override
-    protected List<String> getSelector() {
-      return Arrays.asList("tor", "omobility-id");
-    }
-  }
-
-  private static class IMobilityTorsInListVerifier extends InListVerifier {
-    public IMobilityTorsInListVerifier(List<String> wantedValue) {
-      super(wantedValue);
-    }
-
-    @Override
-    protected List<String> getSelector() {
-      return Arrays.asList("tor", "omobility-id");
-    }
-  }
+  private VerifierFactory omobilityIdVerifierFactory =
+      new VerifierFactory(Arrays.asList("tor", "omobility-id"));
 }

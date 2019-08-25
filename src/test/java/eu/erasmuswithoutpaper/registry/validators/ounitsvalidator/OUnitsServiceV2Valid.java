@@ -26,8 +26,8 @@ public class OUnitsServiceV2Valid extends AbstractOUnitsService {
   protected List<String> requestedOUnitCodes;
   protected List<String> requestedHeiIds;
 
-  protected final int max_ounit_ids = 2;
-  protected final int max_ounit_codes = 2;
+  protected static final int max_ounit_ids = 2;
+  protected static final int max_ounit_codes = 2;
 
   protected int getMaxOunitCodes() {
     return max_ounit_codes;
@@ -145,14 +145,14 @@ public class OUnitsServiceV2Valid extends AbstractOUnitsService {
   public Response handleOUnitsInternetRequest(Request request) {
     try {
       currentRequest = request;
-      VerifyCertificate();
-      CheckRequestMethod();
-      ExtractParams();
-      CheckHei();
-      CheckIds();
-      CheckCodes();
-      List<OunitsResponse.Ounit> data1 = ProcessIds();
-      List<OunitsResponse.Ounit> data2 = ProcessCodes();
+      verifyCertificate();
+      checkRequestMethod();
+      extractParams();
+      checkHei();
+      checkIds();
+      checkCodes();
+      List<OunitsResponse.Ounit> data1 = processIds();
+      List<OunitsResponse.Ounit> data2 = processCodes();
       data1.addAll(data2);
       return createOUnitsResponse(data1);
     } catch (ErrorResponseException e) {
@@ -160,7 +160,7 @@ public class OUnitsServiceV2Valid extends AbstractOUnitsService {
     }
   }
 
-  private void VerifyCertificate() throws ErrorResponseException {
+  private void verifyCertificate() throws ErrorResponseException {
     try {
       this.myAuthorizer.authorize(this.currentRequest);
     } catch (Http4xx e) {
@@ -170,8 +170,8 @@ public class OUnitsServiceV2Valid extends AbstractOUnitsService {
     }
   }
 
-  private void ExtractParams() throws ErrorResponseException {
-    CheckParamsEncoding();
+  private void extractParams() throws ErrorResponseException {
+    checkParamsEncoding();
     Map<String, List<String>> params = InternetTestHelpers.extractAllParams(this.currentRequest);
 
     this.requestedHeiIds = params.getOrDefault("hei_id", new ArrayList<>());
@@ -187,19 +187,19 @@ public class OUnitsServiceV2Valid extends AbstractOUnitsService {
     this.requestedHeiId = hasHeiId ? this.requestedHeiIds.get(0) : null;
 
     if (params.size() == 0) {
-      ErrorNoParams();
+      errorNoParams();
     }
     if (!hasHeiId) {
-      ErrorNoHeiId();
+      errorNoHeiId();
     }
     if (multipleHeiId) {
-      ErrorMultipleHeiIds();
+      errorMultipleHeiIds();
     }
     if (hasOUnitId && hasOUnitCode) {
-      ErrorIdsAndCodes();
+      errorIdsAndCodes();
     }
     if (!hasOUnitId && !hasOUnitCode) {
-      ErrorNoIdsNorCodes();
+      errorNoIdsNorCodes();
     }
 
     int expectedParams = 0;
@@ -207,7 +207,7 @@ public class OUnitsServiceV2Valid extends AbstractOUnitsService {
     expectedParams += hasOUnitCode ? 1 : 0;
     expectedParams += hasOUnitId ? 1 : 0;
     if (params.size() > expectedParams) {
-      HandleUnexpectedParams();
+      handleUnexpectedParams();
     }
 
     if (this.requestedHeiId == null || this.requestedOUnitCodes == null || this.requestedOUnitIds == null) {
@@ -216,44 +216,44 @@ public class OUnitsServiceV2Valid extends AbstractOUnitsService {
     }
   }
 
-  private void CheckHei() throws ErrorResponseException {
-    if (!institutionsServiceV2.GetCoveredHeiIds().contains(this.requestedHeiId)) {
-      ErrorUnknownHeiId();
+  private void checkHei() throws ErrorResponseException {
+    if (!institutionsServiceV2.getCoveredHeiIds().contains(this.requestedHeiId)) {
+      errorUnknownHeiId();
     } else {
-      HandleKnownHeiId();
+      handleKnownHeiId();
     }
   }
 
-  private void CheckCodes() throws ErrorResponseException {
+  private void checkCodes() throws ErrorResponseException {
     if (this.requestedOUnitCodes.size() > getMaxOunitCodes()) {
-      ErrorMaxOUnitCodesExceeded();
+      errorMaxOUnitCodesExceeded();
     }
   }
 
-  private void CheckIds() throws ErrorResponseException {
+  private void checkIds() throws ErrorResponseException {
     if (this.requestedOUnitIds.size() > getMaxOunitIds()) {
-      ErrorMaxOUnitIdsExceeded();
+      errorMaxOUnitIdsExceeded();
     }
   }
 
-  private List<OunitsResponse.Ounit> ProcessCodes() {
-    return ProcessRequested(this.requestedOUnitCodes, coveredOUnitsCodes);
+  private List<OunitsResponse.Ounit> processCodes() {
+    return processRequested(this.requestedOUnitCodes, coveredOUnitsCodes);
   }
 
-  private List<OunitsResponse.Ounit> ProcessIds() {
-    return ProcessRequested(this.requestedOUnitIds, coveredOUnitsIds);
+  private List<OunitsResponse.Ounit> processIds() {
+    return processRequested(this.requestedOUnitIds, coveredOUnitsIds);
   }
 
-  protected List<OunitsResponse.Ounit> ProcessRequested(
+  protected List<OunitsResponse.Ounit> processRequested(
       List<String> requested,
       Map<String, OunitsResponse.Ounit> covered) {
     List<OunitsResponse.Ounit> ret = new ArrayList<>();
     for (String ounit : requested) {
       OunitsResponse.Ounit data = covered.get(ounit);
       if (data == null) {
-        data = HandleUnknownOUnit();
+        data = handleUnknownOUnit();
       } else {
-        data = HandleKnownOUnit(data);
+        data = handleKnownOUnit(data);
       }
       if (data != null) {
         ret.add(data);
@@ -262,74 +262,74 @@ public class OUnitsServiceV2Valid extends AbstractOUnitsService {
     return ret;
   }
 
-  protected OunitsResponse.Ounit HandleKnownOUnit(OunitsResponse.Ounit data) {
+  protected OunitsResponse.Ounit handleKnownOUnit(OunitsResponse.Ounit data) {
     return data;
   }
 
-  protected OunitsResponse.Ounit HandleUnknownOUnit() {
+  protected OunitsResponse.Ounit handleUnknownOUnit() {
     return null;
   }
 
-  protected void ErrorMaxOUnitCodesExceeded() throws ErrorResponseException {
+  protected void errorMaxOUnitCodesExceeded() throws ErrorResponseException {
     throw new ErrorResponseException(
         createErrorResponse(this.currentRequest, 400, "max-ounit-codes exceeded")
     );
   }
 
-  protected void ErrorMaxOUnitIdsExceeded() throws ErrorResponseException {
+  protected void errorMaxOUnitIdsExceeded() throws ErrorResponseException {
     throw new ErrorResponseException(
         createErrorResponse(this.currentRequest, 400, "max-ounit-ids exceeded")
     );
   }
 
-  protected void HandleKnownHeiId() {
+  protected void handleKnownHeiId() {
     //Intentionally left empty
   }
 
-  protected void ErrorUnknownHeiId() throws ErrorResponseException {
+  protected void errorUnknownHeiId() throws ErrorResponseException {
     throw new ErrorResponseException(
         createErrorResponse(this.currentRequest, 400, "Unknown hei_id")
     );
   }
 
-  protected void ErrorMultipleHeiIds() throws ErrorResponseException {
+  protected void errorMultipleHeiIds() throws ErrorResponseException {
     throw new ErrorResponseException(
         createErrorResponse(this.currentRequest, 400, "More that one hei_id provided.")
     );
   }
 
-  protected void ErrorNoIdsNorCodes() throws ErrorResponseException {
+  protected void errorNoIdsNorCodes() throws ErrorResponseException {
     throw new ErrorResponseException(
         createErrorResponse(this.currentRequest, 400, "ounit_id xor ounit_code is required.")
     );
   }
 
-  protected void ErrorIdsAndCodes() throws ErrorResponseException {
+  protected void errorIdsAndCodes() throws ErrorResponseException {
     throw new ErrorResponseException(
         createErrorResponse(this.currentRequest, 400, "Only one of ounit_id and ounit_code should" +
             " be provided")
     );
   }
 
-  protected void ErrorNoHeiId() throws ErrorResponseException {
+  protected void errorNoHeiId() throws ErrorResponseException {
     throw new ErrorResponseException(
         createErrorResponse(this.currentRequest, 400, "No hei_id parameter")
     );
   }
 
-  protected void HandleUnexpectedParams() throws ErrorResponseException {
+  protected void handleUnexpectedParams() throws ErrorResponseException {
     //Ignore
   }
 
 
-  protected void ErrorNoParams()
+  protected void errorNoParams()
       throws ErrorResponseException {
     throw new ErrorResponseException(
       createErrorResponse(this.currentRequest, 400, "No parameters provided")
     );
   }
 
-  protected void CheckRequestMethod() throws ErrorResponseException {
+  protected void checkRequestMethod() throws ErrorResponseException {
     if (!(this.currentRequest.getMethod().equals("GET") || this.currentRequest.getMethod().equals("POST"))) {
       throw new ErrorResponseException(
         this.createErrorResponse(this.currentRequest, 405, "We expect GETs and POSTs only")
@@ -337,7 +337,7 @@ public class OUnitsServiceV2Valid extends AbstractOUnitsService {
     }
   }
 
-  protected void CheckParamsEncoding() throws ErrorResponseException {
+  protected void checkParamsEncoding() throws ErrorResponseException {
     if (this.currentRequest.getMethod().equals("POST")
         && !this.currentRequest.getHeader("content-type").equals("application/x-www-form-urlencoded")) {
       throw new ErrorResponseException(

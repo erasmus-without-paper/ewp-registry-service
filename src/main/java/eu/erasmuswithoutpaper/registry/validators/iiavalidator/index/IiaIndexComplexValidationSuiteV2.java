@@ -1,9 +1,7 @@
 package eu.erasmuswithoutpaper.registry.validators.iiavalidator.index;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.List;
 
 import eu.erasmuswithoutpaper.registry.validators.AbstractValidationSuite;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
@@ -11,8 +9,7 @@ import eu.erasmuswithoutpaper.registry.validators.Combination;
 import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
 import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus.Status;
 import eu.erasmuswithoutpaper.registry.validators.iiavalidator.IiaSuiteState;
-import eu.erasmuswithoutpaper.registry.validators.verifiers.InListVerifier;
-import eu.erasmuswithoutpaper.registry.validators.verifiers.ListEqualVerifier;
+import eu.erasmuswithoutpaper.registry.validators.verifiers.VerifierFactory;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.slf4j.Logger;
@@ -57,7 +54,7 @@ class IiaIndexComplexValidationSuiteV2 extends AbstractValidationSuite<IiaSuiteS
             new Parameter("hei_id", this.currentState.selectedHeiId),
             new Parameter("partner_hei_id", this.currentState.selectedIiaInfo.partnerHeiId)
         ),
-        new IiaIndexVerifier(Arrays.asList(this.currentState.selectedIiaId))
+        iiaIdVerifierFactory.expectResponseToContain(Arrays.asList(this.currentState.selectedIiaId))
     );
 
     String knownAcademicYear = this.currentState.selectedIiaInfo.receivingAcademicYears.get(0);
@@ -69,7 +66,7 @@ class IiaIndexComplexValidationSuiteV2 extends AbstractValidationSuite<IiaSuiteS
             new Parameter("hei_id", this.currentState.selectedHeiId),
             new Parameter("receiving_academic_year_id", knownAcademicYear)
         ),
-        new IiaIndexVerifier(Arrays.asList(this.currentState.selectedIiaId))
+        iiaIdVerifierFactory.expectResponseToContain(Arrays.asList(this.currentState.selectedIiaId))
     );
 
     int unknownAcademicYear = this.currentState.selectedIiaInfo.receivingAcademicYears.stream()
@@ -86,7 +83,7 @@ class IiaIndexComplexValidationSuiteV2 extends AbstractValidationSuite<IiaSuiteS
             new Parameter("hei_id", this.currentState.selectedHeiId),
             new Parameter("receiving_academic_year_id", unknownAcademicYearString)
         ),
-        new IndexEmptyListVerifier()
+        iiaIdVerifierFactory.expectResponseToBeEmpty()
     );
 
     int yearInFuture = Calendar.getInstance().get(Calendar.YEAR) + 5;
@@ -100,7 +97,8 @@ class IiaIndexComplexValidationSuiteV2 extends AbstractValidationSuite<IiaSuiteS
             new Parameter("modified_since",
                 yearInFuture + "-02-12T15:19:21+01:00")
         ),
-        new IndexEmptyListVerifier(Status.WARNING)
+        iiaIdVerifierFactory.expectResponseToBeEmpty(),
+        Status.WARNING
     );
 
     testParameters200(
@@ -111,37 +109,9 @@ class IiaIndexComplexValidationSuiteV2 extends AbstractValidationSuite<IiaSuiteS
             new Parameter("hei_id", this.currentState.selectedHeiId),
             new Parameter("modified_since", "1970-02-12T15:19:21+01:00")
         ),
-        new IiaIndexVerifier(Arrays.asList(this.currentState.selectedIiaId))
+        iiaIdVerifierFactory.expectResponseToContain(Arrays.asList(this.currentState.selectedIiaId))
     );
   }
 
-  private static class IiaIndexVerifier extends InListVerifier {
-    IiaIndexVerifier(List<String> expected, Status status) {
-      super(expected, status);
-    }
-
-    IiaIndexVerifier(List<String> expected) {
-      this(expected, Status.FAILURE);
-    }
-
-    @Override
-    protected List<String> getSelector() {
-      return Arrays.asList("iia-id");
-    }
-  }
-
-  private static class IndexEmptyListVerifier extends ListEqualVerifier {
-    IndexEmptyListVerifier(Status status) {
-      super(new ArrayList<>(), status);
-    }
-
-    IndexEmptyListVerifier() {
-      this(Status.FAILURE);
-    }
-
-    @Override
-    protected List<String> getSelector() {
-      return Arrays.asList("iia-id");
-    }
-  }
+  private VerifierFactory iiaIdVerifierFactory = new VerifierFactory(Arrays.asList("iia-id"));
 }

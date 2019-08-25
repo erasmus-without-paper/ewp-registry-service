@@ -13,9 +13,7 @@ import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.Combination;
 import eu.erasmuswithoutpaper.registry.validators.InlineValidationStep;
 import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
-import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus.Status;
-import eu.erasmuswithoutpaper.registry.validators.verifiers.InListVerifier;
-import eu.erasmuswithoutpaper.registry.validators.verifiers.ListEqualVerifier;
+import eu.erasmuswithoutpaper.registry.validators.verifiers.VerifierFactory;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.slf4j.Logger;
@@ -75,8 +73,8 @@ class OUnitsValidationSuiteV2
         );
         List<String> expectedIDs =
             Collections.singletonList(OUnitsValidationSuiteV2.this.currentState.selectedOunitId);
-        Response response = verifyResponse(
-            this, combination, request, new OUnitIdsVerifier(expectedIDs)
+        Response response = makeRequestAndVerifyResponse(
+            this, combination, request, ounitIdVerifier.expectResponseToContainExactly(expectedIDs)
         );
         List<String> codes = selectFromDocument(
             makeXmlFromBytes(response.getBody()),
@@ -94,8 +92,7 @@ class OUnitsValidationSuiteV2
         "ounit",
         this.currentState.selectedOunitId, this.currentState.maxOunitIds,
         ounitCodes.get(0), this.currentState.maxOunitCodes,
-        OUnitIdsVerifier::new,
-        InListOUnitIdsVerifier::new
+        ounitIdVerifier
     );
 
     testParametersError(
@@ -106,30 +103,9 @@ class OUnitsValidationSuiteV2
             new Parameter("hei_id", this.fakeId),
             new Parameter("ounit_id", OUnitsValidationSuiteV2.this.currentState.selectedOunitId)
         ),
-        400,
-        Status.WARNING
+        400
     );
   }
 
-  private static class OUnitIdsVerifier extends ListEqualVerifier {
-    OUnitIdsVerifier(List<String> expected) {
-      super(expected);
-    }
-
-    @Override
-    protected List<String> getSelector() {
-      return Arrays.asList("ounit", "ounit-id");
-    }
-  }
-
-  private static class InListOUnitIdsVerifier extends InListVerifier {
-    InListOUnitIdsVerifier(List<String> expected) {
-      super(expected);
-    }
-
-    @Override
-    protected List<String> getSelector() {
-      return Arrays.asList("ounit", "ounit-id");
-    }
-  }
+  private VerifierFactory ounitIdVerifier = new VerifierFactory(Arrays.asList("ounit", "ounit-id"));
 }

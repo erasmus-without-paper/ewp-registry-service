@@ -10,24 +10,21 @@ import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus;
 
 import org.joox.Match;
 
-public abstract class InListVerifier extends Verifier {
+public final class InListVerifier extends Verifier {
   private final List<String> wantedValue;
 
-  public InListVerifier(List<String> wantedValue) {
-    this(wantedValue, ValidationStepWithStatus.Status.FAILURE);
-  }
-
-  public InListVerifier(List<String> wantedValue, ValidationStepWithStatus.Status status) {
-    super(status);
+  public InListVerifier(List<String> wantedValue, List<String> selector) {
+    super(selector);
     this.wantedValue = wantedValue;
   }
 
   @Override
-  public void verify(AbstractValidationSuite suite, Match root, Response response)
+  public void verify(AbstractValidationSuite suite, Match root, Response response,
+      ValidationStepWithStatus.Status failureStatus)
       throws InlineValidationStep.Failure {
     List<String> foundElements =
         select(root, suite.getApiInfo().getResponsePrefix(), getSelector())
-        .stream().map(Match::text).collect(Collectors.toList());
+            .stream().map(Match::text).collect(Collectors.toList());
 
     if (!foundElements.containsAll(wantedValue)) {
       throw new InlineValidationStep.Failure(
@@ -36,7 +33,7 @@ public abstract class InListVerifier extends Verifier {
               + "doesn't match what we expect. "
               + "It should contain <" + getParamName() + ">"
               + wantedValue + "</" + getParamName() + ">, but it doesn't.",
-          this.status, response
+          failureStatus, response
       );
     }
   }

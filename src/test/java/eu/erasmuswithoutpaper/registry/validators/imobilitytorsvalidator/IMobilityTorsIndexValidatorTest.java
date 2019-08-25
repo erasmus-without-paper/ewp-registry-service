@@ -18,7 +18,7 @@ public class IMobilityTorsIndexValidatorTest extends IMobilityTorsValidatorTestB
   protected IMobilityTorsIndexValidator validator;
 
   @Override
-  protected ApiValidator<IMobilityTorsSuiteState> GetValidator() {
+  protected ApiValidator<IMobilityTorsSuiteState> getValidator() {
     return validator;
   }
 

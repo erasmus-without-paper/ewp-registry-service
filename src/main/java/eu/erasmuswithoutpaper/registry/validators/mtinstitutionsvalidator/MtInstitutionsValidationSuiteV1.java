@@ -3,14 +3,12 @@ package eu.erasmuswithoutpaper.registry.validators.mtinstitutionsvalidator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
 import eu.erasmuswithoutpaper.registry.validators.AbstractValidationSuite;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.Combination;
 import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
-import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus;
-import eu.erasmuswithoutpaper.registry.validators.verifiers.ListEqualVerifier;
+import eu.erasmuswithoutpaper.registry.validators.verifiers.VerifierFactory;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.slf4j.Logger;
@@ -55,7 +53,8 @@ class MtInstitutionsValidationSuiteV1 extends AbstractValidationSuite<MtInstitut
             new Parameter("pic", this.currentState.selectedPic),
             new Parameter("eche_at_date", this.currentState.selectedEcheAtDate)
         ),
-        new MtInstitutionsVerifier(Collections.singletonList(this.currentState.selectedPic))
+        picVerifierFactory.expectResponseToContainExactly(
+            Collections.singletonList(this.currentState.selectedPic))
     );
 
     testParameters200(
@@ -66,7 +65,8 @@ class MtInstitutionsValidationSuiteV1 extends AbstractValidationSuite<MtInstitut
             new Parameter("eche_at_date", this.currentState.selectedEcheAtDate),
             new Parameter("pic_param", this.currentState.selectedPic)
         ),
-        new MtInstitutionsVerifier(Collections.singletonList(this.currentState.selectedPic))
+        picVerifierFactory.expectResponseToContainExactly(
+            Collections.singletonList(this.currentState.selectedPic))
     );
 
     if (this.currentState.maxIds > 1) {
@@ -78,7 +78,8 @@ class MtInstitutionsValidationSuiteV1 extends AbstractValidationSuite<MtInstitut
               new Parameter("pic", this.currentState.selectedPic),
               new Parameter("eche_at_date", this.currentState.selectedEcheAtDate)
           ),
-          new MtInstitutionsVerifier(Collections.nCopies(2, this.currentState.selectedPic))
+          picVerifierFactory
+              .expectResponseToContainExactly(Collections.nCopies(2, this.currentState.selectedPic))
       );
     }
 
@@ -96,7 +97,7 @@ class MtInstitutionsValidationSuiteV1 extends AbstractValidationSuite<MtInstitut
             new Parameter("pic", fakePic),
             new Parameter("eche_at_date", this.currentState.selectedEcheAtDate)
         ),
-        new MtInstitutionsVerifier(new ArrayList<>())
+        picVerifierFactory.expectResponseToBeEmpty()
     );
 
     testParametersError(
@@ -145,7 +146,8 @@ class MtInstitutionsValidationSuiteV1 extends AbstractValidationSuite<MtInstitut
               new Parameter("pic", fakePic),
               new Parameter("eche_at_date", this.currentState.selectedEcheAtDate)
           ),
-          new MtInstitutionsVerifier(Collections.singletonList(this.currentState.selectedPic))
+          picVerifierFactory.expectResponseToContainExactly(
+              Collections.singletonList(this.currentState.selectedPic))
       );
     }
 
@@ -196,20 +198,10 @@ class MtInstitutionsValidationSuiteV1 extends AbstractValidationSuite<MtInstitut
             Collections.nCopies(this.currentState.maxIds,
                 new Parameter("pic", this.currentState.selectedPic))
         ),
-        new MtInstitutionsVerifier(
+        picVerifierFactory.expectResponseToContainExactly(
             Collections.nCopies(this.currentState.maxIds, this.currentState.selectedPic))
     );
   }
 
-
-  private static class MtInstitutionsVerifier extends ListEqualVerifier {
-    private MtInstitutionsVerifier(List<String> expectedPics) {
-      super(expectedPics, ValidationStepWithStatus.Status.FAILURE);
-    }
-
-    @Override
-    protected List<String> getSelector() {
-      return Arrays.asList("hei", "pic");
-    }
-  }
+  private VerifierFactory picVerifierFactory = new VerifierFactory(Arrays.asList("hei", "pic"));
 }

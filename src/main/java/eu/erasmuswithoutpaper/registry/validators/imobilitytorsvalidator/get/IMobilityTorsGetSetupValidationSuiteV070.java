@@ -66,20 +66,11 @@ class IMobilityTorsGetSetupValidationSuiteV070
   @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
   protected void runApiSpecificTests(HttpSecurityDescription securityDescription)
       throws SuiteBroken {
-    if (this.currentState.parameters.contains(RECEIVING_HEI_ID_PARAMETER)) {
-      this.currentState.receivingHeiId = this.currentState.parameters
-          .get(RECEIVING_HEI_ID_PARAMETER);
-    } else {
-      this.currentState.receivingHeiId = getReceivingHeiId();
-    }
-
-    if (this.currentState.parameters.contains(OMOBILITY_ID_PARAMETER)) {
-      this.currentState.omobilityId = this.currentState.parameters.get(OMOBILITY_ID_PARAMETER);
-    } else {
-      this.currentState.omobilityId = getOmobilityId(securityDescription);
-    }
-
     this.currentState.maxOmobilityIds = getMaxOmobilityIds();
+    this.currentState.receivingHeiId = getParameterValue(RECEIVING_HEI_ID_PARAMETER,
+        this::getReceivingHeiId);
+    this.currentState.omobilityId = getParameterValue(OMOBILITY_ID_PARAMETER,
+        () -> getOmobilityId(securityDescription));
   }
 
   @SuppressFBWarnings("BC_UNCONFIRMED_CAST")

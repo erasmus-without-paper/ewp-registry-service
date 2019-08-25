@@ -16,9 +16,8 @@ import eu.erasmuswithoutpaper.registry.validators.Combination;
 import eu.erasmuswithoutpaper.registry.validators.InlineValidationStep;
 import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
 import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus.Status;
-import eu.erasmuswithoutpaper.registry.validators.verifiers.InListVerifier;
-import eu.erasmuswithoutpaper.registry.validators.verifiers.ListEqualVerifier;
 import eu.erasmuswithoutpaper.registry.validators.verifiers.NotInListVerifier;
+import eu.erasmuswithoutpaper.registry.validators.verifiers.VerifierFactory;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.slf4j.Logger;
@@ -85,8 +84,9 @@ class CoursesValidationSuiteV070
 
         List<String> expectedIDs =
             Collections.singletonList(CoursesValidationSuiteV070.this.currentState.selectedLosId);
-        Response response = verifyResponse(
-            this, combination, request, new CoursesIdsVerifier(expectedIDs)
+        Response response = makeRequestAndVerifyResponse(
+            this, combination, request,
+            losIdVerifierFactory.expectResponseToContainExactly(expectedIDs)
         );
 
         Element body = makeXmlFromBytes(response.getBody());
@@ -154,8 +154,7 @@ class CoursesValidationSuiteV070
         "los",
         this.currentState.selectedLosId, this.currentState.maxLosIds,
         losCode, this.currentState.maxLosCodes,
-        CoursesIdsVerifier::new,
-        InListCoursesIdsVerifier::new
+        losIdVerifierFactory
     );
 
     testParametersError(
@@ -180,7 +179,8 @@ class CoursesValidationSuiteV070
               new Parameter("los_id", this.currentState.selectedLosId),
               new Parameter("lois_after", requestFields.startDate.plusDays(1).toString())
           ),
-          new LoiIdNotIncludedVerifier(losId, requestFields.loiId, Status.WARNING)
+          new LoiIdNotIncludedVerifier(losId, requestFields.loiId),
+          Status.WARNING
       );
 
       testParameters200(
@@ -191,7 +191,8 @@ class CoursesValidationSuiteV070
               new Parameter("los_id", this.currentState.selectedLosId),
               new Parameter("lois_before", requestFields.endDate.minusDays(1).toString())
           ),
-          new LoiIdNotIncludedVerifier(losId, requestFields.loiId, Status.WARNING)
+          new LoiIdNotIncludedVerifier(losId, requestFields.loiId),
+          Status.WARNING
       );
     }
 
@@ -253,39 +254,11 @@ class CoursesValidationSuiteV070
     );
   }
 
-  private static class CoursesIdsVerifier extends ListEqualVerifier {
-    CoursesIdsVerifier(List<String> expected) {
-      super(expected);
-    }
-
-    @Override
-    protected List<String> getSelector() {
-      return Arrays.asList("learningOpportunitySpecification", "los-id");
-    }
-  }
-
-  private static class InListCoursesIdsVerifier extends InListVerifier {
-    public InListCoursesIdsVerifier(List<String> wantedValue) {
-      super(wantedValue);
-    }
-
-    @Override
-    protected List<String> getSelector() {
-      return Arrays.asList("learningOpportunitySpecification", "los-id");
-    }
-  }
-
+  private VerifierFactory losIdVerifierFactory = new VerifierFactory(
+      Arrays.asList("learningOpportunitySpecification", "los-id"));
 
   private static class LoiIdNotIncludedVerifier extends NotInListVerifier {
-    private final String losId;
-
-    LoiIdNotIncludedVerifier(String losId, String loiId, Status status) {
-      super(loiId, status);
-      this.losId = losId;
-    }
-
-    @Override
-    protected List<String> getSelector() {
+    private static List<String> createSelectorForLosId(String losId) {
       return Arrays.asList(
           "learningOpportunitySpecification",
           "los-id[text()=\"" + losId + "\"]/..",
@@ -293,6 +266,10 @@ class CoursesValidationSuiteV070
           "learningOpportunityInstance",
           "loi-id"
       );
+    }
+
+    LoiIdNotIncludedVerifier(String losId, String loiId) {
+      super(loiId, createSelectorForLosId(losId));
     }
   }
 }

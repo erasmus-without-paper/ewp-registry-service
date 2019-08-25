@@ -41,7 +41,7 @@ public class MtInstitutionsValidatorTest extends AbstractApiTest {
   }
 
   @Override
-  protected ApiValidator GetValidator() {
+  protected ApiValidator getValidator() {
     return validator;
   }
 
@@ -57,7 +57,7 @@ public class MtInstitutionsValidatorTest extends AbstractApiTest {
     MtInstitutionsV010Valid service =
         new MtInstitutionsV010Valid(mtInstitutionsUrl, this.client) {
           @Override
-          protected void ErrorMaxPicsExceeded(
+          protected void errorMaxPicsExceeded(
               RequestData requestData) throws ErrorResponseException {
             //Do nothing
           }
@@ -73,9 +73,9 @@ public class MtInstitutionsValidatorTest extends AbstractApiTest {
     MtInstitutionsV010Valid service =
         new MtInstitutionsV010Valid(mtInstitutionsUrl, this.client) {
           @Override
-          protected List<MtInstitutionsResponse.Hei> ProcessPics(
+          protected List<MtInstitutionsResponse.Hei> processPics(
               RequestData requestData) throws ErrorResponseException {
-            List<MtInstitutionsResponse.Hei> result = super.ProcessPics(requestData);
+            List<MtInstitutionsResponse.Hei> result = super.processPics(requestData);
             MtInstitutionsResponse.Hei replaced = new MtInstitutionsResponse.Hei();
             replaced.setMailingAddress(result.get(0).getMailingAddress());
             replaced.setErasmusCharter(result.get(0).getErasmusCharter());
@@ -95,7 +95,7 @@ public class MtInstitutionsValidatorTest extends AbstractApiTest {
     MtInstitutionsV010Valid service =
         new MtInstitutionsV010Valid(mtInstitutionsUrl, this.client) {
           @Override
-          protected void HandleUnexpectedParams(
+          protected void handleUnexpectedParams(
               RequestData requestData) throws ErrorResponseException {
             throw new ErrorResponseException(
                 createErrorResponse(requestData.request, 400, "Unknown param")
@@ -112,10 +112,10 @@ public class MtInstitutionsValidatorTest extends AbstractApiTest {
     MtInstitutionsV010Valid service =
         new MtInstitutionsV010Valid(mtInstitutionsUrl, this.client) {
           @Override
-          protected List<MtInstitutionsResponse.Hei> ProcessPics(
+          protected List<MtInstitutionsResponse.Hei> processPics(
               RequestData requestData) throws ErrorResponseException {
             requestData.pic = requestData.pic.stream().distinct().collect(Collectors.toList());
-            return super.ProcessPics(requestData);
+            return super.processPics(requestData);
           }
         };
     TestValidationReport report = this.getRawReport(service);
@@ -128,12 +128,12 @@ public class MtInstitutionsValidatorTest extends AbstractApiTest {
     MtInstitutionsV010Valid service =
         new MtInstitutionsV010Valid(mtInstitutionsUrl, this.client) {
           @Override
-          protected void ErrorNoPic(RequestData requestData) throws ErrorResponseException {
+          protected void errorNoPic(RequestData requestData) throws ErrorResponseException {
             // ignore
           }
 
           @Override
-          protected void ErrorNoEcheAtDate(RequestData requestData) throws ErrorResponseException {
+          protected void errorNoEcheAtDate(RequestData requestData) throws ErrorResponseException {
             requestData.echeAtDate = coveredPics.get(0).getErasmusCharter().getStartDate();
           }
         };
@@ -148,11 +148,11 @@ public class MtInstitutionsValidatorTest extends AbstractApiTest {
     MtInstitutionsV010Valid service =
         new MtInstitutionsV010Valid(mtInstitutionsUrl, this.client) {
           @Override
-          protected List<MtInstitutionsResponse.Hei> ProcessPics(
+          protected List<MtInstitutionsResponse.Hei> processPics(
               RequestData requestData) throws ErrorResponseException {
             requestData.pic = Collections
                 .nCopies(requestData.pic.size(), coveredPics.get(0).getPic());
-            return super.ProcessPics(requestData);
+            return super.processPics(requestData);
           }
         };
     TestValidationReport report = this.getRawReport(service);
@@ -167,7 +167,7 @@ public class MtInstitutionsValidatorTest extends AbstractApiTest {
     MtInstitutionsV010Valid service =
         new MtInstitutionsV010Valid(mtInstitutionsUrl, this.client) {
           @Override
-          protected void ErrorNoParams(RequestData requestData) throws ErrorResponseException {
+          protected void errorNoParams(RequestData requestData) throws ErrorResponseException {
             throw new ErrorResponseException(
                 createMtInstitutionsReponse(new ArrayList<>())
             );
@@ -183,7 +183,7 @@ public class MtInstitutionsValidatorTest extends AbstractApiTest {
     MtInstitutionsV010Valid service =
         new MtInstitutionsV010Valid(mtInstitutionsUrl, this.client) {
           @Override
-          protected XMLGregorianCalendar ErrorDateFormat(RequestData requestData)
+          protected XMLGregorianCalendar errorDateFormat(RequestData requestData)
               throws ErrorResponseException {
             try {
               return DatatypeFactory.newInstance().newXMLGregorianCalendarDate(2019, 1, 1, 0);
@@ -202,7 +202,7 @@ public class MtInstitutionsValidatorTest extends AbstractApiTest {
     MtInstitutionsV010Valid service =
         new MtInstitutionsV010Valid(mtInstitutionsUrl, this.client) {
           @Override
-          protected XMLGregorianCalendar CheckDateFormat(RequestData requestData, String date)
+          protected XMLGregorianCalendar checkDateFormat(RequestData requestData, String date)
               throws ErrorResponseException {
             DatatypeFactory factoryInstance = null;
             try {
@@ -226,7 +226,7 @@ public class MtInstitutionsValidatorTest extends AbstractApiTest {
   public void notReportingAnErrorWhenNoPicIsProvidedIsDetected() {
     MtInstitutionsV010Valid service =
         new MtInstitutionsV010Valid(mtInstitutionsUrl, this.client) {
-          protected void ErrorNoPic(RequestData requestData) throws ErrorResponseException {
+          protected void errorNoPic(RequestData requestData) throws ErrorResponseException {
             throw new ErrorResponseException(
                 createMtInstitutionsReponse(new ArrayList<>())
             );
@@ -241,7 +241,7 @@ public class MtInstitutionsValidatorTest extends AbstractApiTest {
   public void notReportingAnErrorWhenNoEcheAtDateIsProvidedIsDetected() {
     MtInstitutionsV010Valid service =
         new MtInstitutionsV010Valid(mtInstitutionsUrl, this.client) {
-          protected void ErrorNoEcheAtDate(RequestData requestData) throws ErrorResponseException {
+          protected void errorNoEcheAtDate(RequestData requestData) throws ErrorResponseException {
             throw new ErrorResponseException(
                 createMtInstitutionsReponse(new ArrayList<>())
             );

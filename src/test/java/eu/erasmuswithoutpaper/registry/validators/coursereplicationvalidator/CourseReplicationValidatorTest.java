@@ -51,7 +51,7 @@ public class CourseReplicationValidatorTest extends AbstractApiTest {
     CourseReplicationServiceV1Valid service = new CourseReplicationServiceV1Valid(
         courseReplicationUrlHTTT, this.client, this.validatorKeyStore) {
       @Override
-      protected void ErrorNoParameters(RequestData requestData,
+      protected void errorNoParameters(RequestData requestData,
           Map<String, List<String>> params)
           throws ErrorResponseException {
         throw new ErrorResponseException(
@@ -68,7 +68,7 @@ public class CourseReplicationValidatorTest extends AbstractApiTest {
     CourseReplicationServiceV1Valid service = new CourseReplicationServiceV1Valid(
         courseReplicationUrlHTTT, this.client, this.validatorKeyStore) {
       @Override
-      protected void ErrorAdditionalParameters(RequestData requestData,
+      protected void errorAdditionalParameters(RequestData requestData,
           Map<String, List<String>> params)
           throws ErrorResponseException {
         throw new ErrorResponseException(
@@ -86,7 +86,7 @@ public class CourseReplicationValidatorTest extends AbstractApiTest {
     CourseReplicationServiceV1Valid service = new CourseReplicationServiceV1Valid(
         courseReplicationUrlHTTT, this.client, this.validatorKeyStore) {
       @Override
-      protected void ErrorMultipleHeiIds(RequestData requestData)
+      protected void errorMultipleHeiIds(RequestData requestData)
           throws ErrorResponseException {
         //Ignore
       }
@@ -100,7 +100,7 @@ public class CourseReplicationValidatorTest extends AbstractApiTest {
     CourseReplicationServiceV1Valid service = new CourseReplicationServiceV1Valid(
         courseReplicationUrlHTTT, this.client, this.validatorKeyStore) {
       @Override
-      protected List<String> ProcessNotCoveredHei(RequestData requestData)
+      protected List<String> processNotCoveredHei(RequestData requestData)
           throws ErrorResponseException {
         return new ArrayList<>();
       }
@@ -114,10 +114,10 @@ public class CourseReplicationValidatorTest extends AbstractApiTest {
     CourseReplicationServiceV1Valid service = new CourseReplicationServiceV1Valid(
         courseReplicationUrlHTTT, this.client, this.validatorKeyStore) {
       @Override
-      protected List<String> ProcessNotCoveredHei(RequestData requestData)
+      protected List<String> processNotCoveredHei(RequestData requestData)
           throws ErrorResponseException {
         requestData.requestedHeiId = this.coveredHeiIds.get(0);
-        return ProcessCoveredHei(requestData);
+        return processCoveredHei(requestData);
       }
     };
     TestValidationReport report = this.getRawReport(service);
@@ -129,7 +129,7 @@ public class CourseReplicationValidatorTest extends AbstractApiTest {
     CourseReplicationServiceV1Valid service = new CourseReplicationServiceV1Valid(
         courseReplicationUrlHTTT, this.client, this.validatorKeyStore) {
       @Override
-      protected List<String> ProcessCoveredHei(RequestData requestData)
+      protected List<String> processCoveredHei(RequestData requestData)
           throws ErrorResponseException {
         return Arrays.asList("invalid-id", "invalid-invalid-id");
       }
@@ -142,7 +142,7 @@ public class CourseReplicationValidatorTest extends AbstractApiTest {
   public void testAcceptingInvalidDatesIsDetected() {
     CourseReplicationServiceV1Valid service = new CourseReplicationServiceV1Valid(
         courseReplicationUrlHTTT, this.client, this.validatorKeyStore) {
-      protected void ErrorInvalidModifiedSince(RequestData requestData)
+      protected void errorInvalidModifiedSince(RequestData requestData)
           throws ErrorResponseException {
         requestData.requestedModifiedSinceDate = null;
       }
@@ -152,7 +152,7 @@ public class CourseReplicationValidatorTest extends AbstractApiTest {
   }
 
   @Override
-  protected ApiValidator GetValidator() {
+  protected ApiValidator getValidator() {
     return validator;
   }
 }

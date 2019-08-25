@@ -37,7 +37,7 @@ public class CourseReplicationServiceV1Valid extends AbstractCourseReplicationSe
     return Arrays.asList("CR/123", "CR/5151", "CR/12123");
   }
 
-  public List<String> GetCoveredHeiIds() {
+  public List<String> getCoveredHeiIds() {
     return coveredHeiIds;
   }
 
@@ -48,28 +48,29 @@ public class CourseReplicationServiceV1Valid extends AbstractCourseReplicationSe
     }
     try {
       RequestData requestData = new RequestData(request);
-      VerifyCertificate(requestData);
-      CheckRequestMethod(requestData);
-      ExtractParams(requestData);
-      CheckModifiedSince(requestData);
-      List<String> losIds = ProcessHei(requestData);
+      verifyCertificate(requestData);
+      checkRequestMethod(requestData);
+      extractParams(requestData);
+      checkModifiedSince(requestData);
+      List<String> losIds = processHei(requestData);
       return createCourseReplicationResponse(losIds);
     } catch (ErrorResponseException e) {
       return e.response;
     }
   }
 
-  private void CheckModifiedSince(RequestData requestData)
+  private void checkModifiedSince(RequestData requestData)
       throws ErrorResponseException {
     if (requestData.requestedModifiedSince != null) {
       ZonedDateTime modifiedSince = parseModifiedSince(requestData.requestedModifiedSince);
       if (modifiedSince == null) {
-        ErrorInvalidModifiedSince(requestData);
+        errorInvalidModifiedSince(requestData);
       }
+      requestData.requestedModifiedSinceDate = modifiedSince;
     }
   }
 
-  private void VerifyCertificate(RequestData requestData) throws ErrorResponseException {
+  private void verifyCertificate(RequestData requestData) throws ErrorResponseException {
     try {
       this.myAuthorizer.authorize(requestData.request);
     } catch (Http4xx e) {
@@ -77,8 +78,8 @@ public class CourseReplicationServiceV1Valid extends AbstractCourseReplicationSe
     }
   }
 
-  private void ExtractParams(RequestData requestData) throws ErrorResponseException {
-    CheckParamsEncoding(requestData);
+  private void extractParams(RequestData requestData) throws ErrorResponseException {
+    checkParamsEncoding(requestData);
     Map<String, List<String>> params = InternetTestHelpers.extractAllParams(requestData.request);
 
     requestData.requestedHeiIds = params.getOrDefault("hei_id", new ArrayList<>());
@@ -102,23 +103,23 @@ public class CourseReplicationServiceV1Valid extends AbstractCourseReplicationSe
     }
 
     if (!hasHeiId && !hasModifiedSince) {
-      ErrorNoParameters(requestData, params);
+      errorNoParameters(requestData, params);
     }
 
     if (multipleHeiId) {
-      ErrorMultipleHeiIds(requestData);
+      errorMultipleHeiIds(requestData);
     }
 
     if (multipleModifiedSince) {
-      ErrorMultipleModifiedSince(requestData);
+      errorMultipleModifiedSince(requestData);
     }
 
     if (!hasHeiId) {
-      ErrorNoHeiId(requestData, params);
+      errorNoHeiId(requestData, params);
     }
 
     if (params.size() > count_params) {
-      ErrorAdditionalParameters(requestData, params);
+      errorAdditionalParameters(requestData, params);
     }
 
     if (requestData.requestedHeiId == null) {
@@ -126,17 +127,17 @@ public class CourseReplicationServiceV1Valid extends AbstractCourseReplicationSe
     }
   }
 
-  private void ErrorMultipleModifiedSince(RequestData requestData) throws ErrorResponseException {
+  private void errorMultipleModifiedSince(RequestData requestData) throws ErrorResponseException {
     throw new ErrorResponseException(
         createErrorResponse(requestData.request, 400, "Multiple modified_since params."));
   }
 
-  protected void ErrorMultipleHeiIds(RequestData requestData) throws ErrorResponseException {
+  protected void errorMultipleHeiIds(RequestData requestData) throws ErrorResponseException {
     throw new ErrorResponseException(
         createErrorResponse(requestData.request, 400, "Multiple HEI IDs."));
   }
 
-  protected void CheckParamsEncoding(RequestData requestData) throws ErrorResponseException {
+  protected void checkParamsEncoding(RequestData requestData) throws ErrorResponseException {
     if (requestData.request.getMethod().equals("POST")
         && !requestData.request.getHeader("content-type")
         .equals("application/x-www-form-urlencoded")) {
@@ -145,30 +146,30 @@ public class CourseReplicationServiceV1Valid extends AbstractCourseReplicationSe
     }
   }
 
-  protected void ErrorAdditionalParameters(RequestData requestData,
+  protected void errorAdditionalParameters(RequestData requestData,
       Map<String, List<String>> params)
       throws ErrorResponseException {
     //Ignore unknown parameters
   }
 
-  protected void ErrorNoHeiId(RequestData requestData, Map<String, List<String>> params)
+  protected void errorNoHeiId(RequestData requestData, Map<String, List<String>> params)
       throws ErrorResponseException {
     throw new ErrorResponseException(
         createErrorResponse(requestData.request, 400, "Expected \"hei_id\" parameters"));
   }
 
-  protected void ErrorNoParameters(RequestData requestData, Map<String, List<String>> params)
+  protected void errorNoParameters(RequestData requestData, Map<String, List<String>> params)
       throws ErrorResponseException {
     throw new ErrorResponseException(
         createErrorResponse(requestData.request, 400, "No parameters provided"));
   }
 
-  protected void ErrorInvalidModifiedSince(RequestData requestData) throws ErrorResponseException {
+  protected void errorInvalidModifiedSince(RequestData requestData) throws ErrorResponseException {
     throw new ErrorResponseException(
         createErrorResponse(requestData.request, 400, "Invalid modified_since format."));
   }
 
-  protected void CheckRequestMethod(RequestData requestData) throws ErrorResponseException {
+  protected void checkRequestMethod(RequestData requestData) throws ErrorResponseException {
     if (!(requestData.request.getMethod().equals("GET")
         || requestData.request.getMethod().equals("POST"))) {
       throw new ErrorResponseException(
@@ -176,7 +177,7 @@ public class CourseReplicationServiceV1Valid extends AbstractCourseReplicationSe
     }
   }
 
-  protected List<String> ProcessCoveredHei(RequestData requestData)
+  protected List<String> processCoveredHei(RequestData requestData)
       throws ErrorResponseException {
     if (requestData.requestedModifiedSinceDate != null
         && requestData.requestedModifiedSinceDate.isAfter(ZonedDateTime.now())) {
@@ -185,18 +186,18 @@ public class CourseReplicationServiceV1Valid extends AbstractCourseReplicationSe
     return coveredLosIds;
   }
 
-  protected List<String> ProcessNotCoveredHei(RequestData requestData)
+  protected List<String> processNotCoveredHei(RequestData requestData)
       throws ErrorResponseException {
     throw new ErrorResponseException(
         this.createErrorResponse(requestData.request, 400, "Unknown HEI ID."));
   }
 
-  protected List<String> ProcessHei(RequestData requestData)
+  protected List<String> processHei(RequestData requestData)
       throws ErrorResponseException {
     if (coveredHeiIds.contains(requestData.requestedHeiId)) {
-      return ProcessCoveredHei(requestData);
+      return processCoveredHei(requestData);
     } else {
-      return ProcessNotCoveredHei(requestData);
+      return processNotCoveredHei(requestData);
     }
   }
 

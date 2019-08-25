@@ -4,8 +4,6 @@ import static eu.erasmuswithoutpaper.registry.validators.TestValidationReportAss
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.TestValidationReport;
@@ -21,7 +19,7 @@ public class IiaIndexValidatorTest extends IiaValidatorTestBase {
   protected IiaIndexValidator validator;
 
   @Override
-  protected ApiValidator<IiaSuiteState> GetValidator() {
+  protected ApiValidator<IiaSuiteState> getValidator() {
     return validator;
   }
 

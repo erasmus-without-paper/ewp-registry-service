@@ -76,10 +76,10 @@ public class MtProjectsV010Valid extends AbstractMtProjectsService {
       Request request) throws IOException, ErrorResponseException {
     try {
       RequestData requestData = new RequestData(request);
-      VerifyCertificate(requestData);
-      CheckRequestMethod(requestData);
-      ExtractParams(requestData);
-      List<MtProjectsResponse.Project> projects = ProcessPics(requestData);
+      verifyCertificate(requestData);
+      checkRequestMethod(requestData);
+      extractParams(requestData);
+      List<MtProjectsResponse.Project> projects = processPics(requestData);
       return createMtProjectsReponse(projects);
     } catch (ErrorResponseException e) {
       return e.response;
@@ -87,10 +87,10 @@ public class MtProjectsV010Valid extends AbstractMtProjectsService {
 
   }
 
-  protected List<MtProjectsResponse.Project> ProcessPics(
+  protected List<MtProjectsResponse.Project> processPics(
       RequestData requestData) throws ErrorResponseException {
     if (!coveredProjects.containsKey(requestData.pic)) {
-      ErrorInvalidPic(requestData);
+      errorInvalidPic(requestData);
     }
     List<MtProjectsResponse.Project> projects = coveredProjects
         .getOrDefault(requestData.pic, new ArrayList<>());
@@ -99,7 +99,7 @@ public class MtProjectsV010Valid extends AbstractMtProjectsService {
         .collect(Collectors.toList());
   }
 
-  protected void ErrorInvalidPic(RequestData requestData) throws ErrorResponseException {
+  protected void errorInvalidPic(RequestData requestData) throws ErrorResponseException {
     throw new ErrorResponseException(
         createErrorResponse(requestData.request, 400, "No pic parameter")
     );
@@ -110,7 +110,7 @@ public class MtProjectsV010Valid extends AbstractMtProjectsService {
         && callYear <= project.getEndDate().getYear();
   }
 
-  private void VerifyCertificate(RequestData requestData) throws ErrorResponseException {
+  private void verifyCertificate(RequestData requestData) throws ErrorResponseException {
     try {
       this.myAuthorizer.authorize(requestData.request);
     } catch (Http4xx e) {
@@ -120,7 +120,7 @@ public class MtProjectsV010Valid extends AbstractMtProjectsService {
     }
   }
 
-  protected void CheckRequestMethod(RequestData requestData) throws ErrorResponseException {
+  protected void checkRequestMethod(RequestData requestData) throws ErrorResponseException {
     if (!(requestData.request.getMethod().equals("GET")
         || requestData.request.getMethod().equals("POST"))) {
       throw new ErrorResponseException(
@@ -129,8 +129,8 @@ public class MtProjectsV010Valid extends AbstractMtProjectsService {
     }
   }
 
-  private void ExtractParams(RequestData requestData) throws ErrorResponseException {
-    CheckParamsEncoding(requestData);
+  private void extractParams(RequestData requestData) throws ErrorResponseException {
+    checkParamsEncoding(requestData);
     Map<String, List<String>> params =
         InternetTestHelpers.extractAllParams(requestData.request);
 
@@ -143,19 +143,19 @@ public class MtProjectsV010Valid extends AbstractMtProjectsService {
     boolean multipleCallYears = callYears.size() > 1;
 
     if (params.size() == 0) {
-      ErrorNoParams(requestData);
+      errorNoParams(requestData);
     }
     if (!hasPic) {
-      ErrorNoPic(requestData);
+      errorNoPic(requestData);
     }
     if (!hasCallYear) {
-      ErrorNoCallYear(requestData);
+      errorNoCallYear(requestData);
     }
     if (multipleCallYears) {
-      ErrorMultipleCallYears(requestData);
+      errorMultipleCallYears(requestData);
     }
     if (multiplePics) {
-      ErrorMultiplePics(requestData);
+      errorMultiplePics(requestData);
     }
 
     if (hasPic) {
@@ -163,14 +163,14 @@ public class MtProjectsV010Valid extends AbstractMtProjectsService {
     }
 
     if (hasCallYear) {
-      requestData.callYear = ParseCallYear(requestData, callYears.get(0));
+      requestData.callYear = parseCallYear(requestData, callYears.get(0));
     }
 
     int expectedParams = 0;
     expectedParams += hasPic ? 1 : 0;
     expectedParams += hasCallYear ? 1 : 0;
     if (params.size() > expectedParams) {
-      HandleUnexpectedParams(requestData);
+      handleUnexpectedParams(requestData);
     }
 
     if (requestData.pic == null || requestData.callYear == null) {
@@ -179,45 +179,45 @@ public class MtProjectsV010Valid extends AbstractMtProjectsService {
     }
   }
 
-  protected int ParseCallYear(RequestData requestData,
+  protected int parseCallYear(RequestData requestData,
       String callYear) throws ErrorResponseException {
     int parsed;
     try {
       parsed = Integer.parseInt(callYear);
     } catch (NumberFormatException e) {
-      return ErrorInvalidCallYearFormat(requestData);
+      return errorInvalidCallYearFormat(requestData);
     }
 
     if (parsed == 0) {
-      HandleCallYearZero(requestData);
+      handleCallYearZero(requestData);
     }
 
     if (parsed < 0) {
-      HandleCallYearNegative(requestData);
+      handleCallYearNegative(requestData);
     }
 
-    return AdditionalCallYearCheck(requestData, parsed);
+    return additionalCallYearCheck(requestData, parsed);
   }
 
-  protected int AdditionalCallYearCheck(RequestData requestData, Integer parsed) throws ErrorResponseException {
+  protected int additionalCallYearCheck(RequestData requestData, Integer parsed) throws ErrorResponseException {
     return parsed;
   }
 
-  protected int ErrorInvalidCallYearFormat(RequestData requestData) throws ErrorResponseException {
+  protected int errorInvalidCallYearFormat(RequestData requestData) throws ErrorResponseException {
     throw new ErrorResponseException(
         createErrorResponse(requestData.request, 400, "Invalid call_year format")
     );
   }
 
-  protected void HandleCallYearZero(RequestData requestData) throws ErrorResponseException {
+  protected void handleCallYearZero(RequestData requestData) throws ErrorResponseException {
     // do nothing
   }
 
-  protected void HandleCallYearNegative(RequestData requestData) throws ErrorResponseException {
+  protected void handleCallYearNegative(RequestData requestData) throws ErrorResponseException {
     // do nothing
   }
 
-  protected void CheckParamsEncoding(RequestData requestData) throws ErrorResponseException {
+  protected void checkParamsEncoding(RequestData requestData) throws ErrorResponseException {
     if (requestData.request.getMethod().equals("POST")
         && !requestData.request.getHeader("content-type")
         .equals("application/x-www-form-urlencoded")) {
@@ -227,37 +227,37 @@ public class MtProjectsV010Valid extends AbstractMtProjectsService {
     }
   }
 
-  protected void ErrorNoParams(RequestData requestData) throws ErrorResponseException {
+  protected void errorNoParams(RequestData requestData) throws ErrorResponseException {
     throw new ErrorResponseException(
         createErrorResponse(requestData.request, 400, "No parameters provided")
     );
   }
 
-  protected void ErrorNoPic(RequestData requestData) throws ErrorResponseException {
+  protected void errorNoPic(RequestData requestData) throws ErrorResponseException {
     throw new ErrorResponseException(
         createErrorResponse(requestData.request, 400, "No pic parameter")
     );
   }
 
-  protected void ErrorNoCallYear(RequestData requestData) throws ErrorResponseException {
+  protected void errorNoCallYear(RequestData requestData) throws ErrorResponseException {
     throw new ErrorResponseException(
         createErrorResponse(requestData.request, 400, "No call_year parameter")
     );
   }
 
-  protected void ErrorMultipleCallYears(RequestData requestData) throws ErrorResponseException {
+  protected void errorMultipleCallYears(RequestData requestData) throws ErrorResponseException {
     throw new ErrorResponseException(
         createErrorResponse(requestData.request, 400, "Multiple call_year parameters")
     );
   }
 
-  protected void ErrorMultiplePics(RequestData requestData) throws ErrorResponseException {
+  protected void errorMultiplePics(RequestData requestData) throws ErrorResponseException {
     throw new ErrorResponseException(
         createErrorResponse(requestData.request, 400, "Multiple pic parameters")
     );
   }
 
-  protected void HandleUnexpectedParams(RequestData requestData) throws ErrorResponseException {
+  protected void handleUnexpectedParams(RequestData requestData) throws ErrorResponseException {
     //Ignore
   }
 }

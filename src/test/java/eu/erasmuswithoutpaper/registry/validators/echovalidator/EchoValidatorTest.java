@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 import org.assertj.core.util.Lists;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class EchoValidatorTest extends AbstractApiTest {
@@ -858,7 +857,7 @@ public class EchoValidatorTest extends AbstractApiTest {
   }
 
   @Override
-  protected ApiValidator<EchoSuiteState> GetValidator() {
+  protected ApiValidator<EchoSuiteState> getValidator() {
     return validator;
   }
 

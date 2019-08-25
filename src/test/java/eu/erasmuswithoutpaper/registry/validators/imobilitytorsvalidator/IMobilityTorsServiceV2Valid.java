@@ -19,13 +19,13 @@ import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 import org.springframework.core.io.ResourceLoader;
 
 public class IMobilityTorsServiceV2Valid extends AbstractIMobilityTorsService {
-  protected class IMobilityTorEntry {
+  protected static class IMobilityTorEntry {
     public ImobilityTorsGetResponse.Tor tor;
     public String receiving_hei_id;
     public String sending_hei_id;
 
-    public IMobilityTorEntry(
-        ImobilityTorsGetResponse.Tor tor, String receiving_hei_id, String sending_hei_id) {
+    public IMobilityTorEntry(ImobilityTorsGetResponse.Tor tor, String receiving_hei_id,
+        String sending_hei_id) {
       this.tor = tor;
       this.receiving_hei_id = receiving_hei_id;
       this.sending_hei_id = sending_hei_id;
@@ -53,8 +53,9 @@ public class IMobilityTorsServiceV2Valid extends AbstractIMobilityTorsService {
     String filename = "imobilitytorsvalidator/tor.xml";
     try {
       JAXBContext jc = JAXBContext.newInstance(ImobilityTorsGetResponse.class);
-      ImobilityTorsGetResponse parsedRespone = (ImobilityTorsGetResponse) jc.createUnmarshaller().unmarshal(
-          resourceLoader.getResource("classpath:test-files/" + filename).getInputStream());
+      ImobilityTorsGetResponse parsedRespone = (ImobilityTorsGetResponse) jc.createUnmarshaller()
+          .unmarshal(
+              resourceLoader.getResource("classpath:test-files/" + filename).getInputStream());
       return parsedRespone.getTor();
     } catch (JAXBException | IOException e) {
       throw new RuntimeException(e);

@@ -38,12 +38,12 @@ public class OUnitsValidatorTest extends AbstractApiTest {
   private InstitutionServiceV2Valid GetInstitutions() {
     return new InstitutionServiceV2Valid(institutionsUrlHTTT, client, validatorKeyStore) {
       @Override
-      protected List<String> GetCoveredOUnits() {
+      protected List<String> getCoveredOUnits() {
         return Arrays.asList("ounit-1", "ounit-2", "ounit-3");
       }
 
       @Override
-      protected String GetRootOUnit() {
+      protected String getRootOUnit() {
         return "ounit-3";
       }
     };
@@ -62,7 +62,7 @@ public class OUnitsValidatorTest extends AbstractApiTest {
     OUnitsServiceV2Valid service =
         new OUnitsServiceV2Valid(ounitsUrlHTTT, this.client, GetInstitutions()) {
           @Override
-          protected void ErrorMaxOUnitIdsExceeded() throws ErrorResponseException {
+          protected void errorMaxOUnitIdsExceeded() throws ErrorResponseException {
             //Do nothing
           }
         };
@@ -76,7 +76,7 @@ public class OUnitsValidatorTest extends AbstractApiTest {
     OUnitsServiceV2Valid service =
         new OUnitsServiceV2Valid(ounitsUrlHTTT, this.client, GetInstitutions()) {
           @Override
-          protected void ErrorMaxOUnitCodesExceeded() throws ErrorResponseException {
+          protected void errorMaxOUnitCodesExceeded() throws ErrorResponseException {
             //Do nothing
           }
         };
@@ -90,7 +90,7 @@ public class OUnitsValidatorTest extends AbstractApiTest {
     OUnitsServiceV2Valid service =
         new OUnitsServiceV2Valid(ounitsUrlHTTT, this.client, GetInstitutions()) {
           @Override
-          protected void ErrorNoParams()
+          protected void errorNoParams()
               throws ErrorResponseException {
             throw new ErrorResponseException(
                 createOUnitsResponse(new ArrayList<>())
@@ -106,7 +106,7 @@ public class OUnitsValidatorTest extends AbstractApiTest {
     OUnitsServiceV2Valid service =
         new OUnitsServiceV2Valid(ounitsUrlHTTT, this.client, GetInstitutions()) {
           @Override
-          protected void HandleUnexpectedParams() throws ErrorResponseException {
+          protected void handleUnexpectedParams() throws ErrorResponseException {
             throw new ErrorResponseException(
                 createErrorResponse(this.currentRequest, 400, "Unknown parameter")
             );
@@ -122,7 +122,7 @@ public class OUnitsValidatorTest extends AbstractApiTest {
     OUnitsServiceV2Valid service =
         new OUnitsServiceV2Valid(ounitsUrlHTTT, this.client, GetInstitutions()) {
           @Override
-          protected void ErrorNoHeiId() throws ErrorResponseException {
+          protected void errorNoHeiId() throws ErrorResponseException {
             throw new ErrorResponseException(
                 createOUnitsResponse(new ArrayList<>())
             );
@@ -137,7 +137,7 @@ public class OUnitsValidatorTest extends AbstractApiTest {
     OUnitsServiceV2Valid service =
         new OUnitsServiceV2Valid(ounitsUrlHTTT, this.client, GetInstitutions()) {
           @Override
-          protected void ErrorNoIdsNorCodes() throws ErrorResponseException {
+          protected void errorNoIdsNorCodes() throws ErrorResponseException {
             throw new ErrorResponseException(
                 createOUnitsResponse(new ArrayList<>())
             );
@@ -152,7 +152,7 @@ public class OUnitsValidatorTest extends AbstractApiTest {
     OUnitsServiceV2Valid service =
         new OUnitsServiceV2Valid(ounitsUrlHTTT, this.client, GetInstitutions()) {
           @Override
-          protected void ErrorMultipleHeiIds() throws ErrorResponseException {
+          protected void errorMultipleHeiIds() throws ErrorResponseException {
             //Ignore
           }
         };
@@ -167,7 +167,7 @@ public class OUnitsValidatorTest extends AbstractApiTest {
     OUnitsServiceV2Valid service =
         new OUnitsServiceV2Valid(ounitsUrlHTTT, this.client, GetInstitutions()) {
           @Override
-          protected void ErrorIdsAndCodes() throws ErrorResponseException {
+          protected void errorIdsAndCodes() throws ErrorResponseException {
             //Ignore
           }
         };
@@ -181,7 +181,7 @@ public class OUnitsValidatorTest extends AbstractApiTest {
     OUnitsServiceV2Valid service =
         new OUnitsServiceV2Valid(ounitsUrlHTTT, this.client, GetInstitutions()) {
           @Override
-          protected void ErrorIdsAndCodes() throws ErrorResponseException {
+          protected void errorIdsAndCodes() throws ErrorResponseException {
             this.requestedOUnitCodes.clear();
           }
         };
@@ -195,7 +195,7 @@ public class OUnitsValidatorTest extends AbstractApiTest {
     OUnitsServiceV2Valid service =
         new OUnitsServiceV2Valid(ounitsUrlHTTT, this.client, GetInstitutions()) {
           @Override
-          protected void ErrorIdsAndCodes() throws ErrorResponseException {
+          protected void errorIdsAndCodes() throws ErrorResponseException {
             this.requestedOUnitIds.clear();
           }
         };
@@ -209,8 +209,8 @@ public class OUnitsValidatorTest extends AbstractApiTest {
     OUnitsServiceV2Valid service =
         new OUnitsServiceV2Valid(ounitsUrlHTTT, this.client, GetInstitutions()) {
           @Override
-          protected void ErrorNoHeiId() throws ErrorResponseException {
-            this.requestedHeiId = this.institutionsServiceV2.GetCoveredHeiIds().get(0);
+          protected void errorNoHeiId() throws ErrorResponseException {
+            this.requestedHeiId = this.institutionsServiceV2.getCoveredHeiIds().get(0);
           }
         };
     TestValidationReport report = this.getRawReport(service);
@@ -222,7 +222,7 @@ public class OUnitsValidatorTest extends AbstractApiTest {
     OUnitsServiceV2Valid service =
         new OUnitsServiceV2Valid(ounitsUrlHTTT, this.client, GetInstitutions()) {
           @Override
-          protected void ErrorNoIdsNorCodes() throws ErrorResponseException {
+          protected void errorNoIdsNorCodes() throws ErrorResponseException {
             String id = this.coveredOUnitsIds.values().iterator().next().getOunitId();
             this.requestedOUnitIds = Arrays.asList(id);
             this.requestedOUnitCodes = new ArrayList<>();
@@ -237,7 +237,7 @@ public class OUnitsValidatorTest extends AbstractApiTest {
     OUnitsServiceV2Valid service =
         new OUnitsServiceV2Valid(ounitsUrlHTTT, this.client, GetInstitutions()) {
           @Override
-          protected void ErrorUnknownHeiId() throws ErrorResponseException {
+          protected void errorUnknownHeiId() throws ErrorResponseException {
             throw new ErrorResponseException(
                 createOUnitsResponse(new ArrayList<>())
             );
@@ -253,8 +253,8 @@ public class OUnitsValidatorTest extends AbstractApiTest {
     OUnitsServiceV2Valid service =
         new OUnitsServiceV2Valid(ounitsUrlHTTT, this.client, GetInstitutions()) {
           @Override
-          protected void ErrorUnknownHeiId() throws ErrorResponseException {
-            this.requestedHeiId = this.institutionsServiceV2.GetCoveredHeiIds().get(0);
+          protected void errorUnknownHeiId() throws ErrorResponseException {
+            this.requestedHeiId = this.institutionsServiceV2.getCoveredHeiIds().get(0);
           }
         };
     TestValidationReport report = this.getRawReport(service);
@@ -267,7 +267,7 @@ public class OUnitsValidatorTest extends AbstractApiTest {
     OUnitsServiceV2Valid service =
         new OUnitsServiceV2Valid(ounitsUrlHTTT, this.client, GetInstitutions()) {
           @Override
-          protected OunitsResponse.Ounit HandleKnownOUnit(OunitsResponse.Ounit data) {
+          protected OunitsResponse.Ounit handleKnownOUnit(OunitsResponse.Ounit data) {
             data.setOunitId("invalid-id");
             return data;
           }
@@ -281,7 +281,7 @@ public class OUnitsValidatorTest extends AbstractApiTest {
     OUnitsServiceV2Valid service =
         new OUnitsServiceV2Valid(ounitsUrlHTTT, this.client, GetInstitutions()) {
           @Override
-          protected OunitsResponse.Ounit HandleUnknownOUnit() {
+          protected OunitsResponse.Ounit handleUnknownOUnit() {
             return this.coveredOUnitsIds.values().iterator().next();
           }
         };
@@ -295,10 +295,10 @@ public class OUnitsValidatorTest extends AbstractApiTest {
     OUnitsServiceV2Valid service =
         new OUnitsServiceV2Valid(ounitsUrlHTTT, this.client, GetInstitutions()) {
           @Override
-          protected List<OunitsResponse.Ounit> ProcessRequested(
+          protected List<OunitsResponse.Ounit> processRequested(
               List<String> requested,
               Map<String, OunitsResponse.Ounit> covered) {
-            return new ArrayList<>(new HashSet<>(super.ProcessRequested(requested, covered)));
+            return new ArrayList<>(new HashSet<>(super.processRequested(requested, covered)));
           }
         };
     TestValidationReport report = this.getRawReport(service);
@@ -335,7 +335,7 @@ public class OUnitsValidatorTest extends AbstractApiTest {
   }
 
   @Override
-  protected ApiValidator GetValidator() {
+  protected ApiValidator getValidator() {
     return validator;
   }
 

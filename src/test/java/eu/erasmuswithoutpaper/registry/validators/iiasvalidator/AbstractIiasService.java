@@ -71,7 +71,7 @@ public abstract class AbstractIiasService extends AbstractApiService {
     }
   }
 
-  protected void CheckParamsEncoding(Request request) throws ErrorResponseException {
+  protected void checkParamsEncoding(Request request) throws ErrorResponseException {
     if (request.getMethod().equals("POST")
         && !request.getHeader("content-type").equals("application/x-www-form-urlencoded")) {
       throw new ErrorResponseException(

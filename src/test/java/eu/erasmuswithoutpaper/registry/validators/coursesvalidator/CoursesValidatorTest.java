@@ -46,7 +46,7 @@ public class CoursesValidatorTest extends AbstractApiTest {
   }
 
   @Override
-  protected ApiValidator GetValidator() {
+  protected ApiValidator getValidator() {
     return validator;
   }
 
@@ -67,7 +67,7 @@ public class CoursesValidatorTest extends AbstractApiTest {
     CoursesServiceV070Valid service =
         new CoursesServiceV070Valid(coursesUrlHTTT, this.client, GetCoursesReplication()) {
           @Override
-          protected void ErrorMaxLosIdsExceeded(
+          protected void errorMaxLosIdsExceeded(
               RequestData requestData) throws ErrorResponseException {
             //Do nothing
           }
@@ -82,7 +82,7 @@ public class CoursesValidatorTest extends AbstractApiTest {
     CoursesServiceV070Valid service =
         new CoursesServiceV070Valid(coursesUrlHTTT, this.client, GetCoursesReplication()) {
           @Override
-          protected void ErrorMaxLosCodesExceeded(
+          protected void errorMaxLosCodesExceeded(
               RequestData requestData) throws ErrorResponseException {
             //Do nothing
           }
@@ -97,7 +97,7 @@ public class CoursesValidatorTest extends AbstractApiTest {
     CoursesServiceV070Valid service =
         new CoursesServiceV070Valid(coursesUrlHTTT, this.client, GetCoursesReplication()) {
           @Override
-          protected void ErrorNoParams(
+          protected void errorNoParams(
               RequestData requestData)
               throws ErrorResponseException {
             throw new ErrorResponseException(
@@ -114,7 +114,7 @@ public class CoursesValidatorTest extends AbstractApiTest {
     CoursesServiceV070Valid service =
         new CoursesServiceV070Valid(coursesUrlHTTT, this.client, GetCoursesReplication()) {
           @Override
-          protected void HandleUnexpectedParams(RequestData requestData)
+          protected void handleUnexpectedParams(RequestData requestData)
               throws ErrorResponseException {
             throw new ErrorResponseException(
                 createErrorResponse(requestData.request, 400, "Unknown parameter")
@@ -131,7 +131,7 @@ public class CoursesValidatorTest extends AbstractApiTest {
     CoursesServiceV070Valid service =
         new CoursesServiceV070Valid(coursesUrlHTTT, this.client, GetCoursesReplication()) {
           @Override
-          protected void ErrorNoHeiId(RequestData requestData) throws ErrorResponseException {
+          protected void errorNoHeiId(RequestData requestData) throws ErrorResponseException {
             throw new ErrorResponseException(
                 createCoursesResponse(new ArrayList<>())
             );
@@ -146,7 +146,7 @@ public class CoursesValidatorTest extends AbstractApiTest {
     CoursesServiceV070Valid service =
         new CoursesServiceV070Valid(coursesUrlHTTT, this.client, GetCoursesReplication()) {
           @Override
-          protected void ErrorNoIdsNorCodes(RequestData requestData) throws ErrorResponseException {
+          protected void errorNoIdsNorCodes(RequestData requestData) throws ErrorResponseException {
             throw new ErrorResponseException(
                 createCoursesResponse(new ArrayList<>())
             );
@@ -161,7 +161,7 @@ public class CoursesValidatorTest extends AbstractApiTest {
     CoursesServiceV070Valid service =
         new CoursesServiceV070Valid(coursesUrlHTTT, this.client, GetCoursesReplication()) {
           @Override
-          protected void ErrorMultipleHeiIds(RequestData requestData)
+          protected void errorMultipleHeiIds(RequestData requestData)
               throws ErrorResponseException {
             //Ignore
           }
@@ -175,7 +175,7 @@ public class CoursesValidatorTest extends AbstractApiTest {
     CoursesServiceV070Valid service =
         new CoursesServiceV070Valid(coursesUrlHTTT, this.client, GetCoursesReplication()) {
           @Override
-          protected void ErrorIdsAndCodes(RequestData requestData) throws ErrorResponseException {
+          protected void errorIdsAndCodes(RequestData requestData) throws ErrorResponseException {
             //Ignore
           }
         };
@@ -189,7 +189,7 @@ public class CoursesValidatorTest extends AbstractApiTest {
     CoursesServiceV070Valid service =
         new CoursesServiceV070Valid(coursesUrlHTTT, this.client, GetCoursesReplication()) {
           @Override
-          protected void ErrorIdsAndCodes(RequestData requestData) throws ErrorResponseException {
+          protected void errorIdsAndCodes(RequestData requestData) throws ErrorResponseException {
             requestData.losCodes.clear();
           }
         };
@@ -203,7 +203,7 @@ public class CoursesValidatorTest extends AbstractApiTest {
     CoursesServiceV070Valid service =
         new CoursesServiceV070Valid(coursesUrlHTTT, this.client, GetCoursesReplication()) {
           @Override
-          protected void ErrorIdsAndCodes(RequestData requestData) throws ErrorResponseException {
+          protected void errorIdsAndCodes(RequestData requestData) throws ErrorResponseException {
             requestData.losIds.clear();
           }
         };
@@ -217,8 +217,8 @@ public class CoursesValidatorTest extends AbstractApiTest {
     CoursesServiceV070Valid service =
         new CoursesServiceV070Valid(coursesUrlHTTT, this.client, GetCoursesReplication()) {
           @Override
-          protected void ErrorNoHeiId(RequestData requestData) throws ErrorResponseException {
-            requestData.heiId = this.CourseReplicationServiceV2.GetCoveredHeiIds().get(0);
+          protected void errorNoHeiId(RequestData requestData) throws ErrorResponseException {
+            requestData.heiId = this.CourseReplicationServiceV2.getCoveredHeiIds().get(0);
           }
         };
     TestValidationReport report = this.getRawReport(service);
@@ -230,7 +230,7 @@ public class CoursesValidatorTest extends AbstractApiTest {
     CoursesServiceV070Valid service =
         new CoursesServiceV070Valid(coursesUrlHTTT, this.client, GetCoursesReplication()) {
           @Override
-          protected void ErrorNoIdsNorCodes(RequestData requestData) throws ErrorResponseException {
+          protected void errorNoIdsNorCodes(RequestData requestData) throws ErrorResponseException {
             String id = this.coveredLosIds.values().iterator().next().getLosId();
             requestData.losIds = Arrays.asList(id);
             requestData.losCodes = new ArrayList<>();
@@ -245,7 +245,7 @@ public class CoursesValidatorTest extends AbstractApiTest {
     CoursesServiceV070Valid service =
         new CoursesServiceV070Valid(coursesUrlHTTT, this.client, GetCoursesReplication()) {
           @Override
-          protected void ErrorUnknownHeiId(RequestData requestData) throws ErrorResponseException {
+          protected void errorUnknownHeiId(RequestData requestData) throws ErrorResponseException {
             throw new ErrorResponseException(
                 createCoursesResponse(new ArrayList<>())
             );
@@ -261,8 +261,8 @@ public class CoursesValidatorTest extends AbstractApiTest {
     CoursesServiceV070Valid service =
         new CoursesServiceV070Valid(coursesUrlHTTT, this.client, GetCoursesReplication()) {
           @Override
-          protected void ErrorUnknownHeiId(RequestData requestData) throws ErrorResponseException {
-            requestData.heiId = this.CourseReplicationServiceV2.GetCoveredHeiIds().get(0);
+          protected void errorUnknownHeiId(RequestData requestData) throws ErrorResponseException {
+            requestData.heiId = this.CourseReplicationServiceV2.getCoveredHeiIds().get(0);
           }
         };
     TestValidationReport report = this.getRawReport(service);
@@ -275,7 +275,7 @@ public class CoursesValidatorTest extends AbstractApiTest {
     CoursesServiceV070Valid service =
         new CoursesServiceV070Valid(coursesUrlHTTT, this.client, GetCoursesReplication()) {
           @Override
-          protected CoursesResponse.LearningOpportunitySpecification HandleKnownLos(
+          protected CoursesResponse.LearningOpportunitySpecification handleKnownLos(
               RequestData requestData,
               CoursesResponse.LearningOpportunitySpecification data) {
             data.setLosId("invalid-id");
@@ -292,7 +292,7 @@ public class CoursesValidatorTest extends AbstractApiTest {
     CoursesServiceV070Valid service =
         new CoursesServiceV070Valid(coursesUrlHTTT, this.client, GetCoursesReplication()) {
           @Override
-          protected CoursesResponse.LearningOpportunitySpecification HandleUnknownLos(
+          protected CoursesResponse.LearningOpportunitySpecification handleUnknownLos(
               RequestData requestData) {
             return this.coveredLosIds.values().iterator().next();
           }
@@ -307,11 +307,11 @@ public class CoursesValidatorTest extends AbstractApiTest {
     CoursesServiceV070Valid service =
         new CoursesServiceV070Valid(coursesUrlHTTT, this.client, GetCoursesReplication()) {
           @Override
-          protected List<CoursesResponse.LearningOpportunitySpecification> ProcessRequested(
+          protected List<CoursesResponse.LearningOpportunitySpecification> processRequested(
               RequestData requestData, List<String> requested,
               Map<String, CoursesResponse.LearningOpportunitySpecification> covered) {
             return new ArrayList<>(
-                new HashSet<>(super.ProcessRequested(requestData, requested, covered)));
+                new HashSet<>(super.processRequested(requestData, requested, covered)));
           }
         };
     TestValidationReport report = this.getRawReport(service);
@@ -352,7 +352,7 @@ public class CoursesValidatorTest extends AbstractApiTest {
     CoursesServiceV070Valid service =
         new CoursesServiceV070Valid(coursesUrlHTTT, this.client, GetCoursesReplication()) {
           @Override
-          protected XMLGregorianCalendar ErrorDateFormat(
+          protected XMLGregorianCalendar errorDateFormat(
               RequestData requestData) throws ErrorResponseException {
             try {
               return DatatypeFactory.newInstance()
@@ -373,12 +373,12 @@ public class CoursesValidatorTest extends AbstractApiTest {
     CoursesServiceV070Valid service =
         new CoursesServiceV070Valid(coursesUrlHTTT, this.client, GetCoursesReplication()) {
           @Override
-          protected XMLGregorianCalendar CheckDateFormat(
+          protected XMLGregorianCalendar checkDateFormat(
               RequestData requestData,
               String date)
               throws ErrorResponseException {
             try {
-              return super.CheckDateFormat(requestData, date);
+              return super.checkDateFormat(requestData, date);
             } catch (ErrorResponseException e) {
               // Ignore, try different format
             }
@@ -389,7 +389,7 @@ public class CoursesValidatorTest extends AbstractApiTest {
               return DatatypeFactory.newInstance()
                   .newXMLGregorianCalendar(2000, 1, 1, 0, 0, 0, 0, 0);
             } catch (DateTimeParseException | DatatypeConfigurationException e) {
-              return ErrorDateFormat(requestData);
+              return errorDateFormat(requestData);
             }
           }
         };
@@ -402,7 +402,7 @@ public class CoursesValidatorTest extends AbstractApiTest {
     CoursesServiceV070Valid service =
         new CoursesServiceV070Valid(coursesUrlHTTT, this.client, GetCoursesReplication()) {
           @Override
-          protected void ErrorMultipleLoisAfter(
+          protected void errorMultipleLoisAfter(
               RequestData requestData) throws ErrorResponseException {
             // Ignore
           }
@@ -416,7 +416,7 @@ public class CoursesValidatorTest extends AbstractApiTest {
     CoursesServiceV070Valid service =
         new CoursesServiceV070Valid(coursesUrlHTTT, this.client, GetCoursesReplication()) {
           @Override
-          protected void ErrorMultipleLoisBefore(
+          protected void errorMultipleLoisBefore(
               RequestData requestData) throws ErrorResponseException {
             // Ignore
           }

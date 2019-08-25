@@ -1,17 +1,13 @@
 package eu.erasmuswithoutpaper.registry.validators.iiavalidator.index;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import eu.erasmuswithoutpaper.registry.validators.AbstractValidationSuite;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.Combination;
 import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
-import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus.Status;
 import eu.erasmuswithoutpaper.registry.validators.iiavalidator.IiaSuiteState;
-import eu.erasmuswithoutpaper.registry.validators.verifiers.ListEqualVerifier;
-import eu.erasmuswithoutpaper.registry.validators.verifiers.NoopVerifier;
+import eu.erasmuswithoutpaper.registry.validators.verifiers.VerifierFactory;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.slf4j.Logger;
@@ -53,7 +49,7 @@ class IiaIndexBasicValidationSuiteV2 extends AbstractValidationSuite<IiaSuiteSta
         Arrays.asList(
             new Parameter("hei_id", this.currentState.selectedHeiId)
         ),
-        new IiaIndexVerifier()
+        iiaIdVerifierFactory.expectCorrectResponse()
     );
 
     testParametersError(
@@ -84,7 +80,7 @@ class IiaIndexBasicValidationSuiteV2 extends AbstractValidationSuite<IiaSuiteSta
             new Parameter("hei_id", this.currentState.selectedHeiId),
             new Parameter("receiving_academic_year_id", "2010/2010")
         ),
-        new IiaIndexVerifier()
+        iiaIdVerifierFactory.expectCorrectResponse()
     );
      */
 
@@ -96,7 +92,7 @@ class IiaIndexBasicValidationSuiteV2 extends AbstractValidationSuite<IiaSuiteSta
             new Parameter("hei_id", this.currentState.selectedHeiId),
             new Parameter("receiving_academic_year_id", "2010/2011")
         ),
-        new IiaIndexVerifier()
+        iiaIdVerifierFactory.expectCorrectResponse()
     );
 
     testParametersError(
@@ -126,7 +122,7 @@ class IiaIndexBasicValidationSuiteV2 extends AbstractValidationSuite<IiaSuiteSta
             new Parameter("hei_id", this.currentState.selectedHeiId),
             new Parameter("partner_hei_id", fakeId)
         ),
-        new IndexEmptyListVerifier()
+        iiaIdVerifierFactory.expectResponseToBeEmpty()
     );
 
     testParametersError(
@@ -141,21 +137,5 @@ class IiaIndexBasicValidationSuiteV2 extends AbstractValidationSuite<IiaSuiteSta
     );
   }
 
-  private static class IiaIndexVerifier extends NoopVerifier {
-  }
-
-  private static class IndexEmptyListVerifier extends ListEqualVerifier {
-    IndexEmptyListVerifier(Status status) {
-      super(new ArrayList<>(), status);
-    }
-
-    IndexEmptyListVerifier() {
-      this(Status.FAILURE);
-    }
-
-    @Override
-    protected List<String> getSelector() {
-      return Arrays.asList("iia-id");
-    }
-  }
+  private VerifierFactory iiaIdVerifierFactory = new VerifierFactory(Arrays.asList("iia-id"));
 }

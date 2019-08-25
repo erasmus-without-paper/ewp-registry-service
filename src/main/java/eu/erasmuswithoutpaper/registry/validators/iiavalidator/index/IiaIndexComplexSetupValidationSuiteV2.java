@@ -70,21 +70,8 @@ public class IiaIndexComplexSetupValidationSuiteV2 extends IiaIndexBasicSetupVal
   @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
   protected void runApiSpecificTests(
       HttpSecurityDescription securityDescription) throws SuiteBroken {
-    if (this.currentState.parameters.contains(IIA_ID_PARAMETER)) {
-      this.currentState.selectedIiaId = this.currentState.parameters.get(IIA_ID_PARAMETER);
-    } else {
-      HeiIdAndString foundIiaId = getCoveredIiaIds(
-          Collections.singletonList(
-              new HeiIdAndUrl(
-                  this.currentState.selectedHeiId,
-                  this.currentState.url,
-                  ApiEndpoint.Index
-              )
-          ),
-          securityDescription
-      );
-      this.currentState.selectedIiaId = foundIiaId.string;
-    }
+    this.currentState.selectedIiaId = getParameterValue(IIA_ID_PARAMETER,
+        () -> getIiaIdParameter(securityDescription));
     String getUrl = getApiUrlForHei(
         this.currentState.selectedHeiId, this.getApiInfo().getApiName(), ApiEndpoint.Get,
         "Retrieving 'get' endpoint url from catalogue.",
@@ -96,6 +83,22 @@ public class IiaIndexComplexSetupValidationSuiteV2 extends IiaIndexBasicSetupVal
         this.currentState.selectedIiaId,
         getUrl,
         securityDescription);
+  }
+
+  @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
+  protected String getIiaIdParameter(
+      HttpSecurityDescription securityDescription) throws SuiteBroken {
+    HeiIdAndString foundIiaId = getCoveredIiaIds(
+        Collections.singletonList(
+            new HeiIdAndUrl(
+                this.currentState.selectedHeiId,
+                this.currentState.url,
+                ApiEndpoint.Index
+            )
+        ),
+        securityDescription
+    );
+    return foundIiaId.string;
   }
 
   protected IiaSuiteState.IiaInfo getIiaInfo(

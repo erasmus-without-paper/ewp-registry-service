@@ -38,7 +38,7 @@ public class MtProjectsValidatorTest extends AbstractApiTest {
   }
 
   @Override
-  protected ApiValidator GetValidator() {
+  protected ApiValidator getValidator() {
     return validator;
   }
 
@@ -53,7 +53,7 @@ public class MtProjectsValidatorTest extends AbstractApiTest {
   public void testNotReportingAnErrorWhenNoPicIsProvidedIsDetected() {
     MtProjectsV010Valid service = new MtProjectsV010Valid(mtProjectsUrl, this.client) {
       @Override
-      protected void ErrorNoPic(RequestData requestData) throws ErrorResponseException {
+      protected void errorNoPic(RequestData requestData) throws ErrorResponseException {
         requestData.pic = coveredProjects.keySet().iterator().next();
       }
     };
@@ -68,7 +68,7 @@ public class MtProjectsValidatorTest extends AbstractApiTest {
   public void testNotReportingAnErrorWhenMultiplePicsAreProvidedIsDetected() {
     MtProjectsV010Valid service = new MtProjectsV010Valid(mtProjectsUrl, this.client) {
       @Override
-      protected void ErrorMultiplePics(RequestData requestData) throws ErrorResponseException {
+      protected void errorMultiplePics(RequestData requestData) throws ErrorResponseException {
         // ignore
       }
     };
@@ -83,7 +83,7 @@ public class MtProjectsValidatorTest extends AbstractApiTest {
   public void testNotReportingAnErrorWhenUnknownPicIsProvidedIsDetected() {
     MtProjectsV010Valid service = new MtProjectsV010Valid(mtProjectsUrl, this.client) {
       @Override
-      protected void ErrorInvalidPic(RequestData requestData) throws ErrorResponseException {
+      protected void errorInvalidPic(RequestData requestData) throws ErrorResponseException {
         // ignore
       }
     };
@@ -98,7 +98,7 @@ public class MtProjectsValidatorTest extends AbstractApiTest {
   public void testDefaultDateIsUsedWhenCallYearIsNotProvidedIsDetected() {
     MtProjectsV010Valid service = new MtProjectsV010Valid(mtProjectsUrl, this.client) {
       @Override
-      protected void ErrorNoCallYear(RequestData requestData) throws ErrorResponseException {
+      protected void errorNoCallYear(RequestData requestData) throws ErrorResponseException {
         requestData.callYear = 2019;
       }
     };
@@ -113,7 +113,7 @@ public class MtProjectsValidatorTest extends AbstractApiTest {
   public void testDefaultDateIsUsedWhenCallYearIsInvalidIsDetected() {
     MtProjectsV010Valid service = new MtProjectsV010Valid(mtProjectsUrl, this.client) {
       @Override
-      protected int ErrorInvalidCallYearFormat(
+      protected int errorInvalidCallYearFormat(
           RequestData requestData) throws ErrorResponseException {
         return 2019;
       }
@@ -129,7 +129,7 @@ public class MtProjectsValidatorTest extends AbstractApiTest {
   public void testNotAcceptingCallYearIsZeroIsDetected() {
     MtProjectsV010Valid service = new MtProjectsV010Valid(mtProjectsUrl, this.client) {
       @Override
-      protected void HandleCallYearZero(
+      protected void handleCallYearZero(
           RequestData requestData) throws ErrorResponseException {
         throw new ErrorResponseException(
             createErrorResponse(requestData.request, 400, "Invalid call_year - zero")
@@ -147,7 +147,7 @@ public class MtProjectsValidatorTest extends AbstractApiTest {
   public void testNotAcceptingCallYearIsNegativeIsDetected() {
     MtProjectsV010Valid service = new MtProjectsV010Valid(mtProjectsUrl, this.client) {
       @Override
-      protected void HandleCallYearNegative(
+      protected void handleCallYearNegative(
           RequestData requestData) throws ErrorResponseException {
         throw new ErrorResponseException(
             createErrorResponse(requestData.request, 400, "Invalid call_year - negative")
@@ -165,12 +165,12 @@ public class MtProjectsValidatorTest extends AbstractApiTest {
   public void testAcceptingAFullDateAsCallYearIsDetected() {
     MtProjectsV010Valid service = new MtProjectsV010Valid(mtProjectsUrl, this.client) {
       @Override
-      protected int ParseCallYear(RequestData requestData,
+      protected int parseCallYear(RequestData requestData,
           String callYear) throws ErrorResponseException {
         try {
           return LocalDate.parse(callYear).getYear();
         } catch (DateTimeParseException | IllegalArgumentException e) {
-          return super.ParseCallYear(requestData, callYear);
+          return super.parseCallYear(requestData, callYear);
         }
       }
     };
@@ -185,13 +185,13 @@ public class MtProjectsValidatorTest extends AbstractApiTest {
   public void testAcceptingDateTimeAsCallYearIsDetected() {
     MtProjectsV010Valid service = new MtProjectsV010Valid(mtProjectsUrl, this.client) {
       @Override
-      protected int ParseCallYear(RequestData requestData,
+      protected int parseCallYear(RequestData requestData,
           String callYear) throws ErrorResponseException {
         try {
           DatatypeFactory datatypeFactory = DatatypeFactory.newInstance();
           return datatypeFactory.newXMLGregorianCalendar(callYear).getYear();
         } catch (DatatypeConfigurationException | IllegalArgumentException e) {
-          return super.ParseCallYear(requestData, callYear);
+          return super.parseCallYear(requestData, callYear);
         }
       }
     };
@@ -206,7 +206,7 @@ public class MtProjectsValidatorTest extends AbstractApiTest {
   public void testNotReportingAnErrorWhenNoCallYearIsProvidedIsDetected() {
     MtProjectsV010Valid service = new MtProjectsV010Valid(mtProjectsUrl, this.client) {
       @Override
-      protected void ErrorNoCallYear(RequestData requestData) throws ErrorResponseException {
+      protected void errorNoCallYear(RequestData requestData) throws ErrorResponseException {
         requestData.callYear = 2019;
       }
     };
@@ -221,7 +221,7 @@ public class MtProjectsValidatorTest extends AbstractApiTest {
   public void testNotReportingAnErrorWhenMultipleCallYearsAreProvidedIsDetected() {
     MtProjectsV010Valid service = new MtProjectsV010Valid(mtProjectsUrl, this.client) {
       @Override
-      protected void ErrorMultipleCallYears(RequestData requestData) throws ErrorResponseException {
+      protected void errorMultipleCallYears(RequestData requestData) throws ErrorResponseException {
         //ignore
       }
     };
@@ -236,7 +236,7 @@ public class MtProjectsValidatorTest extends AbstractApiTest {
   public void testAcceptingOnlyFourDigitCallYearIsDetected() {
     MtProjectsV010Valid service = new MtProjectsV010Valid(mtProjectsUrl, this.client) {
       @Override
-      protected int AdditionalCallYearCheck(RequestData requestData,
+      protected int additionalCallYearCheck(RequestData requestData,
           Integer parsed) throws ErrorResponseException {
         if (1000 <= parsed && parsed <= 9999) {
           return parsed;
@@ -259,7 +259,7 @@ public class MtProjectsValidatorTest extends AbstractApiTest {
   public void testNotIgnoringUnknownParamsIsDetected() {
     MtProjectsV010Valid service = new MtProjectsV010Valid(mtProjectsUrl, this.client) {
       @Override
-      protected void HandleUnexpectedParams(RequestData requestData) throws ErrorResponseException {
+      protected void handleUnexpectedParams(RequestData requestData) throws ErrorResponseException {
         throw new ErrorResponseException(
             createErrorResponse(requestData.request, 400, "Unknown param")
         );
@@ -276,17 +276,17 @@ public class MtProjectsValidatorTest extends AbstractApiTest {
   public void testNotReportingAnErrorWhenOnlyUnknownParametersAreProvidedIsDetected() {
     MtProjectsV010Valid service = new MtProjectsV010Valid(mtProjectsUrl, this.client) {
       @Override
-      protected void ErrorNoPic(RequestData requestData) throws ErrorResponseException {
+      protected void errorNoPic(RequestData requestData) throws ErrorResponseException {
         // ignore
       }
 
       @Override
-      protected void ErrorNoCallYear(RequestData requestData) throws ErrorResponseException {
+      protected void errorNoCallYear(RequestData requestData) throws ErrorResponseException {
         // ignore
       }
 
       @Override
-      protected void HandleUnexpectedParams(RequestData requestData) throws ErrorResponseException {
+      protected void handleUnexpectedParams(RequestData requestData) throws ErrorResponseException {
         if (requestData.callYear == null && requestData.pic == null) {
           throw new ErrorResponseException(createMtProjectsReponse(new ArrayList<>()));
         }
@@ -303,7 +303,7 @@ public class MtProjectsValidatorTest extends AbstractApiTest {
   public void testNotReportingAnErrorWhenNoParametersAreProvidedIsDetected() {
     MtProjectsV010Valid service = new MtProjectsV010Valid(mtProjectsUrl, this.client) {
       @Override
-      protected void ErrorNoParams(RequestData requestData) throws ErrorResponseException {
+      protected void errorNoParams(RequestData requestData) throws ErrorResponseException {
         throw new ErrorResponseException(createMtProjectsReponse(new ArrayList<>()));
       }
     };

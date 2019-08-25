@@ -52,17 +52,8 @@ class MtProjectsSetupValidationSuiteV1
   @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
   protected void runApiSpecificTests(HttpSecurityDescription securityDescription)
       throws SuiteBroken {
-    if (this.currentState.parameters.contains(PIC_PARAMETER)) {
-      this.currentState.selectedPic = this.currentState.parameters.get(PIC_PARAMETER);
-    } else {
-      this.currentState.selectedPic = getPicParameter();
-    }
-
-    if (this.currentState.parameters.contains(CALL_YEAR_PARAMETER)) {
-      this.currentState.selectedCallYear = this.currentState.parameters.get(CALL_YEAR_PARAMETER);
-    } else {
-      this.currentState.selectedCallYear = getCallYear();
-    }
+    this.currentState.selectedPic = getParameterValue(PIC_PARAMETER, this::getPicParameter);
+    this.currentState.selectedCallYear = getParameterValue(CALL_YEAR_PARAMETER, this::getCallYear);
   }
 
   private String getCallYear() {

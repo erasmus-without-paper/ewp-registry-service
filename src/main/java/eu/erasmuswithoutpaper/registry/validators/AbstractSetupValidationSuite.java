@@ -585,6 +585,19 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
     return heiIdAndString;
   }
 
+  protected interface ParameterSupplier {
+    String get() throws SuiteBroken;
+  }
+
+  protected String getParameterValue(String parameter,
+      ParameterSupplier defaultValueSupplier) throws SuiteBroken {
+    if (this.currentState.parameters.contains(parameter)) {
+      return this.currentState.parameters.get(parameter);
+    } else {
+      return defaultValueSupplier.get();
+    }
+  }
+
 
   protected static class HeiIdAndUrl {
     public String heiIdParameterName;

@@ -12,13 +12,14 @@ import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus;
 import org.joox.Match;
 
 public abstract class Verifier {
-  protected final ValidationStepWithStatus.Status status;
+  private final List<String> selector;
 
-  protected Verifier(ValidationStepWithStatus.Status status) {
-    this.status = status;
+  protected Verifier(List<String> selector) {
+    this.selector = selector;
   }
 
-  public abstract void verify(AbstractValidationSuite suite, Match root, Response response) throws
+  public abstract void verify(AbstractValidationSuite suite, Match root, Response response,
+      ValidationStepWithStatus.Status failureStatus) throws
       InlineValidationStep.Failure;
 
   List<Match> select(Match root, String nsPrefix, String... pathElements) {
@@ -43,7 +44,9 @@ public abstract class Verifier {
    *
    * @return non empty list of elements from which selector will be constructed.
    */
-  protected abstract List<String> getSelector();
+  protected final List<String> getSelector() {
+    return this.selector;
+  }
 
   /**
    * Returns name of verified parameter. It is assumed that this name is last element of

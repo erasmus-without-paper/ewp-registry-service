@@ -443,14 +443,22 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
   }
 
   protected Response makeRequestAndExpectError(InlineValidationStep step, Combination combination,
-      Request request, int status) throws Failure {
-    return this.makeRequestAndExpectError(step, combination, request, Lists.newArrayList(status));
+      Request request, int expectedErrorCode) throws Failure {
+    return this.makeRequestAndExpectError(step, combination, request,
+        Lists.newArrayList(expectedErrorCode));
   }
 
   protected Response makeRequestAndExpectError(InlineValidationStep step, Combination combination,
-      Request request, List<Integer> statuses) throws Failure {
+      Request request, List<Integer> expectedErrorCodes) throws Failure {
+    return this.makeRequestAndExpectError(step, combination, request, expectedErrorCodes,
+        Status.FAILURE);
+  }
+
+  protected Response makeRequestAndExpectError(InlineValidationStep step, Combination combination,
+      Request request, List<Integer> expectedErrorCodes,
+      Status failureStatus) throws Failure {
     Response response = this.makeRequest(step, request);
-    this.expectError(step, combination, request, response, statuses);
+    this.expectError(step, combination, request, response, expectedErrorCodes, failureStatus);
     return response;
   }
 
@@ -489,15 +497,15 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
    *     The request that triggered the response.
    * @param response
    *     Response to be tested.
-   * @param statuses
+   * @param expectedErrorCodes
    *     Expected HTTP response statuses (any of those).
    * @throws Failure
    *     If HTTP status differs from expected, or if the response body doesn't contain a proper
    *     error response.
    */
   protected void expectError(InlineValidationStep step, Combination combination, Request request,
-      Response response, List<Integer> statuses) throws Failure {
-    expectError(step, combination, request, response, statuses, Status.FAILURE);
+      Response response, List<Integer> expectedErrorCodes) throws Failure {
+    expectError(step, combination, request, response, expectedErrorCodes, Status.FAILURE);
   }
 
   /**
@@ -511,7 +519,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
    *     The request that triggered the response.
    * @param response
    *     Response to be tested.
-   * @param statuses
+   * @param expectedErrorCodes
    *     Expected HTTP response statuses (any of those).
    * @param failureStatus
    *     Type of error to report when statuses do not match.
@@ -520,18 +528,17 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
    *     error response.
    */
   protected void expectError(InlineValidationStep step, Combination combination, Request request,
-      Response response, List<Integer> statuses, Status failureStatus) throws Failure {
+      Response response, List<Integer> expectedErrorCodes, Status failureStatus) throws Failure {
     final List<String> notices =
         this.decodeAndValidateResponseCommons(step, combination, request, response);
-    if (!statuses.contains(response.getStatus())) {
+    if (!expectedErrorCodes.contains(response.getStatus())) {
       int gotFirstDigit = response.getStatus() / 100;
-      int expectedFirstDigit = statuses.get(0) / 100;
+      int expectedFirstDigit = expectedErrorCodes.get(0) / 100;
       Status status =
           (gotFirstDigit == expectedFirstDigit) ? Status.WARNING : failureStatus;
-      String message = "HTTP " + String.join(
-          " or HTTP ",
-          statuses.stream().map(Object::toString).collect(Collectors.toList())
-      );
+      String message = "HTTP " + expectedErrorCodes.stream()
+          .map(Object::toString)
+          .collect(Collectors.joining(" or HTTP "));
       message += " expected, but HTTP " + response.getStatus() + " received.";
       throw new Failure(message, status, response);
     }
@@ -771,22 +778,30 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
     }
   }
 
-  protected Response verifyResponse(InlineValidationStep step, Combination combination,
-      Request request, Verifier verifier) throws Failure {
-    return verifyResponse(step, combination, request, verifier, Status.FAILURE);
+
+  protected void expectValidResponse(Response response, Verifier verifier, Status failureStatus,
+      List<String> notices) throws Failure {
+    expect200(response, failureStatus);
+    verifyContents(response, verifier, failureStatus);
+    checkNotices(response, notices);
   }
 
-  protected Response verifyResponse(InlineValidationStep step, Combination combination,
-      Request request, Verifier verifier, Status failureStatus) throws Failure {
+  protected Response makeRequestAndVerifyResponse(InlineValidationStep step,
+      Combination combination, Request request, Verifier verifier) throws Failure {
+    return makeRequestAndVerifyResponse(step, combination, request, verifier, Status.FAILURE);
+  }
+
+  protected Response makeRequestAndVerifyResponse(InlineValidationStep step,
+      Combination combination, Request request, Verifier verifier,
+      Status failureStatus) throws Failure {
     List<String> notices = new ArrayList<>();
     Response response = makeRequest(step, combination, request, notices);
-    expect200(response, failureStatus);
-    verifyContents(response, verifier);
-    checkNotices(response, notices);
+    this.expectValidResponse(response, verifier, failureStatus, notices);
     return response;
   }
 
-  protected void verifyContents(Response response, Verifier verifier) throws Failure {
+  protected void verifyContents(Response response, Verifier verifier,
+      Status failureStatus) throws Failure {
     BuildParams params = new BuildParams(response.getBody());
     params.setExpectedKnownElement(getApiInfo().getResponseKnownElement());
     BuildResult result = this.docBuilder.build(params);
@@ -794,12 +809,12 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
       throw new Failure(
           "HTTP response status was okay, but the content has failed Schema validation. " + this
               .formatDocBuildErrors(result.getErrors()),
-          Status.FAILURE,
+          failureStatus,
           response
       );
     }
     Match root = $(result.getDocument().get()).namespaces(KnownNamespace.prefixMap());
-    verifier.verify(this, root, response);
+    verifier.verify(this, root, response, failureStatus);
   }
 
   protected void testParameters200(Combination combination, String name, List<Parameter> params,
@@ -818,14 +833,15 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
       @Override
       protected Optional<Response> innerRun() throws Failure {
         Request request = createRequestWithParameters(this, combination, params);
-        return Optional.of(verifyResponse(this, combination, request, verifier, failureStatus));
+        return Optional.of(
+            makeRequestAndVerifyResponse(this, combination, request, verifier, failureStatus));
       }
     });
   }
 
   protected void testParametersError(Combination combination, String name, List<Parameter> params,
       int error) throws SuiteBroken {
-    testParametersError(combination, name, params, Arrays.asList(error), null);
+    testParametersError(combination, name, params, Arrays.asList(error));
   }
 
   protected void testParametersError(Combination combination, String name, List<Parameter> params,
@@ -839,8 +855,8 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
   }
 
   protected void testParametersError(Combination combination, String name, List<Parameter> params,
-      List<Integer> errors, Status status) throws SuiteBroken {
-    this.addAndRun(status, new InlineValidationStep() {
+      List<Integer> errors, Status failureStatus) throws SuiteBroken {
+    this.addAndRun(false, new InlineValidationStep() {
       @Override
       public String getName() {
         return name;
@@ -849,7 +865,8 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
       @Override
       protected Optional<Response> innerRun() throws Failure {
         Request request = createRequestWithParameters(this, combination, params);
-        return Optional.of(makeRequestAndExpectError(this, combination, request, errors));
+        return Optional.of(
+            makeRequestAndExpectError(this, combination, request, errors, failureStatus));
       }
     });
   }
@@ -887,29 +904,27 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
       String secondParameterNamePrefix,
       String id, int maxIds,
       boolean shouldUnknownHeiIdsFail,
-      VerifierFactory exactListVerifier,
-      VerifierFactory inListVerifier) throws SuiteBroken {
+      VerifierFactory verifierFactory) throws SuiteBroken {
     generalTestsIdsAndCodes(combination,
         heiParameterName, heiId,
         secondParameterNamePrefix,
         id, maxIds,
         null, 0,
         shouldUnknownHeiIdsFail,
-        exactListVerifier,
-        inListVerifier);
+        verifierFactory);
   }
 
   protected void generalTestsIdsAndCodes(Combination combination, String heiId,
       String secondParameterNamePrefix,
       String id, int maxIds, String code, int maxCodes,
-      VerifierFactory exactListVerifier, VerifierFactory inListVerifier) throws SuiteBroken {
+      VerifierFactory verifierFactory) throws SuiteBroken {
     generalTestsIdsAndCodes(combination,
         "hei_id", heiId,
         secondParameterNamePrefix,
         id, maxIds,
         code, maxCodes,
         true,
-        exactListVerifier, inListVerifier);
+        verifierFactory);
   }
 
   protected void generalTestsIdsAndCodes(Combination combination,
@@ -918,7 +933,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
       String id, int maxIds,
       String code, int maxCodes,
       boolean shouldUnknownHeiIdsFail,
-      VerifierFactory exactListVerifier, VerifierFactory inListVerifier) throws SuiteBroken {
+      VerifierFactory verifierFactory) throws SuiteBroken {
     if (code != null) {
       testParameters200(
           combination,
@@ -927,7 +942,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
               new Parameter(heiParameterName, heiId),
               new Parameter(secondParameterNamePrefix + "_code", code)
           ),
-          exactListVerifier.create(Collections.singletonList(id))
+          verifierFactory.expectResponseToContainExactly(Collections.singletonList(id))
       );
     }
 
@@ -938,7 +953,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
             new Parameter(heiParameterName, heiId),
             new Parameter(secondParameterNamePrefix + "_id", fakeId)
         ),
-        exactListVerifier.create(new ArrayList<>())
+        verifierFactory.expectResponseToBeEmpty()
     );
 
     if (maxIds > 1) {
@@ -951,7 +966,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
               new Parameter(secondParameterNamePrefix + "_id", id),
               new Parameter(secondParameterNamePrefix + "_id", fakeId)
           ),
-          exactListVerifier.create(Collections.singletonList(id))
+          verifierFactory.expectResponseToContainExactly(Collections.singletonList(id))
       );
     }
 
@@ -965,7 +980,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
               new Parameter(secondParameterNamePrefix + "_code", code),
               new Parameter(secondParameterNamePrefix + "_code", fakeId)
           ),
-          exactListVerifier.create(Collections.singletonList(id))
+          verifierFactory.expectResponseToContainExactly(Collections.singletonList(id))
       );
     }
 
@@ -1012,7 +1027,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
               new Parameter(heiParameterName, fakeId),
               new Parameter(secondParameterNamePrefix + "_id", id)
           ),
-          exactListVerifier.create(new ArrayList<>())
+          verifierFactory.expectResponseToBeEmpty()
       );
     }
 
@@ -1094,7 +1109,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
             Arrays.asList(new Parameter(heiParameterName, heiId)),
             Collections.nCopies(maxIds, new Parameter(secondParameterNamePrefix + "_id", id))
         ),
-        inListVerifier.create(Collections.singletonList(id))
+        verifierFactory.expectResponseToContain(Collections.singletonList(id))
     );
 
     if (code != null) {
@@ -1110,7 +1125,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
                   maxCodes, new Parameter(secondParameterNamePrefix + "_code", code)
               )
           ),
-          inListVerifier.create(Collections.singletonList(id))
+          verifierFactory.expectResponseToContain(Collections.singletonList(id))
       );
     }
 
@@ -1130,7 +1145,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
             new Parameter(secondParameterNamePrefix + "_id", id),
             new Parameter(secondParameterNamePrefix + "_id_param", id)
         ),
-        exactListVerifier.create(Collections.singletonList(id))
+        verifierFactory.expectResponseToContainExactly(Collections.singletonList(id))
     );
 
     if (code != null) {

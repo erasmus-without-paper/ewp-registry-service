@@ -1,5 +1,7 @@
 package eu.erasmuswithoutpaper.registry.validators.verifiers;
 
+import java.util.List;
+
 import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registry.validators.AbstractValidationSuite;
 import eu.erasmuswithoutpaper.registry.validators.InlineValidationStep;
@@ -7,16 +9,17 @@ import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus;
 
 import org.joox.Match;
 
-public abstract class NotInListVerifier extends Verifier {
+public class NotInListVerifier extends Verifier {
   private final String notWantedValue;
 
-  public NotInListVerifier(String notWantedValue, ValidationStepWithStatus.Status status) {
-    super(status);
+  public NotInListVerifier(String notWantedValue, List<String> selector) {
+    super(selector);
     this.notWantedValue = notWantedValue;
   }
 
   @Override
-  public void verify(AbstractValidationSuite suite, Match root, Response response)
+  public void verify(AbstractValidationSuite suite, Match root, Response response,
+      ValidationStepWithStatus.Status failureStatus)
       throws InlineValidationStep.Failure {
     boolean found = select(root, suite.getApiInfo().getResponsePrefix(), getSelector())
         .stream().anyMatch(x -> x.text().equals(notWantedValue));
@@ -28,7 +31,7 @@ public abstract class NotInListVerifier extends Verifier {
               + "doesn't match what we expect. "
               + "It should not contain <" + getParamName() + ">"
               + notWantedValue + "</" + getParamName() + ">, but it does.",
-          this.status, response
+          failureStatus, response
       );
     }
   }

@@ -56,7 +56,7 @@ public abstract class AbstractApiTest<StateType extends SuiteState> extends WRTe
    */
   protected static KeyPair myKeyPair;
 
-  protected abstract ApiValidator<StateType> GetValidator();
+  protected abstract ApiValidator<StateType> getValidator();
 
   /**
    * Run the validator and create a formatted report of its results.
@@ -95,7 +95,7 @@ public abstract class AbstractApiTest<StateType extends SuiteState> extends WRTe
   protected List<ValidationStepWithStatus> getValidationReportSteps(String url,
       SemanticVersion semanticVersion,
       HttpSecurityDescription security) {
-    return GetValidator().runTests(url, semanticVersion, security, new ValidationParameters());
+    return getValidator().runTests(url, semanticVersion, security, new ValidationParameters());
   }
 
   protected void serviceTestContains(FakeInternetService service, String url,
@@ -134,7 +134,7 @@ public abstract class AbstractApiTest<StateType extends SuiteState> extends WRTe
       this.sourceProvider.addSource(ManifestSource.newTrustedSource(selfManifestUrl));
 
       String apiManifest = this.getFileAsString(getManifestFilename());
-      myKeyPair = this.GetValidator().generateKeyPair();
+      myKeyPair = this.getValidator().generateKeyPair();
       apiManifest = apiManifest.replace(
           "SERVER-KEY-PLACEHOLDER",
           Base64.encode(myKeyPair.getPublic().getEncoded())

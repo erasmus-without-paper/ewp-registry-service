@@ -52,17 +52,9 @@ class MtDictionariesSetupValidationSuiteV1
   @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
   protected void runApiSpecificTests(HttpSecurityDescription securityDescription)
       throws SuiteBroken {
-    if (this.currentState.parameters.contains(DICTIONARY_PARAMETER)) {
-      this.currentState.selectedDictionary = this.currentState.parameters.get(DICTIONARY_PARAMETER);
-    } else {
-      this.currentState.selectedDictionary = getDictionaryParameter();
-    }
-
-    if (this.currentState.parameters.contains(CALL_YEAR_PARAMETER)) {
-      this.currentState.selectedCallYear = this.currentState.parameters.get(CALL_YEAR_PARAMETER);
-    } else {
-      this.currentState.selectedCallYear = getCallYear();
-    }
+    this.currentState.selectedDictionary = getParameterValue(DICTIONARY_PARAMETER,
+        this::getDictionaryParameter);
+    this.currentState.selectedCallYear = getParameterValue(CALL_YEAR_PARAMETER, this::getCallYear);
   }
 
   private String getCallYear() {

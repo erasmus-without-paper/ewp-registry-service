@@ -115,17 +115,19 @@ class InstitutionsValidationSuiteV2
 
   private static class InstitutionsVerifier extends ListEqualVerifier {
     private InstitutionsVerifier(List<String> expectedHeiIDs) {
-      super(expectedHeiIDs, Status.FAILURE);
+      super(expectedHeiIDs, Arrays.asList("hei", "hei-id"));
     }
 
     @Override
-    public void verify(AbstractValidationSuite suite, Match root, Response response)
+    public void verify(AbstractValidationSuite suite, Match root, Response response,
+        Status failureStatus)
         throws Failure {
-      super.verify(suite, root, response);
-      verifyRootOUnitId(suite, root, response);
+      super.verify(suite, root, response, failureStatus);
+      verifyRootOUnitId(suite, root, response, failureStatus);
     }
 
-    private void verifyRootOUnitId(AbstractValidationSuite suite, Match root, Response response)
+    private void verifyRootOUnitId(AbstractValidationSuite suite, Match root, Response response,
+        Status failureStatus)
         throws Failure {
       String nsPrefix = suite.getApiInfo().getResponsePrefix() + ":";
 
@@ -147,14 +149,9 @@ class InstitutionsValidationSuiteV2
         if (!found) {
           throw new Failure(
               "The response has proper HTTP status and it passed the schema validation. However, "
-                  + "root-ounit-id is not included in ounit-id list.", Status.FAILURE, response);
+                  + "root-ounit-id is not included in ounit-id list.", failureStatus, response);
         }
       }
-    }
-
-    @Override
-    protected List<String> getSelector() {
-      return Arrays.asList("hei", "hei-id");
     }
   }
 }

@@ -7,7 +7,7 @@ import eu.erasmuswithoutpaper.registry.validators.AbstractValidationSuite;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.Combination;
 import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
-import eu.erasmuswithoutpaper.registry.validators.verifiers.NoopVerifier;
+import eu.erasmuswithoutpaper.registry.validators.verifiers.CorrectResponseVerifier;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.slf4j.Logger;
@@ -51,7 +51,7 @@ class MtProjectsValidationSuiteV1 extends AbstractValidationSuite<MtProjectsSuit
             new Parameter("pic", this.currentState.selectedPic),
             new Parameter("call_year", this.currentState.selectedCallYear)
         ),
-        new NoopVerifier()
+        new CorrectResponseVerifier()
     );
 
     testParameters200(
@@ -62,7 +62,7 @@ class MtProjectsValidationSuiteV1 extends AbstractValidationSuite<MtProjectsSuit
             new Parameter("call_year", this.currentState.selectedCallYear),
             new Parameter("pic_param", this.currentState.selectedPic)
         ),
-        new NoopVerifier()
+        new CorrectResponseVerifier()
     );
 
     testParametersError(
@@ -146,7 +146,7 @@ class MtProjectsValidationSuiteV1 extends AbstractValidationSuite<MtProjectsSuit
             new Parameter("pic", this.currentState.selectedPic),
             new Parameter("call_year", "0")
         ),
-        new NoopVerifier()
+        new CorrectResponseVerifier()
     );
 
     testParameters200(
@@ -156,7 +156,7 @@ class MtProjectsValidationSuiteV1 extends AbstractValidationSuite<MtProjectsSuit
             new Parameter("pic", this.currentState.selectedPic),
             new Parameter("call_year", "-2019")
         ),
-        new NoopVerifier()
+        new CorrectResponseVerifier()
     );
 
     testParametersError(
@@ -186,7 +186,7 @@ class MtProjectsValidationSuiteV1 extends AbstractValidationSuite<MtProjectsSuit
             new Parameter("pic", this.currentState.selectedPic),
             new Parameter("call_year", "50")
         ),
-        new NoopVerifier()
+        new CorrectResponseVerifier()
     );
 
     testParameters200(
@@ -196,7 +196,7 @@ class MtProjectsValidationSuiteV1 extends AbstractValidationSuite<MtProjectsSuit
             new Parameter("pic", this.currentState.selectedPic),
             new Parameter("call_year", "1140080")
         ),
-        new NoopVerifier()
+        new CorrectResponseVerifier()
     );
   }
 }

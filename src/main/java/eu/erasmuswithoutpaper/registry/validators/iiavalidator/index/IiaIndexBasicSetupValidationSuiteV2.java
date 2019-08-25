@@ -1,6 +1,5 @@
 package eu.erasmuswithoutpaper.registry.validators.iiavalidator.index;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -58,13 +57,11 @@ class IiaIndexBasicSetupValidationSuiteV2
   @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
   protected void runApiSpecificTests(HttpSecurityDescription securityDescription)
       throws SuiteBroken {
-    List<String> coveredHeiIds = new ArrayList<>();
-    if (this.currentState.parameters.contains(HEI_ID_PARAMETER)) {
-      coveredHeiIds.add(this.currentState.parameters.get(HEI_ID_PARAMETER));
-    } else {
-      coveredHeiIds = getCoveredHeiIds(this.currentState.url);
-    }
+    this.currentState.selectedHeiId = getParameterValue(HEI_ID_PARAMETER, this::getSelectedHeiId);
+  }
 
-    this.currentState.selectedHeiId = coveredHeiIds.get(0);
+  @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
+  protected String getSelectedHeiId() throws SuiteBroken {
+    return getCoveredHeiIds(this.currentState.url).get(0);
   }
 }

@@ -1,9 +1,7 @@
 package eu.erasmuswithoutpaper.registry.validators.imobilitytorsvalidator.index;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
 import eu.erasmuswithoutpaper.registry.validators.AbstractValidationSuite;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
@@ -11,8 +9,7 @@ import eu.erasmuswithoutpaper.registry.validators.Combination;
 import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
 import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus.Status;
 import eu.erasmuswithoutpaper.registry.validators.imobilitytorsvalidator.IMobilityTorsSuiteState;
-import eu.erasmuswithoutpaper.registry.validators.verifiers.ListEqualVerifier;
-import eu.erasmuswithoutpaper.registry.validators.verifiers.NonEmptyVerifier;
+import eu.erasmuswithoutpaper.registry.validators.verifiers.VerifierFactory;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.slf4j.Logger;
@@ -54,7 +51,7 @@ class IMobilityTorsIndexValidationSuiteV070
         Arrays.asList(
             new Parameter("receiving_hei_id", this.currentState.receivingHeiId)
         ),
-        new IndexNonEmptyVerifier()
+        omobilityIdVerifierFactory.expectResponseToBeNotEmpty()
     );
 
     testParametersError(
@@ -84,7 +81,8 @@ class IMobilityTorsIndexValidationSuiteV070
             new Parameter("receiving_hei_id", this.currentState.receivingHeiId),
             new Parameter("modified_since", "2050-02-12T15:19:21+01:00")
         ),
-        new IndexEmptyVerifier(Status.WARNING)
+        omobilityIdVerifierFactory.expectResponseToBeEmpty(),
+        Status.WARNING
     );
 
     testParameters200(
@@ -95,7 +93,7 @@ class IMobilityTorsIndexValidationSuiteV070
             new Parameter("receiving_hei_id", this.currentState.receivingHeiId),
             new Parameter("modified_since", "1950-02-12T15:19:21+01:00")
         ),
-        new IndexNonEmptyVerifier()
+        omobilityIdVerifierFactory.expectResponseToBeNotEmpty()
     );
 
 
@@ -137,7 +135,7 @@ class IMobilityTorsIndexValidationSuiteV070
             new Parameter("receiving_hei_id", this.currentState.receivingHeiId),
             new Parameter("sending_hei_id", fakeId)
         ),
-        new IndexEmptyVerifier()
+        omobilityIdVerifierFactory.expectResponseToBeEmpty()
     );
 
 
@@ -148,7 +146,7 @@ class IMobilityTorsIndexValidationSuiteV070
         Arrays.asList(
             new Parameter("receiving_hei_id", this.currentState.receivingHeiId)
         ),
-        new IndexNonEmptyVerifier()
+        omobilityIdVerifierFactory.expectResponseToBeNotEmpty()
     );
 
     testParameters200(
@@ -157,7 +155,7 @@ class IMobilityTorsIndexValidationSuiteV070
         Arrays.asList(
             new Parameter("receiving_hei_id", fakeId)
         ),
-        new IndexEmptyVerifier()
+        omobilityIdVerifierFactory.expectResponseToBeEmpty()
     );
 
     testParameters200(
@@ -169,7 +167,7 @@ class IMobilityTorsIndexValidationSuiteV070
             new Parameter("sending_hei_id", this.currentState.sendingHeiId),
             new Parameter("sending_hei_id", fakeId)
         ),
-        new IndexNonEmptyVerifier()
+        omobilityIdVerifierFactory.expectResponseToBeNotEmpty()
     );
 
     testParameters200(
@@ -181,33 +179,10 @@ class IMobilityTorsIndexValidationSuiteV070
             new Parameter("sending_hei_id", fakeId),
             new Parameter("sending_hei_id", fakeId)
         ),
-        new IndexEmptyVerifier()
+        omobilityIdVerifierFactory.expectResponseToBeEmpty()
     );
   }
 
-  private static class IndexNonEmptyVerifier extends NonEmptyVerifier {
-    IndexNonEmptyVerifier() {
-      super(Status.FAILURE);
-    }
-
-    @Override
-    protected List<String> getSelector() {
-      return Arrays.asList("omobility-id");
-    }
-  }
-
-  private static class IndexEmptyVerifier extends ListEqualVerifier {
-    IndexEmptyVerifier(Status status) {
-      super(new ArrayList<>(), status);
-    }
-
-    IndexEmptyVerifier() {
-      this(Status.FAILURE);
-    }
-
-    @Override
-    protected List<String> getSelector() {
-      return Arrays.asList("omobility-id");
-    }
-  }
+  private VerifierFactory omobilityIdVerifierFactory = new VerifierFactory(
+      Arrays.asList("omobility-id"));
 }

@@ -56,19 +56,10 @@ class MtInstitutionsSetupValidationSuiteV1
   @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
   protected void runApiSpecificTests(HttpSecurityDescription securityDescription)
       throws SuiteBroken {
-    if (this.currentState.parameters.contains(PIC_PARAMETER)) {
-      this.currentState.selectedPic = this.currentState.parameters.get(PIC_PARAMETER);
-    } else {
-      this.currentState.selectedPic = getPicParameter();
-    }
-
-    if (this.currentState.parameters.contains(ECHE_DATE_PARAMETER)) {
-      this.currentState.selectedEcheAtDate = this.currentState.parameters.get(ECHE_DATE_PARAMETER);
-    } else {
-      this.currentState.selectedEcheAtDate = getEcheAtDateParameter();
-    }
-
     this.currentState.maxIds = getMaxPicIds();
+    this.currentState.selectedPic = getParameterValue(PIC_PARAMETER, this::getPicParameter);
+    this.currentState.selectedEcheAtDate = getParameterValue(ECHE_DATE_PARAMETER,
+        this::getEcheAtDateParameter);
   }
 
   private String getEcheAtDateParameter() {

@@ -50,7 +50,7 @@ public class InstitutionValidatorTest extends AbstractApiTest {
     InstitutionServiceV2Valid service =
         new InstitutionServiceV2Valid(institutionsUrlHTTT, this.client, validatorKeyStore) {
           @Override
-          protected void CheckHeis(List<String> heis) throws ErrorResponseException {
+          protected void checkHeis(List<String> heis) throws ErrorResponseException {
             //Do nothing.
           }
         };
@@ -65,9 +65,9 @@ public class InstitutionValidatorTest extends AbstractApiTest {
     InstitutionServiceV2Valid service =
         new InstitutionServiceV2Valid(institutionsUrlHTTT, this.client, validatorKeyStore) {
           @Override
-          protected void CheckHeis(List<String> heis) throws ErrorResponseException {
+          protected void checkHeis(List<String> heis) throws ErrorResponseException {
             ArrayList<String> unique_heis = new ArrayList<>(new HashSet<>(heis));
-            super.CheckHeis(unique_heis);
+            super.checkHeis(unique_heis);
           }
         };
     TestValidationReport report = this.getRawReport(service);
@@ -79,7 +79,7 @@ public class InstitutionValidatorTest extends AbstractApiTest {
     InstitutionServiceV2Valid service =
         new InstitutionServiceV2Valid(institutionsUrlHTTT, this.client, validatorKeyStore) {
           @Override
-          protected void CheckHeis(List<String> heis) throws ErrorResponseException {
+          protected void checkHeis(List<String> heis) throws ErrorResponseException {
             if (heis.size() > max_hei_ids - 1) {
               throw new ErrorResponseException(
                   createErrorResponse(this.currentRequest, 400, "Exceeded max-hei-ids parameter")
@@ -97,7 +97,7 @@ public class InstitutionValidatorTest extends AbstractApiTest {
     InstitutionServiceV2Valid service =
         new InstitutionServiceV2Valid(institutionsUrlHTTT, this.client, validatorKeyStore) {
           @Override
-          protected void ExtractParamsMultipleParams(Map<String, List<String>> params)
+          protected void extractParamsMultipleParams(Map<String, List<String>> params)
               throws ErrorResponseException {
             throw new ErrorResponseException(
                 createErrorResponse(this.currentRequest, 400, "Expected only hei_id parameters")
@@ -114,7 +114,7 @@ public class InstitutionValidatorTest extends AbstractApiTest {
     InstitutionServiceV2Valid service =
         new InstitutionServiceV2Valid(institutionsUrlHTTT, this.client, validatorKeyStore) {
           @Override
-          protected void CheckRequestMethod() throws ErrorResponseException {
+          protected void checkRequestMethod() throws ErrorResponseException {
           }
         };
     TestValidationReport report = this.getRawReport(service);
@@ -127,7 +127,7 @@ public class InstitutionValidatorTest extends AbstractApiTest {
     InstitutionServiceV2Valid service =
         new InstitutionServiceV2Valid(institutionsUrlHTTT, this.client, validatorKeyStore) {
           @Override
-          protected void ExtractParamsNoParams(Map<String, List<String>> params)
+          protected void extractParamsNoParams(Map<String, List<String>> params)
               throws ErrorResponseException {
           }
         };
@@ -140,7 +140,7 @@ public class InstitutionValidatorTest extends AbstractApiTest {
     InstitutionServiceV2Valid service =
         new InstitutionServiceV2Valid(institutionsUrlHTTT, this.client, validatorKeyStore) {
           @Override
-          protected void ExtractParamsNoHeiIds(Map<String, List<String>> params)
+          protected void extractParamsNoHeiIds(Map<String, List<String>> params)
               throws ErrorResponseException {
           }
         };
@@ -153,7 +153,7 @@ public class InstitutionValidatorTest extends AbstractApiTest {
     InstitutionServiceV2Valid service =
         new InstitutionServiceV2Valid(institutionsUrlHTTT, this.client, validatorKeyStore) {
           @Override
-          protected void ProcessNotCoveredHei(String hei, List<InstitutionsResponse.Hei> heis)
+          protected void processNotCoveredHei(String hei, List<InstitutionsResponse.Hei> heis)
               throws ErrorResponseException {
             heis.add(createFakeHeiData(hei));
           }
@@ -168,7 +168,7 @@ public class InstitutionValidatorTest extends AbstractApiTest {
     InstitutionServiceV2Valid service =
         new InstitutionServiceV2Valid(institutionsUrlHTTT, this.client, validatorKeyStore) {
           @Override
-          protected void ProcessNotCoveredHei(String hei, List<InstitutionsResponse.Hei> heis)
+          protected void processNotCoveredHei(String hei, List<InstitutionsResponse.Hei> heis)
               throws ErrorResponseException {
             throw new ErrorResponseException(
                 this.createErrorResponse(this.currentRequest, 400, "Unknown HEI ID encountered")
@@ -185,12 +185,12 @@ public class InstitutionValidatorTest extends AbstractApiTest {
     InstitutionServiceV2Valid service =
         new InstitutionServiceV2Valid(institutionsUrlHTTT, this.client, validatorKeyStore) {
           @Override
-          protected List<String> GetCoveredOUnits() {
+          protected List<String> getCoveredOUnits() {
             return Arrays.asList("1", "2", "3");
           }
 
           @Override
-          protected String GetRootOUnit() {
+          protected String getRootOUnit() {
             return "4";
           }
         };
@@ -199,7 +199,7 @@ public class InstitutionValidatorTest extends AbstractApiTest {
   }
 
   @Override
-  protected ApiValidator<InstitutionsSuiteState> GetValidator() {
+  protected ApiValidator<InstitutionsSuiteState> getValidator() {
     return validator;
   }
 }
