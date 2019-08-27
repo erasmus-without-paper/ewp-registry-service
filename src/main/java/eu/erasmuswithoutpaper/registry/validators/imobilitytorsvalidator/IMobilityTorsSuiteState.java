@@ -8,6 +8,7 @@ public class IMobilityTorsSuiteState extends SuiteState {
   public String receivingHeiId;
   public String omobilityId;
   public int maxOmobilityIds;
+  public String notPermittedHeiId;
 
   public IMobilityTorsSuiteState(String url, SemanticVersion version) {
     super(url, version);

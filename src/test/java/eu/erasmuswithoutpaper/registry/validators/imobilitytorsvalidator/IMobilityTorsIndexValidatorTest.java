@@ -5,6 +5,7 @@ import static eu.erasmuswithoutpaper.registry.validators.TestValidationReportAss
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.TestValidationReport;
@@ -257,6 +258,20 @@ public class IMobilityTorsIndexValidatorTest extends IMobilityTorsValidatorTestB
             + "and empty response.");
   }
 
+  @Test
+  public void testSendingDataThatCallerHasNoAccessToIsDetected() {
+    IMobilityTorsServiceV2Valid service = new IMobilityTorsServiceV2Valid(
+        omobilityTorsIndexUrl, omobilityTorsGetUrl, this.client, this.resourceLoader) {
+      @Override
+      protected boolean isCallerPermittedToSeeSendingHeiId(String sendingHeiId) {
+        return true;
+      }
+    };
+    TestValidationReport report = this.getRawReport(service);
+    assertThat(report).containsWarning(
+        "Request with known receiving_hei_id and sending_hei_id valid but not covered by"
+            + " the validator, expect empty response.");
 
+  }
 }
 

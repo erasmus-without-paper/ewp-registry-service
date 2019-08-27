@@ -65,7 +65,7 @@ public class IMobilityTorsServiceV2Valid extends AbstractIMobilityTorsService {
   private void fillDataBase(ResourceLoader resourceLoader) {
     final String RECEIVING_HEI_ID = "test.hei01.uw.edu.pl";
     final String SENDING_HEI_ID_1 = "validator-hei01.developers.erasmuswithoutpaper.eu";
-    final String SENDING_HEI_ID_2 = "test.eu";
+    final String SENDING_HEI_ID_2 = "uw.edu.pl";
 
     List<ImobilityTorsGetResponse.Tor> tor = readTorFromFile(resourceLoader);
     tors.add(new IMobilityTorEntry(tor.get(0), RECEIVING_HEI_ID, SENDING_HEI_ID_1));
@@ -87,6 +87,8 @@ public class IMobilityTorsServiceV2Valid extends AbstractIMobilityTorsService {
       checkSendingHeiId(requestData);
       List<IMobilityTorEntry> selectedIMobilityTors = filterIMobilityTorsForIndex(tors,
           requestData);
+      selectedIMobilityTors = filterNotPermittedIMobilityTors(selectedIMobilityTors,
+          requestData);
       selectedIMobilityTors = filterIMobilityTorsByModifiedSince(selectedIMobilityTors,
           requestData);
       List<String> resultOMobilities = mapToOMobilityIds(selectedIMobilityTors);
@@ -94,6 +96,18 @@ public class IMobilityTorsServiceV2Valid extends AbstractIMobilityTorsService {
     } catch (ErrorResponseException e) {
       return e.response;
     }
+  }
+
+  protected boolean isCallerPermittedToSeeSendingHeiId(String sendingHeiId) {
+    final String validatorHeiId = "validator-hei01.developers.erasmuswithoutpaper.eu";
+    return sendingHeiId.equals(validatorHeiId);
+  }
+
+  private List<IMobilityTorEntry> filterNotPermittedIMobilityTors(
+      List<IMobilityTorEntry> selectedIMobilityTors, RequestData requestData) {
+    return selectedIMobilityTors.stream()
+        .filter(tor -> isCallerPermittedToSeeSendingHeiId(tor.sending_hei_id))
+        .collect(Collectors.toList());
   }
 
   @Override

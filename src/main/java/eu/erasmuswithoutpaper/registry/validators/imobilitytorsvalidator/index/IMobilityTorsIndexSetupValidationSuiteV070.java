@@ -36,12 +36,14 @@ class IMobilityTorsIndexSetupValidationSuiteV070
 
   static final String RECEIVING_HEI_ID_PARAMETER = "receiving_hei_id";
   static final String SENDING_HEI_ID_PARAMETER = "sending_hei_id";
+  static final String NOT_PERMITTED_HEI_ID = "not_permitted_hei_id";
 
   public static List<ValidationParameter> getParameters() {
     return Arrays.asList(
         new ValidationParameter(RECEIVING_HEI_ID_PARAMETER),
         new ValidationParameter(SENDING_HEI_ID_PARAMETER,
-            Collections.singletonList(RECEIVING_HEI_ID_PARAMETER))
+            Collections.singletonList(RECEIVING_HEI_ID_PARAMETER)),
+        new ValidationParameter(NOT_PERMITTED_HEI_ID)
     );
   }
 
@@ -65,6 +67,19 @@ class IMobilityTorsIndexSetupValidationSuiteV070
         this::getReceivingHeiId);
     this.currentState.sendingHeiId = getParameterValue(SENDING_HEI_ID_PARAMETER,
         this::getSendingHeiId);
+    this.currentState.notPermittedHeiId = getParameterValue(NOT_PERMITTED_HEI_ID,
+        () -> getOtherRealHeiId(this.currentState.sendingHeiId));
+  }
+
+  @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
+  private String getOtherRealHeiId(String knownRealHeiId) throws SuiteBroken {
+    String realHeiId1 = "uw.edu.pl";
+    String realHeiId2 = "uma.es";
+    if (knownRealHeiId.equals(realHeiId1)) {
+      return realHeiId2;
+    } else {
+      return realHeiId1;
+    }
   }
 
   @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
@@ -76,4 +91,5 @@ class IMobilityTorsIndexSetupValidationSuiteV070
   private String getSendingHeiId() throws SuiteBroken {
     return "validator-hei01.developers.erasmuswithoutpaper.eu";
   }
+
 }

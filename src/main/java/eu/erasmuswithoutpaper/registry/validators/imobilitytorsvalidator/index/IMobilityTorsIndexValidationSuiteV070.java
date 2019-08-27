@@ -138,6 +138,17 @@ class IMobilityTorsIndexValidationSuiteV070
         omobilityIdVerifierFactory.expectResponseToBeEmpty()
     );
 
+    testParameters200(
+        combination,
+        "Request with known receiving_hei_id and sending_hei_id valid but not covered by"
+            + " the validator, expect empty response.",
+        Arrays.asList(
+            new Parameter("receiving_hei_id", this.currentState.receivingHeiId),
+            new Parameter("sending_hei_id", this.currentState.notPermittedHeiId)
+        ),
+        omobilityIdVerifierFactory.expectResponseToBeEmpty(),
+        Status.WARNING
+    );
 
     testParameters200(
         combination,
