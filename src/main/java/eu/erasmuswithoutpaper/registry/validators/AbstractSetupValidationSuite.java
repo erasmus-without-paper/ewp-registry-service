@@ -598,6 +598,14 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
     }
   }
 
+  protected String getParameterValue(String parameter) throws SuiteBroken {
+    return getParameterValue(parameter, () -> null);
+  }
+
+  protected boolean isParameterProvided(String parameter) {
+    return this.currentState.parameters.contains(parameter);
+  }
+
 
   protected static class HeiIdAndUrl {
     public String heiIdParameterName;

@@ -53,6 +53,11 @@ public class ValidationParameters {
           return false;
         }
       }
+      for (String blocker : parameter.getBlockers()) {
+        if (this.contains(blocker)) {
+          return false;
+        }
+      }
     }
     return true;
   }

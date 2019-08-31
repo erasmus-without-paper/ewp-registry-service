@@ -57,17 +57,20 @@ class IiaIndexComplexValidationSuiteV2 extends AbstractValidationSuite<IiaSuiteS
         iiaIdVerifierFactory.expectResponseToContain(Arrays.asList(this.currentState.selectedIiaId))
     );
 
-    String knownAcademicYear = this.currentState.selectedIiaInfo.receivingAcademicYears.get(0);
-    testParameters200(
-        combination,
-        "Request with known hei_id and known receiving_academic_year_id parameter, "
-            + "expect 200 OK and non-empty response.",
-        Arrays.asList(
-            new Parameter("hei_id", this.currentState.selectedHeiId),
-            new Parameter("receiving_academic_year_id", knownAcademicYear)
-        ),
-        iiaIdVerifierFactory.expectResponseToContain(Arrays.asList(this.currentState.selectedIiaId))
-    );
+    if (!this.currentState.selectedIiaInfo.receivingAcademicYears.isEmpty()) {
+      String knownAcademicYear = this.currentState.selectedIiaInfo.receivingAcademicYears.get(0);
+      testParameters200(
+          combination,
+          "Request with known hei_id and known receiving_academic_year_id parameter, "
+              + "expect 200 OK and non-empty response.",
+          Arrays.asList(
+              new Parameter("hei_id", this.currentState.selectedHeiId),
+              new Parameter("receiving_academic_year_id", knownAcademicYear)
+          ),
+          iiaIdVerifierFactory
+              .expectResponseToContain(Arrays.asList(this.currentState.selectedIiaId))
+      );
+    }
 
     int unknownAcademicYear = this.currentState.selectedIiaInfo.receivingAcademicYears.stream()
         .map(x -> Integer.valueOf(x.split("/")[0]))

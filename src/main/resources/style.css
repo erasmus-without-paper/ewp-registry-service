@@ -595,7 +595,9 @@ td.ewpsrc__test_index {
 }
 
 .api-entry-parameter-name {
-    width: 5em;
+    width: 7em;
+    overflow-wrap: break-word;
+    word-break: break-all;
 }
 
 .api-entry-parameter-value {
@@ -650,7 +652,7 @@ td.ewpsrc__test_index {
 }
 
 .validation-entry-param-name {
-    width: 7em;
+    min-width: 7em;
     float: left;
 }
 

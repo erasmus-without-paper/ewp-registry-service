@@ -4,6 +4,7 @@ import static org.joox.JOOX.$;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
 import eu.erasmuswithoutpaper.registry.validators.ApiEndpoint;
@@ -25,7 +26,7 @@ public class ManifestApiEntry {
   public final String name;
   public final String version;
   public final String url;
-  public final List<HttpSecurityDescription> securities;
+  public final List<String> securities;
   public final boolean available;
   public final List<ValidationParameter> parameters;
   public final ApiEndpoint endpoint;
@@ -55,7 +56,9 @@ public class ManifestApiEntry {
     this.endpoint = endpoint;
     this.version = version;
     this.url = url;
-    this.securities = securities;
+    this.securities = securities.stream()
+        .map(HttpSecurityDescription::toString)
+        .collect(Collectors.toList());
     this.available = available;
     this.parameters = parameters;
   }

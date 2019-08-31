@@ -39,6 +39,11 @@ public class IiaIndexComplexSetupValidationSuiteV2 extends IiaIndexBasicSetupVal
   }
 
   private static final String IIA_ID_PARAMETER = "iia_id";
+  private static final String PARTNER_HEI_ID_PARAMETER = "partner_hei_id";
+  private static final String RECEIVING_ACADEMIC_YEAR_ID = "receiving_academic_year_id";
+  private static final String IIA_ID_PARAMETER_DESCRIPTION =
+      "This parameter is used to fetch partner_hei_id and receiving_academic_year_id using"
+          + " GET endpoint.";
 
   /**
    * Get list of parameters supported by this validator.
@@ -46,8 +51,17 @@ public class IiaIndexComplexSetupValidationSuiteV2 extends IiaIndexBasicSetupVal
    * @return list of supported parameters with dependencies.
    */
   public static List<ValidationParameter> getParameters() {
-    return Collections.singletonList(
-        new ValidationParameter(IIA_ID_PARAMETER, Collections.singletonList(HEI_ID_PARAMETER))
+    return Arrays.asList(
+        new ValidationParameter(IIA_ID_PARAMETER)
+            .dependsOn(HEI_ID_PARAMETER)
+            .blockedBy(PARTNER_HEI_ID_PARAMETER)
+            .withDescription(IIA_ID_PARAMETER_DESCRIPTION),
+        new ValidationParameter(PARTNER_HEI_ID_PARAMETER)
+            .dependsOn(HEI_ID_PARAMETER)
+            .blockedBy(IIA_ID_PARAMETER),
+        new ValidationParameter(RECEIVING_ACADEMIC_YEAR_ID)
+            .dependsOn(HEI_ID_PARAMETER, PARTNER_HEI_ID_PARAMETER)
+            .blockedBy(IIA_ID_PARAMETER)
     );
   }
 
@@ -70,6 +84,16 @@ public class IiaIndexComplexSetupValidationSuiteV2 extends IiaIndexBasicSetupVal
   @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
   protected void runApiSpecificTests(
       HttpSecurityDescription securityDescription) throws SuiteBroken {
+    if (isParameterProvided(PARTNER_HEI_ID_PARAMETER)) {
+      useUserProvidedParameters();
+    } else {
+      useGetEndpointToFetchParameters(securityDescription);
+    }
+  }
+
+  @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
+  private void useGetEndpointToFetchParameters(
+      HttpSecurityDescription securityDescription) throws SuiteBroken {
     this.currentState.selectedIiaId = getParameterValue(IIA_ID_PARAMETER,
         () -> getIiaIdParameter(securityDescription));
     String getUrl = getApiUrlForHei(
@@ -83,6 +107,17 @@ public class IiaIndexComplexSetupValidationSuiteV2 extends IiaIndexBasicSetupVal
         this.currentState.selectedIiaId,
         getUrl,
         securityDescription);
+  }
+
+  @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
+  private void useUserProvidedParameters() throws SuiteBroken {
+    this.currentState.selectedIiaInfo.heiId = this.currentState.selectedHeiId;
+    this.currentState.selectedIiaInfo.partnerHeiId = getParameterValue(PARTNER_HEI_ID_PARAMETER);
+
+    if (isParameterProvided(RECEIVING_ACADEMIC_YEAR_ID)) {
+      this.currentState.selectedIiaInfo.receivingAcademicYears
+          .add(getParameterValue(RECEIVING_ACADEMIC_YEAR_ID));
+    }
   }
 
   @SuppressFBWarnings("BC_UNCONFIRMED_CAST")

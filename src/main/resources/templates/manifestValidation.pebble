@@ -13,18 +13,34 @@
 <div>
     <div :class='classes'>
         <div class="help-popup-popup">
-            <h2>{{ popup_name }}</h2>
+            <h2>{{ popupName }}</h2>
             <a class="help-popup-close" @click="hidePopup()">&times;</a>
             <div class="help-popup-content">
-                <slot></slot>
+                <div v-if="popupContent">
+                    {{ popupContent }}
+                </div>
+                <div v-else>
+                    <slot></slot>
+                </div>
             </div>
         </div>
     </div>
 </div>
 </script>
 
-<script type="text/x-template" id="help-popup-button-template">
-    <a class="help-popup-button" @click="showPopup()">&#9432;</a>
+<script type="text/x-template" id="help-button-template">
+    <a class="help-popup-button" @click="$emit('click')">&#9432;</a>
+</script>
+
+<script type="text/x-template" id="text-with-help-popup-template">
+    <div>
+        {{ text }}&nbsp;<help-button @click="showPopup()"></help-button>
+        <help-popup ref="popup" :popup-content="popupContent" :popup-name="popupName"></help-popup>
+    </div>
+</script>
+
+<script type="text/x-template" id="global-help-popup-button-template">
+    <help-button @click="showPopup()"></help-button>
 </script>
 
 <script type="text/x-template" id="security-radio-button-template">
@@ -43,7 +59,7 @@
         <span class="validation-entry-status">
             <span v-if='entry.status === "IN_PROGRESS"'>In progress...</span>
             <span v-else-if='entry.status === "ERROR"'>Error {{ entry.response.status }}</span>
-            <span v-else-if='entry.status === "DONE"'> <a href="#" @click="openResult">Show results</a> </span>
+            <span v-else-if='entry.status === "DONE"'> <a href="#" @click.prevent="openResult">Show results</a> </span>
         </span>
         <span class="validation-entry-template-security"> {{entry.security}} </span>
         <code v-for="param in entry.parameters">
@@ -60,7 +76,12 @@
 
 <script type="text/x-template" id="parameter-input-template">
     <tr>
-        <td class="api-entry-parameter-name"> {{name}} </td>
+        <td class="api-entry-parameter-name" v-if="description">
+            <text-with-help-popup :text="name" :popup-name="name" :popup-content="description"></text-with-help-popup>
+        </td>
+        <td class="api-entry-parameter-name" v-else>
+            {{name}}
+        </td>
         <td class="api-entry-parameter-value"> <input type="text" :disabled=areDependenciesNotMet v-model="value"> </td>
     </tr>
 </script>
@@ -68,13 +89,15 @@
 <script type="text/x-template" id="parameters-template">
     <div class="parameters">
         <div class="section-name">Parameters
-            <help-popup-button popup_id="parameters_popup"> </help-popup-button>
+            <global-help-popup-button popup-id="parameters-popup"> </global-help-popup-button>
         </div>
         <table v-if="parameters && parameters.length > 0">
             <parameter-input v-for="parameter in parameters"
                              ref="parameter_input"
                              :name="parameter.name"
                              :dependencies="parameter.dependencies"
+                             :blockers="parameter.blockers"
+                             :description="parameter.description"
                              @emptyChanged='emptyChanged'
             ></parameter-input>
         </table>
@@ -86,8 +109,7 @@
 
 <script type="text/x-template" id="api-entry-template">
     <div class="api-entry">
-        <div class="api-info">
-            <span class="api-name">{{name}}</span>
+        <div class="api-info"> <span class="api-name">{{name}}</span>
             <span v-if='endpoint' class="api-name"> - {{endpoint}}</span>
             <span class="api-version">{{version}}</span>
             <code class="api-url">{{ url }}</code>
@@ -95,17 +117,17 @@
         <div class="api-entry-content">
             <div class="securities">
                 <div class="section-name">Security method
-                    <help-popup-button popup_id="security_method_popup"> </help-popup-button>
+                    <global-help-popup-button popup-id="security-method-popup"></global-help-popup-button>
                 </div>
-                <security-radio-button v-for="sec in security" :name="sec" :group="url" @selected='selectedSecurity'>
+                <security-radio-button v-for="sec in security" :name="sec" :group="url" @selected='onSecuritySelected'>
                 </security-radio-button>
             </div>
 
-            <parameters ref="input_parameters" :parameters="parameters"></parameters>
+            <parameters ref="inputParameters" :parameters="parameters"></parameters>
 
             <div class="validation">
-                <button class="validation-button" @click='validate' :disabled='selected_security == ""'> Validate </button>
-                <validation-list ref='validation_list'></validation-list>
+                <button class="validation-button" @click='validate' :disabled='!isSecuritySelected'> Validate </button>
+                <validation-list ref='validationList'></validation-list>
             </div>
         </div>
     </div>
@@ -113,7 +135,10 @@
 
 <script>
 Vue.component('help-popup', {
-    props: ['popup_id', 'popup_name'],
+    props: {
+        popupName: String,
+        popupContent: String
+    },
     data: function() {
         return {
             active: false
@@ -130,23 +155,49 @@ Vue.component('help-popup', {
     methods: {
         hidePopup: function() {
             this.active = false;
+        },
+        showPopup: function() {
+            this.active = true;
         }
     },
     template: '#help-popup-template'
 });
 
-Vue.component('help-popup-button', {
-    props: ['popup_id'],
+Vue.component('help-button', {
+    template: '#help-button-template'
+});
+
+Vue.component('global-help-popup-button', {
+    props: {
+        popupId: String
+    },
     methods: {
         showPopup: function() {
-            this.$root.$refs[this.popup_id].active = true
+            this.$root.$refs[this.popupId].showPopup();
         }
     },
-    template: '#help-popup-button-template'
+    template: '#global-help-popup-button-template'
+});
+
+Vue.component('text-with-help-popup', {
+    props: {
+        popupContent: String,
+        popupName: String,
+        text: String
+    },
+    methods: {
+        showPopup: function() {
+            this.$refs.popup.showPopup();
+        }
+    },
+    template: '#text-with-help-popup-template'
 });
 
 Vue.component('security-radio-button', {
-    props: ['name', 'group'],
+    props: {
+        name: String,
+        group: String
+    },
     methods: {
         onSelected: function(value) {
             this.$emit('selected', value);
@@ -198,10 +249,12 @@ class ValidationRequest {
 }
 
 Vue.component('validation-entry', {
-    props: ['entry'],
+    props: {
+        entry: String
+    },
     methods: {
         openResult: function() {
-            var newWindow = window.open();
+            const newWindow = window.open();
             newWindow.document.write(this.entry.response);
             newWindow.document.close();
         }
@@ -227,39 +280,52 @@ Vue.component('validation-list', {
 Vue.component('parameter-input', {
     props: {
         name: String,
-        dependencies: Array
+        dependencies: Array,
+        blockers: Array,
+        description: String
     },
     data: function() {
         return {
-            dependencies_values: this.dependencies.reduce((map, obj) => {map[obj] = true; return map}, {}),
-            input_value: ''
+            dependencyMap: this.createDependencyMap(),
+            inputValue: ''
         }
     },
     methods: {
         otherEmptyChanged: function(parameter_name, empty) {
             if (this.dependencies.indexOf(parameter_name) !== -1) {
-                this.dependencies_values[parameter_name] = empty;
+                this.dependencyMap[parameter_name] = !empty;
+            }
+            else if (this.blockers.indexOf(parameter_name) !== -1) {
+                this.dependencyMap[parameter_name] = empty;
             }
         },
         hasValue: function() {
-            return !this.areDependenciesNotMet && this.value !== '';
+            return this.areDependenciesMet() && this.value !== '';
+        },
+        createDependencyMap: function() {
+            const blockersValues = this.blockers.reduce((map, obj) => {map[obj] = true; return map}, {})
+            const dependenciesValues = this.dependencies.reduce((map, obj) => {map[obj] = false; return map}, {})
+            return Object.assign({}, blockersValues, dependenciesValues);
+        },
+        areDependenciesMet: function() {
+            return Object.values(this.dependencyMap).every((x) => x);
         }
     },
     computed: {
         areDependenciesNotMet: function() {
-            return Object.values(this.dependencies_values).some((x) => x);
+            return !this.areDependenciesMet();
         },
         value: {
             get: function() {
-                return this.input_value;
+                return this.inputValue;
             },
             set: function(value) {
-                if (value && !this.input_value) {
+                if (value && !this.inputValue) {
                     this.$emit('emptyChanged', this.name, false);
-                } else if (!value && this.input_value) {
+                } else if (!value && this.inputValue) {
                     this.$emit('emptyChanged', this.name, true);
                 }
-                this.input_value = value;
+                this.inputValue = value;
             }
         }
     },
@@ -280,7 +346,7 @@ Vue.component('parameters', {
             if (this.$refs.parameter_input === undefined) {
                 return []
             }
-            var inputs_with_values = this.$refs.parameter_input.filter(input => input.hasValue());
+            const inputs_with_values = this.$refs.parameter_input.filter(input => input.hasValue());
             return inputs_with_values.map(input => {
                     return {
                         name: input.name,
@@ -294,28 +360,33 @@ Vue.component('parameters', {
 
 Vue.component('api-entry', {
     props: {
-        'name': String,
-        'version': String,
-        'endpoint': String,
-        'security': Array,
-        'url': String,
-        'parameters': Array
+        name: String,
+        version: String,
+        endpoint: String,
+        security: Array,
+        url: String,
+        parameters: Array
     },
     data: function() {
         return {
-            'selected_security': ''
+            selectedSecurity: ''
         };
     },
+    computed: {
+        isSecuritySelected: function() {
+            return this.selectedSecurity !== "";
+        }
+    },
     methods: {
-        selectedSecurity: function(value) {
-            this.selected_security = value;
+        onSecuritySelected: function(value) {
+            this.selectedSecurity = value;
         },
         validate: function() {
-            this.$refs.validation_list.addEntry(
-                this.url, this.name, this.endpoint, this.version, this.selected_security, this.gatherParameters());
+            this.$refs.validationList.addEntry(
+                this.url, this.name, this.endpoint, this.version, this.selectedSecurity, this.gatherParameters());
         },
         gatherParameters: function() {
-            return this.$refs.input_parameters.gatherParameters();
+            return this.$refs.inputParameters.gatherParameters();
         }
     },
     template: '#api-entry-template'
@@ -350,26 +421,19 @@ $(function() {
                     name="{{ api.name }}"
                     version="{{ api.version }}"
                     endpoint="{{ api.endpoint }}"
-                    :security="[ {% for security in api.securities %} '{{ security }}', {% endfor %} ]"
-                    :parameters="[ {% for param in api.parameters %}
-                            {
-                                'name': '{{ param.name }}',
-                                'dependencies': [
-                                    {% for dependency in param.dependencies %}
-                                        '{{ dependency }}',
-                                    {% endfor %}
-                                ]
-                            },
-                        {% endfor %}]"
-                    url="{{ api.url }}"></api-entry>
+                    url="{{ api.url }}"
+                    :security='{{ api.securities | asJson | raw }}'
+                    :parameters='{{ api.parameters | asJson | raw }}'
+            >
+            </api-entry>
         {% endfor %}
 
-        <help-popup ref="security_method_popup" popup_name="Security method">
+        <help-popup ref="security-method-popup" popup-name="Security method">
             Here you have to select security method that will be used to perform calls to validated API.
             Security method consists of four letters, their meaning is described on the top of this page.
         </help-popup>
 
-        <help-popup ref="parameters_popup" popup_name="Parameters">
+        <help-popup ref="parameters-popup" popup-name="Parameters">
             <p>
                 Parameters are values used by validators when they perform calls to APIs.
                 <b>You should leave those fields empty</b>, validators are able to find proper values themselves.
