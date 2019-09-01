@@ -200,9 +200,18 @@
     <properties>
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
+        <vueBuildProfile>prod</vueBuildProfile>
     </properties>
 
     <build>
+        <resources>
+          <resource>
+            <directory>${project.basedir}/src/main/resources</directory>
+          </resource>
+          <resource>
+            <directory>${project.build.directory}/generated-resources</directory>
+          </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -382,7 +391,36 @@
                     </xjbSources>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>com.github.eirslett</groupId>
+                <artifactId>frontend-maven-plugin</artifactId>
+                <version>1.6</version>
+                <executions>
+                    <execution>
+                        <id>install-node-and-npm</id>
+                        <goals><goal>install-node-and-npm</goal></goals>
+                        <phase>generate-resources</phase>
+                    </execution>
+                    <execution>
+                        <id>npm-install</id>
+                        <goals><goal>npm</goal></goals>
+                        <configuration>
+                            <arguments>-prefix src/main/webapp/ install</arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>webpack-build</id>
+                        <goals><goal>npm</goal></goals>
+                        <configuration>
+                            <arguments>-prefix src/main/webapp/ run build-${vueBuildProfile}</arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+                <configuration>
+                    <nodeVersion>v8.11.1</nodeVersion>
+                    <npmVersion>5.6.0</npmVersion>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
-
 </project>

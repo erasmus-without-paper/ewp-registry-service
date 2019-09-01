@@ -108,6 +108,8 @@ public class UiController {
   private String cachedCssFingerprint;
   private byte[] cachedJs;
   private String cachedJsFingerprint;
+  private byte[] cachedUiJs;
+  private String cachedUiJsFingerprint;
   private byte[] cachedLogo;
 
   /**
@@ -218,6 +220,23 @@ public class UiController {
       this.cacheJs();
     }
     return this.cachedJs;
+  }
+
+  /**
+   * @param response
+   *     Needed to add some custom headers.
+   * @return Our scripts file.
+   */
+  @ResponseBody
+  @RequestMapping(value = "/ui-{version}.js", method = RequestMethod.GET,
+      produces = "application/javascript")
+  @SuppressFBWarnings("EI_EXPOSE_REP")
+  public byte[] getUiJs(HttpServletResponse response) {
+    response.addHeader("Cache-Control", "public, max-age=86400, stale-while-revalidate=604800");
+    if (this.cachedUiJs == null) {
+      this.cacheUiJs();
+    }
+    return this.cachedUiJs;
   }
 
   /**
@@ -507,6 +526,16 @@ public class UiController {
     }
   }
 
+  private void cacheUiJs() {
+    try {
+      this.cachedUiJs = IOUtils.toByteArray(
+          this.resLoader.getResource("classpath:vue-app/ui.js").getInputStream());
+      this.cachedUiJsFingerprint = DigestUtils.sha1Hex(this.cachedUiJs);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
   private String getCoverageMatrixHtml() {
     String result = this.catcache.getCoverageMatrixHtml();
     if (result == null) {
@@ -530,10 +559,18 @@ public class UiController {
     return this.cachedJsFingerprint;
   }
 
+  private String getUiJsFingerprint() {
+    if (this.cachedUiJsFingerprint == null) {
+      this.cacheUiJs();
+    }
+    return this.cachedUiJsFingerprint;
+  }
+
   private void initializeMavCommons(ModelAndView mav) {
     mav.addObject("isUsingDevDesign", this.isUsingDevDesign());
     mav.addObject("cssFingerprint", this.getCssFingerprint());
     mav.addObject("jsFingerprint", this.getJsFingerprint());
+    mav.addObject("uiJsFingerprint", this.getUiJsFingerprint());
   }
 
   private boolean isUsingDevDesign() {
