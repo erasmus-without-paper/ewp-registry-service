@@ -2,7 +2,6 @@ package eu.erasmuswithoutpaper.registry.validators;
 
 import static org.joox.JOOX.$;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -560,7 +559,8 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
           }
 
           try {
-            Response response = AbstractSetupValidationSuite.this.internet.makeRequest(
+            Response response = AbstractSetupValidationSuite.this.makeRequest(
+                this,
                 makeApiRequestWithPreferredSecurity(this, heiIdAndUrl, securityDescription)
             );
             expect200(response);
@@ -573,8 +573,11 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
               heiIdAndString.heiId = heiIdAndUrl.heiId;
               return Optional.empty();
             }
-          } catch (IOException | Failure ignored) {
-            // Ignore
+          } catch (Failure e) {
+            if (e.isFatal()) {
+              throw e;
+            }
+            // else ignore
           }
         }
 

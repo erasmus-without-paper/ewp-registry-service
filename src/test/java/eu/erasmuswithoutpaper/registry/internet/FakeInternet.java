@@ -139,6 +139,11 @@ public class FakeInternet implements Internet {
     }
   }
 
+  @Override
+  public Response makeRequest(Request request, Integer timeout) throws IOException {
+    return makeRequest(request);
+  }
+
   /**
    * Fetch the list of emails sent, and clear the list.
    *

@@ -35,6 +35,8 @@ public interface Internet {
    */
   Response makeRequest(Request request) throws IOException;
 
+  Response makeRequest(Request request, Integer timeout) throws IOException;
+
   /**
    * Enqueue an email for sending from the Registry Service to the given recipients. This method
    * should return immediately and never throw any exceptions.

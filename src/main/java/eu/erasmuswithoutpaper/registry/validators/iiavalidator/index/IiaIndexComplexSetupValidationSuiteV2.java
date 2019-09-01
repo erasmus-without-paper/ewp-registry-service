@@ -1,6 +1,7 @@
 package eu.erasmuswithoutpaper.registry.validators.iiavalidator.index;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -166,7 +167,11 @@ public class IiaIndexComplexSetupValidationSuiteV2 extends IiaIndexBasicSetupVal
 
         Response response;
         try {
-          response = IiaIndexComplexSetupValidationSuiteV2.this.internet.makeRequest(request);
+          response = IiaIndexComplexSetupValidationSuiteV2.this.internet.makeRequest(request,
+              IiaIndexComplexSetupValidationSuiteV2.this.timeoutMillis);
+        } catch (SocketTimeoutException e) {
+          throw new Failure("Request to 'get' endpoint timed out.",
+              Status.ERROR, true);
         } catch (IOException ignored) {
           throw new Failure("Internal error: couldn't perform request to 'get' endpoint.",
               Status.ERROR, null);

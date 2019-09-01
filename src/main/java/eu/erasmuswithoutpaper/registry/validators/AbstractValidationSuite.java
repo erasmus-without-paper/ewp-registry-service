@@ -5,6 +5,7 @@ import static org.joox.JOOX.$;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.SocketTimeoutException;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.security.interfaces.RSAPublicKey;
@@ -86,6 +87,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
   protected final DecodingHelper resDecoderHelper;
   protected Match catalogueMatch = null;
   protected S currentState;
+  protected final Integer timeoutMillis = 10000;
 
   protected AbstractValidationSuite(
       ApiValidator<S> validator, S currentState,
@@ -193,7 +195,12 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
    */
   protected void addAndRun(Status failedStatus, InlineValidationStep step) throws SuiteBroken {
     this.steps.add(step);
-    Status status = step.run();
+    Status status = null;
+    try {
+      status = step.run();
+    } catch (InlineValidationStep.FatalFailure e) {
+      throw new SuiteBroken();
+    }
     if (failedStatus != null && status.compareTo(failedStatus) >= 0) {
       throw new SuiteBroken();
     }
@@ -465,9 +472,18 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
   protected Response makeRequest(InlineValidationStep step, Request request) throws Failure {
     step.addRequestSnapshot(request);
     try {
-      Response response = this.internet.makeRequest(request);
+      Response response = this.internet.makeRequest(request, timeoutMillis);
       step.addResponseSnapshot(response);
       return response;
+    } catch (SocketTimeoutException e) {
+      getLogger().debug(
+          "Timeout when retrieving response from server: " + ExceptionUtils.getFullStackTrace(e));
+      throw new Failure(
+          String.format("Timeout when retrieving %s response from url %s.",
+              request.getMethod(), request.getUrl()),
+          Status.ERROR,
+          true
+      );
     } catch (IOException e) {
       getLogger().debug(
           "Problems retrieving response from server: " + ExceptionUtils.getFullStackTrace(e));

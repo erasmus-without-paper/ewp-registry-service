@@ -110,6 +110,11 @@ public class RealInternet implements Internet {
 
   @Override
   public Response makeRequest(Request request) throws IOException {
+    return makeRequest(request, null);
+  }
+
+  @Override
+  public Response makeRequest(Request request, Integer timeout) throws IOException {
 
     /* Prepare and make the request. */
 
@@ -130,6 +135,12 @@ public class RealInternet implements Internet {
     if (request.getBody().isPresent()) {
       conn.setDoOutput(true);
     }
+
+    if (timeout != null) {
+      conn.setConnectTimeout(timeout);
+      conn.setReadTimeout(timeout);
+    }
+
     conn.connect();
     if (request.getBody().isPresent()) {
       conn.getOutputStream().write(request.getBody().get());

@@ -33,6 +33,7 @@ public abstract class InlineValidationStep implements ValidationStepWithStatus {
   public static class Failure extends Exception {
 
     private final Status status;
+    private boolean fatal = false;
     private transient Response serverResponse = null;
 
     /**
@@ -45,6 +46,19 @@ public abstract class InlineValidationStep implements ValidationStepWithStatus {
       super(message);
       this.status = status;
       this.serverResponse = serverResponse;
+    }
+
+    /**
+     * Create a Failure with certain message and status for given response.
+     * @param message Cause of this failure.
+     * @param status Severity of this failure.
+     * @param fatal true marks this failure as fatal.
+     */
+    public Failure(String message, Status status, boolean fatal) {
+      super(message);
+      this.status = status;
+      this.serverResponse = null;
+      this.fatal = fatal;
     }
 
     public void attachServerResponse(Response response) {
@@ -62,6 +76,13 @@ public abstract class InlineValidationStep implements ValidationStepWithStatus {
     public Failure withChangedStatus(Status status) {
       return new Failure(this.getMessage(), status, this.serverResponse);
     }
+
+    public boolean isFatal() {
+      return fatal;
+    }
+  }
+
+  public static class FatalFailure extends Exception {
   }
 
   private Status status = Status.PENDING;
@@ -156,7 +177,7 @@ public abstract class InlineValidationStep implements ValidationStepWithStatus {
    *
    * @return The new status of this validation step.
    */
-  public final Status run() {
+  public final Status run() throws FatalFailure {
     try {
       Optional<Response> response = this.innerRun();
       if (this.getStatus().equals(Status.PENDING)) {
@@ -173,6 +194,9 @@ public abstract class InlineValidationStep implements ValidationStepWithStatus {
       this.setMessage(e.getMessage());
       if (e.getAttachedServerResponse().isPresent()) {
         this.addResponseSnapshot(e.getAttachedServerResponse().get());
+      }
+      if (e.isFatal()) {
+        throw new FatalFailure();
       }
     }
     return this.getStatus();
