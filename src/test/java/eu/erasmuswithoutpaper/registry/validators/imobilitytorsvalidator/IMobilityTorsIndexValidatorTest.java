@@ -5,7 +5,6 @@ import static eu.erasmuswithoutpaper.registry.validators.TestValidationReportAss
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.TestValidationReport;
@@ -81,9 +80,9 @@ public class IMobilityTorsIndexValidatorTest extends IMobilityTorsValidatorTestB
       }
     };
     TestValidationReport report = this.getRawReport(service);
-    assertThat(report).containsFailure(
-        "Request with known receiving_hei_id and without sending_hei_id, expect 200 " +
-            "and non-empty response.");
+    assertThat(report).containsNotice(
+        "Request one known receiving_hei_id, expect 200 OK."
+    );
   }
 
   @Test
@@ -99,9 +98,9 @@ public class IMobilityTorsIndexValidatorTest extends IMobilityTorsValidatorTestB
       }
     };
     TestValidationReport report = this.getRawReport(service);
-    assertThat(report).containsFailure(
-        "Request with known receiving_hei_id and without sending_hei_id, expect 200 " +
-            "and non-empty response.");
+    assertThat(report).containsNotice(
+        "Request one known receiving_hei_id, expect 200 OK."
+    );
   }
 
   @Test
@@ -246,7 +245,8 @@ public class IMobilityTorsIndexValidatorTest extends IMobilityTorsValidatorTestB
     IMobilityTorsServiceV2Valid service = new IMobilityTorsServiceV2Valid(
         omobilityTorsIndexUrl, omobilityTorsGetUrl, this.client, this.resourceLoader) {
       @Override
-      protected void handleMultipleSendingHeiId(RequestData requestData) throws ErrorResponseException {
+      protected void handleMultipleSendingHeiId(
+          RequestData requestData) throws ErrorResponseException {
         throw new ErrorResponseException(
             createErrorResponse(requestData.request, 400, "More that one sending_hei_id provided.")
         );

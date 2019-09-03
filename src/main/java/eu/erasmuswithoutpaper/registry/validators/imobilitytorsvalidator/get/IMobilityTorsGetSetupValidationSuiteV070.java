@@ -35,8 +35,8 @@ class IMobilityTorsGetSetupValidationSuiteV070
     return apiInfo;
   }
 
-  static final String RECEIVING_HEI_ID_PARAMETER = "receiving_hei_id";
-  static final String OMOBILITY_ID_PARAMETER = "omobility_id";
+  private static final String RECEIVING_HEI_ID_PARAMETER = "receiving_hei_id";
+  private static final String OMOBILITY_ID_PARAMETER = "omobility_id";
 
   public static List<ValidationParameter> getParameters() {
     return Arrays.asList(
@@ -75,7 +75,7 @@ class IMobilityTorsGetSetupValidationSuiteV070
 
   @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
   private String getReceivingHeiId() throws SuiteBroken {
-    return "test.hei01.uw.edu.pl";
+    return getCoveredHeiIds(this.currentState.url).get(0);
   }
 
   @SuppressFBWarnings("BC_UNCONFIRMED_CAST")

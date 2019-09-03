@@ -18,7 +18,7 @@ public class NotInListVerifier extends Verifier {
   }
 
   @Override
-  public void verify(AbstractValidationSuite suite, Match root, Response response,
+  protected void verify(AbstractValidationSuite suite, Match root, Response response,
       ValidationStepWithStatus.Status failureStatus)
       throws InlineValidationStep.Failure {
     boolean found = select(root, suite.getApiInfo().getResponsePrefix(), getSelector())

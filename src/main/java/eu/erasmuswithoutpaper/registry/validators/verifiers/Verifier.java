@@ -13,12 +13,21 @@ import org.joox.Match;
 
 public abstract class Verifier {
   private final List<String> selector;
+  protected String customErrorMessage;
+  protected boolean verificationResult = false;
 
   protected Verifier(List<String> selector) {
     this.selector = selector;
   }
 
-  public abstract void verify(AbstractValidationSuite suite, Match root, Response response,
+  public void performVerificaion(AbstractValidationSuite suite, Match root, Response response,
+      ValidationStepWithStatus.Status failureStatus) throws
+      InlineValidationStep.Failure {
+    this.verify(suite, root, response, failureStatus);
+    verificationResult = true;
+  }
+
+  protected abstract void verify(AbstractValidationSuite suite, Match root, Response response,
       ValidationStepWithStatus.Status failureStatus) throws
       InlineValidationStep.Failure;
 
@@ -58,5 +67,14 @@ public abstract class Verifier {
   protected String getParamName() {
     List<String> selector = getSelector();
     return selector.get(selector.size() - 1);
+  }
+
+  public void setCustomErrorMessage(String customErrorMessage) {
+    this.customErrorMessage = customErrorMessage;
+  }
+
+  //PMD linter forces methods returning boolean to start with 'is', it's not want we want.
+  public boolean getVerificationResult() { //NOPMD
+    return verificationResult;
   }
 }

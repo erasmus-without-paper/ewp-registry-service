@@ -84,7 +84,7 @@ class IMobilityTorsIndexSetupValidationSuiteV070
 
   @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
   private String getReceivingHeiId() throws SuiteBroken {
-    return "test.hei01.uw.edu.pl";
+    return getCoveredHeiIds(this.currentState.url).get(0);
   }
 
   @SuppressFBWarnings("BC_UNCONFIRMED_CAST")

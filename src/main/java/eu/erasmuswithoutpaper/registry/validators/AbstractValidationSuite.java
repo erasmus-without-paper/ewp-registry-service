@@ -823,14 +823,14 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
     BuildResult result = this.docBuilder.build(params);
     if (!result.isValid()) {
       throw new Failure(
-          "HTTP response status was okay, but the content has failed Schema validation. " + this
-              .formatDocBuildErrors(result.getErrors()),
-          failureStatus,
+          "HTTP response status was okay, but the content has failed Schema validation. "
+              + this.formatDocBuildErrors(result.getErrors()),
+          Status.FAILURE,
           response
       );
     }
     Match root = $(result.getDocument().get()).namespaces(KnownNamespace.prefixMap());
-    verifier.verify(this, root, response, failureStatus);
+    verifier.performVerificaion(this, root, response, failureStatus);
   }
 
   protected void testParameters200(Combination combination, String name, List<Parameter> params,

@@ -19,7 +19,7 @@ public final class InListVerifier extends Verifier {
   }
 
   @Override
-  public void verify(AbstractValidationSuite suite, Match root, Response response,
+  protected void verify(AbstractValidationSuite suite, Match root, Response response,
       ValidationStepWithStatus.Status failureStatus)
       throws InlineValidationStep.Failure {
     List<String> foundElements =

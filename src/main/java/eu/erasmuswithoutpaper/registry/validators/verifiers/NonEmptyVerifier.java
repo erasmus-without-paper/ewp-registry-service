@@ -16,19 +16,23 @@ public final class NonEmptyVerifier extends Verifier {
   }
 
   @Override
-  public void verify(AbstractValidationSuite suite, Match root, Response response,
+  protected void verify(AbstractValidationSuite suite, Match root, Response response,
       ValidationStepWithStatus.Status failureStatus)
       throws InlineValidationStep.Failure {
     List<Match> foundElements =
         new ArrayList<>(select(root, suite.getApiInfo().getResponsePrefix(), getSelector()));
 
     if (foundElements.isEmpty()) {
+      String defaultMessage = "However the set of returned <" + getParamName() + ">s "
+              + "doesn't match what we expect. "
+              + "It should be non-empty but it is empty";
+      String message = defaultMessage;
+      if (customErrorMessage != null) {
+        message = customErrorMessage;
+      }
       throw new InlineValidationStep.Failure(
           "The response has proper HTTP status and it passed the schema validation. "
-              + "However the set of returned <" + getParamName() + ">s "
-              + "doesn't match what we expect. "
-              + "It should be non-empty but it is empty",
-          failureStatus, response
+          + message, failureStatus, response
       );
     }
   }
