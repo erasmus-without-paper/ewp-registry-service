@@ -12,6 +12,7 @@ import eu.erasmuswithoutpaper.registry.validators.Combination;
 import eu.erasmuswithoutpaper.registry.validators.InlineValidationStep.Failure;
 import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
 import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus.Status;
+import eu.erasmuswithoutpaper.registry.validators.verifiers.InListVerifier;
 import eu.erasmuswithoutpaper.registry.validators.verifiers.ListEqualVerifier;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -53,50 +54,49 @@ class InstitutionsValidationSuiteV2
       throws SuiteBroken {
     String fakeHeiId = this.fakeId;
 
-    testParameters200(combination, "Request for one of known HEI IDs, expect 200 OK.",
+    testParameters200(combination, "Request for one of known hei_ids, expect 200 OK.",
         Arrays.asList(new Parameter("hei_id", currentState.selectedHeiId)),
-        new InstitutionsVerifier(Collections.singletonList(currentState.selectedHeiId))
+        new ListEqualInstitutionsVerifier(Collections.singletonList(currentState.selectedHeiId))
     );
 
-    testParameters200(combination, "Request one unknown HEI ID, expect 200 and empty response.",
+    testParameters200(combination, "Request one unknown hei_id, expect 200 and empty response.",
         Collections.singletonList(new Parameter("hei_id", fakeHeiId)),
-        new InstitutionsVerifier(new ArrayList<>())
+        new ListEqualInstitutionsVerifier(new ArrayList<>())
     );
 
     if (this.currentState.maxHeiIds > 1) {
       testParameters200(
           combination,
-          "Request one known and one unknown HEI ID, expect 200 and only one HEI in response.",
+          "Request one known and one unknown hei_id, expect 200 and only one <hei-id> in response.",
           Arrays.asList(new Parameter("hei_id", currentState.selectedHeiId),
               new Parameter("hei_id", fakeHeiId)
           ),
-          new InstitutionsVerifier(Collections.singletonList(currentState.selectedHeiId))
+          new ListEqualInstitutionsVerifier(Collections.singletonList(currentState.selectedHeiId))
       );
     }
 
-    testParametersError(combination, "Request without HEI IDs, expect 400.", new ArrayList<>(),
+    testParametersError(combination, "Request without hei_ids, expect 400.", new ArrayList<>(),
         400
     );
 
-    testParametersError(combination, "Request more than <max-hei-ids> known HEIs, expect 400.",
+    testParametersError(combination, "Request more than <max-hei-ids> known hei_ids, expect 400.",
         Collections.nCopies(this.currentState.maxHeiIds + 1,
             new Parameter("hei_id", currentState.selectedHeiId)
         ),
         400
     );
 
-    testParametersError(combination, "Request more than <max-hei-ids> unknown HEI IDs, expect 400.",
+    testParametersError(combination, "Request more than <max-hei-ids> unknown hei_ids, expect 400.",
         Collections.nCopies(this.currentState.maxHeiIds + 1, new Parameter("hei_id", fakeHeiId)),
         400
     );
 
-    testParameters200(combination, "Request exactly <max-hei-ids> known HEI IDs, "
-            + "expect 200 and <max-hei-ids> HEI IDs in response.",
+    testParameters200(combination, "Request exactly <max-hei-ids> known hei_ids, "
+            + "expect 200 and non-empty response.",
         Collections.nCopies(this.currentState.maxHeiIds,
             new Parameter("hei_id", currentState.selectedHeiId)
         ),
-        new InstitutionsVerifier(
-            Collections.nCopies(this.currentState.maxHeiIds, currentState.selectedHeiId))
+        new InListInstitutionsVerifier(Collections.singletonList(currentState.selectedHeiId))
     );
 
     testParametersError(combination, "Request with single incorrect parameter, expect 400.",
@@ -109,12 +109,42 @@ class InstitutionsValidationSuiteV2
                 new Parameter("hei_id", currentState.selectedHeiId),
                 new Parameter("hei_id_param", currentState.selectedHeiId)
             ),
-        new InstitutionsVerifier(Collections.singletonList(currentState.selectedHeiId))
+        new ListEqualInstitutionsVerifier(Collections.singletonList(currentState.selectedHeiId))
     );
   }
 
-  private static class InstitutionsVerifier extends ListEqualVerifier {
-    private InstitutionsVerifier(List<String> expectedHeiIDs) {
+
+  private static void verifyRootOUnitId(AbstractValidationSuite suite, Match root,
+      Response response,
+      Status failureStatus)
+      throws Failure {
+    String nsPrefix = suite.getApiInfo().getResponsePrefix() + ":";
+
+    for (Match entry : root.xpath(nsPrefix + "hei").each()) {
+      Match rootOunitId = entry.xpath(nsPrefix + "root-ounit-id").first();
+      if (rootOunitId.isEmpty()) {
+        continue;
+      }
+
+      boolean found = false;
+
+      for (Match ounitId : entry.xpath(nsPrefix + "ounit-id").each()) {
+        if (ounitId.text().equals(rootOunitId.text())) {
+          found = true;
+          break;
+        }
+      }
+
+      if (!found) {
+        throw new Failure(
+            "The response has proper HTTP status and it passed the schema validation. However, "
+                + "root-ounit-id is not included in ounit-id list.", failureStatus, response);
+      }
+    }
+  }
+
+  private static class ListEqualInstitutionsVerifier extends ListEqualVerifier {
+    private ListEqualInstitutionsVerifier(List<String> expectedHeiIDs) {
       super(expectedHeiIDs, Arrays.asList("hei", "hei-id"));
     }
 
@@ -125,33 +155,19 @@ class InstitutionsValidationSuiteV2
       super.verify(suite, root, response, failureStatus);
       verifyRootOUnitId(suite, root, response, failureStatus);
     }
+  }
 
-    private void verifyRootOUnitId(AbstractValidationSuite suite, Match root, Response response,
+  private static class InListInstitutionsVerifier extends InListVerifier {
+    private InListInstitutionsVerifier(List<String> expectedHeiIDs) {
+      super(expectedHeiIDs, Arrays.asList("hei", "hei-id"));
+    }
+
+    @Override
+    protected void verify(AbstractValidationSuite suite, Match root, Response response,
         Status failureStatus)
         throws Failure {
-      String nsPrefix = suite.getApiInfo().getResponsePrefix() + ":";
-
-      for (Match entry : root.xpath(nsPrefix + "hei").each()) {
-        Match rootOunitId = entry.xpath(nsPrefix + "root-ounit-id").first();
-        if (rootOunitId.isEmpty()) {
-          continue;
-        }
-
-        boolean found = false;
-
-        for (Match ounitId : entry.xpath(nsPrefix + "ounit-id").each()) {
-          if (ounitId.text().equals(rootOunitId.text())) {
-            found = true;
-            break;
-          }
-        }
-
-        if (!found) {
-          throw new Failure(
-              "The response has proper HTTP status and it passed the schema validation. However, "
-                  + "root-ounit-id is not included in ounit-id list.", failureStatus, response);
-        }
-      }
+      super.verify(suite, root, response, failureStatus);
+      verifyRootOUnitId(suite, root, response, failureStatus);
     }
   }
 }

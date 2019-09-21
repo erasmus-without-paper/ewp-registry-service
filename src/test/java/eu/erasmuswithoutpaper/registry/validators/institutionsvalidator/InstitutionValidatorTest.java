@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import eu.erasmuswithoutpaper.registry.validators.AbstractApiTest;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
@@ -56,8 +57,8 @@ public class InstitutionValidatorTest extends AbstractApiTest {
         };
     TestValidationReport report = this.getRawReport(service);
     assertThat(report)
-        .containsFailure("Request more than <max-hei-ids> known HEIs, expect 400.")
-        .containsFailure("Request more than <max-hei-ids> unknown HEI IDs, expect 400.");
+        .containsFailure("Request more than <max-hei-ids> known hei_ids, expect 400.")
+        .containsFailure("Request more than <max-hei-ids> unknown hei_ids, expect 400.");
   }
 
   @Test
@@ -71,7 +72,7 @@ public class InstitutionValidatorTest extends AbstractApiTest {
           }
         };
     TestValidationReport report = this.getRawReport(service);
-    assertThat(report).containsFailure("Request more than <max-hei-ids> known HEIs, expect 400.");
+    assertThat(report).containsFailure("Request more than <max-hei-ids> known hei_ids, expect 400.");
   }
 
   @Test
@@ -89,7 +90,7 @@ public class InstitutionValidatorTest extends AbstractApiTest {
         };
     TestValidationReport report = this.getRawReport(service);
     assertThat(report).containsFailure(
-        "Request one known and one unknown HEI ID, expect 200 and only one HEI in response.");
+        "Request one known and one unknown hei_id, expect 200 and only one <hei-id> in response.");
   }
 
   @Test
@@ -132,7 +133,7 @@ public class InstitutionValidatorTest extends AbstractApiTest {
           }
         };
     TestValidationReport report = this.getRawReport(service);
-    assertThat(report).containsFailure("Request without HEI IDs, expect 400.");
+    assertThat(report).containsFailure("Request without hei_ids, expect 400.");
   }
 
   @Test
@@ -160,7 +161,7 @@ public class InstitutionValidatorTest extends AbstractApiTest {
         };
     TestValidationReport report = this.getRawReport(service);
     assertThat(report)
-        .containsFailure("Request one unknown HEI ID, expect 200 and empty response.");
+        .containsFailure("Request one unknown hei_id, expect 200 and empty response.");
   }
 
   @Test
@@ -177,7 +178,7 @@ public class InstitutionValidatorTest extends AbstractApiTest {
         };
     TestValidationReport report = this.getRawReport(service);
     assertThat(report).containsFailure(
-        "Request one known and one unknown HEI ID, expect 200 and only one HEI in response.");
+        "Request one known and one unknown hei_id, expect 200 and only one <hei-id> in response.");
   }
 
   @Test
@@ -195,7 +196,21 @@ public class InstitutionValidatorTest extends AbstractApiTest {
           }
         };
     TestValidationReport report = this.getRawReport(service);
-    assertThat(report).containsFailure("Request for one of known HEI IDs, expect 200 OK.");
+    assertThat(report).containsFailure("Request for one of known hei_ids, expect 200 OK.");
+  }
+
+  @Test
+  public void testReturningDeduplicatedListIsNotAnError() {
+    InstitutionServiceV2Valid service =
+        new InstitutionServiceV2Valid(institutionsUrlHTTT, this.client, validatorKeyStore) {
+          @Override
+          protected List<InstitutionsResponse.Hei> processHeis(List<String> heis)
+              throws ErrorResponseException {
+            return super.processHeis(heis.stream().distinct().collect(Collectors.toList()));
+          }
+        };
+    TestValidationReport report = this.getRawReport(service);
+    assertThat(report).isCorrect();
   }
 
   @Override

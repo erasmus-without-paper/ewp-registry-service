@@ -192,14 +192,14 @@ class MtInstitutionsValidationSuiteV1 extends AbstractValidationSuite<MtInstitut
 
     testParameters200(
         combination,
-        "Request exactly <max-ids> known PICs, expect 200 and <max-ids> PICs in response.",
+        "Request exactly <max-ids> known PICs, expect 200 and non-empty response.",
         concatArrays(
             Arrays.asList(new Parameter("eche_at_date", this.currentState.selectedEcheAtDate)),
             Collections.nCopies(this.currentState.maxIds,
                 new Parameter("pic", this.currentState.selectedPic))
         ),
-        picVerifierFactory.expectResponseToContainExactly(
-            Collections.nCopies(this.currentState.maxIds, this.currentState.selectedPic))
+        picVerifierFactory.expectResponseToContain(
+            Collections.singletonList(this.currentState.selectedPic))
     );
   }
 

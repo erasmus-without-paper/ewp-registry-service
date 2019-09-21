@@ -262,7 +262,7 @@ public class MtInstitutionsValidatorTest extends AbstractApiTest {
         };
     TestValidationReport report = this.getRawReport(service);
     assertThat(report).containsFailure(
-        "Request exactly <max-ids> known PICs, expect 200 and <max-ids> PICs in response.");
+        "Request exactly <max-ids> known PICs, expect 200 and non-empty response.");
   }
 }
 

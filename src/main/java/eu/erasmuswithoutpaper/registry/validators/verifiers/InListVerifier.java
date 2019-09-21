@@ -10,7 +10,7 @@ import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus;
 
 import org.joox.Match;
 
-public final class InListVerifier extends Verifier {
+public class InListVerifier extends Verifier {
   private final List<String> wantedValue;
 
   public InListVerifier(List<String> wantedValue, List<String> selector) {
