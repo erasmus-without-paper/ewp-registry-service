@@ -10,6 +10,10 @@ public interface ValidatedApiInfo {
 
   String getApiName();
 
+  default String getGitHubRepositoryName() {
+    return getApiName();
+  }
+
   ApiEndpoint getEndpoint();
 
   default String getApiNamespace() {

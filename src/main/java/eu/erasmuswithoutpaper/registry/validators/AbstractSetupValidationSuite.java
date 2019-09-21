@@ -84,7 +84,10 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
   }
 
   private List<SemanticVersion> getGitHubTags() {
-    return this.gitHubTagsGetter.getTags(getApiInfo().getApiName(), this.internet, getLogger());
+    return this.gitHubTagsGetter.getTags(
+        getApiInfo().getGitHubRepositoryName(),
+        this.internet,
+        getLogger());
   }
 
   protected void runApiSpecificTests(HttpSecurityDescription security) throws SuiteBroken {

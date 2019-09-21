@@ -25,4 +25,9 @@ class OUnitsValidatedApiInfo implements ValidatedApiInfo {
   public ApiEndpoint getEndpoint() {
     return ApiEndpoint.NoEndpoint;
   }
+
+  @Override
+  public String getGitHubRepositoryName() {
+    return "ounits";
+  }
 }
