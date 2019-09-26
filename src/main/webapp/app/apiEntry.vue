@@ -21,6 +21,12 @@
                 <validation-list ref='validationList'></validation-list>
             </div>
         </div>
+        <div v-if="hasNotices" class="api-entry-notice-list">
+            <p>Detected problems with securities:</p>
+            <ul>
+                <li v-for="securityNotice in securityNotices">{{ securityNotice }}</li>
+            </ul>
+        </div>
     </div>
 </template>
 
@@ -44,7 +50,8 @@
             endpoint: String,
             security: Array,
             url: String,
-            parameters: Array
+            parameters: Array,
+            securityNotices: Array
         },
         data: function() {
             return {
@@ -54,6 +61,9 @@
         computed: {
             isSecuritySelected: function() {
                 return this.selectedSecurity !== "";
+            },
+            hasNotices: function () {
+                return Array.isArray(this.securityNotices) && this.securityNotices.length > 0;
             }
         },
         methods: {

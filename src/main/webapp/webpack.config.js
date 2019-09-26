@@ -1,6 +1,6 @@
 const path = require('path')
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
-const shouldMinimize = process.env["MINIMIZE"] === 'true'
+const isDev = process.env.NODE_ENV === 'dev'
 
 module.exports = {
   entry: './app/main.js',
@@ -21,10 +21,7 @@ module.exports = {
     },
     extensions: ['*', '.js', '.vue', '.json']
   },
-  optimization: {
-      minimize: shouldMinimize
-  },
-  mode: 'production',
+  mode: isDev ? 'development' : 'production',
   plugins: [
     new VueLoaderPlugin()
   ]

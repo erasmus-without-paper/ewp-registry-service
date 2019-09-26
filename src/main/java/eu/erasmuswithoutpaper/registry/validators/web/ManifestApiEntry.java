@@ -30,6 +30,7 @@ public class ManifestApiEntry {
   public final boolean available;
   public final List<ValidationParameter> parameters;
   public final ApiEndpoint endpoint;
+  public final List<String> securityNotices;
 
   /**
    * Description of API endpoint.
@@ -51,7 +52,7 @@ public class ManifestApiEntry {
    */
   public ManifestApiEntry(String name, ApiEndpoint endpoint, String version, String url,
       List<HttpSecurityDescription> securities, boolean available,
-      List<ValidationParameter> parameters) {
+      List<ValidationParameter> parameters, List<String> securityNotices) {
     this.name = name;
     this.endpoint = endpoint;
     this.version = version;
@@ -61,6 +62,7 @@ public class ManifestApiEntry {
         .collect(Collectors.toList());
     this.available = available;
     this.parameters = parameters;
+    this.securityNotices = securityNotices;
   }
 
   /**
@@ -110,8 +112,8 @@ public class ManifestApiEntry {
     }
 
     final Element securityElement = api.xpath("*[local-name()='http-security']").get(0);
-    List<HttpSecurityDescription> securitySettings =
-        parseSecurity(new HttpSecuritySettings(securityElement));
+    HttpSecuritySettings httpSecuritySettings = new HttpSecuritySettings(securityElement);
+    List<HttpSecurityDescription> securitySettings = parseSecurity(httpSecuritySettings);
 
     for (ApiEndpoint endpoint : ApiEndpoint.values()) {
       final String urlElementName = getEndpointXmlElementName(endpoint);
@@ -122,7 +124,8 @@ public class ManifestApiEntry {
 
       result.add(new ManifestApiEntry(apiName, endpoint, version, url, securitySettings,
           manager.hasCompatibleTests(apiName, endpoint, semanticVersion),
-          manager.getParameters(apiName, endpoint, semanticVersion)
+          manager.getParameters(apiName, endpoint, semanticVersion),
+          httpSecuritySettings.getNotices()
       ));
     }
     return result;

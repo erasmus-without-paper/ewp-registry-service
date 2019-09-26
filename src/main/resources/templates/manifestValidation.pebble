@@ -31,6 +31,7 @@
                     url="{{ api.url }}"
                     :security='{{ api.securities | asJson | raw }}'
                     :parameters='{{ api.parameters | asJson | raw }}'
+                    :security-notices='{{ api.securityNotices | asJson | raw }}'
             >
             </api-entry>
         {% endfor %}

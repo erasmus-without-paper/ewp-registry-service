@@ -712,3 +712,8 @@ td.ewpsrc__test_index {
     max-height: 30%;
     overflow: auto;
 }
+
+.api-entry-notice-list {
+    width: 100%;
+    float: left;
+}
