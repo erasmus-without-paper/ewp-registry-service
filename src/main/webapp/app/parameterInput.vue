@@ -1,7 +1,12 @@
 <template>
     <tr>
-        <td class="api-entry-parameter-name" v-if="description">
-            <text-with-help-popup :text="name" :popup-name="name" :popup-content="description"></text-with-help-popup>
+        <td v-if="description">
+            <text-with-help-popup
+                    :text="name"
+                    text-class="api-entry-parameter-name"
+                    :popup-name="name"
+                    :popup-content="description">
+            </text-with-help-popup>
         </td>
         <td class="api-entry-parameter-name" v-else>
             {{name}}

@@ -1,6 +1,8 @@
 <template>
     <div>
-        {{ text }}&nbsp;<help-button @click="showPopup()"></help-button>
+        <div :class="textClass">
+            {{ text }}&nbsp;<help-button @click="showPopup()"></help-button>
+        </div>
         <help-popup ref="popup" :popup-content="popupContent" :popup-name="popupName"></help-popup>
     </div>
 </template>
@@ -18,7 +20,8 @@
         props: {
             popupContent: String,
             popupName: String,
-            text: String
+            text: String,
+            textClass: String
         },
         methods: {
             showPopup: function() {
