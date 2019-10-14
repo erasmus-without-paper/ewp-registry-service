@@ -1,7 +1,9 @@
 package eu.erasmuswithoutpaper.registry.cmatrix;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownElement;
 import eu.erasmuswithoutpaper.registryclient.HeiEntry;
@@ -59,6 +61,10 @@ class CoverageMatrixRow {
     /* SCHAC */
 
     row1.append(genRow("SCHAC", NAME_COLOR_CLASS, 3, 1, "ewpst__cell-schac"));
+
+    /* Erasmus code */
+
+    row1.append(genRow("Erasmus code", NAME_COLOR_CLASS, 3, 1, "ewpst__cell-schac"));
 
     /* General Purpose APIs */
 
@@ -158,6 +164,15 @@ class CoverageMatrixRow {
     cell.addClass("ewpst__cell-schac");
     this.cells.add(cell);
     cell.addContentLine(hei.getId());
+
+    /* Erasmus code */
+
+    cell = new CoverageMatrixCell(NAME_COLOR_CLASS);
+    cell.addClass("ewpst__cell-schac");
+    this.cells.add(cell);
+    Collection<String> erasmusCodes = hei.getOtherIds("erasmus");
+    Optional<String> erasmusCode = erasmusCodes.stream().findFirst();
+    cell.addContentLine(erasmusCode.orElse(""));
 
     /* General Purpose APIs */
 
