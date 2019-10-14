@@ -16,7 +16,7 @@ import org.junit.runner.RunWith;
  * A common test class to extend. Should be used for all unit tests.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest
+@SpringBootTest(classes = Application.class)
 @ActiveProfiles("test")
 public abstract class WRTest {
 

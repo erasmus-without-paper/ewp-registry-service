@@ -12,7 +12,6 @@ import javax.annotation.PostConstruct;
 
 import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
 import eu.erasmuswithoutpaper.registry.internet.Internet;
-import eu.erasmuswithoutpaper.registry.repository.ManifestRepository;
 import eu.erasmuswithoutpaper.registry.validators.echovalidator.EchoValidator;
 import eu.erasmuswithoutpaper.registry.validators.githubtags.GitHubTagsGetter;
 import eu.erasmuswithoutpaper.registry.web.SelfManifestProvider;
@@ -37,7 +36,7 @@ public abstract class ApiValidator<S extends SuiteState> {
   @Autowired
   protected ApiValidatorsManager apiValidatorsManager;
   @Autowired
-  private ManifestRepository repo;
+  private CatalogueMatcherProvider catalogueMatcherProvider;
   @Autowired
   private GitHubTagsGetter gitHubTagsGetter;
 
@@ -232,7 +231,7 @@ public abstract class ApiValidator<S extends SuiteState> {
       HttpSecurityDescription security, ValidationParameters parameters) {
     AbstractValidationSuite.ValidationSuiteConfig config =
         new AbstractValidationSuite.ValidationSuiteConfig(
-            this.docBuilder, this.internet, this.client, this.repo,
+            this.docBuilder, this.internet, this.client, this.catalogueMatcherProvider,
             this.gitHubTagsGetter
         );
     List<ValidationStepWithStatus> result = new ArrayList<>();

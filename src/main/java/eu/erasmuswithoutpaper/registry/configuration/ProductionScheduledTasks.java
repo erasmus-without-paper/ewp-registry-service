@@ -12,6 +12,7 @@ import eu.erasmuswithoutpaper.registry.updater.UptimeChecker;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -28,6 +29,7 @@ import org.slf4j.LoggerFactory;
 @Profile({ "production", "development" })
 @Component
 @SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
+@ConditionalOnWebApplication
 public class ProductionScheduledTasks {
 
   private static final Logger logger = LoggerFactory.getLogger(ProductionConfiguration.class);

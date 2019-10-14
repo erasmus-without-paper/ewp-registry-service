@@ -27,6 +27,7 @@ import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient.RefreshFailureException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Iterables;
@@ -59,6 +60,7 @@ import org.xml.sax.SAXException;
  */
 @Service
 @SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
+@ConditionalOnWebApplication
 public class ManifestRepositoryImpl implements ManifestRepository {
 
   private static final Logger logger = LoggerFactory.getLogger(ManifestRepositoryImpl.class);

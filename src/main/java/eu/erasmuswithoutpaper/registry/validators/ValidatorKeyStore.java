@@ -15,6 +15,7 @@ import java.util.Date;
 import java.util.List;
 
 import eu.erasmuswithoutpaper.registry.web.SelfManifestProvider;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Service;
 
 import org.bouncycastle.asn1.x500.X500Name;
@@ -39,18 +40,19 @@ import org.slf4j.LoggerFactory;
  * Keeps keys and certificates used by {@link ApiValidator}s.
  */
 @Service
+@ConditionalOnWebApplication
 public class ValidatorKeyStore {
   private static final Logger logger = LoggerFactory.getLogger(ValidatorKeyStore.class);
 
-  private final KeyPair myClientRsaKeyPair;
-  private final KeyPair myServerRsaKeyPair;
-  private final KeyPair myTlsKeyPair;
-  private final KeyPair myUnregisteredKeyPair;
-  private final X509Certificate myTlsCertificate;
+  protected KeyPair myClientRsaKeyPair;
+  protected KeyPair myServerRsaKeyPair;
+  protected KeyPair myTlsKeyPair;
+  protected KeyPair myUnregisteredKeyPair;
+  protected X509Certificate myTlsCertificate;
 
-  private final Date myCredentialsDate;
+  protected Date myCredentialsDate;
 
-  private final List<String> myCoveredHeiIDs;
+  protected List<String> myCoveredHeiIDs;
 
   /**
    * Generates credential and certificates to be used by validators and published in manifest.

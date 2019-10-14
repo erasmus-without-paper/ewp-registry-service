@@ -1,16 +1,6 @@
 package eu.erasmuswithoutpaper.registry.web;
 
-import static org.joox.JOOX.$;
-
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.charset.CharacterCodingException;
-import java.nio.charset.CharsetDecoder;
-import java.nio.charset.StandardCharsets;
-import java.security.cert.CertificateEncodingException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -26,9 +16,6 @@ import eu.erasmuswithoutpaper.registry.documentbuilder.BuildError;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildParams;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildResult;
 import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
-import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
-import eu.erasmuswithoutpaper.registry.internet.Request;
-import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registry.notifier.NotifierService;
 import eu.erasmuswithoutpaper.registry.repository.CatalogueDependantCache;
 import eu.erasmuswithoutpaper.registry.repository.ManifestNotFound;
@@ -41,6 +28,7 @@ import eu.erasmuswithoutpaper.registry.updater.RegistryUpdater;
 import eu.erasmuswithoutpaper.registry.updater.UptimeChecker;
 import eu.erasmuswithoutpaper.registry.validators.ApiEndpoint;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidatorsManager;
+import eu.erasmuswithoutpaper.registry.validators.HtmlValidationReportFormatter;
 import eu.erasmuswithoutpaper.registry.validators.HttpSecurityDescription;
 import eu.erasmuswithoutpaper.registry.validators.HttpSecurityDescription.InvalidDescriptionString;
 import eu.erasmuswithoutpaper.registry.validators.SemanticVersion;
@@ -48,12 +36,12 @@ import eu.erasmuswithoutpaper.registry.validators.SemanticVersion.InvalidVersion
 import eu.erasmuswithoutpaper.registry.validators.ValidationParameter;
 import eu.erasmuswithoutpaper.registry.validators.ValidationParameters;
 import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus;
-import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus.Status;
 import eu.erasmuswithoutpaper.registry.validators.ValidatorKeyStore;
 import eu.erasmuswithoutpaper.registry.validators.web.ManifestApiEntry;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.http.HttpHeaders;
@@ -77,14 +65,13 @@ import com.google.gson.JsonPrimitive;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.xerces.impl.dv.util.Base64;
-import org.joox.Match;
 
 /**
  * Handles UI requests.
  */
 @Controller
 @SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
+@ConditionalOnWebApplication
 public class UiController {
 
   private final TaskExecutor taskExecutor;
@@ -95,7 +82,6 @@ public class UiController {
   private final NotifierService notifier;
   private final UptimeChecker uptimeChecker;
   private final EwpDocBuilder docBuilder;
-  private final SelfManifestProvider selfManifestProvider;
   private final ResourceLoader resLoader;
   private final CoverageMatrixGenerator matrixGenerator;
   private final RegistryClient regClient;
@@ -129,8 +115,6 @@ public class UiController {
    *     needed to display current uptime stats.
    * @param docBuilder
    *     needed to support online document validation service.
-   * @param selfManifestProvider
-   *     needed in Echo Validator responses.
    * @param resLoader
    *     needed to load CSS, logos etc.
    * @param matrixGenerator
@@ -149,7 +133,7 @@ public class UiController {
       ManifestUpdateStatusRepository manifestUpdateStatuses, ManifestRepository manifestRepository,
       ManifestSourceProvider sourceProvider, RegistryUpdater updater, NotifierService notifier,
       UptimeChecker uptimeChecker, EwpDocBuilder docBuilder,
-      SelfManifestProvider selfManifestProvider, ResourceLoader resLoader,
+      ResourceLoader resLoader,
       CoverageMatrixGenerator matrixGenerator, RegistryClient regClient,
       CatalogueDependantCache catcache,
       ApiValidatorsManager apiValidatorsManager,
@@ -163,7 +147,6 @@ public class UiController {
     this.notifier = notifier;
     this.uptimeChecker = uptimeChecker;
     this.docBuilder = docBuilder;
-    this.selfManifestProvider = selfManifestProvider;
     this.resLoader = resLoader;
     this.matrixGenerator = matrixGenerator;
     this.regClient = regClient;
@@ -589,40 +572,6 @@ public class UiController {
     return !Application.isProductionSite();
   }
 
-  private Map<String, Object> createValidationInfo(ValidationRequestBody requestBody,
-      HttpSecurityDescription description, Date validationStarted) {
-    Map<String, Object> info = new HashMap<>();
-    DateFormat isoDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-    info.put("validationStarted", isoDateFormat.format(validationStarted));
-    Date clientKeysRegenerated = this.validatorKeyStore.getCredentialsGenerationDate();
-    info.put("clientKeysRegenerated", isoDateFormat.format(clientKeysRegenerated));
-    info.put(
-        "clientKeysAgeWhenValidationStartedInSeconds",
-        (validationStarted.getTime() - clientKeysRegenerated.getTime()) / 1000
-    );
-    info.put("registryManifestBody", this.selfManifestProvider.getManifest());
-    info.put("security", requestBody.getSecurity());
-    info.put("url", requestBody.getUrl());
-    info.put("apiName", requestBody.getName());
-    info.put("version", requestBody.getVersion());
-
-    info.put("securityExplanation", createSecurityExplanation(description));
-    return info;
-  }
-
-  private Object createSecurityExplanation(HttpSecurityDescription description) {
-    String[] explanations = description.getExplanation().split("\n");
-    List<Map<String, String>> splitExplanations = new ArrayList<>();
-    for (String explanation : explanations) {
-      String[] parts = explanation.split(":", 2);
-      Map<String, String> mapParts = new HashMap<>();
-      mapParts.put("marker", parts[0]);
-      mapParts.put("description", parts[1]);
-      splitExplanations.add(mapParts);
-    }
-    return splitExplanations;
-  }
-
   /**
    * Run validation on one of APIs served at the given URL.
    *
@@ -640,11 +589,11 @@ public class UiController {
     this.initializeMavCommons(mav);
     mav.setViewName("validationResult");
 
-    HttpSecurityDescription desc;
+    HttpSecurityDescription httpSecurityDescription;
     SemanticVersion ver;
     ApiEndpoint endpoint;
     try {
-      desc = new HttpSecurityDescription(requestBody.getSecurity());
+      httpSecurityDescription = new HttpSecurityDescription(requestBody.getSecurity());
       ver = new SemanticVersion(requestBody.getVersion());
       endpoint = ApiEndpoint.fromEndpointName(requestBody.getEndpoint());
     } catch (InvalidDescriptionString | IllegalArgumentException | InvalidVersionString ignored) {
@@ -667,128 +616,29 @@ public class UiController {
 
     List<ValidationStepWithStatus> testResults = this.apiValidatorsManager
         .getApiValidator(requestBody.getName(), endpoint)
-        .runTests(requestBody.getUrl(), ver, desc, requestParameters);
+        .runTests(requestBody.getUrl(), ver, httpSecurityDescription, requestParameters);
 
-    List<Map<String, Object>> testsArray =
-        testResults.stream().map(this::createTestStepDescription).collect(Collectors.toList());
+    HtmlValidationReportFormatter htmlValidationReportFormatter =
+        new HtmlValidationReportFormatter(docBuilder);
 
-    Status worstStatus =
-        testResults.stream().map(ValidationStepWithStatus::getStatus).max(Status::compareTo)
-            .orElse(Status.SUCCESS);
+    HtmlValidationReportFormatter.ValidationInfoParameters validationInfoParameters =
+        new HtmlValidationReportFormatter.ValidationInfoParameters(
+            requestBody.getName(),
+            requestBody.getSecurity(),
+            requestBody.getUrl(),
+            requestBody.getVersion(),
+            httpSecurityDescription,
+            validationStartedDate,
+            this.validatorKeyStore.getCredentialsGenerationDate()
+        );
 
-    mav.addObject("info", createValidationInfo(requestBody, desc, validationStartedDate));
-    mav.addObject("success", worstStatus.equals(Status.SUCCESS));
-    mav.addObject("status", worstStatus.toString());
-    mav.addObject("tests", testsArray);
+    Map<String, Object> pebbleContext = htmlValidationReportFormatter.getPebbleContext(
+        testResults,
+        validationInfoParameters
+    );
+
+    mav.addAllObjects(pebbleContext);
 
     return mav;
   }
-
-  private Map<String, Object> createTestStepDescription(ValidationStepWithStatus testResult) {
-    Map<String, Object> testStepDescription = new HashMap<>();
-    testStepDescription.put("name", testResult.getName());
-    testStepDescription.put("status", testResult.getStatus().toString());
-
-    String message = testResult.getMessage();
-    testStepDescription.put("message", message);
-
-    List<Object> requestSnapshots = this.formatRequestSnapshotsToMap(testResult);
-    testStepDescription.put("requestSnapshots", requestSnapshots);
-    List<Object> responseSnapshots = this.formatResponseSnapshotsToMap(testResult);
-    testStepDescription.put("responseSnapshots", responseSnapshots);
-
-    boolean hasMessage = !message.isEmpty() && !message.equals("OK");
-    testStepDescription.put("hasMessage", hasMessage);
-
-    boolean hasDetails = !requestSnapshots.isEmpty() || !responseSnapshots.isEmpty();
-    testStepDescription.put("hasDetails", hasDetails);
-
-    int height = 1;
-    if (hasMessage) {
-      height += 1;
-    }
-    if (hasDetails) {
-      height += 1;
-    }
-
-    testStepDescription.put("height", height);
-
-    return testStepDescription;
-  }
-
-
-  private List<Object> formatResponseSnapshotsToMap(ValidationStepWithStatus testResult) {
-    List<Object> results = new ArrayList<>();
-    for (Response snapshot : testResult.getResponseSnapshots()) {
-      results.add(this.formatResponseSnapshotToMap(snapshot));
-    }
-    return results;
-  }
-
-  private Map<String, Object> formatResponseSnapshotToMap(Response response) {
-    Map<String, Object> result = new HashMap<>();
-    result.put("status", response.getStatus());
-    result.put("rawBodyBase64", Base64.encode(response.getBody()));
-    BuildParams params = new BuildParams(response.getBody());
-    params.setMakingPretty(true);
-    BuildResult buildResult = this.docBuilder.build(params);
-    if (buildResult.getDocument().isPresent()) {
-      Match root = $(buildResult.getDocument().get()).namespaces(KnownNamespace.prefixMap());
-      result.put(
-          "developerMessage",
-          root.xpath("/ewp:error-response/ewp:developer-message").text()
-      );
-      result.put("prettyXml", buildResult.getPrettyXml().orElse(null));
-    } else {
-      result.put("developerMessage", null);
-      result.put("prettyXml", null);
-    }
-    result.put("headers", response.getHeaders());
-    result.put("processingNoticesHtml", response.getProcessingNoticesHtml());
-    return result;
-  }
-
-  private List<Object> formatRequestSnapshotsToMap(ValidationStepWithStatus testResult) {
-    List<Object> results = new ArrayList<>();
-    for (Request snapshot : testResult.getRequestSnapshots()) {
-      results.add(this.formatRequestSnapshotToMap(snapshot));
-    }
-    return results;
-  }
-
-  private Map<String, Object> formatRequestSnapshotToMap(Request request) {
-    Map<String, Object> result = new HashMap<>();
-    if (request.getBody().isPresent()) {
-      byte[] body = request.getBody().get();
-      result.put("rawBodyBase64", Base64.encode(body));
-      CharsetDecoder decoder = StandardCharsets.UTF_8.newDecoder();
-      try {
-        CharBuffer decoded = decoder.decode(ByteBuffer.wrap(body));
-        result.put("body", decoded.toString());
-      } catch (CharacterCodingException e) {
-        result.put("body", null);
-      }
-    } else {
-      result.put("rawBodyBase64", null);
-      result.put("body", null);
-    }
-    result.put("url", request.getUrl());
-    result.put("method", request.getMethod());
-    result.put("headers", request.getHeaders());
-    if (request.getClientCertificate().isPresent()) {
-      try {
-        result.put(
-            "clientCertFingerprint",
-            DigestUtils.sha256Hex(request.getClientCertificate().get().getEncoded())
-        );
-      } catch (CertificateEncodingException e) {
-        throw new RuntimeException(e);
-      }
-    } else {
-      result.put("clientCertFingerprint", null);
-    }
-    result.put("processingNoticesHtml", request.getProcessingNoticesHtml());
-    return result;
-  }
-
 }

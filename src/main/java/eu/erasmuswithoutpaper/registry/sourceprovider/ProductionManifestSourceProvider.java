@@ -6,15 +6,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import javax.xml.parsers.DocumentBuilder;
 
 import eu.erasmuswithoutpaper.registry.common.Utils;
 import eu.erasmuswithoutpaper.registry.constraints.ManifestConstraint;
 import eu.erasmuswithoutpaper.registry.constraints.RestrictInstitutionsCovered;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -36,7 +35,8 @@ import org.xml.sax.SAXException;
  * </p>
  */
 @Service
-@Profile({ "production", "development" })
+@Profile({"production", "development"})
+@ConditionalOnWebApplication
 public class ProductionManifestSourceProvider extends ManifestSourceProvider {
 
   private static final Logger logger =
@@ -45,9 +45,12 @@ public class ProductionManifestSourceProvider extends ManifestSourceProvider {
   private final List<ManifestSource> sources;
 
   /**
-   * @param rootUrl needed to construct a proper URL to Registry's own self-manifest.
-   * @param manifestSourcesUrl location of the manifest-sources.xml file.
-   * @param resLoader needed to load the manifest-sources.xml file.
+   * @param rootUrl
+   *     needed to construct a proper URL to Registry's own self-manifest.
+   * @param manifestSourcesUrl
+   *     location of the manifest-sources.xml file.
+   * @param resLoader
+   *     needed to load the manifest-sources.xml file.
    */
   @Autowired
   public ProductionManifestSourceProvider(@Value("${app.root-url}") String rootUrl,

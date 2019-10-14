@@ -6,7 +6,7 @@
         <div class='ewp-header__grid'>
             <a href='/' class='ewp-header__hlink'>
                 <div class='ewp-header__logo'>
-                    <img src='/logo.png'>
+                    <img src='{{ baseUrl | default("") }}/logo.png'>
                 </div>
             </a>
             <a href='/' class='ewp-header__hlink'>

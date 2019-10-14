@@ -5,8 +5,8 @@ import java.nio.charset.StandardCharsets;
 
 import eu.erasmuswithoutpaper.registry.repository.CatalogueNotFound;
 import eu.erasmuswithoutpaper.registry.repository.ManifestRepository;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -23,6 +23,7 @@ import org.apache.commons.io.IOUtils;
  * endpoints.
  */
 @RestController
+@ConditionalOnWebApplication
 public class ApiController {
 
   private final ManifestRepository repo;
@@ -30,9 +31,12 @@ public class ApiController {
   private final ResourceLoader resLoader;
 
   /**
-   * @param repo Required to fetch the current catalogue contents.
-   * @param selfManifestProvider Required to fetch Registry's own manifest contents.
-   * @param resLoader Needed in order to load XML templates for error responses.
+   * @param repo
+   *     Required to fetch the current catalogue contents.
+   * @param selfManifestProvider
+   *     Required to fetch Registry's own manifest contents.
+   * @param resLoader
+   *     Needed in order to load XML templates for error responses.
    */
   @Autowired
   public ApiController(ManifestRepository repo, SelfManifestProvider selfManifestProvider,

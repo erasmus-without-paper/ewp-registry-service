@@ -33,6 +33,7 @@ import eu.erasmuswithoutpaper.registry.sourceprovider.ManifestSourceProvider;
 import eu.erasmuswithoutpaper.registry.updater.ManifestConverter.NotValidManifest;
 import eu.erasmuswithoutpaper.registry.xmlformatter.XmlFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Sets;
@@ -50,6 +51,7 @@ import org.w3c.dom.Document;
  * </p>
  */
 @Service
+@ConditionalOnWebApplication
 public class RegistryUpdaterImpl implements RegistryUpdater {
 
   private static final Logger logger = LoggerFactory.getLogger(RegistryUpdaterImpl.class);

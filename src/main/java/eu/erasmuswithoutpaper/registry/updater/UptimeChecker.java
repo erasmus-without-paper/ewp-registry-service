@@ -13,6 +13,7 @@ import eu.erasmuswithoutpaper.registry.internet.Internet;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Service;
 
 import org.joox.Match;
@@ -22,6 +23,7 @@ import org.xml.sax.SAXException;
  * This service is responsible for determining the uptime of the application.
  */
 @Service
+@ConditionalOnWebApplication
 public class UptimeChecker {
 
   /**

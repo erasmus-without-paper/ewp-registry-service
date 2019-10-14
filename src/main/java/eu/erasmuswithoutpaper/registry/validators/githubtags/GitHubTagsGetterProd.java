@@ -17,7 +17,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 
 @Service
-@Profile({ "production", "development" })
+@Profile({ "production", "development", "console" })
 public class GitHubTagsGetterProd implements GitHubTagsGetter {
   /**
    * Sends request to GitHub and parses the response to obtain list of tags available for API.

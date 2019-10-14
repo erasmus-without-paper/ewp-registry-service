@@ -3,6 +3,7 @@ package eu.erasmuswithoutpaper.registry.validators;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class ValidationParameters {
   private Map<String, String> map = new HashMap<>();
@@ -60,5 +61,9 @@ public class ValidationParameters {
       }
     }
     return true;
+  }
+
+  public Set<Map.Entry<String, String>> getParameters() {
+    return map.entrySet();
   }
 }

@@ -3,9 +3,10 @@ package eu.erasmuswithoutpaper.registry.configuration;
 import java.nio.file.FileSystems;
 
 import eu.erasmuswithoutpaper.registry.repository.ManifestRepositoryImplProperties;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -15,7 +16,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 /**
  * Spring beans to be used when running an actual application server.
  */
-@Profile({ "production", "development" })
+@Profile({"production", "development", "console"})
 @Configuration
 public class ProductionConfiguration {
   public ProductionConfiguration() {
@@ -45,10 +46,14 @@ public class ProductionConfiguration {
    * initialized based on the values in the <code>application.properties</code> file.
    * </p>
    *
-   * @param path Path to the Git repository folder.
-   * @param committerName Name to be used when committing a Git change.
-   * @param committerEmail Email to be used when committing a Git change.
-   * @param enablePushing whether to enable pushing Git changes to a remote repository or not.
+   * @param path
+   *     Path to the Git repository folder.
+   * @param committerName
+   *     Name to be used when committing a Git change.
+   * @param committerEmail
+   *     Email to be used when committing a Git change.
+   * @param enablePushing
+   *     whether to enable pushing Git changes to a remote repository or not.
    * @return {@link ManifestRepositoryImplProperties} instance.
    */
   @Autowired
@@ -75,7 +80,14 @@ public class ProductionConfiguration {
    * @return {@link ThreadPoolTaskExecutor} instance.
    */
   @Bean
+  @ConditionalOnWebApplication
   public TaskExecutor getTaskExecutor() {
     return new ThreadPoolTaskExecutor();
+  }
+
+  @Bean
+  @ConditionalOnNotWebApplication
+  public TaskExecutor getConsoleTaskExecutor() {
+    return null;
   }
 }

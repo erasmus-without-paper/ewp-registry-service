@@ -13,6 +13,7 @@ import eu.erasmuswithoutpaper.registry.internet.Internet;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
@@ -26,6 +27,7 @@ import org.slf4j.LoggerFactory;
  * need their attention.
  */
 @Component
+@ConditionalOnWebApplication
 public class NotifierService {
 
   private static final Logger logger = LoggerFactory.getLogger(NotifierService.class);

@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
  * </p>
  */
 @Service
-@Profile({ "production", "development" })
+@Profile({ "production", "development", "console" })
 @SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
 public class RealInternet implements Internet {
 
@@ -243,7 +243,7 @@ public class RealInternet implements Internet {
   /**
    * @param notifier needed to register local error flags.
    */
-  @Autowired
+  @Autowired(required = false)
   @SuppressFBWarnings("UPM_UNCALLED_PRIVATE_METHOD")
   private void setNotifierServer(NotifierService notifier) { // NOPMD
     notifier.addWatchedFlag(this.emailSendingStatus);

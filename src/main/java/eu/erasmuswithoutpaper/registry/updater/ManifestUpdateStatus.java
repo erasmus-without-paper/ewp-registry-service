@@ -12,6 +12,8 @@ import javax.persistence.Table;
 
 import eu.erasmuswithoutpaper.registry.common.Severity;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -24,6 +26,7 @@ import org.ocpsoft.prettytime.PrettyTime;
  */
 @Entity
 @Table(name = "REG_MANIFEST_UPDATE_STATUSES")
+@ConditionalOnWebApplication
 public class ManifestUpdateStatus {
 
   /**

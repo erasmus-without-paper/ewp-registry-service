@@ -9,7 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 /**
  * A subclass of {@link WRTest} for integration testing.
  */
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, classes = Application.class)
 public abstract class WRIntegrationTest extends WRTest {
 
   @Value("${local.server.port}")

@@ -27,7 +27,6 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import eu.erasmuswithoutpaper.registry.common.Utils;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildError;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildParams;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildResult;
@@ -49,8 +48,6 @@ import eu.erasmuswithoutpaper.registry.internet.sec.NoopRequestEncoder;
 import eu.erasmuswithoutpaper.registry.internet.sec.RequestEncoder;
 import eu.erasmuswithoutpaper.registry.internet.sec.RequestSigner;
 import eu.erasmuswithoutpaper.registry.internet.sec.TlsResponseAuthorizer;
-import eu.erasmuswithoutpaper.registry.repository.CatalogueNotFound;
-import eu.erasmuswithoutpaper.registry.repository.ManifestRepository;
 import eu.erasmuswithoutpaper.registry.validators.InlineValidationStep.Failure;
 import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus.Status;
 import eu.erasmuswithoutpaper.registry.validators.echovalidator.HttpSecuritySettings;
@@ -74,7 +71,6 @@ import org.xml.sax.SAXException;
 
 public abstract class AbstractValidationSuite<S extends SuiteState> {
   protected static final String fakeId = "this-is-some-unknown-and-unexpected-id";
-  protected final ManifestRepository repo;
 
   protected final ApiValidator<S> parentValidator;
   protected final List<ValidationStepWithStatus> steps;
@@ -85,14 +81,15 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
   protected final EwpCertificateRequestSigner reqSignerCert;
   protected final EwpHttpSigRequestSigner reqSignerHttpSig;
   protected final DecodingHelper resDecoderHelper;
-  protected Match catalogueMatch = null;
+  private final CatalogueMatcherProvider catalogueMatcherProvider;
   protected S currentState;
   protected final Integer timeoutMillis = 10000;
+  private Match catalogueMatcher;
 
   protected AbstractValidationSuite(
       ApiValidator<S> validator, S currentState,
       ValidationSuiteConfig config) {
-    this.repo = config.repo;
+    this.catalogueMatcherProvider = config.catalogueMatcherProvider;
     this.steps = new ArrayList<>();
     this.parentValidator = validator;
     this.docBuilder = config.docBuilder;
@@ -702,19 +699,10 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
   }
 
   protected Match getCatalogueMatcher() {
-    if (catalogueMatch == null) {
-      DocumentBuilder docBuilder = Utils.newSecureDocumentBuilder();
-      Document doc = null;
-      try {
-        doc = docBuilder.parse(new ByteArrayInputStream(this.repo.getCatalogue()
-            .getBytes(StandardCharsets.UTF_8)));
-      } catch (SAXException | IOException | CatalogueNotFound e) {
-        throw new RuntimeException(e);
-      }
-
-      catalogueMatch = $(doc).namespaces(KnownNamespace.prefixMap());
+    if (this.catalogueMatcher == null) {
+      this.catalogueMatcher = catalogueMatcherProvider.getMatcher();
     }
-    return catalogueMatch;
+    return this.catalogueMatcher;
   }
 
   protected List<String> fetchHeiIdsCoveredByApiByUrl(String url) {
@@ -1206,8 +1194,8 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
     public final EwpDocBuilder docBuilder;
     public final Internet internet;
     public final RegistryClient regClient;
-    public final ManifestRepository repo;
     public final GitHubTagsGetter gitHubTagsGetter;
+    private final CatalogueMatcherProvider catalogueMatcherProvider;
 
     /**
      * Creates data structure with all configurations required for AbstractValidationSuite to work.
@@ -1218,8 +1206,8 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
      *     Needed to make API requests across the network.
      * @param regClient
      *     Needed to fetch (and verify) APIs' security settings.
-     * @param repo
-     *     to store the new content of the fetched manifests.
+     * @param catalogueMatcherProvider
+     *     to get {@link Match} for catalogue.
      * @param gitHubTagsGetter
      *     to fetch API tags from GitHub.
      */
@@ -1227,12 +1215,12 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
         EwpDocBuilder docBuilder,
         Internet internet,
         RegistryClient regClient,
-        ManifestRepository repo,
+        CatalogueMatcherProvider catalogueMatcherProvider,
         GitHubTagsGetter gitHubTagsGetter) {
       this.docBuilder = docBuilder;
       this.internet = internet;
       this.regClient = regClient;
-      this.repo = repo;
+      this.catalogueMatcherProvider = catalogueMatcherProvider;
       this.gitHubTagsGetter = gitHubTagsGetter;
     }
   }
