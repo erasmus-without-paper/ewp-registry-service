@@ -717,3 +717,7 @@ td.ewpsrc__test_index {
     width: 100%;
     float: left;
 }
+
+.ewp-api-validator--security-disclaimer {
+    text-align: justify;
+}

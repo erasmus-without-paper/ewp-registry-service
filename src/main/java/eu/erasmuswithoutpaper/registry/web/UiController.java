@@ -242,7 +242,7 @@ public class UiController {
   /**
    * @param response
    *     Needed to add some custom headers.
-   * @return EWP logo image. Depends on the result of {@link #isUsingDevDesign()}.
+   * @return EWP logo image. Depends on the result of {@link #isServingDevelopmentVersion()}.
    */
   @ResponseBody
   @RequestMapping(value = "/logo.png", method = RequestMethod.GET, produces = "image/png")
@@ -252,7 +252,7 @@ public class UiController {
     if (this.cachedLogo == null) {
       try {
         String path;
-        if (this.isUsingDevDesign()) {
+        if (this.isServingDevelopmentVersion()) {
           path = "classpath:logo-dev.png";
         } else {
           path = "classpath:logo-prod.png";
@@ -354,6 +354,18 @@ public class UiController {
       securities.add(mapParts);
     }
     mav.addObject("securities", securities);
+
+    String securityDisclaimer;
+    if (isServingDevelopmentVersion()) {
+      securityDisclaimer = "<b>Make sure</b> that the system you connect to the DEMO EWP Network "
+          + "contains only scrambled data or artificial data. This network is used for testing, "
+          + "so - according to Murphy's law - whatever can go wrong, will go wrong.";
+    } else {
+      securityDisclaimer = "Do not connect your production system do the EWP Network unless you "
+          + "are 100% sure that your system is secure and only authorised users can get "
+          + "access to the data.";
+    }
+    mav.addObject("securityDisclaimer", securityDisclaimer);
 
     return mav;
   }
@@ -567,13 +579,13 @@ public class UiController {
   }
 
   private void initializeMavCommons(ModelAndView mav) {
-    mav.addObject("isUsingDevDesign", this.isUsingDevDesign());
+    mav.addObject("isUsingDevDesign", this.isServingDevelopmentVersion());
     mav.addObject("cssFingerprint", this.getCssFingerprint());
     mav.addObject("jsFingerprint", this.getJsFingerprint());
     mav.addObject("uiJsFingerprint", this.getUiJsFingerprint());
   }
 
-  private boolean isUsingDevDesign() {
+  private boolean isServingDevelopmentVersion() {
     return !Application.isProductionSite();
   }
 

@@ -12,6 +12,19 @@
     <section class='ewp-section ewp-section-centered'>
         <h2 class='ewp-section-title'>API Validator</h2>
 
+        <div class='ewp-api-validator--security-disclaimer'>
+            API Validator can be used to validate implementation of the EWP APIs against the specification.
+            You should be aware that the Validator is publicly available, any API can be tested any time.
+            Both requests and responses are also publicly available.
+            <br/>
+            <br/>
+            To be compliant with the EU General Data Protection Regulation (GDPR) you should not,
+            under any circumstances, expose private personal data to unauthorised users.
+            <br/>
+            <br/>
+            {{ securityDisclaimer | raw }}
+        </div>
+
         <h4 class='ewp-section-title'>Security options</h4>
         {% for security in securities %}
             <code class='ewpst__bordered-code-larger'>{{ security.marker }}</code> - {{ security.description }} <br>
