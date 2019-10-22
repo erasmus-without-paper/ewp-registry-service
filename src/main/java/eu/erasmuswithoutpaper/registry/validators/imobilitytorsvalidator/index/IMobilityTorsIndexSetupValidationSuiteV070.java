@@ -94,7 +94,10 @@ class IMobilityTorsIndexSetupValidationSuiteV070
 
   @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
   private String getSendingHeiId() throws SuiteBroken {
-    return "validator-hei01.developers.erasmuswithoutpaper.eu";
+    if (!this.parentValidator.getCoveredHeiIDs().isEmpty()) {
+      return this.parentValidator.getCoveredHeiIDs().get(0);
+    }
+    return "";
   }
 
 }

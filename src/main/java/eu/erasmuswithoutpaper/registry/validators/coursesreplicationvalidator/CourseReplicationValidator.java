@@ -31,7 +31,7 @@ public class CourseReplicationValidator extends ApiValidator<CourseReplicationSu
 
     );
     validationSuites.put(
-        new SemanticVersion(1, 0, 0, 9),
+        new SemanticVersion(1, 0, 0),
         new ValidationSuiteInfo<>(CourseReplicationValidationSuiteV1::new)
     );
   }

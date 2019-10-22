@@ -43,7 +43,6 @@ public class HtmlValidationReportFormatter {
 
   public static class ValidationInfoParameters {
     private final String apiName;
-    private final String security;
     private final String url;
     private final String version;
     private final HttpSecurityDescription httpSecurityDescription;
@@ -54,11 +53,10 @@ public class HtmlValidationReportFormatter {
      * Basic info about run tests.
      */
     public ValidationInfoParameters(
-        String apiName, String security, String url, String version,
+        String apiName, String url, String version,
         HttpSecurityDescription httpSecurityDescription, Date validationStartedDate,
         Date clientKeysRegenerationDate) {
       this.apiName = apiName;
-      this.security = security;
       this.url = url;
       this.version = version;
       this.httpSecurityDescription = httpSecurityDescription;
@@ -80,13 +78,13 @@ public class HtmlValidationReportFormatter {
         isoDateFormat.format(validationInfoParameters.validationStartedDate));
 
     Date clientKeysRegenerated = validationInfoParameters.clientKeysRegenerationDate;
-    String clientKeysRegeneratedString = "<UNKNOWN>";
+    String clientKeysRegeneratedString = null;
     if (clientKeysRegenerated != null) {
       clientKeysRegeneratedString = isoDateFormat.format(clientKeysRegenerated);
     }
     info.put("clientKeysRegenerated", clientKeysRegeneratedString);
 
-    String clientKeysAgeWhenValidationStartedInSeconds = "<UNKNOWN>";
+    String clientKeysAgeWhenValidationStartedInSeconds = null;
     if (clientKeysRegenerated != null) {
       long clientKeysAgeWhenValidationStartedInMillis =
           validationInfoParameters.validationStartedDate.getTime()
@@ -101,7 +99,7 @@ public class HtmlValidationReportFormatter {
         clientKeysAgeWhenValidationStartedInSeconds
     );
 
-    info.put("security", validationInfoParameters.security);
+    info.put("security", validationInfoParameters.httpSecurityDescription.toString());
     info.put("url", validationInfoParameters.url);
     info.put("apiName", validationInfoParameters.apiName);
     info.put("version", validationInfoParameters.version);

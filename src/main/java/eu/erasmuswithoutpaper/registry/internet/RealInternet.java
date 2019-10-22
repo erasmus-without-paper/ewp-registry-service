@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -69,13 +70,13 @@ public class RealInternet implements Internet {
    *        production environments).
    */
   @Autowired
-  public RealInternet(JavaMailSender mailSender,
+  public RealInternet(Optional<JavaMailSender> mailSender,
       @Value("${app.admin-emails}") List<String> adminEmails,
       @Value("${app.instance-name}") String replyToName,
       @Value("${app.reply-to-address}") String replyToAddress, TaskExecutor taskExecutor,
       Environment env) {
 
-    this.mailSender = mailSender;
+    this.mailSender = mailSender.orElse(null);
     this.replyToName = replyToName;
     this.replyToAddress = replyToAddress;
     this.taskExecutor = taskExecutor;

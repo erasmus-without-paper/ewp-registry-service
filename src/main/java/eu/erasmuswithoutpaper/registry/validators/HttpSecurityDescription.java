@@ -47,6 +47,72 @@ public class HttpSecurityDescription {
   }
 
   /**
+   * Maps given Client Authentication abbreviation to CombEntry.
+   * @param code Client Authentication abbreviation letter.
+   * @return Client Authentication CombEntry corresponding to given letter.
+   * @throws InvalidDescriptionString if `code` was not a valid Client Authentication abbreviation.
+   */
+  public static CombEntry getClientAuthFromCode(char code) throws InvalidDescriptionString {
+    if (code == CombEntry.CLIAUTH_NONE.getCode()) {
+      return CombEntry.CLIAUTH_NONE;
+    } else if (code == CombEntry.CLIAUTH_HTTPSIG.getCode()) {
+      return CombEntry.CLIAUTH_HTTPSIG;
+    } else if (code == CombEntry.CLIAUTH_TLSCERT_SELFSIGNED.getCode()) {
+      return CombEntry.CLIAUTH_TLSCERT_SELFSIGNED;
+    } else {
+      throw new InvalidDescriptionString();
+    }
+  }
+
+  /**
+   * Maps given Server Authentication abbreviation to CombEntry.
+   * @param code Server Authentication abbreviation letter.
+   * @return Server Authentication CombEntry corresponding to given letter.
+   * @throws InvalidDescriptionString if `code` was not a valid Server Authentication abbreviation.
+   */
+  public static CombEntry getServerAuthFromCode(char code) throws InvalidDescriptionString {
+    if (code == CombEntry.SRVAUTH_TLSCERT.getCode()) {
+      return CombEntry.SRVAUTH_TLSCERT;
+    } else if (code == CombEntry.SRVAUTH_HTTPSIG.getCode()) {
+      return CombEntry.SRVAUTH_HTTPSIG;
+    } else {
+      throw new InvalidDescriptionString();
+    }
+  }
+
+  /**
+   * Maps given Request Encryption abbreviation to CombEntry.
+   * @param code Request Encryption abbreviation letter.
+   * @return Request Encryption CombEntry corresponding to given letter.
+   * @throws InvalidDescriptionString if `code` was not a valid Request Encryption abbreviation.
+   */
+  public static CombEntry getRequestEncryptionFromCode(char code) throws InvalidDescriptionString {
+    if (code == CombEntry.REQENCR_TLS.getCode()) {
+      return CombEntry.REQENCR_TLS;
+    } else if (code == CombEntry.REQENCR_EWP.getCode()) {
+      return CombEntry.REQENCR_EWP;
+    } else {
+      throw new InvalidDescriptionString();
+    }
+  }
+
+  /**
+   * Maps given Response Encryption abbreviation to CombEntry.
+   * @param code Response Encryption abbreviation letter.
+   * @return Response Encryption CombEntry corresponding to given letter.
+   * @throws InvalidDescriptionString if `code` was not a valid Response Encryption abbreviation.
+   */
+  public static CombEntry getResponseEncryptionFromCode(char code) throws InvalidDescriptionString {
+    if (code == CombEntry.RESENCR_TLS.getCode()) {
+      return CombEntry.RESENCR_TLS;
+    } else if (code == CombEntry.RESENCR_EWP.getCode()) {
+      return CombEntry.RESENCR_EWP;
+    } else {
+      throw new InvalidDescriptionString();
+    }
+  }
+
+  /**
    * Creates security description from given string.
    *
    * @param description
@@ -61,42 +127,16 @@ public class HttpSecurityDescription {
     }
 
     char cliAuthChar = description.charAt(0);
-    if (cliAuthChar == CombEntry.CLIAUTH_NONE.getCode()) {
-      cliauth = CombEntry.CLIAUTH_NONE;
-    } else if (cliAuthChar == CombEntry.CLIAUTH_HTTPSIG.getCode()) {
-      cliauth = CombEntry.CLIAUTH_HTTPSIG;
-    } else if (cliAuthChar == CombEntry.CLIAUTH_TLSCERT_SELFSIGNED.getCode()) {
-      cliauth = CombEntry.CLIAUTH_TLSCERT_SELFSIGNED;
-    } else {
-      throw new InvalidDescriptionString();
-    }
+    cliauth = getClientAuthFromCode(cliAuthChar);
 
     char srvAuthChar = description.charAt(1);
-    if (srvAuthChar == CombEntry.SRVAUTH_TLSCERT.getCode()) {
-      srvauth = CombEntry.SRVAUTH_TLSCERT;
-    } else if (srvAuthChar == CombEntry.SRVAUTH_HTTPSIG.getCode()) {
-      srvauth = CombEntry.SRVAUTH_HTTPSIG;
-    } else {
-      throw new InvalidDescriptionString();
-    }
+    srvauth = getServerAuthFromCode(srvAuthChar);
 
     char reqEncrChar = description.charAt(2);
-    if (reqEncrChar == CombEntry.REQENCR_TLS.getCode()) {
-      reqencr = CombEntry.REQENCR_TLS;
-    } else if (reqEncrChar == CombEntry.REQENCR_EWP.getCode()) {
-      reqencr = CombEntry.REQENCR_EWP;
-    } else {
-      throw new InvalidDescriptionString();
-    }
+    reqencr = getRequestEncryptionFromCode(reqEncrChar);
 
-    char resEncrChar = description.charAt(2);
-    if (resEncrChar == CombEntry.RESENCR_TLS.getCode()) {
-      resencr = CombEntry.RESENCR_TLS;
-    } else if (resEncrChar == CombEntry.RESENCR_EWP.getCode()) {
-      resencr = CombEntry.RESENCR_EWP;
-    } else {
-      throw new InvalidDescriptionString();
-    }
+    char resEncrChar = description.charAt(3);
+    resencr = getResponseEncryptionFromCode(resEncrChar);
   }
 
   /**

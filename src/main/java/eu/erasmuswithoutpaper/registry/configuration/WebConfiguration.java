@@ -68,4 +68,9 @@ public class WebConfiguration {
     }
     return client;
   }
+
+  @Bean
+  public ConsoleEnvInfo getConsoleEnvInfo() {
+    return new ConsoleEnvInfo(false);
+  }
 }

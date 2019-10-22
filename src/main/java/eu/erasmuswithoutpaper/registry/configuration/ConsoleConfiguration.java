@@ -43,4 +43,9 @@ public class ConsoleConfiguration {
     client.refresh();
     return client;
   }
+
+  @Bean
+  public ConsoleEnvInfo getConsoleEnvInfo() {
+    return new ConsoleEnvInfo(true);
+  }
 }

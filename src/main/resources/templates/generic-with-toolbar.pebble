@@ -4,12 +4,12 @@
     <header class='ewp-header ewp-header--small {% if isUsingDevDesign %}ewp-header--dev{% endif %}'>
         <div class='ewp-header__margin ewp-header__margin--top'></div>
         <div class='ewp-header__grid'>
-            <a href='/' class='ewp-header__hlink'>
+            <a href='{{ baseUrl | default("") }}/' class='ewp-header__hlink'>
                 <div class='ewp-header__logo'>
                     <img src='{{ baseUrl | default("") }}/logo.png'>
                 </div>
             </a>
-            <a href='/' class='ewp-header__hlink'>
+            <a href='{{ baseUrl | default("") }}/' class='ewp-header__hlink'>
                 <h1 class='ewp-header__site-name'>
                     {% if isUsingDevDesign %}
                         <span class='ewp-header__red-text'>DEV</span> Registry Service

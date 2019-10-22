@@ -112,6 +112,38 @@ public abstract class ApiValidator<S extends SuiteState> {
     return parameters;
   }
 
+  public static class ParameterWithVersion {
+    public ValidationParameter parameter;
+    public SemanticVersion version;
+
+    public ParameterWithVersion(
+        ValidationParameter parameter,
+        SemanticVersion version) {
+      this.parameter = parameter;
+      this.version = version;
+    }
+  }
+
+  /**
+   * Get list of parameters for all validators.
+   */
+  public List<ParameterWithVersion> getParameters() {
+    List<ParameterWithVersion> parameters = new ArrayList<>();
+
+    for (Map.Entry<SemanticVersion, ValidationSuiteInfo<S>> entry :
+        getValidationSuites().entries()) {
+      SemanticVersion version = entry.getKey();
+      ValidationSuiteInfo<S> info = entry.getValue();
+      for (ValidationParameter parameter : info.parameters) {
+        parameters.add(new ParameterWithVersion(
+            parameter,
+            version
+        ));
+      }
+    }
+    return parameters;
+  }
+
   @PostConstruct
   private void registerApiName() { //NOPMD
     this.apiValidatorsManager.registerApiValidator(this.validatedApiName, this.endpoint, this);

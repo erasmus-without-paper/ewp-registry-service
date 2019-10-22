@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Component;
@@ -16,8 +17,9 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 /**
  * Our primary Spring application class.
  */
-@SpringBootApplication
+@ConditionalOnWebApplication
 @EnableScheduling
+@SpringBootApplication
 public class Application {
 
   private static volatile String rootUrl = null;

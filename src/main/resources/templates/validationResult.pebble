@@ -34,12 +34,14 @@
             <li>
                 Datetime validation started: <code class='ewpst__bordered-code'>{{ info.validationStarted }}</code>
             </li>
+            {% if info.clientKeysRegenerated %}
             <li>
                 Datetime client keys regenerated:
                 <code class='ewpst__bordered-code'>{{ info.clientKeysRegenerated }}</code>
                 ({{ info.clientKeysAgeWhenValidationStartedInSeconds }}
                 seconds before validation)
             </li>
+            {% endif %}
         </ul>
 
         <h2 class='ewp-section-title'>Validation results</h2>

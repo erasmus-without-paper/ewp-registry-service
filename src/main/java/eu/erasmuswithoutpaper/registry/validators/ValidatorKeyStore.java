@@ -14,7 +14,9 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import eu.erasmuswithoutpaper.registry.configuration.ConsoleEnvInfo;
 import eu.erasmuswithoutpaper.registry.web.SelfManifestProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Service;
 
@@ -57,7 +59,8 @@ public class ValidatorKeyStore {
   /**
    * Generates credential and certificates to be used by validators and published in manifest.
    */
-  public ValidatorKeyStore() {
+  @Autowired
+  public ValidatorKeyStore(ConsoleEnvInfo consoleEnvInfo) {
     if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
       logger.debug("Registering BouncyCastle security provider");
       Security.addProvider(new BouncyCastleProvider());
@@ -71,9 +74,11 @@ public class ValidatorKeyStore {
     this.myUnregisteredKeyPair = this.generateKeyPair();
 
     this.myCoveredHeiIDs = new ArrayList<>();
-    // Add artificial HEIs that are used by validators.
-    for (int i = 1; i <= 2; i++) {
-      this.myCoveredHeiIDs.add("validator-hei0" + i + ".developers.erasmuswithoutpaper.eu");
+    if (!consoleEnvInfo.isConsole()) {
+      // Add artificial HEIs that are used by validators.
+      for (int i = 1; i <= 2; i++) {
+        this.myCoveredHeiIDs.add("validator-hei0" + i + ".developers.erasmuswithoutpaper.eu");
+      }
     }
   }
 
@@ -93,7 +98,7 @@ public class ValidatorKeyStore {
    * {@link SelfManifestProvider}) to fetch these HEIs from us.
    *
    * @return IDs of the HEIs which are to be associated with the TLS client certificate returned in
-   *         {@link #getTlsClientCertificateInUse()}.
+   *     {@link #getTlsClientCertificateInUse()}.
    */
   public List<String> getCoveredHeiIDs() {
     return Collections.unmodifiableList(this.myCoveredHeiIDs);
@@ -107,6 +112,9 @@ public class ValidatorKeyStore {
    * @return The date indicating since when the current credentials are used.
    */
   public Date getCredentialsGenerationDate() {
+    if (this.myCredentialsDate == null) {
+      return null;
+    }
     return new Date(this.myCredentialsDate.getTime());
   }
 
@@ -131,7 +139,8 @@ public class ValidatorKeyStore {
   /**
    * Generate a certificate for given KeyPair.
    *
-   * @param keyPair Base KeyPair.
+   * @param keyPair
+   *     Base KeyPair.
    * @return Certificate
    */
   public X509Certificate generateCertificate(KeyPair keyPair) {
@@ -166,6 +175,7 @@ public class ValidatorKeyStore {
 
   /**
    * Generates RSA KeyPair.
+   *
    * @return Generated KeyPair.
    */
   public KeyPair generateKeyPair() {

@@ -624,7 +624,6 @@ public class UiController {
     HtmlValidationReportFormatter.ValidationInfoParameters validationInfoParameters =
         new HtmlValidationReportFormatter.ValidationInfoParameters(
             requestBody.getName(),
-            requestBody.getSecurity(),
             requestBody.getUrl(),
             requestBody.getVersion(),
             httpSecurityDescription,

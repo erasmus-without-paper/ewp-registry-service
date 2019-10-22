@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 
 @Service
 public class ApiValidatorsManager {
-  private static class ApiNameAndEndpoint {
+  public static class ApiNameAndEndpoint {
     public final String apiName;
     public final ApiEndpoint endpoint;
 
@@ -110,5 +110,9 @@ public class ApiValidatorsManager {
       return new ArrayList<>();
     }
     return validator.getParameters(version);
+  }
+
+  public Map<ApiNameAndEndpoint, ApiValidator<?>> getRegisteredApiValidators() {
+    return registeredApiValidators;
   }
 }

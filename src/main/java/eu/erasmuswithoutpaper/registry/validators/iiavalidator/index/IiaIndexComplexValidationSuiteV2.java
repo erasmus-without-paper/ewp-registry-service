@@ -72,9 +72,7 @@ class IiaIndexComplexValidationSuiteV2 extends AbstractValidationSuite<IiaSuiteS
       );
     }
 
-    int unknownAcademicYear = this.currentState.selectedIiaInfo.receivingAcademicYears.stream()
-        .map(x -> Integer.valueOf(x.split("/")[0]))
-        .min(Integer::compareTo).orElse(1980) - 1;
+    int unknownAcademicYear = 1653; //Arbitrary, but most probably unknown.
 
     String unknownAcademicYearString =
         String.format("%04d/%04d", unknownAcademicYear, unknownAcademicYear + 1);

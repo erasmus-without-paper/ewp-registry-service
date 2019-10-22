@@ -173,8 +173,12 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
 
       @Override
       protected Optional<Response> innerRun() throws Failure {
-        if (new Date().getTime() - AbstractSetupValidationSuite.this.parentValidator
-            .getCredentialsGenerationDate().getTime() < 10 * 60 * 1000) {
+        Date credentialsGenerationDate = AbstractSetupValidationSuite.this.parentValidator
+            .getCredentialsGenerationDate();
+        if (credentialsGenerationDate == null) {
+          return Optional.empty();
+        }
+        if (new Date().getTime() - credentialsGenerationDate.getTime() < 10 * 60 * 1000) {
           throw new Failure(
               "Our client credentials are quite fresh. This means that many APIs will "
                   + "(correctly) return error responses in places where we expect HTTP 200. "
