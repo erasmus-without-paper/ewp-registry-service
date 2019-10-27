@@ -8,6 +8,8 @@ import java.util.Optional;
 import eu.erasmuswithoutpaper.registry.common.Severity;
 
 import com.google.common.collect.ImmutableList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Flags are an abstract concept which describe "watched issues". Each flag has a name (see
@@ -15,6 +17,7 @@ import com.google.common.collect.ImmutableList;
  * {@link Severity} status (see {@link #getStatus()}.
  */
 public abstract class NotifierFlag {
+  private static final Logger logger = LoggerFactory.getLogger(NotifierFlag.class);
 
   private final List<String> rcptEmails;
   private volatile Severity status = Severity.UNDETERMINED;
@@ -85,6 +88,10 @@ public abstract class NotifierFlag {
    * @param status The new status.
    */
   public void setStatus(Severity status) {
+    if (this.status != status) {
+      logger.info("Flag status changed, name: {}, from status: {}, to status: {}, for emails: {}",
+          this.getName(), this.status, status, this.getRecipientEmails());
+    }
     this.status = status;
   }
 

@@ -340,6 +340,10 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
       }
     } finally {
       this.manifestUpdateStatusRepository.save(status);
+      if (!status.getLastAccessNotices().isEmpty()) {
+        logger.info("Manifest update notices for url: {}, notifier flag name: {}, notices: {}",
+            status.getUrl(), notifierFlag.getName(), status.getLastAccessNotices());
+      }
       notifierFlag.setStatus(status.getLastAccessFlagStatus());
 
       logger.info("Reloading " + source.getUrl() + " ("

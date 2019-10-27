@@ -261,7 +261,8 @@ public class NotifierService {
       sb.append("/\n");
       String contents = sb.toString();
 
-      logger.info("Sending \"" + worstDeterminedStatus.toString() + "\" notification to " + email);
+      logger.info("Sending \"{}\" notification to {}. Previous status was \"{}\".",
+          worstDeterminedStatus.toString(), email, prevStatus.toString());
 
       String subject = "EWP Status Update";
       ArrayList<String> recipients = Lists.newArrayList(email);
