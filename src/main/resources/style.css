@@ -418,6 +418,9 @@ a:hover {
 .ewpsrc__test_validation-table .ewpsrc__item td {
     background: #eee;
 }
+.ewpsrc__test_validation-table .ewpsrc__item td.ewpsrc__item--status-SKIPPED {
+    background: #84b9ff;
+}
 .ewpsrc__test_validation-table .ewpsrc__item td.ewpsrc__item--status-SUCCESS {
     background: #b6d7a8;
 }

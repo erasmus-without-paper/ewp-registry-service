@@ -4,9 +4,11 @@ import java.security.Security;
 import java.util.Locale;
 
 import eu.erasmuswithoutpaper.registry.configuration.ConsoleConfiguration;
+import eu.erasmuswithoutpaper.registry.configuration.ProductionConfiguration;
 import eu.erasmuswithoutpaper.registry.consoleapplication.ConsoleValidator;
 import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
 import eu.erasmuswithoutpaper.registry.internet.RealInternet;
+import eu.erasmuswithoutpaper.registry.updater.ManifestConverter;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidatorsManager;
 import eu.erasmuswithoutpaper.registry.validators.ExternalValidatorKeyStore;
@@ -28,8 +30,10 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 @ComponentScan(basePackageClasses = {
     ApiValidator.class,
     ConsoleConfiguration.class,
+    ProductionConfiguration.class,
     EwpDocBuilder.class,
     XmlFormatter.class,
+    ManifestConverter.class,
     RealInternet.class})
 @ConditionalOnNotWebApplication
 public class ConsoleApplication implements ApplicationRunner {
@@ -39,6 +43,10 @@ public class ConsoleApplication implements ApplicationRunner {
   private ExternalValidatorKeyStore externalValidatorKeyStore;
   @Autowired
   private EwpDocBuilder docBuilder;
+  @Autowired
+  private ManifestConverter converter;
+  @Autowired
+  private XmlFormatter xmlFormatter;
 
   /**
    * Initialize and run Spring application.
@@ -66,7 +74,8 @@ public class ConsoleApplication implements ApplicationRunner {
     ConsoleValidator consoleValidator = new ConsoleValidator();
 
     consoleValidator.performValidation(
-        args, this.apiValidatorsManager, this.docBuilder, this.externalValidatorKeyStore
+        args, this.apiValidatorsManager, this.docBuilder, this.externalValidatorKeyStore,
+        this.converter, this.xmlFormatter
     );
   }
 

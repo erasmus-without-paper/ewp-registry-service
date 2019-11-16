@@ -178,6 +178,11 @@ public abstract class InlineValidationStep implements ValidationStepWithStatus {
    * @return The new status of this validation step.
    */
   public final Status run() throws FatalFailure {
+    if (this.shouldSkip()) {
+      this.setStatus(Status.SKIPPED);
+      this.setMessage("Test skipped: " + this.getSkipReason());
+      return this.getStatus();
+    }
     try {
       Optional<Response> response = this.innerRun();
       if (this.getStatus().equals(Status.PENDING)) {
@@ -200,5 +205,13 @@ public abstract class InlineValidationStep implements ValidationStepWithStatus {
       }
     }
     return this.getStatus();
+  }
+
+  protected String getSkipReason() {
+    return null;
+  }
+
+  protected boolean shouldSkip() {
+    return false;
   }
 }

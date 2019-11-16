@@ -34,7 +34,7 @@
             <li>
                 Datetime validation started: <code class='ewpst__bordered-code'>{{ info.validationStarted }}</code>
             </li>
-            {% if info.clientKeysRegenerated %}
+            {% if info.clientKeysRegenerated is not null %}
             <li>
                 Datetime client keys regenerated:
                 <code class='ewpst__bordered-code'>{{ info.clientKeysRegenerated }}</code>

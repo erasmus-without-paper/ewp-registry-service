@@ -70,6 +70,7 @@ public class SecurityParameters {
     String securityOption = readParameter(args, "security", "security", false);
     securities = filterDisabledSecurities(securities, filterTls, filterHttp);
     List<String> securityDescriptions;
+
     if (securityOption == null) {
       String security = userSelectSecurity(console, securities, apiName);
       if (security != null) {
@@ -77,10 +78,12 @@ public class SecurityParameters {
       } else {
         securityDescriptions = new ArrayList<>();
       }
+    } else if (securityOption.equals("all")) {
+      securityDescriptions = securities;
     } else {
       if (securityOption.length() != 4) {
         throw new ApplicationArgumentException(
-            "Expected '--security' to be string with exactly four characters"
+            "Expected '--security' to be string with exactly four characters, or 'all'."
         );
       }
       String pattern = buildSecurityPattern(securityOption);

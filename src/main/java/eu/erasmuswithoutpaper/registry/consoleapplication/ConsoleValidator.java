@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.TimeZone;
 
 import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
+import eu.erasmuswithoutpaper.registry.updater.ManifestConverter;
 import eu.erasmuswithoutpaper.registry.validators.AbstractValidationSuite;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidatorsManager;
 import eu.erasmuswithoutpaper.registry.validators.ExternalValidatorKeyStore;
@@ -25,6 +26,7 @@ import eu.erasmuswithoutpaper.registry.validators.SemanticVersion;
 import eu.erasmuswithoutpaper.registry.validators.ValidationParameters;
 import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus;
 import eu.erasmuswithoutpaper.registry.validators.web.ManifestApiEntry;
+import eu.erasmuswithoutpaper.registry.xmlformatter.XmlFormatter;
 import org.springframework.boot.ApplicationArguments;
 
 import org.beryx.textio.TextIO;
@@ -32,6 +34,7 @@ import org.beryx.textio.TextIoFactory;
 import org.beryx.textio.TextTerminal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
 
 
 public class ConsoleValidator {
@@ -41,6 +44,8 @@ public class ConsoleValidator {
   private ApiValidatorsManager apiValidatorsManager;
   private ExternalValidatorKeyStore externalValidatorKeyStore;
   private EwpDocBuilder docBuilder;
+  private ManifestConverter converter;
+  private XmlFormatter xmlFormatter;
 
   private static void printHelp(TextTerminal<?> textTerminal,
       ApiValidatorsManager apiValidatorsManager) {
@@ -126,7 +131,7 @@ public class ConsoleValidator {
 
   private void validate(ApplicationArguments args, TextIO console,
       TextTerminal<?> textTerminal) throws ApplicationArgumentException, IOException {
-    String manifestUrl = ApplicationParametersUtils.readParameter(args, "manifest", "url");
+    final String manifestUrl = ApplicationParametersUtils.readParameter(args, "manifest", "url");
 
     readKeysFromArguments(args, textTerminal);
 
@@ -136,8 +141,22 @@ public class ConsoleValidator {
     }
 
     String manifest = ApiParameters.readManifestFromUrl(manifestUrl);
+
+    Document doc;
+    try {
+      doc = this.converter.buildToV5(manifest.getBytes(StandardCharsets.UTF_8), null);
+    } catch (ManifestConverter.NotValidManifest e) {
+      textTerminal.println("This manifest file is not valid, terminating.");
+      return;
+    }
+
+    String filteredContents = this.xmlFormatter.format(doc);
     List<ManifestApiEntry> apis = ApiParameters
-        .readApisFromManifest(manifest, apiValidatorsManager);
+        .readApisFromManifest(filteredContents, apiValidatorsManager);
+    if (apis.isEmpty()) {
+      textTerminal.println("No API found in provided manifest file, terminating.");
+      return;
+    }
     List<ManifestApiEntry> selectedApiEntries =
         ApiParameters.getSelectedApiEntries(apis, args, console);
     if (selectedApiEntries.isEmpty()) {
@@ -223,7 +242,7 @@ public class ConsoleValidator {
 
   private static String getUtcDateString(Date date) {
     TimeZone tz = TimeZone.getTimeZone("UTC");
-    DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH-mm-ss'Z'");
     df.setTimeZone(tz);
     return df.format(date);
   }
@@ -233,12 +252,16 @@ public class ConsoleValidator {
    */
   public void performValidation(ApplicationArguments args,
       ApiValidatorsManager apiValidatorsManager, EwpDocBuilder docBuilder,
-      ExternalValidatorKeyStore externalValidatorKeyStore) {
+      ExternalValidatorKeyStore externalValidatorKeyStore,
+      ManifestConverter converter,
+      XmlFormatter xmlFormatter) {
     final TextIO console = TextIoFactory.getTextIO();
     final TextTerminal<?> textTerminal = console.getTextTerminal();
     this.apiValidatorsManager = apiValidatorsManager;
     this.docBuilder = docBuilder;
     this.externalValidatorKeyStore = externalValidatorKeyStore;
+    this.converter = converter;
+    this.xmlFormatter = xmlFormatter;
 
     if (isHelpParameterPresent(args)) {
       printHelp(textTerminal, apiValidatorsManager);

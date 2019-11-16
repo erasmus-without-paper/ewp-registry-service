@@ -40,7 +40,7 @@ public class WebConfiguration {
   @Autowired
   @Bean
   @SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
-  public RegistryClient getlocalRegistryClient(ManifestRepository repo) {
+  public RegistryClient getLocalRegistryClient(ManifestRepository repo) {
     ClientImplOptions options = new ClientImplOptions();
     options.setCatalogueFetcher(new CatalogueFetcher() {
 

@@ -823,15 +823,36 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
 
   protected void testParameters200(Combination combination, String name, List<Parameter> params,
       Verifier verifier) throws SuiteBroken {
-    testParameters200(combination, name, params, verifier, Status.FAILURE);
+    testParameters200(combination, name, params, verifier, Status.FAILURE, false, null);
+  }
+
+  protected void testParameters200(Combination combination, String name, List<Parameter> params,
+      Verifier verifier, boolean shouldSkip, String skipReason) throws SuiteBroken {
+    testParameters200(combination, name, params, verifier, Status.FAILURE, shouldSkip, skipReason);
   }
 
   protected void testParameters200(Combination combination, String name, List<Parameter> params,
       Verifier verifier, Status failureStatus) throws SuiteBroken {
+    testParameters200(combination, name, params, verifier, failureStatus, false, null);
+  }
+
+  protected void testParameters200(Combination combination, String name, List<Parameter> params,
+      Verifier verifier, Status failureStatus,
+      boolean shouldSkip, String skipReason) throws SuiteBroken {
     this.addAndRun(false, new InlineValidationStep() {
       @Override
       public String getName() {
         return name;
+      }
+
+      @Override
+      protected boolean shouldSkip() {
+        return shouldSkip;
+      }
+
+      @Override
+      protected String getSkipReason() {
+        return skipReason;
       }
 
       @Override
@@ -843,14 +864,48 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
     });
   }
 
+  protected void testSkipped(String name, String reason) throws SuiteBroken {
+    this.addAndRun(false, new InlineValidationStep() {
+      @Override
+      protected boolean shouldSkip() {
+        return true;
+      }
+
+      @Override
+      protected String getSkipReason() {
+        return reason;
+      }
+
+      @Override
+      public String getName() {
+        return name;
+      }
+
+      @Override
+      protected Optional<Response> innerRun() throws Failure {
+        return Optional.empty();
+      }
+    });
+  }
+
   protected void testParametersError(Combination combination, String name, List<Parameter> params,
       int error) throws SuiteBroken {
     testParametersError(combination, name, params, Arrays.asList(error));
   }
 
   protected void testParametersError(Combination combination, String name, List<Parameter> params,
+      int error, boolean shouldSkip, String skipReason) throws SuiteBroken {
+    testParametersError(combination, name, params, Arrays.asList(error), shouldSkip, skipReason);
+  }
+
+  protected void testParametersError(Combination combination, String name, List<Parameter> params,
       int error, Status failureStatus) throws SuiteBroken {
     testParametersError(combination, name, params, Arrays.asList(error), failureStatus);
+  }
+
+  protected void testParametersError(Combination combination, String name, List<Parameter> params,
+      List<Integer> errors, boolean shouldSkip, String skipReason) throws SuiteBroken {
+    testParametersError(combination, name, params, errors, Status.FAILURE, shouldSkip, skipReason);
   }
 
   protected void testParametersError(Combination combination, String name, List<Parameter> params,
@@ -860,10 +915,26 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
 
   protected void testParametersError(Combination combination, String name, List<Parameter> params,
       List<Integer> errors, Status failureStatus) throws SuiteBroken {
+    testParametersError(combination, name, params, errors, failureStatus, false, null);
+  }
+
+  protected void testParametersError(Combination combination, String name, List<Parameter> params,
+      List<Integer> errors, Status failureStatus,
+      boolean shouldSkip, String skipReason) throws SuiteBroken {
     this.addAndRun(false, new InlineValidationStep() {
       @Override
       public String getName() {
         return name;
+      }
+
+      @Override
+      protected boolean shouldSkip() {
+        return shouldSkip;
+      }
+
+      @Override
+      protected String getSkipReason() {
+        return skipReason;
       }
 
       @Override
@@ -915,6 +986,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
         id, maxIds,
         null, 0,
         shouldUnknownHeiIdsFail,
+        true,
         verifierFactory);
   }
 
@@ -928,6 +1000,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
         id, maxIds,
         code, maxCodes,
         true,
+        false,
         verifierFactory);
   }
 
@@ -937,8 +1010,9 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
       String id, int maxIds,
       String code, int maxCodes,
       boolean shouldUnknownHeiIdsFail,
+      boolean skipCodeTests,
       VerifierFactory verifierFactory) throws SuiteBroken {
-    if (code != null) {
+    if (!skipCodeTests) {
       testParameters200(
           combination,
           "Request for one of known " + secondParameterNamePrefix + "_codes, expect 200 OK.",
@@ -946,7 +1020,9 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
               new Parameter(heiParameterName, heiId),
               new Parameter(secondParameterNamePrefix + "_code", code)
           ),
-          verifierFactory.expectResponseToContainExactly(Collections.singletonList(id))
+          verifierFactory.expectResponseToContainExactly(Collections.singletonList(id)),
+          code == null,
+          secondParameterNamePrefix + "_code not found."
       );
     }
 
@@ -960,21 +1036,22 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
         verifierFactory.expectResponseToBeEmpty()
     );
 
-    if (maxIds > 1) {
-      testParameters200(
-          combination,
-          "Request one known and one unknown " + secondParameterNamePrefix
-              + "_id, expect 200 and only one " + secondParameterNamePrefix + " in response.",
-          Arrays.asList(
-              new Parameter(heiParameterName, heiId),
-              new Parameter(secondParameterNamePrefix + "_id", id),
-              new Parameter(secondParameterNamePrefix + "_id", fakeId)
-          ),
-          verifierFactory.expectResponseToContainExactly(Collections.singletonList(id))
-      );
-    }
+    testParameters200(
+        combination,
+        "Request one known and one unknown " + secondParameterNamePrefix
+            + "_id, expect 200 and only one " + secondParameterNamePrefix + " in response.",
+        Arrays.asList(
+            new Parameter(heiParameterName, heiId),
+            new Parameter(secondParameterNamePrefix + "_id", id),
+            new Parameter(secondParameterNamePrefix + "_id", fakeId)
+        ),
+        verifierFactory.expectResponseToContainExactly(Collections.singletonList(id)),
+        maxIds == 1,
+        "max-ids is equal to 1."
 
-    if (maxCodes > 1 && code != null) {
+    );
+
+    if (!skipCodeTests) {
       testParameters200(
           combination,
           "Request one known and one unknown " + secondParameterNamePrefix
@@ -984,7 +1061,9 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
               new Parameter(secondParameterNamePrefix + "_code", code),
               new Parameter(secondParameterNamePrefix + "_code", fakeId)
           ),
-          verifierFactory.expectResponseToContainExactly(Collections.singletonList(id))
+          verifierFactory.expectResponseToContainExactly(Collections.singletonList(id)),
+          maxCodes == 1 || code == null,
+          "max-codes equal to 0 or " + secondParameterNamePrefix + "_code not found."
       );
     }
 
@@ -1035,7 +1114,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
       );
     }
 
-    if (code != null) {
+    if (!skipCodeTests) {
       testParametersError(
           combination,
           "Request for one of known " + secondParameterNamePrefix + "_codes with unknown "
@@ -1044,7 +1123,9 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
               new Parameter(heiParameterName, fakeId),
               new Parameter(secondParameterNamePrefix + "_code", code)
           ),
-          400
+          400,
+          code == null,
+          secondParameterNamePrefix + "_code not found."
       );
     }
 
@@ -1061,7 +1142,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
         400
     );
 
-    if (code != null) {
+    if (!skipCodeTests) {
       testParametersError(
           combination,
           "Request more than <max-" + secondParameterNamePrefix + "-codes> known "
@@ -1073,7 +1154,9 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
                   new Parameter(secondParameterNamePrefix + "_code", code)
               )
           ),
-          400
+          400,
+          code == null,
+          secondParameterNamePrefix + "_code not found."
       );
     }
 
@@ -1116,7 +1199,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
         verifierFactory.expectResponseToContain(Collections.singletonList(id))
     );
 
-    if (code != null) {
+    if (!skipCodeTests) {
       testParameters200(
           combination,
           "Request exactly "
@@ -1129,7 +1212,9 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
                   maxCodes, new Parameter(secondParameterNamePrefix + "_code", code)
               )
           ),
-          verifierFactory.expectResponseToContain(Collections.singletonList(id))
+          verifierFactory.expectResponseToContain(Collections.singletonList(id)),
+          code == null,
+          secondParameterNamePrefix + "_code not found."
       );
     }
 
@@ -1152,7 +1237,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
         verifierFactory.expectResponseToContainExactly(Collections.singletonList(id))
     );
 
-    if (code != null) {
+    if (!skipCodeTests) {
       testParametersError(
           combination,
           "Request with correct " + secondParameterNamePrefix + "_id and correct "
@@ -1162,7 +1247,9 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
               new Parameter(secondParameterNamePrefix + "_id", id),
               new Parameter(secondParameterNamePrefix + "_code", code)
           ),
-          400
+          400,
+          code == null,
+          secondParameterNamePrefix + "_code not found."
       );
     }
 

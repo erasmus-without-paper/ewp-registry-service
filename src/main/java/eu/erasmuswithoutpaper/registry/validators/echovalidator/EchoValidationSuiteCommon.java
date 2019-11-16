@@ -235,8 +235,10 @@ abstract class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSui
       }
     });
 
-    this.addAndRun(false, new InlineValidationStep() {
+    KeyPair serverKeyPair = this.parentValidator.getServerRsaKeyPairInUse();
+    KeyPair clientKeyPair = this.parentValidator.getClientRsaKeyPairInUse();
 
+    this.addAndRun(false, new InlineValidationStep() {
       @Override
       public String getName() {
         return "Trying " + combination + " signed with a server key, instead of a client key. "
@@ -244,10 +246,21 @@ abstract class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSui
       }
 
       @Override
+      protected boolean shouldSkip() {
+        return serverKeyPair.getPrivate().equals(clientKeyPair.getPrivate());
+      }
+
+      @Override
+      protected String getSkipReason() {
+        return "Client and server keys are equal.";
+      }
+
+      @Override
       protected Optional<Response> innerRun() throws Failure {
         Request request =
             EchoValidationSuiteCommon.this.createValidRequestForCombination(this, combination);
-        KeyPair keyPair = EchoValidationSuiteCommon.this.parentValidator.getServerRsaKeyPairInUse();
+        KeyPair keyPair =
+            EchoValidationSuiteCommon.this.parentValidator.getServerRsaKeyPairInUse();
         RequestSigner badSigner = new EwpHttpSigRequestSigner(keyPair);
         badSigner.sign(request);
         return Optional.of(EchoValidationSuiteCommon.this
@@ -461,6 +474,7 @@ abstract class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSui
           }
         }
       });
+
     }
   }
 

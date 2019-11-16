@@ -168,33 +168,42 @@ class CoursesValidationSuiteV070
         400
     );
 
+    String losId = this.currentState.selectedLosId;
+
+    String dayAfterStart = null;
+    String dayBeforeEnd = null;
     if (requestFields.startDate != null) {
-      String losId = this.currentState.selectedLosId;
-
-      testParameters200(
-          combination,
-          "Ask for LOIs after one of the courses started, expect it is not included in results.",
-          Arrays.asList(
-              new Parameter("hei_id", this.currentState.selectedHeiId),
-              new Parameter("los_id", this.currentState.selectedLosId),
-              new Parameter("lois_after", requestFields.startDate.plusDays(1).toString())
-          ),
-          new LoiIdNotIncludedVerifier(losId, requestFields.loiId),
-          Status.WARNING
-      );
-
-      testParameters200(
-          combination,
-          "Ask for LOIs before one of the courses ended, expect it is not included in results.",
-          Arrays.asList(
-              new Parameter("hei_id", this.currentState.selectedHeiId),
-              new Parameter("los_id", this.currentState.selectedLosId),
-              new Parameter("lois_before", requestFields.endDate.minusDays(1).toString())
-          ),
-          new LoiIdNotIncludedVerifier(losId, requestFields.loiId),
-          Status.WARNING
-      );
+      dayAfterStart = requestFields.startDate.plusDays(1).toString();
+      dayBeforeEnd = requestFields.endDate.minusDays(1).toString();
     }
+
+    testParameters200(
+        combination,
+        "Ask for LOIs after one of the courses started, expect it is not included in results.",
+        Arrays.asList(
+            new Parameter("hei_id", this.currentState.selectedHeiId),
+            new Parameter("los_id", this.currentState.selectedLosId),
+            new Parameter("lois_after", dayAfterStart)
+        ),
+        new LoiIdNotIncludedVerifier(losId, requestFields.loiId),
+        Status.WARNING,
+        requestFields.startDate == null,
+        "No LOI ID."
+    );
+
+    testParameters200(
+        combination,
+        "Ask for LOIs before one of the courses ended, expect it is not included in results.",
+        Arrays.asList(
+            new Parameter("hei_id", this.currentState.selectedHeiId),
+            new Parameter("los_id", this.currentState.selectedLosId),
+            new Parameter("lois_before", dayBeforeEnd)
+        ),
+        new LoiIdNotIncludedVerifier(losId, requestFields.loiId),
+        Status.WARNING,
+        requestFields.startDate == null,
+        "No LOI ID."
+    );
 
     testParametersError(
         combination,

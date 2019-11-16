@@ -15,7 +15,7 @@ public interface ValidationStepWithStatus {
    * Possible outcomes of the validation step.
    */
   static enum Status {
-    SUCCESS, NOTICE, WARNING, FAILURE, ERROR, PENDING
+    SKIPPED, SUCCESS, NOTICE, WARNING, FAILURE, ERROR, PENDING
   }
 
   /**

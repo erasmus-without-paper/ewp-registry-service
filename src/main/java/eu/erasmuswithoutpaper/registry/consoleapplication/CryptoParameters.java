@@ -143,7 +143,7 @@ public class CryptoParameters {
    */
   public static KeyPair readHttpSigClientKeyPair(
       ApplicationArguments args) throws ApplicationArgumentException {
-    if (args.containsOption("http-client-key-use-tls-key")) {
+    if (args.containsOption("http-client-use-tls-key")) {
       KeyPairAndCertificate keyPairAndCertificate = readTlsKeyAndCertificateFromParameters(args);
       if (keyPairAndCertificate == null) {
         return null;
@@ -159,13 +159,13 @@ public class CryptoParameters {
    */
   public static KeyPair readHttpSigServerKeyPair(
       ApplicationArguments args) throws ApplicationArgumentException {
-    if (args.containsOption("http-server-key-use-tls-key")) {
+    if (args.containsOption("http-server-use-tls-key")) {
       KeyPairAndCertificate keyPairAndCertificate = readTlsKeyAndCertificateFromParameters(args);
       if (keyPairAndCertificate == null) {
         return null;
       }
       return keyPairAndCertificate.keyPair;
-    } else if (args.containsOption("http-server-key-use-client-key")) {
+    } else if (args.containsOption("http-server-use-client-key")) {
       return readHttpSigClientKeyPair(args);
     } else {
       return readHttpSigKeyFromParameters(args, "server");

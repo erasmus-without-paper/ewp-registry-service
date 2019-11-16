@@ -20,7 +20,7 @@ public class UserInput {
     }
     int selected = console.newIntInputReader()
         .withMinVal(0)
-        .withMaxVal(elements.size() + 1)
+        .withMaxVal(elements.size())
         .read(prompt);
     if (selected == 0) {
       return null;
