@@ -173,7 +173,7 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
 
       @Override
       protected Optional<Response> innerRun() throws Failure {
-        Date credentialsGenerationDate = AbstractSetupValidationSuite.this.parentValidator
+        Date credentialsGenerationDate = AbstractSetupValidationSuite.this.validatorKeyStore
             .getCredentialsGenerationDate();
         if (credentialsGenerationDate == null) {
           return Optional.empty();

@@ -72,44 +72,53 @@ import org.xml.sax.SAXException;
 public abstract class AbstractValidationSuite<S extends SuiteState> {
   protected static final String fakeId = "this-is-some-unknown-and-unexpected-id";
 
-  protected final ApiValidator<S> parentValidator;
+  protected ValidatorKeyStore validatorKeyStore;
+  protected ValidatorKeyStoreSet validatorKeyStoreSet;
   protected final List<ValidationStepWithStatus> steps;
   protected final EwpDocBuilder docBuilder;
   protected final Internet internet;
   protected final RegistryClient regClient;
-  protected final AnonymousRequestSigner reqSignerAnon;
-  protected final EwpCertificateRequestSigner reqSignerCert;
-  protected final EwpHttpSigRequestSigner reqSignerHttpSig;
-  protected final DecodingHelper resDecoderHelper;
+  protected AnonymousRequestSigner reqSignerAnon;
+  protected EwpCertificateRequestSigner reqSignerCert;
+  protected EwpHttpSigRequestSigner reqSignerHttpSig;
+  protected DecodingHelper resDecoderHelper;
   private final CatalogueMatcherProvider catalogueMatcherProvider;
   protected S currentState;
   protected final Integer timeoutMillis = 10000;
   private Match catalogueMatcher;
 
   protected AbstractValidationSuite(
-      ApiValidator<S> validator, S currentState,
+      ApiValidator<S> validator,
+      S currentState,
       ValidationSuiteConfig config) {
     this.catalogueMatcherProvider = config.catalogueMatcherProvider;
     this.steps = new ArrayList<>();
-    this.parentValidator = validator;
     this.docBuilder = config.docBuilder;
     this.internet = config.internet;
     this.regClient = config.regClient;
+    this.currentState = currentState;
+    this.validatorKeyStoreSet = validator.getValidatorKeyStoreSet();
+
+    this.setValidatorKeyStore(validator.getValidatorKeyStoreSet().getMainKeyStore());
+  }
+
+  protected void setValidatorKeyStore(ValidatorKeyStore validatorKeyStore) {
+    this.validatorKeyStore = validatorKeyStore;
     this.reqSignerAnon = new AnonymousRequestSigner();
     this.reqSignerCert =
         new EwpCertificateRequestSigner(
-            this.parentValidator.getTlsClientCertificateInUse(),
-            this.parentValidator.getTlsKeyPairInUse()
+            this.validatorKeyStore.getTlsClientCertificateInUse(),
+            this.validatorKeyStore.getTlsKeyPairInUse()
         );
     this.reqSignerHttpSig =
-        new EwpHttpSigRequestSigner(this.parentValidator.getClientRsaKeyPairInUse());
+        new EwpHttpSigRequestSigner(this.validatorKeyStore.getClientRsaKeyPairInUse());
     this.resDecoderHelper = new DecodingHelper();
     this.resDecoderHelper.addDecoder(new EwpRsaAesResponseDecoder(Lists.newArrayList(
-        this.parentValidator.getClientRsaKeyPairInUse(),
-        this.parentValidator.getServerRsaKeyPairInUse()
+        this.validatorKeyStore.getClientRsaKeyPairInUse(),
+        this.validatorKeyStore.getServerRsaKeyPairInUse()
     )));
     this.resDecoderHelper.addDecoder(new GzipResponseDecoder());
-    this.currentState = currentState;
+
   }
 
   @SafeVarargs
@@ -298,7 +307,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
         request.putHeader(
             "Accept-Response-Encryption-Key",
             Base64.getEncoder()
-                .encodeToString(this.parentValidator.getClientRsaPublicKeyInUse().getEncoded())
+                .encodeToString(this.validatorKeyStore.getClientRsaPublicKeyInUse().getEncoded())
         );
       }
     } else {
@@ -1063,7 +1072,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
           ),
           verifierFactory.expectResponseToContainExactly(Collections.singletonList(id)),
           maxCodes == 1 || code == null,
-          "max-codes equal to 0 or " + secondParameterNamePrefix + "_code not found."
+          "max-codes equal to 1 or " + secondParameterNamePrefix + "_code not found."
       );
     }
 

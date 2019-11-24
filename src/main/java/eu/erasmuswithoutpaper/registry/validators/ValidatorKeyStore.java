@@ -4,7 +4,6 @@ import java.math.BigInteger;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
-import java.security.Security;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPrivateKey;
@@ -14,11 +13,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import eu.erasmuswithoutpaper.registry.configuration.ConsoleEnvInfo;
 import eu.erasmuswithoutpaper.registry.web.SelfManifestProvider;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.stereotype.Service;
 
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
@@ -27,25 +22,18 @@ import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.X509v3CertificateBuilder;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.crypto.params.RSAKeyParameters;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.DefaultDigestAlgorithmIdentifierFinder;
 import org.bouncycastle.operator.DefaultSignatureAlgorithmIdentifierFinder;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.bc.BcContentSignerBuilder;
 import org.bouncycastle.operator.bc.BcRSAContentSignerBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 /**
  * Keeps keys and certificates used by {@link ApiValidator}s.
  */
-@Service
-@ConditionalOnWebApplication
 public class ValidatorKeyStore {
-  private static final Logger logger = LoggerFactory.getLogger(ValidatorKeyStore.class);
-
   protected KeyPair myClientRsaKeyPair;
   protected KeyPair myServerRsaKeyPair;
   protected KeyPair myTlsKeyPair;
@@ -59,13 +47,7 @@ public class ValidatorKeyStore {
   /**
    * Generates credential and certificates to be used by validators and published in manifest.
    */
-  @Autowired
-  public ValidatorKeyStore(ConsoleEnvInfo consoleEnvInfo) {
-    if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
-      logger.debug("Registering BouncyCastle security provider");
-      Security.addProvider(new BouncyCastleProvider());
-    }
-
+  public ValidatorKeyStore(boolean addValidatorHeiIdsToCoveredHeiIds) {
     this.myCredentialsDate = new Date();
     this.myClientRsaKeyPair = this.generateKeyPair();
     this.myServerRsaKeyPair = this.generateKeyPair();
@@ -74,7 +56,7 @@ public class ValidatorKeyStore {
     this.myUnregisteredKeyPair = this.generateKeyPair();
 
     this.myCoveredHeiIDs = new ArrayList<>();
-    if (!consoleEnvInfo.isConsole()) {
+    if (addValidatorHeiIdsToCoveredHeiIds) {
       // Add artificial HEIs that are used by validators.
       for (int i = 1; i <= 2; i++) {
         this.myCoveredHeiIDs.add("validator-hei0" + i + ".developers.erasmuswithoutpaper.eu");

@@ -4,7 +4,7 @@ import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
 import eu.erasmuswithoutpaper.registry.internet.Internet;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.SemanticVersion;
-import eu.erasmuswithoutpaper.registry.validators.ValidatorKeyStore;
+import eu.erasmuswithoutpaper.registry.validators.ValidatorKeyStoreSet;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,8 +47,8 @@ public class EchoValidator extends ApiValidator<EchoSuiteState> {
 
   @Autowired
   public EchoValidator(EwpDocBuilder docBuilder, Internet internet, RegistryClient client,
-      ValidatorKeyStore validatorKeyStore) {
-    super(docBuilder, internet, client, validatorKeyStore, "echo");
+      ValidatorKeyStoreSet validatorKeyStoreSet) {
+    super(docBuilder, internet, client, validatorKeyStoreSet, "echo");
   }
 
   @Override

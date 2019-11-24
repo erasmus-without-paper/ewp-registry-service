@@ -5,14 +5,22 @@ import static org.joox.JOOX.$;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.security.KeyStore;
+import java.security.PublicKey;
 import java.security.cert.CertificateEncodingException;
+import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.List;
 
 import eu.erasmuswithoutpaper.registry.Application;
+import eu.erasmuswithoutpaper.registry.common.KeyPairAndCertificate;
+import eu.erasmuswithoutpaper.registry.common.KeyStoreUtils;
+import eu.erasmuswithoutpaper.registry.common.KeyStoreUtilsException;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildParams;
 import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
 import eu.erasmuswithoutpaper.registry.validators.ValidatorKeyStore;
+import eu.erasmuswithoutpaper.registry.validators.ValidatorKeyStoreSet;
 import eu.erasmuswithoutpaper.registry.xmlformatter.XmlFormatter;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +32,8 @@ import com.google.common.collect.Lists;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.joox.Match;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -40,14 +50,39 @@ import org.w3c.dom.Element;
 @Service
 public class SelfManifestProvider {
 
+  private static final Logger logger = LoggerFactory.getLogger(SelfManifestProvider.class);
+
+  private static class EncodedCertificateAndKeys {
+    private final String certificateEncoded;
+    private final String clientPublicKeyEncoded;
+    private final String serverPublicKeyEncoded;
+
+    private EncodedCertificateAndKeys(String certificateEncoded,
+        String clientPublicKeyEncoded, String serverPublicKeyEncoded) {
+      this.certificateEncoded = certificateEncoded;
+      this.clientPublicKeyEncoded = clientPublicKeyEncoded;
+      this.serverPublicKeyEncoded = serverPublicKeyEncoded;
+    }
+
+    public String getCertificateEncoded() {
+      return certificateEncoded;
+    }
+
+    public String getClientPublicKeyEncoded() {
+      return clientPublicKeyEncoded;
+    }
+
+    public String getServerPublicKeyEncoded() {
+      return serverPublicKeyEncoded;
+    }
+  }
+
   private final ResourceLoader res;
   private final EwpDocBuilder docBuilder;
   private final XmlFormatter formatter;
   private final List<String> adminEmails;
-  private final String echoTesterCertEncoded;
-  private final String echoTesterClientRsaPublicKeyEncoded;
-  private final String echoTesterServerRsaPublicKeyEncoded;
   private final List<String> echoTesterHeiIDs;
+  private final List<EncodedCertificateAndKeys> certificatesAndKeys = new ArrayList<>();
 
   private volatile String cached = null;
 
@@ -57,31 +92,77 @@ public class SelfManifestProvider {
    * @param formatter Needed to format the end document as XML.
    * @param adminEmails A list of email addresses, separated by commas. These addresses will be
    *        included in the <code>ewp:admin-email</code> elements in the generated manifest file.
-   * @param validatorKeyStore Source of public keys and certificates used by validators to be
+   * @param validatorKeyStoreSet Source of public keys and certificates used by validators to be
    *                         published in our manifest.
    */
   @Autowired
-  public SelfManifestProvider(ResourceLoader res, EwpDocBuilder docBuilder, XmlFormatter formatter,
-      @Value("${app.admin-emails}") List<String> adminEmails, ValidatorKeyStore validatorKeyStore) {
+  public SelfManifestProvider(
+      ResourceLoader res,
+      EwpDocBuilder docBuilder,
+      XmlFormatter formatter,
+      @Value("${app.admin-emails}") List<String> adminEmails,
+      ValidatorKeyStoreSet validatorKeyStoreSet,
+      @Value("${app.additional-keys-keystore.path:#{null}}") String additionalKeysKeystorePath,
+      @Value("${app.additional-keys-keystore.aliases:#{null}}") List<String> aliases,
+      @Value("${app.additional-keys-keystore.password:#{null}}") String password)
+      throws KeyStoreUtilsException, CertificateEncodingException {
     this.res = res;
     this.docBuilder = docBuilder;
     this.formatter = formatter;
     this.adminEmails = adminEmails;
-    try {
-      this.echoTesterCertEncoded =
-          new String(
-              Base64.encodeBase64(validatorKeyStore.getTlsClientCertificateInUse().getEncoded()),
-              StandardCharsets.US_ASCII);
-    } catch (CertificateEncodingException e) {
-      throw new RuntimeException(e);
-    }
-    this.echoTesterClientRsaPublicKeyEncoded =
-        new String(Base64.encodeBase64(validatorKeyStore.getClientRsaPublicKeyInUse().getEncoded()),
-            StandardCharsets.US_ASCII);
-    this.echoTesterServerRsaPublicKeyEncoded =
-        new String(Base64.encodeBase64(validatorKeyStore.getServerRsaPublicKeyInUse().getEncoded()),
-            StandardCharsets.US_ASCII);
+    ValidatorKeyStore validatorKeyStore = validatorKeyStoreSet.getMainKeyStore();
+
+    this.certificatesAndKeys.add(new EncodedCertificateAndKeys(
+        this.encodeCertificate(validatorKeyStore.getTlsClientCertificateInUse()),
+        this.encodePublicKey(validatorKeyStore.getClientRsaPublicKeyInUse()),
+        this.encodePublicKey(validatorKeyStore.getServerRsaPublicKeyInUse())
+    ));
+
     this.echoTesterHeiIDs = validatorKeyStore.getCoveredHeiIDs();
+
+    if (additionalKeysKeystorePath != null && aliases != null && password != null) {
+      readKeysFromKeyStore(additionalKeysKeystorePath, aliases, password);
+    }
+  }
+
+  private void readKeysFromKeyStore(
+      String additionalKeysKeystorePath, List<String> aliases, String password)
+      throws KeyStoreUtilsException, CertificateEncodingException {
+    char[] charPassword = password.toCharArray();
+    logger.debug("Reading keyStore '{}'", additionalKeysKeystorePath);
+    KeyStore keyStore = KeyStoreUtils.loadKeyStore(
+        additionalKeysKeystorePath, "jks", charPassword
+    );
+
+    for (String alias : aliases) {
+      logger.debug("Reading keys under alias '{}'", alias);
+      KeyPairAndCertificate keyPairAndCertificate =
+          KeyStoreUtils.readKeyPairAndCertificateFromKeyStore(keyStore, alias, charPassword);
+      certificatesAndKeys.add(
+          new EncodedCertificateAndKeys(
+              this.encodeCertificate(keyPairAndCertificate.certificate),
+              this.encodePublicKey(keyPairAndCertificate.keyPair.getPublic()),
+              this.encodePublicKey(keyPairAndCertificate.keyPair.getPublic())
+          )
+      );
+    }
+  }
+
+  private String encodeCertificate(X509Certificate certificate)
+      throws CertificateEncodingException {
+    return encodeAsBase64(certificate.getEncoded());
+  }
+
+  private String encodePublicKey(PublicKey key) {
+    return encodeAsBase64(key.getEncoded());
+  }
+
+  private String encodeAsBase64(byte[] bytes) {
+    return new String(
+        Base64.encodeBase64(bytes),
+        StandardCharsets.US_ASCII
+    );
+
   }
 
   /**
@@ -148,28 +229,48 @@ public class SelfManifestProvider {
       heisCoveredElem.appendChild(heiElem);
     }
 
-    // Add client credentials in use.
+    // Add client certificates in use.
+    for (EncodedCertificateAndKeys encodedCertificateAndKeys : this.certificatesAndKeys) {
+      this.addClientCertificate(hosts, doc, encodedCertificateAndKeys.getCertificateEncoded());
+    }
 
-    Element cliCredentialsElem = hosts.get(1).xpath("mf5:client-credentials-in-use").get(0);
-    Element certElem =
-        doc.createElementNS(KnownNamespace.RESPONSE_MANIFEST_V5.getNamespaceUri(), "certificate");
-    certElem.setTextContent(this.echoTesterCertEncoded);
-    cliCredentialsElem.appendChild(certElem);
-    Element rsaKeyElem = doc.createElementNS(KnownNamespace.RESPONSE_MANIFEST_V5.getNamespaceUri(),
-        "rsa-public-key");
-    rsaKeyElem.setTextContent(this.echoTesterClientRsaPublicKeyEncoded);
-    cliCredentialsElem.appendChild(rsaKeyElem);
+    // Add client keys in use.
+    for (EncodedCertificateAndKeys encodedCertificateAndKeys : this.certificatesAndKeys) {
+      this.addClientRsaPublicKey(hosts, doc, encodedCertificateAndKeys.getClientPublicKeyEncoded());
+    }
 
     // Add server credentials in use.
-
-    Element srvCredentialsElem = hosts.get(1).xpath("mf5:server-credentials-in-use").get(0);
-    Element srvKeyElem = doc.createElementNS(KnownNamespace.RESPONSE_MANIFEST_V5.getNamespaceUri(),
-        "rsa-public-key");
-    srvKeyElem.setTextContent(this.echoTesterServerRsaPublicKeyEncoded);
-    srvCredentialsElem.appendChild(srvKeyElem);
+    for (EncodedCertificateAndKeys encodedCertificateAndKeys : this.certificatesAndKeys) {
+      this.addServerCredentials(hosts, doc, encodedCertificateAndKeys.getServerPublicKeyEncoded());
+    }
 
     // Reformat.
 
     return this.formatter.format(doc);
+  }
+
+  private void addClientCertificate(List<Match> hosts, Document doc, String certEncoded) {
+    Element cliCredentialsElem = hosts.get(1).xpath("mf5:client-credentials-in-use").get(0);
+    Element certElem =
+        doc.createElementNS(KnownNamespace.RESPONSE_MANIFEST_V5.getNamespaceUri(), "certificate");
+    certElem.setTextContent(certEncoded);
+    cliCredentialsElem.appendChild(certElem);
+  }
+
+  private void addClientRsaPublicKey(List<Match> hosts, Document doc, String rsaPublicKeyEncoded) {
+    Element cliCredentialsElem = hosts.get(1).xpath("mf5:client-credentials-in-use").get(0);
+    Element rsaKeyElem = doc.createElementNS(KnownNamespace.RESPONSE_MANIFEST_V5.getNamespaceUri(),
+        "rsa-public-key");
+    rsaKeyElem.setTextContent(rsaPublicKeyEncoded);
+    cliCredentialsElem.appendChild(rsaKeyElem);
+  }
+
+  private void addServerCredentials(List<Match> hosts, Document doc,
+      String rsaPublicKeyEncoded) {
+    Element srvCredentialsElem = hosts.get(1).xpath("mf5:server-credentials-in-use").get(0);
+    Element srvKeyElem = doc.createElementNS(KnownNamespace.RESPONSE_MANIFEST_V5.getNamespaceUri(),
+        "rsa-public-key");
+    srvKeyElem.setTextContent(rsaPublicKeyEncoded);
+    srvCredentialsElem.appendChild(srvKeyElem);
   }
 }

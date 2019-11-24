@@ -108,7 +108,7 @@ class IiaIndexComplexValidationSuiteV2 extends AbstractValidationSuite<IiaSuiteS
             + "expect 200 OK and non-empty response.",
         Arrays.asList(
             new Parameter("hei_id", this.currentState.selectedHeiId),
-            new Parameter("modified_since", "1970-02-12T15:19:21+01:00")
+            new Parameter("modified_since", "2000-02-12T15:19:21+01:00")
         ),
         iiaIdVerifierFactory.expectResponseToContain(Arrays.asList(this.currentState.selectedIiaId))
     );

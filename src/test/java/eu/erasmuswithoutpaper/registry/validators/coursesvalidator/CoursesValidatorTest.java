@@ -51,7 +51,9 @@ public class CoursesValidatorTest extends AbstractApiTest {
   }
 
   private CourseReplicationServiceV1Valid GetCoursesReplication() {
-    return new CourseReplicationServiceV1Valid(replicationUrlHTTT, client, validatorKeyStore);
+    return new CourseReplicationServiceV1Valid(
+        replicationUrlHTTT, client, validatorKeyStoreSet.getMainKeyStore()
+    );
   }
 
   @Test

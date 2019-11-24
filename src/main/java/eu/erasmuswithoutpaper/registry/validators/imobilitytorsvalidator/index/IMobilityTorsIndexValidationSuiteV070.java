@@ -2,12 +2,18 @@ package eu.erasmuswithoutpaper.registry.validators.imobilitytorsvalidator.index;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
+import eu.erasmuswithoutpaper.registry.internet.Request;
+import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registry.validators.AbstractValidationSuite;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.Combination;
+import eu.erasmuswithoutpaper.registry.validators.InlineValidationStep;
 import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
 import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus.Status;
+import eu.erasmuswithoutpaper.registry.validators.ValidatorKeyStore;
 import eu.erasmuswithoutpaper.registry.validators.imobilitytorsvalidator.IMobilityTorsSuiteState;
 import eu.erasmuswithoutpaper.registry.validators.verifiers.Verifier;
 import eu.erasmuswithoutpaper.registry.validators.verifiers.VerifierFactory;
@@ -60,7 +66,7 @@ class IMobilityTorsIndexValidationSuiteV070
         Status.NOTICE
     );
 
-    final boolean wasAnyOMobilityIdReturned = hasAnyElementVerifier.getVerificationResult();
+    final boolean noOMobilityIdReturned = !hasAnyElementVerifier.getVerificationResult();
 
     testParametersError(
         combination,
@@ -103,102 +109,167 @@ class IMobilityTorsIndexValidationSuiteV070
         "Request with multiple modified_since parameters, expect 400.",
         Arrays.asList(
             new Parameter("receiving_hei_id", this.currentState.receivingHeiId),
-            new Parameter("modified_since", "1950-02-12T15:19:21+01:00"),
-            new Parameter("modified_since", "1950-02-12T15:19:21+01:00")
+            new Parameter("modified_since", "2019-02-12T15:19:21+01:00"),
+            new Parameter("modified_since", "2019-02-12T15:19:21+01:00")
         ),
         400
     );
 
-    if (wasAnyOMobilityIdReturned) {
-      testParameters200(
-          combination,
-          "Request with known receiving_hei_id and modified_since in the future, expect 200 OK "
-              + "and empty response",
-          Arrays.asList(
-              new Parameter("receiving_hei_id", this.currentState.receivingHeiId),
-              new Parameter("modified_since", "2050-02-12T15:19:21+01:00")
-          ),
-          omobilityIdVerifierFactory.expectResponseToBeEmpty(),
-          Status.WARNING
-      );
+    final String noOMobilitySkipReason = "OMobilities list was empty.";
 
-      testParameters200(
-          combination,
-          "Request with known receiving_hei_id and modified_since far in the past, expect 200 OK "
-              + "and non-empty response.",
-          Arrays.asList(
-              new Parameter("receiving_hei_id", this.currentState.receivingHeiId),
-              new Parameter("modified_since", "1950-02-12T15:19:21+01:00")
-          ),
-          omobilityIdVerifierFactory.expectResponseToBeNotEmpty()
-      );
+    testParameters200(
+        combination,
+        "Request with known receiving_hei_id and modified_since in the future, expect 200 OK "
+            + "and empty response",
+        Arrays.asList(
+            new Parameter("receiving_hei_id", this.currentState.receivingHeiId),
+            new Parameter("modified_since", "2050-02-12T15:19:21+01:00")
+        ),
+        omobilityIdVerifierFactory.expectResponseToBeEmpty(),
+        Status.WARNING,
+        noOMobilityIdReturned,
+        noOMobilitySkipReason
+    );
 
-      testParameters200(
-          combination,
-          "Request with known receiving_hei_id and unknown sending_hei_id, "
-              + "expect 200 and empty response.",
-          Arrays.asList(
-              new Parameter("receiving_hei_id", this.currentState.receivingHeiId),
-              new Parameter("sending_hei_id", fakeId)
-          ),
-          omobilityIdVerifierFactory.expectResponseToBeEmpty()
-      );
+    testParameters200(
+        combination,
+        "Request with known receiving_hei_id and modified_since far in the past, expect 200 OK "
+            + "and non-empty response.",
+        Arrays.asList(
+            new Parameter("receiving_hei_id", this.currentState.receivingHeiId),
+            new Parameter("modified_since", "2000-02-12T15:19:21+01:00")
+        ),
+        omobilityIdVerifierFactory.expectResponseToBeNotEmpty(),
+        noOMobilityIdReturned,
+        noOMobilitySkipReason
+    );
 
-      testParameters200(
-          combination,
-          "Request with known receiving_hei_id and sending_hei_id valid but not covered by"
-              + " the validator, expect empty response.",
-          Arrays.asList(
-              new Parameter("receiving_hei_id", this.currentState.receivingHeiId),
-              new Parameter("sending_hei_id", this.currentState.notPermittedHeiId)
-          ),
-          omobilityIdVerifierFactory.expectResponseToBeEmpty(),
-          Status.WARNING
-      );
+    testParameters200(
+        combination,
+        "Request with known receiving_hei_id and unknown sending_hei_id, "
+            + "expect 200 and empty response.",
+        Arrays.asList(
+            new Parameter("receiving_hei_id", this.currentState.receivingHeiId),
+            new Parameter("sending_hei_id", fakeId)
+        ),
+        omobilityIdVerifierFactory.expectResponseToBeEmpty(),
+        noOMobilityIdReturned,
+        noOMobilitySkipReason
+    );
 
-      testParameters200(
-          combination,
-          "Request with known receiving_hei_id and without sending_hei_id, expect 200 "
-              + "and non-empty response.",
-          Arrays.asList(
-              new Parameter("receiving_hei_id", this.currentState.receivingHeiId)
-          ),
-          omobilityIdVerifierFactory.expectResponseToBeNotEmpty()
-      );
+    testParameters200(
+        combination,
+        "Request with known receiving_hei_id and without sending_hei_id, expect 200 "
+            + "and non-empty response.",
+        Arrays.asList(
+            new Parameter("receiving_hei_id", this.currentState.receivingHeiId)
+        ),
+        omobilityIdVerifierFactory.expectResponseToBeNotEmpty(),
+        noOMobilityIdReturned,
+        noOMobilitySkipReason
+    );
 
-      testParameters200(
-          combination,
-          "Request with unknown receiving_hei_id, expect 200 and empty response.",
-          Arrays.asList(
-              new Parameter("receiving_hei_id", fakeId)
-          ),
-          omobilityIdVerifierFactory.expectResponseToBeEmpty()
-      );
+    testParameters200(
+        combination,
+        "Request with unknown receiving_hei_id, expect 200 and empty response.",
+        Arrays.asList(
+            new Parameter("receiving_hei_id", fakeId)
+        ),
+        omobilityIdVerifierFactory.expectResponseToBeEmpty(),
+        noOMobilityIdReturned,
+        noOMobilitySkipReason
+    );
 
-      testParameters200(
-          combination,
-          "Request with known receiving_hei_id and known and unknown "
-              + "sending_hei_id, expect 200 and non-empty response.",
-          Arrays.asList(
-              new Parameter("receiving_hei_id", this.currentState.receivingHeiId),
-              new Parameter("sending_hei_id", this.currentState.sendingHeiId),
-              new Parameter("sending_hei_id", fakeId)
-          ),
-          omobilityIdVerifierFactory.expectResponseToBeNotEmpty()
-      );
+    testParameters200(
+        combination,
+        "Request with known receiving_hei_id and known and unknown "
+            + "sending_hei_id, expect 200 and non-empty response.",
+        Arrays.asList(
+            new Parameter("receiving_hei_id", this.currentState.receivingHeiId),
+            new Parameter("sending_hei_id", this.currentState.sendingHeiId),
+            new Parameter("sending_hei_id", fakeId)
+        ),
+        omobilityIdVerifierFactory.expectResponseToBeNotEmpty(),
+        noOMobilityIdReturned,
+        noOMobilitySkipReason
+    );
 
-      testParameters200(
-          combination,
-          "Request with known receiving_hei_id and two unknown sending_hei_id, expect 200 OK "
-              + "and empty response.",
-          Arrays.asList(
-              new Parameter("receiving_hei_id", this.currentState.receivingHeiId),
-              new Parameter("sending_hei_id", fakeId),
-              new Parameter("sending_hei_id", fakeId)
-          ),
-          omobilityIdVerifierFactory.expectResponseToBeEmpty()
-      );
-    }
+    testParameters200(
+        combination,
+        "Request with known receiving_hei_id and two unknown sending_hei_id, expect 200 OK "
+            + "and empty response.",
+        Arrays.asList(
+            new Parameter("receiving_hei_id", this.currentState.receivingHeiId),
+            new Parameter("sending_hei_id", fakeId),
+            new Parameter("sending_hei_id", fakeId)
+        ),
+        omobilityIdVerifierFactory.expectResponseToBeEmpty(),
+        noOMobilityIdReturned,
+        noOMobilitySkipReason
+    );
+
+    // Permission tests
+    // Am I allowed to see ToRs issued by others?
+    testParameters200(
+        combination,
+        "Request with known receiving_hei_id and sending_hei_id valid but not covered by"
+            + " the validator, expect empty response.",
+        Arrays.asList(
+            new Parameter("receiving_hei_id", this.currentState.receivingHeiId),
+            new Parameter("sending_hei_id", this.currentState.notPermittedHeiId)
+        ),
+        omobilityIdVerifierFactory.expectResponseToBeEmpty(),
+        Status.WARNING,
+        noOMobilityIdReturned,
+        noOMobilitySkipReason
+    );
+
+    // Are others able to see ToRs issued by me?
+    final ValidatorKeyStore currentValidatorKeyStore = this.validatorKeyStore;
+    final ValidatorKeyStore otherValidationKeyStore =
+        this.validatorKeyStoreSet.getSecondaryKeyStore();
+    final String receivingHeiId = this.currentState.receivingHeiId;
+
+    this.addAndRun(false, new InlineValidationStep() {
+      @Override
+      public String getName() {
+        return "Request one known receiving_hei_id as other EWP participant, "
+            + "expect 200 OK and empty response.";
+      }
+
+      @Override
+      protected boolean shouldSkip() {
+        return noOMobilityIdReturned || otherValidationKeyStore == null;
+      }
+
+      @Override
+      protected String getSkipReason() {
+        if (noOMobilityIdReturned) {
+          return noOMobilitySkipReason;
+        }
+        return "Keys not provided, ask EWP Administrator for one.";
+      }
+
+      @Override
+      protected Optional<Response> innerRun() throws Failure {
+        List<Parameter> params = Arrays.asList(
+            new Parameter("receiving_hei_id", receivingHeiId)
+        );
+        Verifier verifier = omobilityIdVerifierFactory.expectResponseToBeEmpty();
+
+        try {
+          IMobilityTorsIndexValidationSuiteV070.this.setValidatorKeyStore(otherValidationKeyStore);
+
+          Request request = createRequestWithParameters(this, combination, params);
+
+          return Optional.of(
+              makeRequestAndVerifyResponse(this, combination, request, verifier, Status.FAILURE)
+          );
+        } finally {
+          IMobilityTorsIndexValidationSuiteV070.this.setValidatorKeyStore(currentValidatorKeyStore);
+        }
+      }
+    });
   }
 
   private VerifierFactory omobilityIdVerifierFactory = new VerifierFactory(

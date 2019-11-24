@@ -537,7 +537,8 @@ public class EchoValidatorTest extends AbstractApiTest {
     try {
       FakeInternetService service;
 
-      KeyPair otherKeyPair = this.validator.getClientRsaKeyPairInUse();
+      KeyPair otherKeyPair =
+          this.validator.getValidatorKeyStoreSet().getMainKeyStore().getClientRsaKeyPairInUse();
       String keyId = DigestUtils.sha256Hex(otherKeyPair.getPublic().getEncoded());
       service = new ServiceMMTTValid(echoUrlMMTT, this.client, otherKeyPair) {
         @Override

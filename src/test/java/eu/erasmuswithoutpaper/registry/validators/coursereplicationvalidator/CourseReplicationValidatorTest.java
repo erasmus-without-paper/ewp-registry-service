@@ -41,7 +41,7 @@ public class CourseReplicationValidatorTest extends AbstractApiTest {
   @Test
   public void testValidationOnValidServiceIsSuccessful() {
     CourseReplicationServiceV1Valid service = new CourseReplicationServiceV1Valid(
-        getUrl(), this.client, this.validatorKeyStore);
+        getUrl(), this.client, this.validatorKeyStoreSet.getMainKeyStore());
     TestValidationReport report = this.getRawReport(service);
     assertThat(report).isCorrect();
   }
@@ -49,7 +49,7 @@ public class CourseReplicationValidatorTest extends AbstractApiTest {
   @Test
   public void testNotReportingErrorWhenNoParametersAreProvidedIsDetected() {
     CourseReplicationServiceV1Valid service = new CourseReplicationServiceV1Valid(
-        courseReplicationUrlHTTT, this.client, this.validatorKeyStore) {
+        courseReplicationUrlHTTT, this.client, this.validatorKeyStoreSet.getMainKeyStore()) {
       @Override
       protected void errorNoParameters(RequestData requestData,
           Map<String, List<String>> params)
@@ -66,7 +66,7 @@ public class CourseReplicationValidatorTest extends AbstractApiTest {
   @Test
   public void testReportingAnErrorWhenUnknownParametersArePassedIsDetected() {
     CourseReplicationServiceV1Valid service = new CourseReplicationServiceV1Valid(
-        courseReplicationUrlHTTT, this.client, this.validatorKeyStore) {
+        courseReplicationUrlHTTT, this.client, this.validatorKeyStoreSet.getMainKeyStore()) {
       @Override
       protected void errorAdditionalParameters(RequestData requestData,
           Map<String, List<String>> params)
@@ -84,7 +84,7 @@ public class CourseReplicationValidatorTest extends AbstractApiTest {
   @Test
   public void testIgnoringAdditionalHeiIdsIsDetected() {
     CourseReplicationServiceV1Valid service = new CourseReplicationServiceV1Valid(
-        courseReplicationUrlHTTT, this.client, this.validatorKeyStore) {
+        courseReplicationUrlHTTT, this.client, this.validatorKeyStoreSet.getMainKeyStore()) {
       @Override
       protected void errorMultipleHeiIds(RequestData requestData)
           throws ErrorResponseException {
@@ -98,7 +98,7 @@ public class CourseReplicationValidatorTest extends AbstractApiTest {
   @Test
   public void testNotReportingUnknownHeiIdAsAnErrorIsDetected() {
     CourseReplicationServiceV1Valid service = new CourseReplicationServiceV1Valid(
-        courseReplicationUrlHTTT, this.client, this.validatorKeyStore) {
+        courseReplicationUrlHTTT, this.client, this.validatorKeyStoreSet.getMainKeyStore()) {
       @Override
       protected List<String> processNotCoveredHei(RequestData requestData)
           throws ErrorResponseException {
@@ -112,7 +112,7 @@ public class CourseReplicationValidatorTest extends AbstractApiTest {
   @Test
   public void testReturningCorrectResponseWhenUnknownHeiIdIsPassedIsDetected() {
     CourseReplicationServiceV1Valid service = new CourseReplicationServiceV1Valid(
-        courseReplicationUrlHTTT, this.client, this.validatorKeyStore) {
+        courseReplicationUrlHTTT, this.client, this.validatorKeyStoreSet.getMainKeyStore()) {
       @Override
       protected List<String> processNotCoveredHei(RequestData requestData)
           throws ErrorResponseException {
@@ -127,7 +127,7 @@ public class CourseReplicationValidatorTest extends AbstractApiTest {
   @Test
   public void testReturningInvalidLosIdsIsDetected() {
     CourseReplicationServiceV1Valid service = new CourseReplicationServiceV1Valid(
-        courseReplicationUrlHTTT, this.client, this.validatorKeyStore) {
+        courseReplicationUrlHTTT, this.client, this.validatorKeyStoreSet.getMainKeyStore()) {
       @Override
       protected List<String> processCoveredHei(RequestData requestData)
           throws ErrorResponseException {
@@ -141,7 +141,7 @@ public class CourseReplicationValidatorTest extends AbstractApiTest {
   @Test
   public void testAcceptingInvalidDatesIsDetected() {
     CourseReplicationServiceV1Valid service = new CourseReplicationServiceV1Valid(
-        courseReplicationUrlHTTT, this.client, this.validatorKeyStore) {
+        courseReplicationUrlHTTT, this.client, this.validatorKeyStoreSet.getMainKeyStore()) {
       protected void errorInvalidModifiedSince(RequestData requestData)
           throws ErrorResponseException {
         requestData.requestedModifiedSinceDate = null;

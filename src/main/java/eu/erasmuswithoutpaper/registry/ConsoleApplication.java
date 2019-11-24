@@ -11,8 +11,9 @@ import eu.erasmuswithoutpaper.registry.internet.RealInternet;
 import eu.erasmuswithoutpaper.registry.updater.ManifestConverter;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidatorsManager;
-import eu.erasmuswithoutpaper.registry.validators.ExternalValidatorKeyStore;
+import eu.erasmuswithoutpaper.registry.validators.ValidatorKeyStoreSet;
 import eu.erasmuswithoutpaper.registry.xmlformatter.XmlFormatter;
+import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -40,13 +41,15 @@ public class ConsoleApplication implements ApplicationRunner {
   @Autowired
   private ApiValidatorsManager apiValidatorsManager;
   @Autowired
-  private ExternalValidatorKeyStore externalValidatorKeyStore;
+  private ValidatorKeyStoreSet validatorKeyStoreSet;
   @Autowired
   private EwpDocBuilder docBuilder;
   @Autowired
   private ManifestConverter converter;
   @Autowired
   private XmlFormatter xmlFormatter;
+  @Autowired
+  private RegistryClient registryClient;
 
   /**
    * Initialize and run Spring application.
@@ -55,6 +58,7 @@ public class ConsoleApplication implements ApplicationRunner {
    *     Command-line arguments.
    */
   public static void main(String[] args) {
+    System.out.println("Starting API Validator..."); // NOPMD
     if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
       Security.addProvider(new BouncyCastleProvider());
     }
@@ -73,10 +77,8 @@ public class ConsoleApplication implements ApplicationRunner {
   public void run(ApplicationArguments args) {
     ConsoleValidator consoleValidator = new ConsoleValidator();
 
-    consoleValidator.performValidation(
-        args, this.apiValidatorsManager, this.docBuilder, this.externalValidatorKeyStore,
-        this.converter, this.xmlFormatter
-    );
+    consoleValidator.performValidation(args, this.apiValidatorsManager, this.docBuilder,
+        this.validatorKeyStoreSet, this.converter, this.xmlFormatter, this.registryClient);
   }
 
 }

@@ -6,26 +6,23 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.security.Key;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyStore;
-import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.UnrecoverableKeyException;
-import java.security.cert.Certificate;
-import java.security.cert.CertificateException;
 import java.security.interfaces.RSAPrivateCrtKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.RSAPublicKeySpec;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
+import eu.erasmuswithoutpaper.registry.common.KeyPairAndCertificate;
+import eu.erasmuswithoutpaper.registry.common.KeyStoreUtils;
+import eu.erasmuswithoutpaper.registry.common.KeyStoreUtilsException;
 import org.springframework.boot.ApplicationArguments;
 
 import org.bouncycastle.openssl.PEMParser;
@@ -63,7 +60,11 @@ public class CryptoParameters {
         "    --http-server-keystore-password=<password> - refer to tls-client-keystore-password",
         "    --http-server-pem=<path> - path to PKCS #8 .pem file with private key",
         "    --http-server-use-tls-key - Uses same key that was is used by TLS.",
-        "    --http-server-use-client-key - Uses same key that was is used by HTTP Sig Client."
+        "    --http-server-use-client-key - Uses same key that was is used by HTTP Sig Client.",
+        "  Keys for permission tests, provided by EWP Administrators:",
+        "    --confidentiality-tls-keystore=<path>",
+        "    --confidentiality-tls-keystore-alias=<alias>",
+        "    --confidentiality-tls-keystore-password=<password>"
     );
   }
 
@@ -80,39 +81,26 @@ public class CryptoParameters {
       pkcs12KeyFormatString
   );
 
-  private static PublicKey getPublicKeyFromPrivateKey(
-      RSAPrivateCrtKey rsaPrivateKey) throws ApplicationArgumentException {
-    KeyFactory keyFactory = null;
-    try {
-      keyFactory = KeyFactory.getInstance("RSA");
-
-      RSAPublicKeySpec publicKeySpec = new RSAPublicKeySpec(
-          rsaPrivateKey.getModulus(), rsaPrivateKey.getPublicExponent()
-      );
-
-      return keyFactory.generatePublic(publicKeySpec);
-    } catch (InvalidKeySpecException | NoSuchAlgorithmException e) {
-      throw new ApplicationArgumentException("Cannot generate public key from private key: "
-          + e.getMessage());
-    }
-  }
-
-  private static KeyPair readKeyPairFromKeyStoreParameters(ApplicationArguments args,
-      String keyStorePath, String keyPairName) throws ApplicationArgumentException {
+  private static KeyPair readKeyPairFromKeyStoreParameters(
+      ApplicationArguments args,
+      String keyStorePath,
+      String keyPairName)
+      throws ApplicationArgumentException, KeyStoreUtilsException {
     String clientKeyStoreFormat = getKeyStoreFormat(args, keyStorePath, keyPairName);
     String keyStoreAlias = readParameter(args, keyPairName + "-keystore-alias", "alias");
     String keyStorePassword = readParameter(args, keyPairName + "-keystore-password", "password",
         false);
     char[] password = keyStorePassword == null ? null : keyStorePassword.toCharArray();
 
-    KeyStore keyStore = loadKeyStore(keyStorePath, clientKeyStoreFormat, password);
-    PrivateKey privateKey = readPrivateKeyFromKeyStore(keyStore, keyStoreAlias, password);
-    PublicKey publicKey = getPublicKeyFromPrivateKey((RSAPrivateCrtKey) privateKey);
+    KeyStore keyStore = KeyStoreUtils.loadKeyStore(keyStorePath, clientKeyStoreFormat, password);
+    PrivateKey privateKey = KeyStoreUtils
+        .readPrivateKeyFromKeyStore(keyStore, keyStoreAlias, password);
+    PublicKey publicKey = KeyStoreUtils.getPublicKeyFromPrivateKey((RSAPrivateCrtKey) privateKey);
     return new KeyPair(publicKey, privateKey);
   }
 
-  private static KeyPair readHttpSigKeyFromParameters(ApplicationArguments args,
-      String keyName) throws ApplicationArgumentException {
+  private static KeyPair readHttpSigKeyFromParameters(ApplicationArguments args, String keyName)
+      throws ApplicationArgumentException, KeyStoreUtilsException {
     String keyStorePathParameter = String.format("http-%s-keystore", keyName);
     String pemPathParameter = String.format("http-%s-pem", keyName);
     String keyStorePath = readParameter(args, keyStorePathParameter, "file-path", false);
@@ -141,8 +129,8 @@ public class CryptoParameters {
   /**
    * Read Client HTTP Sig KeyPair from file given in parameters.
    */
-  public static KeyPair readHttpSigClientKeyPair(
-      ApplicationArguments args) throws ApplicationArgumentException {
+  public static KeyPair readHttpSigClientKeyPair(ApplicationArguments args)
+      throws ApplicationArgumentException, KeyStoreUtilsException {
     if (args.containsOption("http-client-use-tls-key")) {
       KeyPairAndCertificate keyPairAndCertificate = readTlsKeyAndCertificateFromParameters(args);
       if (keyPairAndCertificate == null) {
@@ -157,8 +145,8 @@ public class CryptoParameters {
   /**
    * Read Server HTTP Sig KeyPair from file given in parameters.
    */
-  public static KeyPair readHttpSigServerKeyPair(
-      ApplicationArguments args) throws ApplicationArgumentException {
+  public static KeyPair readHttpSigServerKeyPair(ApplicationArguments args)
+      throws ApplicationArgumentException, KeyStoreUtilsException {
     if (args.containsOption("http-server-use-tls-key")) {
       KeyPairAndCertificate keyPairAndCertificate = readTlsKeyAndCertificateFromParameters(args);
       if (keyPairAndCertificate == null) {
@@ -172,8 +160,8 @@ public class CryptoParameters {
     }
   }
 
-  private static KeyPair readPkcs8KeyFromFile(
-      String clientPemPath) throws ApplicationArgumentException {
+  private static KeyPair readPkcs8KeyFromFile(String clientPemPath)
+      throws ApplicationArgumentException, KeyStoreUtilsException {
     PemObject pemObject;
     try (PEMParser pemParser = new PEMParser(
         new InputStreamReader(
@@ -194,7 +182,7 @@ public class CryptoParameters {
     try {
       KeyFactory factory = KeyFactory.getInstance("RSA", "BC");
       PrivateKey privateKey = factory.generatePrivate(keySpec);
-      PublicKey publicKey = getPublicKeyFromPrivateKey((RSAPrivateCrtKey) privateKey);
+      PublicKey publicKey = KeyStoreUtils.getPublicKeyFromPrivateKey((RSAPrivateCrtKey) privateKey);
       if (publicKey == null) {
         throw new ApplicationArgumentException(
             "Cannot generate public key from private key.");
@@ -210,28 +198,47 @@ public class CryptoParameters {
   }
 
   /**
+   * Read TLS PrivateKey and Certificate from KeyStore given in parameters for permission testing.
+   */
+  public static KeyPairAndCertificate readPermissionTlsKeyAndCertificateFromParameters(
+      ApplicationArguments args)
+      throws ApplicationArgumentException, KeyStoreUtilsException {
+    return readTlsKeyAndCertificateFromParametersWithPrefix(args, "confidentiality-");
+  }
+
+  /**
    * Read TLS PrivateKey and Certificate from file given in parameters.
    */
   public static KeyPairAndCertificate readTlsKeyAndCertificateFromParameters(
-      ApplicationArguments args) throws ApplicationArgumentException {
-    String clientKeyStorePath = readParameter(args, "tls-keystore", "file-path", false);
+      ApplicationArguments args)
+      throws ApplicationArgumentException, KeyStoreUtilsException {
+    return readTlsKeyAndCertificateFromParametersWithPrefix(args, "");
+  }
+
+  private static KeyPairAndCertificate readTlsKeyAndCertificateFromParametersWithPrefix(
+      ApplicationArguments args, String prefix)
+      throws ApplicationArgumentException, KeyStoreUtilsException {
+    String clientKeyStorePath = readParameter(args, prefix + "tls-keystore", "file-path", false);
     if (clientKeyStorePath == null) {
       return null;
     }
     String clientKeyStoreFormat = getKeyStoreFormat(args, clientKeyStorePath, "tls");
-    String keyStoreAlias = readParameter(args, "tls-keystore-alias", "alias");
-    String keyStorePassword = readParameter(args, "tls-keystore-password", "password", false);
+    String keyStoreAlias = readParameter(args, prefix + "tls-keystore-alias", "alias");
+    String keyStorePassword = readParameter(
+        args, prefix + "tls-keystore-password", "password", false);
     char[] password = keyStorePassword == null ? null : keyStorePassword.toCharArray();
 
-    KeyStore keyStore = loadKeyStore(clientKeyStorePath, clientKeyStoreFormat, password);
-    return readKeyPairAndCertificateFromKeyStore(
+    KeyStore keyStore = KeyStoreUtils
+        .loadKeyStore(clientKeyStorePath, clientKeyStoreFormat, password);
+    return KeyStoreUtils.readKeyPairAndCertificateFromKeyStore(
         keyStore,
         keyStoreAlias,
         password
     );
   }
 
-  private static String getKeyStoreFormat(ApplicationArguments args,
+  private static String getKeyStoreFormat(
+      ApplicationArguments args,
       String clientKeyStorePath,
       String securityProtocolPrefix) throws ApplicationArgumentException {
     String parameter = securityProtocolPrefix + "-keystore-format";
@@ -261,81 +268,6 @@ public class CryptoParameters {
           "Invalid key format, available key formats are " + availableKeyFormats.toString());
     }
     return clientKeyStoreFormat;
-  }
-
-  private static KeyStore loadKeyStore(String path, String format,
-      char[] password) throws ApplicationArgumentException {
-    try {
-      KeyStore keyStore = KeyStore.getInstance(format);
-      try (FileInputStream is = new FileInputStream(path)) {
-        keyStore.load(is, password);
-      }
-      return keyStore;
-    } catch (IOException | CertificateException | NoSuchAlgorithmException | KeyStoreException e) {
-      throw new ApplicationArgumentException(
-          String.format(
-              "Cannot load KeyStore, %s",
-              e.getMessage()
-          )
-      );
-    }
-  }
-
-  private static PrivateKey readPrivateKeyFromKeyStore(
-      KeyStore keyStore,
-      String keyStoreAlias,
-      char[] password
-  ) throws ApplicationArgumentException {
-    Key key;
-    try {
-      key = keyStore.getKey(keyStoreAlias, password);
-    } catch (UnrecoverableKeyException | NoSuchAlgorithmException | KeyStoreException e) {
-      throw new ApplicationArgumentException(
-          String.format(
-              "Cannot recover key from keystore. Alias: \"%s\", %s",
-              keyStoreAlias, e.getMessage()
-          )
-      );
-    }
-
-    if (key == null) {
-      throw new ApplicationArgumentException(
-          String.format(
-              "Cannot recover key, invalid alias: \"%s\"",
-              keyStoreAlias
-          )
-      );
-    }
-
-    if (key instanceof PrivateKey) {
-      return (PrivateKey) key;
-    }
-    throw new ApplicationArgumentException(
-        "There is no PrivateKey instance under provided alias."
-    );
-  }
-
-  private static KeyPairAndCertificate readKeyPairAndCertificateFromKeyStore(
-      KeyStore keyStore,
-      String keyStoreAlias,
-      char[] password
-  ) throws ApplicationArgumentException {
-    try {
-      PrivateKey key = readPrivateKeyFromKeyStore(keyStore, keyStoreAlias, password);
-      KeyPair keyPair;
-      Certificate certificate;
-      certificate = keyStore.getCertificate(keyStoreAlias);
-      PublicKey publicKey = certificate.getPublicKey();
-      keyPair = new KeyPair(publicKey, key);
-      return new KeyPairAndCertificate(keyPair, certificate);
-    } catch (KeyStoreException e) {
-      throw new ApplicationArgumentException(
-          String.format(
-              "Problem while reading certificate from provided keystore: %s",
-              e.getMessage()
-          )
-      );
-    }
   }
 
 }

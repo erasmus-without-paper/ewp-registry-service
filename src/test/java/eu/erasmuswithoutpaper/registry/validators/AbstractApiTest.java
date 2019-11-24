@@ -45,7 +45,7 @@ public abstract class AbstractApiTest<StateType extends SuiteState> extends WRTe
   protected RegistryClient client;
 
   @Autowired
-  protected ValidatorKeyStore validatorKeyStore;
+  protected ValidatorKeyStoreSet validatorKeyStoreSet;
 
   private static final String selfManifestUrl = "https://registry.example.com/manifest.xml";
   private static final String apiManifestUrl = "https://university.example.com/manifest.xml";
@@ -134,7 +134,7 @@ public abstract class AbstractApiTest<StateType extends SuiteState> extends WRTe
       this.sourceProvider.addSource(ManifestSource.newTrustedSource(selfManifestUrl));
 
       String apiManifest = this.getFileAsString(getManifestFilename());
-      myKeyPair = this.getValidator().generateKeyPair();
+      myKeyPair = this.getValidator().getValidatorKeyStoreSet().getMainKeyStore().generateKeyPair();
       apiManifest = apiManifest.replace(
           "SERVER-KEY-PLACEHOLDER",
           Base64.encode(myKeyPair.getPublic().getEncoded())

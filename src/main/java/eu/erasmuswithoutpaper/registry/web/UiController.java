@@ -37,6 +37,7 @@ import eu.erasmuswithoutpaper.registry.validators.ValidationParameter;
 import eu.erasmuswithoutpaper.registry.validators.ValidationParameters;
 import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus;
 import eu.erasmuswithoutpaper.registry.validators.ValidatorKeyStore;
+import eu.erasmuswithoutpaper.registry.validators.ValidatorKeyStoreSet;
 import eu.erasmuswithoutpaper.registry.validators.web.ManifestApiEntry;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -125,8 +126,8 @@ public class UiController {
    *     needed for caching the result of {@link CoverageMatrixGenerator}.
    * @param apiValidatorsManager
    *     needed to check if there are some tests for given api and version.
-   * @param validatorKeyStore
-   *     KeyStore providing credentials.
+   * @param validatorKeyStoreSet
+   *     Set of KeyStores providing credentials.
    */
   @Autowired
   public UiController(TaskExecutor taskExecutor,
@@ -137,7 +138,7 @@ public class UiController {
       CoverageMatrixGenerator matrixGenerator, RegistryClient regClient,
       CatalogueDependantCache catcache,
       ApiValidatorsManager apiValidatorsManager,
-      ValidatorKeyStore validatorKeyStore,
+      ValidatorKeyStoreSet validatorKeyStoreSet,
       MyErrorController errorController) {
     this.taskExecutor = taskExecutor;
     this.manifestStatusRepo = manifestUpdateStatuses;
@@ -152,7 +153,7 @@ public class UiController {
     this.regClient = regClient;
     this.catcache = catcache;
     this.apiValidatorsManager = apiValidatorsManager;
-    this.validatorKeyStore = validatorKeyStore;
+    this.validatorKeyStore = validatorKeyStoreSet.getMainKeyStore();
     this.errorController = errorController;
   }
 

@@ -7,24 +7,17 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-import eu.erasmuswithoutpaper.registry.configuration.ConsoleEnvInfo;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
-import org.springframework.stereotype.Service;
 
-@Service
-@ConditionalOnNotWebApplication
 public class ExternalValidatorKeyStore extends ValidatorKeyStore {
-  @Autowired
   private RegistryClient registryClient;
 
   /**
    * Constructor.
    */
-  @Autowired
-  public ExternalValidatorKeyStore(ConsoleEnvInfo consoleEnvInfo) {
-    super(consoleEnvInfo);
+  public ExternalValidatorKeyStore(RegistryClient registryClient) {
+    super(false);
+    this.registryClient = registryClient;
     this.myCredentialsDate = null;
     this.myClientRsaKeyPair = this.generateKeyPair();
     this.myServerRsaKeyPair = this.generateKeyPair();

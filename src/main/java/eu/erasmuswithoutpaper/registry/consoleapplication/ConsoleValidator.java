@@ -6,7 +6,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.KeyPair;
-import java.security.cert.X509Certificate;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -15,6 +14,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
+import eu.erasmuswithoutpaper.registry.common.KeyPairAndCertificate;
+import eu.erasmuswithoutpaper.registry.common.KeyStoreUtilsException;
 import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
 import eu.erasmuswithoutpaper.registry.updater.ManifestConverter;
 import eu.erasmuswithoutpaper.registry.validators.AbstractValidationSuite;
@@ -25,8 +26,10 @@ import eu.erasmuswithoutpaper.registry.validators.HttpSecurityDescription;
 import eu.erasmuswithoutpaper.registry.validators.SemanticVersion;
 import eu.erasmuswithoutpaper.registry.validators.ValidationParameters;
 import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus;
+import eu.erasmuswithoutpaper.registry.validators.ValidatorKeyStoreSet;
 import eu.erasmuswithoutpaper.registry.validators.web.ManifestApiEntry;
 import eu.erasmuswithoutpaper.registry.xmlformatter.XmlFormatter;
+import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 import org.springframework.boot.ApplicationArguments;
 
 import org.beryx.textio.TextIO;
@@ -46,6 +49,8 @@ public class ConsoleValidator {
   private EwpDocBuilder docBuilder;
   private ManifestConverter converter;
   private XmlFormatter xmlFormatter;
+  private ValidatorKeyStoreSet keyStoreSet;
+  private RegistryClient registryClient;
 
   private static void printHelp(TextTerminal<?> textTerminal,
       ApiValidatorsManager apiValidatorsManager) {
@@ -82,13 +87,30 @@ public class ConsoleValidator {
 
   private void readKeysFromArguments(ApplicationArguments args,
       TextTerminal<?> textTerminal)
-      throws ApplicationArgumentException {
+      throws ApplicationArgumentException, KeyStoreUtilsException {
     readTlsKeyAndCertificate(args, textTerminal);
     readHttpSigKeys(args, textTerminal);
+    readPermissionKeysAndCertificate(args);
+  }
+
+  private void readPermissionKeysAndCertificate(ApplicationArguments args)
+      throws KeyStoreUtilsException, ApplicationArgumentException {
+    KeyPairAndCertificate keyPairAndCertificate =
+        CryptoParameters.readPermissionTlsKeyAndCertificateFromParameters(args);
+    if (keyPairAndCertificate == null) {
+      return;
+    }
+
+    ExternalValidatorKeyStore keyStore = new ExternalValidatorKeyStore(this.registryClient);
+    keyStore.setServerRsaKey(keyPairAndCertificate.keyPair);
+    keyStore.setClientRsaKey(keyPairAndCertificate.keyPair);
+    keyStore.setCertificate(keyPairAndCertificate.keyPair, keyPairAndCertificate.certificate);
+    this.keyStoreSet.setSecondaryKeyStore(keyStore);
   }
 
   private void readTlsKeyAndCertificate(
-      ApplicationArguments args, TextTerminal<?> textTerminal) throws ApplicationArgumentException {
+      ApplicationArguments args, TextTerminal<?> textTerminal)
+      throws ApplicationArgumentException, KeyStoreUtilsException {
     KeyPairAndCertificate keyPairAndCertificate =
         CryptoParameters.readTlsKeyAndCertificateFromParameters(args);
     if (keyPairAndCertificate == null) {
@@ -98,12 +120,13 @@ public class ConsoleValidator {
     }
     this.externalValidatorKeyStore.setCertificate(
         keyPairAndCertificate.keyPair,
-        (X509Certificate) keyPairAndCertificate.certificate
+        keyPairAndCertificate.certificate
     );
   }
 
   private void readHttpSigKeys(
-      ApplicationArguments args, TextTerminal<?> textTerminal) throws ApplicationArgumentException {
+      ApplicationArguments args, TextTerminal<?> textTerminal)
+      throws ApplicationArgumentException, KeyStoreUtilsException {
     KeyPair clientKeyPair = CryptoParameters.readHttpSigClientKeyPair(args);
     if (clientKeyPair == null) {
       textTerminal.println(
@@ -129,8 +152,8 @@ public class ConsoleValidator {
     return args.containsOption("help") || args.containsOption("h");
   }
 
-  private void validate(ApplicationArguments args, TextIO console,
-      TextTerminal<?> textTerminal) throws ApplicationArgumentException, IOException {
+  private void validate(ApplicationArguments args, TextIO console, TextTerminal<?> textTerminal)
+      throws ApplicationArgumentException, IOException, KeyStoreUtilsException {
     final String manifestUrl = ApplicationParametersUtils.readParameter(args, "manifest", "url");
 
     readKeysFromArguments(args, textTerminal);
@@ -252,16 +275,21 @@ public class ConsoleValidator {
    */
   public void performValidation(ApplicationArguments args,
       ApiValidatorsManager apiValidatorsManager, EwpDocBuilder docBuilder,
-      ExternalValidatorKeyStore externalValidatorKeyStore,
+      ValidatorKeyStoreSet keyStoreSet,
       ManifestConverter converter,
-      XmlFormatter xmlFormatter) {
+      XmlFormatter xmlFormatter,
+      RegistryClient registryClient) {
     final TextIO console = TextIoFactory.getTextIO();
     final TextTerminal<?> textTerminal = console.getTextTerminal();
     this.apiValidatorsManager = apiValidatorsManager;
     this.docBuilder = docBuilder;
-    this.externalValidatorKeyStore = externalValidatorKeyStore;
+    this.registryClient = registryClient;
     this.converter = converter;
     this.xmlFormatter = xmlFormatter;
+
+    this.externalValidatorKeyStore = new ExternalValidatorKeyStore(this.registryClient);
+    keyStoreSet.setMainKeyStore(this.externalValidatorKeyStore);
+    this.keyStoreSet = keyStoreSet;
 
     if (isHelpParameterPresent(args)) {
       printHelp(textTerminal, apiValidatorsManager);
@@ -270,7 +298,7 @@ public class ConsoleValidator {
 
     try {
       validate(args, console, textTerminal);
-    } catch (ApplicationArgumentException | IOException e) {
+    } catch (ApplicationArgumentException | IOException | KeyStoreUtilsException e) {
       textTerminal.println(e.getMessage());
       textTerminal.println("\nUse --help parameter to get help.");
     }

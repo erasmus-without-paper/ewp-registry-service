@@ -8,6 +8,7 @@ import java.util.List;
 
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.TestValidationReport;
+import eu.erasmuswithoutpaper.registry.validators.ValidatorKeyStore;
 import eu.erasmuswithoutpaper.registry.validators.imobilitytorsvalidator.index.IMobilityTorsIndexValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -271,6 +272,25 @@ public class IMobilityTorsIndexValidatorTest extends IMobilityTorsValidatorTestB
     assertThat(report).containsWarning(
         "Request with known receiving_hei_id and sending_hei_id valid but not covered by"
             + " the validator, expect empty response.");
+
+  }
+
+  @Test
+  public void testSendingDataThatCallerHasNoAccessToIsDetected2() {
+    IMobilityTorsServiceV2Valid service = new IMobilityTorsServiceV2Valid(
+        omobilityTorsIndexUrl, omobilityTorsGetUrl, this.client, this.resourceLoader) {
+      @Override
+      protected boolean isCallerPermittedToSeeSendingHeiId(String sendingHeiId) {
+        return true;
+      }
+    };
+    this.validator.getValidatorKeyStoreSet().setSecondaryKeyStore(
+        new ValidatorKeyStore(false)
+    );
+    TestValidationReport report = this.getRawReport(service);
+    assertThat(report).containsFailure(
+        "Request one known receiving_hei_id as other EWP participant, "
+            + "expect 200 OK and empty response.");
 
   }
 }

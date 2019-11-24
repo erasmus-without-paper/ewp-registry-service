@@ -5,7 +5,7 @@ import eu.erasmuswithoutpaper.registry.internet.Internet;
 import eu.erasmuswithoutpaper.registry.validators.ApiEndpoint;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.SemanticVersion;
-import eu.erasmuswithoutpaper.registry.validators.ValidatorKeyStore;
+import eu.erasmuswithoutpaper.registry.validators.ValidatorKeyStoreSet;
 import eu.erasmuswithoutpaper.registry.validators.imobilitytorsvalidator.IMobilityTorsSuiteState;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 import org.springframework.stereotype.Service;
@@ -40,8 +40,8 @@ public class IMobilityTorsIndexValidator extends ApiValidator<IMobilityTorsSuite
   }
 
   public IMobilityTorsIndexValidator(EwpDocBuilder docBuilder, Internet internet,
-      RegistryClient client, ValidatorKeyStore validatorKeyStore) {
-    super(docBuilder, internet, client, validatorKeyStore, "imobility-tors",
+      RegistryClient client, ValidatorKeyStoreSet validatorKeyStoreSet) {
+    super(docBuilder, internet, client, validatorKeyStoreSet, "imobility-tors",
         ApiEndpoint.Index);
   }
 

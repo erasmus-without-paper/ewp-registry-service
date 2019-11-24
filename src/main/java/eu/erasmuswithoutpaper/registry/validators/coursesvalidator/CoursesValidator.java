@@ -4,7 +4,7 @@ import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
 import eu.erasmuswithoutpaper.registry.internet.Internet;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.SemanticVersion;
-import eu.erasmuswithoutpaper.registry.validators.ValidatorKeyStore;
+import eu.erasmuswithoutpaper.registry.validators.ValidatorKeyStoreSet;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 import org.springframework.stereotype.Service;
@@ -34,8 +34,8 @@ public class CoursesValidator extends ApiValidator<CoursesSuiteState> {
   }
 
   public CoursesValidator(EwpDocBuilder docBuilder, Internet internet, RegistryClient client,
-      ValidatorKeyStore validatorKeyStore) {
-    super(docBuilder, internet, client, validatorKeyStore, "courses");
+      ValidatorKeyStoreSet validatorKeyStoreSet) {
+    super(docBuilder, internet, client, validatorKeyStoreSet, "courses");
   }
 
   @Override

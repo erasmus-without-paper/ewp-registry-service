@@ -94,8 +94,8 @@ class IMobilityTorsIndexSetupValidationSuiteV070
 
   @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
   private String getSendingHeiId() throws SuiteBroken {
-    if (!this.parentValidator.getCoveredHeiIDs().isEmpty()) {
-      return this.parentValidator.getCoveredHeiIDs().get(0);
+    if (!this.validatorKeyStore.getCoveredHeiIDs().isEmpty()) {
+      return this.validatorKeyStore.getCoveredHeiIDs().get(0);
     }
     return "";
   }

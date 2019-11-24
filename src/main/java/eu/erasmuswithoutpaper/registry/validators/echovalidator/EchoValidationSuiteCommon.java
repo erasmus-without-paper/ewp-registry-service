@@ -97,7 +97,7 @@ abstract class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSui
         Request request =
             EchoValidationSuiteCommon.this.createValidRequestForCombination(this, combination);
         KeyPair otherKeyPair =
-            EchoValidationSuiteCommon.this.parentValidator.getUnregisteredKeyPair();
+            EchoValidationSuiteCommon.this.validatorKeyStore.getUnregisteredKeyPair();
         // Replace the previously set Authorization header with a different one.
         RequestSigner badSigner = new EwpHttpSigRequestSigner(otherKeyPair);
         badSigner.sign(request);
@@ -124,7 +124,7 @@ abstract class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSui
         // Leave keyId as is, but use a new random key for signature generation.
         String previousKeyId = Authorization.parse(request.getHeader("Authorization")).getKeyId();
         KeyPair otherKeyPair =
-            EchoValidationSuiteCommon.this.parentValidator.getUnregisteredKeyPair();
+            EchoValidationSuiteCommon.this.validatorKeyStore.getUnregisteredKeyPair();
         RequestSigner mySigner = new EwpHttpSigRequestSigner(otherKeyPair) {
           @Override
           public String getKeyId() {
@@ -176,7 +176,7 @@ abstract class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSui
         EchoValidationSuiteCommon.this.reqSignerHttpSig.sign(request);
         return Optional.of(EchoValidationSuiteCommon.this
             .makeRequestAndExpectHttp200(this, combination, request,
-                EchoValidationSuiteCommon.this.parentValidator.getCoveredHeiIDs(),
+                EchoValidationSuiteCommon.this.validatorKeyStore.getCoveredHeiIDs(),
                 Lists.newArrayList()
             ));
       }
@@ -229,14 +229,14 @@ abstract class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSui
         EchoValidationSuiteCommon.this.reqSignerHttpSig.sign(request);
         return Optional.of(EchoValidationSuiteCommon.this
             .makeRequestAndExpectHttp200(this, combination, request,
-                EchoValidationSuiteCommon.this.parentValidator.getCoveredHeiIDs(),
+                EchoValidationSuiteCommon.this.validatorKeyStore.getCoveredHeiIDs(),
                 Lists.newArrayList()
             ));
       }
     });
 
-    KeyPair serverKeyPair = this.parentValidator.getServerRsaKeyPairInUse();
-    KeyPair clientKeyPair = this.parentValidator.getClientRsaKeyPairInUse();
+    KeyPair serverKeyPair = this.validatorKeyStore.getServerRsaKeyPairInUse();
+    KeyPair clientKeyPair = this.validatorKeyStore.getClientRsaKeyPairInUse();
 
     this.addAndRun(false, new InlineValidationStep() {
       @Override
@@ -260,7 +260,7 @@ abstract class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSui
         Request request =
             EchoValidationSuiteCommon.this.createValidRequestForCombination(this, combination);
         KeyPair keyPair =
-            EchoValidationSuiteCommon.this.parentValidator.getServerRsaKeyPairInUse();
+            EchoValidationSuiteCommon.this.validatorKeyStore.getServerRsaKeyPairInUse();
         RequestSigner badSigner = new EwpHttpSigRequestSigner(keyPair);
         badSigner.sign(request);
         return Optional.of(EchoValidationSuiteCommon.this
@@ -394,7 +394,7 @@ abstract class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSui
           mySigner.sign(request);
           return Optional.of(EchoValidationSuiteCommon.this
               .makeRequestAndExpectHttp200(this, combination, request,
-                  EchoValidationSuiteCommon.this.parentValidator.getCoveredHeiIDs(),
+                  EchoValidationSuiteCommon.this.validatorKeyStore.getCoveredHeiIDs(),
                   Lists.newArrayList("b", "b")
               ));
         }
@@ -462,7 +462,7 @@ abstract class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSui
           try {
             return Optional.of(EchoValidationSuiteCommon.this
                 .makeRequestAndExpectHttp200(this, combination, request,
-                    EchoValidationSuiteCommon.this.parentValidator.getCoveredHeiIDs(),
+                    EchoValidationSuiteCommon.this.validatorKeyStore.getCoveredHeiIDs(),
                     Lists.newArrayList("b", "b")
                 ));
           } catch (Failure f) {
@@ -498,9 +498,9 @@ abstract class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSui
 
         // Override the work done by the original (valid) request signer.
         KeyPair otherKeyPair =
-            EchoValidationSuiteCommon.this.parentValidator.getUnregisteredKeyPair();
+            EchoValidationSuiteCommon.this.validatorKeyStore.getUnregisteredKeyPair();
         X509Certificate otherCert =
-            EchoValidationSuiteCommon.this.parentValidator.generateCertificate(otherKeyPair);
+            EchoValidationSuiteCommon.this.validatorKeyStore.generateCertificate(otherKeyPair);
         EwpCertificateRequestSigner mySigner =
             new EwpCertificateRequestSigner(otherCert, otherKeyPair);
         mySigner.sign(request);
@@ -538,7 +538,7 @@ abstract class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSui
         } else {
           return Optional.of(EchoValidationSuiteCommon.this
               .makeRequestAndExpectHttp200(this, relaxedCombination, request,
-                  EchoValidationSuiteCommon.this.parentValidator.getCoveredHeiIDs(),
+                  EchoValidationSuiteCommon.this.validatorKeyStore.getCoveredHeiIDs(),
                   Lists.newArrayList()
               ));
         }
@@ -566,7 +566,7 @@ abstract class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSui
         } else {
           return Optional.of(EchoValidationSuiteCommon.this
               .makeRequestAndExpectHttp200(this, combination, request,
-                  EchoValidationSuiteCommon.this.parentValidator.getCoveredHeiIDs(),
+                  EchoValidationSuiteCommon.this.validatorKeyStore.getCoveredHeiIDs(),
                   Lists.newArrayList()
               ));
         }
@@ -598,7 +598,7 @@ abstract class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSui
           } else {
             return Optional.of(EchoValidationSuiteCommon.this
                 .makeRequestAndExpectHttp200(this, combination, request,
-                    EchoValidationSuiteCommon.this.parentValidator.getCoveredHeiIDs(),
+                    EchoValidationSuiteCommon.this.validatorKeyStore.getCoveredHeiIDs(),
                     Lists.newArrayList()
                 ));
           }
@@ -747,7 +747,7 @@ abstract class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSui
           } else {
             return Optional.of(EchoValidationSuiteCommon.this.makeRequestAndExpectHttp200(this,
                 combination.withChangedResEncr(CombEntry.RESENCR_TLS), request,
-                EchoValidationSuiteCommon.this.parentValidator.getCoveredHeiIDs(),
+                EchoValidationSuiteCommon.this.validatorKeyStore.getCoveredHeiIDs(),
                 Collections.emptyList()
             ));
           }
@@ -773,7 +773,7 @@ abstract class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSui
               .sign(request);
           return Optional.of(EchoValidationSuiteCommon.this
               .makeRequestAndExpectHttp200(this, combination, request,
-                  EchoValidationSuiteCommon.this.parentValidator.getCoveredHeiIDs(),
+                  EchoValidationSuiteCommon.this.validatorKeyStore.getCoveredHeiIDs(),
                   Collections.emptyList()
               ));
         }
@@ -799,7 +799,7 @@ abstract class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSui
                 .sign(request);
             return Optional.of(EchoValidationSuiteCommon.this.makeRequestAndExpectHttp200(this,
                 combination.withChangedResEncr(CombEntry.RESENCR_TLS), request,
-                EchoValidationSuiteCommon.this.parentValidator.getCoveredHeiIDs(),
+                EchoValidationSuiteCommon.this.validatorKeyStore.getCoveredHeiIDs(),
                 Collections.emptyList()
             ));
           }
@@ -823,7 +823,7 @@ abstract class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSui
           Request request =
               EchoValidationSuiteCommon.this.createValidRequestForCombination(this, combination);
           RSAPublicKey attackersKey =
-              EchoValidationSuiteCommon.this.parentValidator.getServerRsaPublicKeyInUse();
+              EchoValidationSuiteCommon.this.validatorKeyStore.getServerRsaPublicKeyInUse();
           byte[] attackersKeyFingerprint =
               DigestUtils.getSha256Digest().digest(attackersKey.getEncoded());
           if (request.getHeader("Accept-Response-Encryption-Key") == null) {
@@ -852,7 +852,7 @@ abstract class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSui
             // into Failure).
           }
           EchoValidationSuiteCommon.this.expectHttp200(this, combination, request, response,
-              EchoValidationSuiteCommon.this.parentValidator.getCoveredHeiIDs(),
+              EchoValidationSuiteCommon.this.validatorKeyStore.getCoveredHeiIDs(),
               Collections.emptyList()
           );
           return Optional.of(response);
@@ -874,7 +874,7 @@ abstract class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSui
           Request request =
               EchoValidationSuiteCommon.this.createValidRequestForCombination(this, combination);
           RSAPublicKey newKey =
-              EchoValidationSuiteCommon.this.parentValidator.getServerRsaPublicKeyInUse();
+              EchoValidationSuiteCommon.this.validatorKeyStore.getServerRsaPublicKeyInUse();
           byte[] newKeyFingerprint = DigestUtils.getSha256Digest().digest(newKey.getEncoded());
           if (request.getHeader("Accept-Response-Encryption-Key") == null) {
             request.putHeader(
@@ -891,7 +891,7 @@ abstract class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSui
           // Make sure that the "old" key is not used.
           Response response = EchoValidationSuiteCommon.this.makeRequest(this, request);
           KeyPair oldKeyPair =
-              EchoValidationSuiteCommon.this.parentValidator.getClientRsaKeyPairInUse();
+              EchoValidationSuiteCommon.this.validatorKeyStore.getClientRsaKeyPairInUse();
           byte[] oldKeyFingerprint =
               DigestUtils.getSha256Digest().digest(oldKeyPair.getPublic().getEncoded());
           try {
@@ -911,7 +911,7 @@ abstract class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSui
             // into Failure).
           }
           EchoValidationSuiteCommon.this.expectHttp200(this, combination, request, response,
-              EchoValidationSuiteCommon.this.parentValidator.getCoveredHeiIDs(),
+              EchoValidationSuiteCommon.this.validatorKeyStore.getCoveredHeiIDs(),
               Collections.emptyList()
           );
           return Optional.of(response);
@@ -969,7 +969,7 @@ abstract class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSui
             .createValidRequestForCombination(this, combination, "echo=a&echo=b&echo=a");
         return Optional.of(EchoValidationSuiteCommon.this
             .makeRequestAndExpectHttp200(this, combination, request,
-                EchoValidationSuiteCommon.this.parentValidator.getCoveredHeiIDs(),
+                EchoValidationSuiteCommon.this.validatorKeyStore.getCoveredHeiIDs(),
                 expectedEchoValues
             ));
       }
@@ -1004,7 +1004,7 @@ abstract class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSui
             .sign(request);
         return Optional.of(EchoValidationSuiteCommon.this
             .makeRequestAndExpectHttp200(this, combination, request,
-                EchoValidationSuiteCommon.this.parentValidator.getCoveredHeiIDs(),
+                EchoValidationSuiteCommon.this.validatorKeyStore.getCoveredHeiIDs(),
                 expectedEchoValues
             ));
       }
@@ -1045,7 +1045,7 @@ abstract class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSui
               .expectError(this, combination, request, response, Lists.newArrayList(401, 403));
         } else {
           EchoValidationSuiteCommon.this.expectHttp200(this, combination, request, response,
-              EchoValidationSuiteCommon.this.parentValidator.getCoveredHeiIDs(),
+              EchoValidationSuiteCommon.this.validatorKeyStore.getCoveredHeiIDs(),
               Collections.emptyList()
           );
         }
@@ -1091,7 +1091,7 @@ abstract class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSui
         );
         return Optional.of(EchoValidationSuiteCommon.this
             .makeRequestAndExpectHttp200(this, combination, request,
-                EchoValidationSuiteCommon.this.parentValidator.getCoveredHeiIDs(),
+                EchoValidationSuiteCommon.this.validatorKeyStore.getCoveredHeiIDs(),
                 expectedEchoValues
             ));
       }
