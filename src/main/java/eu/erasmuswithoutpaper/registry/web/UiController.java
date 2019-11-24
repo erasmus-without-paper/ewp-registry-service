@@ -396,7 +396,11 @@ public class UiController {
 
     List<ManifestUpdateStatus> statuses = new ArrayList<>();
     for (ManifestSource source : this.sourceProvider.getAll()) {
-      statuses.add(this.manifestStatusRepo.findOne(source.getUrl()));
+      ManifestUpdateStatus status = this.manifestStatusRepo.findOne(source.getUrl());
+      // Manifests that weren't loaded yet won't be displayed.
+      if (status != null) {
+        statuses.add(status);
+      }
     }
     mav.addObject("manifestStatuses", statuses);
     mav.addObject("manifestValidationUrl", Application.getRootUrl() + "/manifestValidation");
