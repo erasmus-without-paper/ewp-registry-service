@@ -43,16 +43,21 @@ public class MyErrorController implements ErrorController {
   @Autowired
   @SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
   public MyErrorController(ResourceLoader resLoader, NotifierService notifier,
-      @Value("${app.admin-emails}") List<String> adminEmails) {
+      @Value("${app.admin-emails}") List<String> adminEmails,
+      @Value("${app.use-flag-to-notify-about-exceptions}") boolean useFlagToNotifyAboutExceptions) {
     this.resLoader = resLoader;
-    this.http500errorFlag = new NotifierFlag(adminEmails) {
-      @Override
-      public String getName() {
-        return "Recently recorded runtime errors.";
-      }
-    };
-    this.http500errorFlag.setStatus(Severity.OK);
-    notifier.addWatchedFlag(this.http500errorFlag);
+    if (useFlagToNotifyAboutExceptions) {
+      this.http500errorFlag = new NotifierFlag(adminEmails) {
+        @Override
+        public String getName() {
+          return "Recently recorded runtime errors.";
+        }
+      };
+      this.http500errorFlag.setStatus(Severity.OK);
+      notifier.addWatchedFlag(this.http500errorFlag);
+    } else {
+      this.http500errorFlag = null;
+    }
   }
 
   /**
@@ -63,7 +68,9 @@ public class MyErrorController implements ErrorController {
    */
   @RequestMapping("/error")
   public ResponseEntity<String> error(HttpServletRequest request) {
-    this.http500errorFlag.setStatus(Severity.WARNING);
+    if (this.http500errorFlag != null) {
+      this.http500errorFlag.setStatus(Severity.WARNING);
+    }
     HttpHeaders headers = new HttpHeaders();
     String xml;
     try {

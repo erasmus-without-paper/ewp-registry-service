@@ -7,11 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 /**
  * Spring beans to be used when running an actual application server.
@@ -89,5 +91,15 @@ public class ProductionConfiguration {
   @ConditionalOnNotWebApplication
   public TaskExecutor getConsoleTaskExecutor() {
     return null;
+  }
+
+  @Bean
+  public HandlerExceptionResolver sentryExceptionResolver() {
+    return new io.sentry.spring.SentryExceptionResolver();
+  }
+
+  @Bean
+  public ServletContextInitializer sentryServletContextInitializer() {
+    return new io.sentry.spring.SentryServletContextInitializer();
   }
 }

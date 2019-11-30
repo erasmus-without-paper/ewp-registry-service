@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -29,6 +30,7 @@ import org.junit.Test;
 /**
  * Check if the URLs served by our {@link ApiController} are actually served.
  */
+@TestPropertySource(properties = {"app.use-flag-to-notify-about-exceptions=true"})
 public class ApiControllerIntegrationTest extends WRIntegrationTest {
 
   @Autowired
