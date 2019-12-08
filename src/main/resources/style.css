@@ -724,3 +724,18 @@ td.ewpsrc__test_index {
 .ewp-api-validator--security-disclaimer {
     text-align: justify;
 }
+
+.ewpsrc__api_stats_table {
+    margin: 2px;
+    display: inline-flex;
+}
+
+.ewpsrc__host_overview_info_table {
+    width: 100%;
+    table-layout: fixed;
+}
+
+.ewpsrc__host_overview_info_table td {
+    overflow-wrap: break-word;
+    vertical-align: top;
+}

@@ -16,6 +16,8 @@ import eu.erasmuswithoutpaper.registry.documentbuilder.BuildError;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildParams;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildResult;
 import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
+import eu.erasmuswithoutpaper.registry.manifestoverview.ImplementedApisCount;
+import eu.erasmuswithoutpaper.registry.manifestoverview.ManifestOverviewInfo;
 import eu.erasmuswithoutpaper.registry.notifier.NotifierService;
 import eu.erasmuswithoutpaper.registry.repository.CatalogueDependantCache;
 import eu.erasmuswithoutpaper.registry.repository.ManifestNotFound;
@@ -405,6 +407,7 @@ public class UiController {
     }
     mav.addObject("manifestStatuses", statuses);
     mav.addObject("manifestValidationUrl", Application.getRootUrl() + "/manifestValidation");
+    mav.addObject("manifestOverviewUrl", Application.getRootUrl() + "/manifestsOverview");
     return mav;
   }
 
@@ -642,6 +645,34 @@ public class UiController {
     );
 
     mav.addAllObjects(pebbleContext);
+
+    return mav;
+  }
+
+  /**
+   * Presents some information from manifests.
+   */
+  @RequestMapping(path = "/manifestsOverview", method = RequestMethod.GET)
+  public Object validateApiVersion(HttpServletResponse response) {
+    ModelAndView mav = new ModelAndView();
+    this.initializeMavCommons(mav);
+    mav.setViewName("manifestsOverview");
+    response.addHeader("Cache-Control", "public, max-age=300");
+
+    List<ManifestOverviewInfo> infos = new ArrayList<>();
+    for (ManifestSource source : this.sourceProvider.getAll()) {
+      ManifestOverviewInfo manifestOverviewInfo =
+          ManifestOverviewInfo.generateFromManifest(source.getUrl(), this.manifestRepository);
+      if (manifestOverviewInfo != null) {
+        infos.add(manifestOverviewInfo);
+      }
+    }
+    mav.addObject("manifestInfos", infos);
+
+    ImplementedApisCount implementedApisCount =
+        ImplementedApisCount.fromManifestOverviewInfos(infos);
+
+    mav.addObject("implementedApisCount", implementedApisCount);
 
     return mav;
   }

@@ -1,0 +1,128 @@
+{% extends "generic-with-toolbar" %}
+
+{% block pageTitle %}Manifests Overview{% endblock %}
+
+{% block main %}
+    <section class='ewp-section ewp-section-centered'>
+        <h2 class='ewp-section-title'>Manifests Overview</h2>
+
+        <p class='ewp-para'>Currently defined manifest sources and overview of their contents:</p>
+
+        <div class="ewpsrc">
+            <h2>Implemented APIs statistics:</h2>
+                {% for implementedApiCount in implementedApisCount.counts %}
+                <table class="ewpsrc ewpsrc__api_stats_table">
+                <tbody>
+                    <tr class="ewpsrc__item">
+                    <td colspan="3"><h4>{{ implementedApiCount.name }}</h4></td>
+                    </tr>
+                    <tr class="ewpsrc__item">
+                        <td>Version</td>
+                        <td>Hosts</td>
+                        <td>Institutions</td>
+                    </tr>
+                    {% for versionsCounts in implementedApiCount.counts %}
+                        <tr class="ewpsrc__item">
+                            <td>{{ versionsCounts.version }}</td>
+                            <td>{{ versionsCounts.hostsCount }}</td>
+                            <td>{{ versionsCounts.uniqueInstitutionsCount }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+                </table>
+                {% endfor %}
+        </div>
+
+        <div class='ewpsrc'>
+            <h2>Implemented APIs and covered HEIs:</h2>
+            <table class="ewpsrc">
+            {% for manifestOverviewInfo in manifestInfos %}
+                <h3><a href="{{ manifestOverviewInfo.url }}">{{ manifestOverviewInfo.url }}</a></h3>
+                {% for hostOverviewInfo in manifestOverviewInfo.hosts %}
+                <table class="ewpsrc__host_overview_info_table">
+                    <tr class="ewpsrc__item">
+                        <td colspan="5">
+                            <h4>HOST {{ loop.index + 1 }}</h4>
+                        </td>
+                    </tr>
+                    <tr class="ewpsrc__item">
+                        <td colspan="5">
+                            Admin emails: ({{ hostOverviewInfo.adminEmails.size }})
+                        </td>
+                    </tr>
+
+                    {% for email in hostOverviewInfo.adminEmails %}
+                        <tr class="ewpsrc__item">
+                            <td colspan="5">
+                                {{ email }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+
+                    <tr class="ewpsrc__item">
+                        <td colspan="5">
+                            Admin notes: ({{ hostOverviewInfo.adminNotes.size }})
+                        </td>
+                    </tr>
+                    {% for note in hostOverviewInfo.adminNotes %}
+                        <tr class="ewpsrc__item">
+                            <td colspan="5">
+                                {{ note }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+
+                    <tr class="ewpsrc__item">
+                        <td colspan="5">
+                            APIs implemented: ({{ hostOverviewInfo.apisImplemented.size }})
+                        </td>
+                    </tr>
+                    {% for apiImplementedInfo in hostOverviewInfo.apisImplemented %}
+                        <tr class="ewpsrc__item">
+                            <td>
+                                {{ apiImplementedInfo.name }}
+                            </td>
+                            <td>
+                                {{ apiImplementedInfo.version }}
+                            </td>
+                            <td colspan="3">
+                                {% for url in apiImplementedInfo.urls %}
+                                    {{ url }} {% if not loop.last%} <br/> {% endif %}
+                                {% endfor %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+
+                    {% set numCoveredHeiIds = hostOverviewInfo.coveredHeiIds.size %}
+
+                    <tr class="ewpsrc__item">
+                        <td colspan="5">
+                            Covered institutions: ({{ numCoveredHeiIds }})
+                        </td>
+                    </tr>
+                    {% for heiId in hostOverviewInfo.coveredHeiIds %}
+                        {% if loop.index % 5 == 0 %}
+                        <tr class="ewpsrc__item">
+                        {% endif %}
+                        <td>
+                         {{ heiId }}
+                        </td>
+                        {% if loop.index % 5  == 4 %}
+                        </tr>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% set rowsToFill = 5 - (numCoveredHeiIds % 5) %}
+                    {% for i in range(1, rowsToFill) %}
+                        <td></td>
+                        {% if loop.last %}
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                </table>
+                {% endfor %}
+            {% endfor %}
+            </table>
+        </div>
+    </section>
+{% endblock %}
