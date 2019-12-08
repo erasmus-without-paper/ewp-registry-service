@@ -8,15 +8,17 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import eu.erasmuswithoutpaper.registry.internet.Internet;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Service;
 
 import org.joox.Match;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 /**
@@ -25,6 +27,7 @@ import org.xml.sax.SAXException;
 @Service
 @ConditionalOnWebApplication
 public class UptimeChecker {
+  private static final Logger logger = LoggerFactory.getLogger(UptimeChecker.class);
 
   /**
    * Thrown by {@link UptimeChecker#refresh()} on refresh errors.
@@ -52,10 +55,18 @@ public class UptimeChecker {
   private String last30DaysUptimeRatio = null;
   private String last365DaysUptimeRatio = null;
 
+  private final int maxRetries;
+  private final int retryTimeoutSeconds;
+
   @Autowired
-  UptimeChecker(Internet internet, @Value("${app.uptimerobot.monitor-key}") String monitorApiKey) {
+  UptimeChecker(Internet internet,
+      @Value("${app.uptimerobot.monitor-key}") String monitorApiKey,
+      @Value("${app.uptimerobot.max-retries}") int maxRetries,
+      @Value("${app.uptimerobot.retry-timeout-seconds}") int retryTimeoutSeconds) {
     this.internet = internet;
     this.monitorApiKey = monitorApiKey;
+    this.maxRetries = maxRetries;
+    this.retryTimeoutSeconds = retryTimeoutSeconds;
   }
 
   /**
@@ -98,12 +109,7 @@ public class UptimeChecker {
     sb.append(this.monitorApiKey);
     sb.append("&customUptimeRatio=1-7-30-365");
     String url = sb.toString();
-    byte[] xml;
-    try {
-      xml = this.internet.getUrl(url);
-    } catch (IOException e) {
-      throw new CouldNotRefresh(e);
-    }
+    byte[] xml = loadPageWithRetries(url);
     Match doc;
     try {
       doc = $(new ByteArrayInputStream(xml));
@@ -115,5 +121,26 @@ public class UptimeChecker {
     this.last7DaysUptimeRatio = customRatios[1];
     this.last30DaysUptimeRatio = customRatios[2];
     this.last365DaysUptimeRatio = customRatios[3];
+  }
+
+  private byte[] loadPageWithRetries(String url) throws CouldNotRefresh {
+    int retry = 0;
+    while (true) {
+      try {
+        return this.internet.getUrl(url);
+      } catch (IOException e) {
+        logger.error("An error has occurred when fetching uptimerobot.com API.", e);
+        if (retry >= this.maxRetries) {
+          throw new CouldNotRefresh(e);
+        }
+
+        retry++;
+        try {
+          TimeUnit.SECONDS.sleep(this.retryTimeoutSeconds);
+        } catch (InterruptedException ex) {
+          //ignore
+        }
+      }
+    }
   }
 }
