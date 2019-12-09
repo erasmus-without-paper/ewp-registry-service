@@ -1,6 +1,7 @@
 package eu.erasmuswithoutpaper.registry;
 
 import java.util.Locale;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,7 +45,21 @@ public class Application {
    * @return True, if this is the official production site.
    */
   public static boolean isProductionSite() {
-    return getRootUrl().equals("https://registry.erasmuswithoutpaper.eu");
+    return isProductionSite(getRootUrl());
+  }
+
+  /**
+   * @return True, if urlToCheck is the official production site.
+   */
+  public static boolean isProductionSite(String urlToCheck) {
+    return Objects.equals(urlToCheck, "https://registry.erasmuswithoutpaper.eu");
+  }
+
+  /**
+   * @return True, if validator should be available on this website.
+   */
+  public static boolean isValidationEnabled() {
+    return !isProductionSite();
   }
 
   /**

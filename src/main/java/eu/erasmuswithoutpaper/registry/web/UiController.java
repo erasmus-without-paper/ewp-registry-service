@@ -315,6 +315,10 @@ public class UiController {
    */
   @RequestMapping(value = "/manifestValidation", params = "url", method = RequestMethod.GET)
   public Object manifestValidate(HttpServletResponse response, @RequestParam String url) {
+    if (!Application.isValidationEnabled()) {
+      return this.errorController.get404();
+    }
+
     ModelAndView mav = new ModelAndView();
     this.initializeMavCommons(mav);
     mav.setViewName("manifestValidation");
@@ -408,6 +412,7 @@ public class UiController {
     mav.addObject("manifestStatuses", statuses);
     mav.addObject("manifestValidationUrl", Application.getRootUrl() + "/manifestValidation");
     mav.addObject("manifestOverviewUrl", Application.getRootUrl() + "/manifestsOverview");
+    mav.addObject("isValidatorEnabled", Application.isValidationEnabled());
     return mav;
   }
 
@@ -593,6 +598,10 @@ public class UiController {
    */
   @RequestMapping(path = "/validateApi", method = RequestMethod.POST)
   public Object validateApiVersion(@RequestBody ValidationRequestBody requestBody) {
+    if (!Application.isValidationEnabled()) {
+      return this.errorController.get404();
+    }
+
     ModelAndView mav = new ModelAndView();
     this.initializeMavCommons(mav);
     mav.setViewName("validationResult");
