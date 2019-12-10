@@ -16,7 +16,7 @@ public class ExternalValidatorKeyStore extends ValidatorKeyStore {
    * Constructor.
    */
   public ExternalValidatorKeyStore(RegistryClient registryClient) {
-    super(false);
+    super();
     this.registryClient = registryClient;
     this.myCredentialsDate = null;
     this.myClientRsaKeyPair = this.generateKeyPair();

@@ -285,7 +285,7 @@ public class IMobilityTorsIndexValidatorTest extends IMobilityTorsValidatorTestB
       }
     };
     this.validator.getValidatorKeyStoreSet().setSecondaryKeyStore(
-        new ValidatorKeyStore(false)
+        new ValidatorKeyStore()
     );
     TestValidationReport report = this.getRawReport(service);
     assertThat(report).containsFailure(

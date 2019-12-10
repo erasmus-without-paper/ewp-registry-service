@@ -45,9 +45,18 @@ public class ValidatorKeyStore {
   protected List<String> myCoveredHeiIDs;
 
   /**
-   * Generates credential and certificates to be used by validators and published in manifest.
+   * Generates credentials and certificates to be used by validators and published in the manifest.
    */
-  public ValidatorKeyStore(boolean addValidatorHeiIdsToCoveredHeiIds) {
+  public ValidatorKeyStore() {
+    this(null);
+  }
+  /**
+   * Generates credentials and certificates to be used by validators and published in the manifest.
+   * Provided HEI IDs will be present in covered-institutions list of the manifest.
+   *
+   * @param coveredHeiIds HEI IDs to be added as covered-institutions in the manifest.
+   */
+  public ValidatorKeyStore(List<String> coveredHeiIds) {
     this.myCredentialsDate = new Date();
     this.myClientRsaKeyPair = this.generateKeyPair();
     this.myServerRsaKeyPair = this.generateKeyPair();
@@ -56,11 +65,8 @@ public class ValidatorKeyStore {
     this.myUnregisteredKeyPair = this.generateKeyPair();
 
     this.myCoveredHeiIDs = new ArrayList<>();
-    if (addValidatorHeiIdsToCoveredHeiIds) {
-      // Add artificial HEIs that are used by validators.
-      for (int i = 1; i <= 2; i++) {
-        this.myCoveredHeiIDs.add("validator-hei0" + i + ".developers.erasmuswithoutpaper.eu");
-      }
+    if (coveredHeiIds != null) {
+      this.myCoveredHeiIDs.addAll(coveredHeiIds);
     }
   }
 
