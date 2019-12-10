@@ -386,18 +386,18 @@
                 <configuration>
                     <packageName>eu.erasmuswithoutpaper.registry.validators.types</packageName>
                     <sources>
-                        <source>src/main/resources/schemas/ewp-specs-api-institutions-v2.1.0/response.xsd</source>
-                        <source>src/main/resources/schemas/ewp-specs-api-ounits-v2.1.0/response.xsd</source>
-                        <source>src/main/resources/schemas/ewp-specs-api-course-replication-v1.0.0-rc9/response.xsd</source>
-                        <source>src/main/resources/schemas/ewp-specs-api-iias-v2.1.0/endpoints/index-response.xsd</source>
-                        <source>src/main/resources/schemas/ewp-specs-api-iias-v2.1.0/endpoints/get-response.xsd</source>
-                        <source>src/main/resources/schemas/ewp-specs-api-discovery-v4.1.1/manifest.xsd</source>
-                        <source>src/main/resources/schemas/ewp-specs-api-discovery-v5.0.0/manifest.xsd</source>
-                        <source>src/main/resources/schemas/ewp-specs-api-mt-projects-v0.1.0/response.xsd</source>
-                        <source>src/main/resources/schemas/ewp-specs-api-mt-institutions-v0.1.0/response.xsd</source>
-                        <source>src/main/resources/schemas/ewp-specs-api-mt-dictionaries-v0.1.0/response.xsd</source>
-                        <source>src/main/resources/schemas/ewp-specs-api-imobility-tors-v0.7.0/endpoints/index-response.xsd</source>
-                        <source>src/main/resources/schemas/ewp-specs-api-imobility-tors-v0.7.0/endpoints/get-response.xsd</source>
+                        <source>src/main/resources/jaxb-schemas/ewp-specs-api-institutions-v2.1.0/response.xsd</source>
+                        <source>src/main/resources/jaxb-schemas/ewp-specs-api-ounits-v2.1.0/response.xsd</source>
+                        <source>src/main/resources/jaxb-schemas/ewp-specs-api-course-replication-v1.0.0-rc9/response.xsd</source>
+                        <source>src/main/resources/jaxb-schemas/ewp-specs-api-iias-v2.1.0/endpoints/index-response.xsd</source>
+                        <source>src/main/resources/jaxb-schemas/ewp-specs-api-iias-v2.1.0/endpoints/get-response.xsd</source>
+                        <source>src/main/resources/jaxb-schemas/ewp-specs-api-discovery-v4.1.1/manifest.xsd</source>
+                        <source>src/main/resources/jaxb-schemas/ewp-specs-api-discovery-v5.0.0/manifest.xsd</source>
+                        <source>src/main/resources/jaxb-schemas/ewp-specs-api-mt-projects-v0.1.0/response.xsd</source>
+                        <source>src/main/resources/jaxb-schemas/ewp-specs-api-mt-institutions-v0.1.0/response.xsd</source>
+                        <source>src/main/resources/jaxb-schemas/ewp-specs-api-mt-dictionaries-v0.1.0/response.xsd</source>
+                        <source>src/main/resources/jaxb-schemas/ewp-specs-api-imobility-tors-v0.7.0/endpoints/index-response.xsd</source>
+                        <source>src/main/resources/jaxb-schemas/ewp-specs-api-imobility-tors-v0.7.0/endpoints/get-response.xsd</source>
                     </sources>
                     <xjbSources>
                         <xjbSource>src/main/resources/schema-bindings/manifests.xjb</xjbSource>

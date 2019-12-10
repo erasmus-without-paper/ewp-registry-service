@@ -32,6 +32,7 @@
                 <learningOpportunitySpecification>
                     <identifier type="ewp-los-id">CR/19560ed8-5183-4842-9bb0-2b7e23f56522</identifier>
                     <title>The importance of &lt;b<![CDATA[r> in HTML]]></title>
+                    <iscedCode>0612</iscedCode>
                     <specifies>
                         <learningOpportunityInstance>
                             <!--
@@ -51,12 +52,12 @@
                     </specifies>
                 </learningOpportunitySpecification>
                 <issueDate>2015-10-31T07:00:00+02:00</issueDate>
+                <attachment>
+                    <title xml:lang="en">Transcript of Records</title>
+                    <type>Transcript of Records</type>
+                    <content>data:application/pdf;base64,iiNhz6QfDnnDybjHLBF2...</content>
+                </attachment>
             </report>
-            <attachment>
-                <title xml:lang="en">"Global" attachment</title>
-                <type>EMREX transcript</type>
-                <content>data:application/pdf;base64,iiNhz6QfDnnDybjHLBF2...</content>
-            </attachment>
             <Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
                 <SignedInfo>
                     <CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
@@ -92,5 +93,15 @@
                 </KeyInfo>
             </Signature>
         </elmo>
+        <gradeConversionTable>
+            <iscedTable iscedCode="0612">
+                <gradeFrequency label="F" percentage="0.8"/>
+                <gradeFrequency label="E" percentage="24.7"/>
+                <gradeFrequency label="D" percentage="26.3"/>
+                <gradeFrequency label="C" percentage="36.3"/>
+                <gradeFrequency label="B" percentage="9.9"/>
+                <gradeFrequency label="A" percentage="2.0"/>
+            </iscedTable>
+        </gradeConversionTable>
     </tor>
 </imobility-tors-get-response>

@@ -27,14 +27,14 @@
             <xs:documentation>
                 This element uniquely identifies the TLS Client Certificate Authentication method, as
                 described here:
-                
+
                 https://github.com/erasmus-without-paper/ewp-specs-sec-cliauth-tlscert
-                
+
                 It can be used in various contexts, whenever someone needs to identify this
                 particular method of client authentication. In particular, it is often seen
                 together with `HttpSecurityOptions` data type described here:
-                
-                https://github.com/erasmus-without-paper/ewp-specs-sec-intro/blob/stable-v2/schema.md
+
+                https://github.com/erasmus-without-paper/ewp-specs-sec-intro/blob/stable-v2/schema.xsd
             </xs:documentation>
         </xs:annotation>
         <xs:complexType>

@@ -2,13 +2,13 @@
 <jaxb:bindings version="2.0" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
    xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc" xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
-   <jaxb:bindings schemaLocation="../schemas/ewp-specs-api-discovery-v4.1.1/manifest.xsd" node="/xs:schema">
+   <jaxb:bindings schemaLocation="../jaxb-schemas/ewp-specs-api-discovery-v4.1.1/manifest.xsd" node="/xs:schema">
       <jaxb:bindings node="//xs:element[@name='manifest']">
          <jaxb:class name="ManifestV4" />
       </jaxb:bindings>
    </jaxb:bindings>
 
-   <jaxb:bindings schemaLocation="../schemas/ewp-specs-api-discovery-v5.0.0/manifest.xsd">
+   <jaxb:bindings schemaLocation="../jaxb-schemas/ewp-specs-api-discovery-v5.0.0/manifest.xsd">
       <jaxb:bindings node="/xs:schema/xs:element[@name='manifest']">
          <jaxb:class name="ManifestV5" />
       </jaxb:bindings>

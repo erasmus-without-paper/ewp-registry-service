@@ -71,7 +71,7 @@ def get_repositories_list():
 
         repo_url = repo['git_url']
         result.append((repo_name, repo_url))
-    return result
+    return list(sorted(result))
 
 
 def get_tag_version(tag):
@@ -80,7 +80,7 @@ def get_tag_version(tag):
 
 
 def git_list_files(repo):
-    return repo.git.ls_tree("HEAD", name_only=True, r=True, full_tree=True).split('\n')
+    return list(sorted(repo.git.ls_tree("HEAD", name_only=True, r=True, full_tree=True).split('\n')))
 
 
 def get_tag_dict(repos):
@@ -310,11 +310,13 @@ def create_copy_examples_entries(name, version):
 def create_index_entries(tags_dict):
     index_entries_result = []
     copy_entries_result = []
-    for name, versions_dict in tags_dict.items():
+    for name in sorted(tags_dict.keys()):
+        versions_dict = tags_dict[name]
         if len(versions_dict) > 1 and 0 in versions_dict:
             del versions_dict[0]
 
-        for major_version, versions in versions_dict.items():
+        for major_version in sorted(versions_dict.keys()):
+            versions = versions_dict[major_version]
             print("Creating index for", name, versions[-1])
             index_entries, copy_entries = process_repo_version(name, versions[-1])
             index_entries_result.extend(index_entries)

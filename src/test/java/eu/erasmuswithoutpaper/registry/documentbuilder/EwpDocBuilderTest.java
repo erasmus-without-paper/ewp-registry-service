@@ -243,32 +243,9 @@ public class EwpDocBuilderTest extends WRTest {
 
           try {
 
-            /*
-             * Verify if all elements has explicit minOccurs and maxOccurs values. These attributes
-             * have sensible defaults, but - based on experience - missing values often indicate
-             * that a designer didn't (yet) decide on proper values. That's why in EWP we want them
-             * declared explicitly.
-             */
-
-            if (parentName.equals("schema")) {
-              /*
-               * This element is a direct child of xs:schema, so it cannot have minOccurs nor
-               * maxOccurs attributes.
-               */
-            } else if (parentName.equals("choice")) {
-              if (minOccurs.isEmpty() && maxOccurs.isEmpty()) {
-                /* Correct. */
-              } else {
-                fail("We want all xs:choice children to NOT have minOccurs nor maxOccurs. "
-                    + "If you need them, then use xs:sequence.");
-              }
+            if (parentName.equals("schema") || parentName.equals("choice")) {
+              /* We skip checks for direct descendants of schema and choice elements. */
             } else {
-              if (minOccurs.isEmpty() || maxOccurs.isEmpty()) {
-                fail("Elements should declare minOccurs and maxOccurs explicitly.");
-              } else {
-                /* Correct. */
-              }
-
               /* Verify if all elements with optional xml:lang attribute are repeatable. */
 
               if (type.contains("WithOptionalLang") && (!maxOccurs.equals("unbounded"))) {

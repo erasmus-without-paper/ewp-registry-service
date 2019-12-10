@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xml="http://www.w3.org/XML/1998/namespace"
+    xmlns:ewp="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
+    elementFormDefault="qualified"
+
+    targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-api-mt-mobilities/blob/stable-v1/endpoints/status-response.xsd"
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-mt-mobilities/blob/stable-v1/endpoints/status-response.xsd">
+
+    <xs:import
+        schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-architecture/stable-v1/common-types.xsd"
+        namespace="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd" />
+
+    <xs:annotation>
+        <xs:documentation>
+            This schema is a part of the Erasmus Without Paper project. Before you start using it, make
+            sure you have read the general rules described here:
+
+            http://developers.erasmuswithoutpaper.eu/
+        </xs:documentation>
+    </xs:annotation>
+
+    <xs:element name="mt-mobilities-status-response">
+        <xs:annotation>
+            <xs:documentation>
+                This describes the format of the response returned by the `status` endpoint of EWP
+                Mobility Tool+ Mobilities API.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="group-status" minOccurs="1" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>
+                            Status of the whole report.
+                        </xs:documentation>
+                    </xs:annotation>
+                    <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                            <xs:enumeration value="PENDING">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        Report is still being processed. Caller should repeat status
+                                        request after some time.
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:enumeration>
+                            <xs:enumeration value="ACCEPTED">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        The whole report has been accepted.
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:enumeration>
+                            <xs:enumeration value="REJECTED">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        The whole report has been rejected due to some global error or
+                                        errors in every mobility.
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:enumeration>
+                            <xs:enumeration value="PARTIAL">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        Some of the mobilities present in the report has been accepted and
+                                        some of them has been rejected.
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:enumeration>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:element>
+                <xs:element name="mobility" minOccurs="0" maxOccurs="unbounded">
+                    <xs:annotation>
+                        <xs:documentation>
+                            Statuses of individual mobilities from the report. If the group status is
+                            PARTIAL, than server SHOULD return one such element for every `mobility_id` from the request
+                            or for all mobilities from the report, if the `mobility_id` parameters are not given.
+                        </xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="id" type="ewp:AsciiPrintableIdentifier" minOccurs="1"
+                                maxOccurs="1">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        Identifier of the mobility, as assigned by the sending HEI and
+                                        sent in the report request.
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                            <xs:element name="status" minOccurs="1" maxOccurs="1">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        Status of the mobility.
+                                    </xs:documentation>
+                                </xs:annotation>
+                                <xs:simpleType>
+                                    <xs:restriction base="xs:string">
+                                        <xs:enumeration value="PENDING">
+                                            <xs:annotation>
+                                                <xs:documentation>Mobility is still being processed. Caller should
+                                                    repeat status request after some time.
+                                                </xs:documentation>
+                                            </xs:annotation>
+                                        </xs:enumeration>
+                                        <xs:enumeration value="ADDED">
+                                            <xs:annotation>
+                                                <xs:documentation>
+                                                    Mobility has been successfully added. Mobility data is
+                                                    complete and correct.
+                                                </xs:documentation>
+                                            </xs:annotation>
+                                        </xs:enumeration>
+                                        <xs:enumeration value="ADDED_DRAFT">
+                                            <xs:annotation>
+                                                <xs:documentation>
+                                                    Mobility has been added as a draft. Minimum
+                                                    requirements have been met, but the mobility data is incomplete.
+                                                </xs:documentation>
+                                            </xs:annotation>
+                                        </xs:enumeration>
+                                        <xs:enumeration value="UPDATED">
+                                            <xs:annotation>
+                                                <xs:documentation>
+                                                    Mobility has been successfully updated. Mobility data
+                                                    is complete and correct.
+                                                </xs:documentation>
+                                            </xs:annotation>
+                                        </xs:enumeration>
+                                        <xs:enumeration value="UPDATED_DRAFT">
+                                            <xs:annotation>
+                                                <xs:documentation>
+                                                    Mobility has been updated. Minimum requirements have
+                                                    been met, but the mobility data is still incomplete.
+                                                </xs:documentation>
+                                            </xs:annotation>
+                                        </xs:enumeration>
+                                        <xs:enumeration value="REJECTED">
+                                            <xs:annotation>
+                                                <xs:documentation>
+                                                    Mobility data has been rejected due to some errors and
+                                                    has not been saved. Details are provided in the user-message
+                                                    element.
+                                                </xs:documentation>
+                                            </xs:annotation>
+                                        </xs:enumeration>
+                                    </xs:restriction>
+                                </xs:simpleType>
+                            </xs:element>
+                            <xs:element name="user-message" type="ewp:StringWithOptionalLang" minOccurs="0"
+                                maxOccurs="unbounded">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        Reasons of the rejection. Server SHOULD provide at least one
+                                        reason if the mobility status is REJECTED.
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

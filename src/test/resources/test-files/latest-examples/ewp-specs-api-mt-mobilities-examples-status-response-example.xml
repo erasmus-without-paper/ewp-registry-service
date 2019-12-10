@@ -1,0 +1,20 @@
+<mt-mobilities-status-response
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-mt-mobilities/blob/stable-v1/endpoints/status-response.xsd"
+    xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        https://github.com/erasmus-without-paper/ewp-specs-api-mt-mobilities/blob/stable-v1/endpoints/status-response.xsd
+        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-mt-mobilities/master/endpoints/status-response.xsd
+     ">
+
+    <group-status>PARTIAL</group-status>
+    <mobility>
+        <id>6614310B5BC54AB4326D0B501E0A8349</id>
+        <status>ADDED</status>
+    </mobility>
+    <mobility>
+        <id>5653496075EF1E2FE0530B501E0A46A3</id>
+        <status>REJECTED</status>
+        <user-message xml:lang="en">Mandatory conditional field not provided</user-message>
+    </mobility>
+
+</mt-mobilities-status-response>
