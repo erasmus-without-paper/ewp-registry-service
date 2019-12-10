@@ -64,7 +64,10 @@ public class ConsoleValidator {
         "  PARAMETERS:",
         "  General:",
         "    -h, --help - print this message and exit.",
-        "    --manifest=<arg> - url of manifest to test, required"
+        "    --manifest=<arg> - url of manifest to test, required",
+        "    --registry-domain=<domain> - domain of registry to use, without https://",
+        "                                 and trailing slash.",
+        "                                 Default: dev-registry.erasmuswithoutpaper.eu"
     );
 
     List<String> keysParams = CryptoParameters.getCryptoParametersHelpText();
@@ -152,8 +155,10 @@ public class ConsoleValidator {
     return args.containsOption("help") || args.containsOption("h");
   }
 
-  private void validate(ApplicationArguments args, TextIO console, TextTerminal<?> textTerminal)
+  private void validate(ApplicationArguments args, TextIO console, TextTerminal<?> textTerminal,
+      String registryDomain)
       throws ApplicationArgumentException, IOException, KeyStoreUtilsException {
+    textTerminal.printf("Using registry located at https://%s/\n", registryDomain);
     final String manifestUrl = ApplicationParametersUtils.readParameter(args, "manifest", "url");
 
     readKeysFromArguments(args, textTerminal);
@@ -207,14 +212,17 @@ public class ConsoleValidator {
       }
 
       for (HttpSecurityDescription security : securities) {
-        runTestsAndGenerateReport(entry, semanticVersion, security, args, textTerminal, console);
+        runTestsAndGenerateReport(
+            entry, semanticVersion, security, args, registryDomain, textTerminal, console
+        );
       }
     }
   }
 
   private void runTestsAndGenerateReport(ManifestApiEntry entry, SemanticVersion semanticVersion,
-      HttpSecurityDescription security, ApplicationArguments args, TextTerminal<?> textTerminal,
-      TextIO console) throws ApplicationArgumentException, IOException {
+      HttpSecurityDescription security, ApplicationArguments args, String registryDomain,
+      TextTerminal<?> textTerminal, TextIO console)
+      throws ApplicationArgumentException, IOException {
 
     textTerminal.printf("Testing API %s, version %s, security %s\n",
         ApplicationParametersUtils.buildApiNameParameter(entry), semanticVersion.toString(),
@@ -238,7 +246,7 @@ public class ConsoleValidator {
     textTerminal.printf("Finished tests at %s\n", getUtcDateString(new Date()));
 
     String htmlReport = ReportUtils.generateHtmlReport(
-        report, validationInfoParameters, docBuilder
+        report, validationInfoParameters, docBuilder, registryDomain
     );
     String reportSummary = ReportUtils.generateReportSummary(report);
     textTerminal.println(reportSummary);
@@ -278,7 +286,8 @@ public class ConsoleValidator {
       ValidatorKeyStoreSet keyStoreSet,
       ManifestConverter converter,
       XmlFormatter xmlFormatter,
-      RegistryClient registryClient) {
+      RegistryClient registryClient,
+      String registryDomain) {
     final TextIO console = TextIoFactory.getTextIO();
     final TextTerminal<?> textTerminal = console.getTextTerminal();
     this.apiValidatorsManager = apiValidatorsManager;
@@ -297,7 +306,7 @@ public class ConsoleValidator {
     }
 
     try {
-      validate(args, console, textTerminal);
+      validate(args, console, textTerminal, registryDomain);
     } catch (ApplicationArgumentException | IOException | KeyStoreUtilsException e) {
       textTerminal.println(e.getMessage());
       textTerminal.println("\nUse --help parameter to get help.");

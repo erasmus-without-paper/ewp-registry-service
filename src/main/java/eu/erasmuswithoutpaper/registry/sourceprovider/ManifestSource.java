@@ -70,7 +70,7 @@ public class ManifestSource {
 
     try {
       URI realUri = new URI(url);
-      if (!realUri.getScheme().equalsIgnoreCase("https")) {
+      if (realUri.getScheme() == null || !realUri.getScheme().equalsIgnoreCase("https")) {
         throw new RuntimeException("Only HTTPS scheme is allowed for manifest sources");
       }
     } catch (URISyntaxException e) {

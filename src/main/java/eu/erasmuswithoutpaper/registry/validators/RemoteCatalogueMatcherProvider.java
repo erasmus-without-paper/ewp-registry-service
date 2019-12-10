@@ -10,9 +10,9 @@ import java.net.URL;
 import javax.xml.parsers.DocumentBuilder;
 
 import eu.erasmuswithoutpaper.registry.common.Utils;
+import eu.erasmuswithoutpaper.registry.consoleapplication.RegistryDomainProvider;
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.stereotype.Service;
 
@@ -27,16 +27,10 @@ public class RemoteCatalogueMatcherProvider implements CatalogueMatcherProvider 
 
   /**
    * Returns {@link Match}er that can be used to match against contents of the catalogue.
-   *
-   * @param registryDomain
-   *     url where the catalogue can be found, set ${app.registry-domain} to change it.
    */
   @Autowired
-  public RemoteCatalogueMatcherProvider(
-      @Value("${app.registry-domain:#{null}}") String registryDomain) {
-    if (registryDomain == null) {
-      registryDomain = "dev-registry.erasmuswithoutpaper.eu";
-    }
+  public RemoteCatalogueMatcherProvider(RegistryDomainProvider registryDomainProvider) {
+    String registryDomain = registryDomainProvider.getRegistryDomain();
 
     try {
       this.catalogueUrl = new URL("https://" + registryDomain + "/catalogue-v1.xml");

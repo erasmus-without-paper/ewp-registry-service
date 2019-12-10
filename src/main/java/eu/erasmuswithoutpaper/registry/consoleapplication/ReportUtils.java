@@ -49,7 +49,7 @@ public class ReportUtils {
    */
   public static String generateHtmlReport(List<ValidationStepWithStatus> steps,
       HtmlValidationReportFormatter.ValidationInfoParameters validationInfoParameters,
-      EwpDocBuilder docBuilder) {
+      EwpDocBuilder docBuilder, String registryDomain) {
     HtmlValidationReportFormatter htmlValidationReportFormatter =
         new HtmlValidationReportFormatter(docBuilder);
 
@@ -58,8 +58,8 @@ public class ReportUtils {
         validationInfoParameters
     );
 
-    String registryDomain = "https://dev-registry.erasmuswithoutpaper.eu";
-    pebbleContext.put("baseUrl", registryDomain);
+    String registryUrl = "https://" + registryDomain;
+    pebbleContext.put("baseUrl", registryUrl);
     pebbleContext.put("isUsingDevDesign", true);
 
     ClasspathLoader classpathLoader = new ClasspathLoader();
