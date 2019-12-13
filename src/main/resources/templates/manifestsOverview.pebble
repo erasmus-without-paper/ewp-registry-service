@@ -32,6 +32,32 @@
                 </table>
                 {% endfor %}
         </div>
+        <div class='ewpsrc'>
+            <h2>Duplicates in EWP network:</h2>
+            {% if duplicatesInfo.map is empty %}
+                <div style="font-weight: bolder">
+                    No duplicates.
+                </div>
+            {% else %}
+                {% for entry in duplicatesInfo.map %}
+                    {% set key = entry.key %}
+                    {% set value = entry.value %}
+                    <table class="ewpsrc ewpsrc__host_overview_info_table">
+                        <tr class="ewpsrc__item">
+                            <td colspan="2">{{ key.heiId }}</td>
+                            <td colspan="3"> API: {{ key.apiName }}</td>
+                        </tr>
+                        {% for implementationInfo in value %}
+                            <tr class="ewpsrc__item">
+                                <td colspan="3"> {{ implementationInfo.manifestUrl }} </td>
+                                <td colspan="1"> Host: {{ implementationInfo.hostId }} </td>
+                                <td colspan="1"> Version: {{ implementationInfo.version }} </td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                {% endfor %}
+            {% endif %}
+        </div>
 
         <div class='ewpsrc'>
             <h2>Implemented APIs and covered HEIs:</h2>

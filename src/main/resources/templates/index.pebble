@@ -103,11 +103,16 @@
                 {% endif %}
             </div>
             {% if adminEmails != null %}
-                <div class='ewp-header__footer ewp-footer'>
+                <div class='ewp-header__footer ewp-footer ewp-footer-right'>
                     Contact:
                     {% for adminEmail in adminEmails %}
                         <a href="mailto:{{ adminEmail }}">{{ adminEmail}}</a>
                     {% endfor %}
+                </div>
+            {% endif %}
+            {% if manifestOverviewUrl != null %}
+                <div class='ewp-header__footer ewp-footer ewp-footer-left'>
+                    <a href="{{ manifestOverviewUrl  }}">Manifests Overview</a>
                 </div>
             {% endif %}
         </div>

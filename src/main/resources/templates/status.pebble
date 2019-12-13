@@ -29,7 +29,5 @@
         </table>
 
         <p class='ewp-para'>(write us to add yours)</p>
-
-        <p class='ewp-para'><a href="{{ manifestOverviewUrl }}">Manifests Overview</a></p>
     </section>
 {% endblock %}

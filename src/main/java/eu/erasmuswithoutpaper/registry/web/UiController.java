@@ -16,6 +16,7 @@ import eu.erasmuswithoutpaper.registry.documentbuilder.BuildError;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildParams;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildResult;
 import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
+import eu.erasmuswithoutpaper.registry.manifestoverview.ApiForHeiImplementationMapping;
 import eu.erasmuswithoutpaper.registry.manifestoverview.ImplementedApisCount;
 import eu.erasmuswithoutpaper.registry.manifestoverview.ManifestOverviewInfo;
 import eu.erasmuswithoutpaper.registry.notifier.NotifierService;
@@ -270,6 +271,7 @@ public class UiController {
     mav.addObject("statusUrl", Application.getRootUrl() + "/status");
     mav.addObject("coverageUrl", Application.getRootUrl() + "/coverage");
     mav.addObject("schemaValidatorUrl", Application.getRootUrl() + "/schemaValidator");
+    mav.addObject("manifestOverviewUrl", Application.getRootUrl() + "/manifestsOverview");
     mav.addObject("uptime24", this.uptimeChecker.getLast24HoursUptimeRatio());
     mav.addObject("uptime7", this.uptimeChecker.getLast7DaysUptimeRatio());
     mav.addObject("uptime30", this.uptimeChecker.getLast30DaysUptimeRatio());
@@ -411,7 +413,6 @@ public class UiController {
     }
     mav.addObject("manifestStatuses", statuses);
     mav.addObject("manifestValidationUrl", Application.getRootUrl() + "/manifestValidation");
-    mav.addObject("manifestOverviewUrl", Application.getRootUrl() + "/manifestsOverview");
     mav.addObject("isValidatorEnabled", Application.isValidationEnabled());
     return mav;
   }
@@ -681,7 +682,13 @@ public class UiController {
     ImplementedApisCount implementedApisCount =
         ImplementedApisCount.fromManifestOverviewInfos(infos);
 
+    ApiForHeiImplementationMapping apiForHeiImplementationMapping =
+        ApiForHeiImplementationMapping.fromManifestOverviewInfos(infos);
+    ApiForHeiImplementationMapping duplicates =
+        apiForHeiImplementationMapping.getMappingWithDuplicates();
+
     mav.addObject("implementedApisCount", implementedApisCount);
+    mav.addObject("duplicatesInfo", duplicates);
 
     return mav;
   }

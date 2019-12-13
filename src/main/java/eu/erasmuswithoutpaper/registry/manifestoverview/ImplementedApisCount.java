@@ -17,7 +17,7 @@ public class ImplementedApisCount {
       List<ManifestOverviewInfo> overviewInfos) {
     ImplementedApisCount result = new ImplementedApisCount();
     for (ManifestOverviewInfo manifest : overviewInfos) {
-      int hostId = 0;
+      int hostId = 1;
 
       for (HostOverviewInfo host : manifest.hosts) {
         String hostName = manifest.url + hostId;

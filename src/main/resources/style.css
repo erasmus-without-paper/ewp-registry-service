@@ -248,10 +248,16 @@ a:hover {
     grid-area: footer;
 }
 .ewp-footer {
-    text-align: right;
     opacity: 0.5;
     font-style: italic;
     margin-right: 20px;
+    display: inline;
+}
+.ewp-footer-right {
+    text-align: right;
+}
+.ewp-footer-left {
+    text-align: left;
 }
 
 
