@@ -1,0 +1,105 @@
+How to use EWP API Validator?
+
+Content
+A Test configurations
+
+A.1 Developer uses Validator to test own implementation but with the use of the public installation of the EWP registry (https://dev-registry.erasmuswithoutpaper.eu)
+A.2 Developer uses Validator to test own implementation but with the use of the local installation of the EWP registry
+A.2.1 Developer uses Validator run from console
+A.2.2 Developer uses on-line Validator (run from the browser)
+A.3 The EWP Network administrator uses Validator to test a new partner before accepting him for production
+
+B Additional explanations
+=====================================================================
+A Test configurations
+
+EWP API Validator can be used in different test configurations and for different purposes.
+Scenarios A.1 and A.2 are for the developer, A.3 is for the EWP Network administrator.
+Scenarios A.1 and A.3 use public registry, A.2 uses local registry.
+
+=====================================================================
+A.1 Developer uses Validator to test own implementation but with the use of the public installation of the EWP registry (https://dev-registry.erasmuswithoutpaper.eu).
+
+S.1 Developer D chooses one of his partners, whose hei_id is P. Developer should have some data for P in his database (agreements, mobilities etc.)
+-->S.2 In his database D changes P to V where V denotes hei_id of the public Validator (e.g. validator-hei01). From this time on V will run on behalf of P. 
+S.3 D runs his tests using public on-line Validator available at https://dev-registry.erasmuswithoutpaper.eu.
+S.4 When the tests are done, D changes back V to P.
+
+Comments
+C.1 Since V pretends to be P, P will not be able to test D and D will not be able to test P (since we use public infrastructure). This will, however, last only as long as D runs his tests. This is public DEV environment, anyway.
+C.2 Since D uses public infrastructure data of P obtained from the database of D will be available to V, i.e. publicly. D should not use this test scenario if the private data is not properly anonymized. 
+C.3 Similar scenario is used by usosadm.demo.usos.edu.pl and usosadm-hei.demo.usos.edu.pl - two DEMO installations of the University of Warsaw. One of them pretends to be UW, the other pretends to be one of the partners of UW. They can be used in public environment since data are properly anonymized.
+
+=====================================================================
+A.2 Developer uses Validator to test own implementation but with the use of the local installation of the EWP registry.
+=====================================================================
+A.2.1 Developer uses Validator run from console
+
+S.1 Developer D chooses one of his partners, whose hei_id is P. Developer should have some data for P in his database (agreements, mobilities etc.)
+S.2 D installs local registry (scripts are available from the EWP Network administrator).
+S.3 D generates new pair of keys KP (KP_pub and KP_priv), which will be used as keys of P in the local registry.
+S.4 D adds to the local registry information that partner P is using KP_pub.
+D creates new manifest with a host having P in institutions-covered and using key KP_pub. This manifest has to be added to the list of manifests supported by the local registry and use HTTPS (e.g. pastebin.com).
+S.5 D changes in his local client installation address of the registry from https://dev-registry.erasmuswithoutpaper.eu to URL of the local registry.
+S.6 D tests his installation as P using Validator run from console.
+
+Comments
+C.1 No test data will be publicly exposed so this scenario can be used in situations when we can not trust that data is properly anonymized.
+=====================================================================
+A.2.2 Developer uses on-line Validator (run from the browser)
+
+S.1 D chooses P, as before.
+-->S.2 D installs local registry delivering P as parameter.
+Registry by default adds validator-hei01 to its manifest, but will also add hei-id=P and this way will gain access to data of P.
+S.3 D changes in his local client installation address of the registry from https://dev-registry.erasmuswithoutpaper.eu to URL of the local registry. 
+S.4 D tests its installation as P using on-line Validator (run from a browser).
+
+Comments
+C.1 No test data will be publicly exposed so this scenario can be used in situations when we can not trust that data is properly anonymized.
+C.2 Developer may prefer scenario I.2.2 over I.2.1 since test results are easily reached from the browser, no need to e.g. copy files with the results to the location where the browser can be run.
+
+=====================================================================
+A.3 The EWP Network administrator uses Validator to test a new partner before accepting him for production.
+
+Let P be the tested partner.
+
+A.3.1 Administrator can use on-line public Validator to test public APIs.
+
+A.3.2 How to test private APIs, the possible options are:
+
+O.1 Private APIs of P are tested by partner P2, who can run Validator from console using his own keys and manifest of P. P2 has to deliver test report.
+--> który to punkt w scenariuszach powy¿ej?
+--> O co chodzi w tym 'manifest of P'?
+O.2 P delivers a report from tests run in local installation (as described in A.2.
+O.3 If P uses A.1 and his data is available to on-line Validator, Administrator can also test using on-line Validator.
+
+=====================================================================
+B. Additional explanations
+
+1 What are the requirements concerning test tools?
+1.1 Minimize effort on the side of a developer/EWP Network administrator.
+1.2 Cover the largest possible number of scenarios (APIs).
+1.3 Find all scenarios when data confidentiality is compromised. 
+1.4 Do not compromise data when running tests.
+
+2 What is tested?
+2.1 That partner's response is compliant with the XSD schema and specification (available in GitHub).
+2.2 That partner does not expose confidential data to all partenrs in the EWP Network.
+2.3 That partner properly implements communication protocols of the EWP Network.
+
+3 What is not tested?
+
+3.1 Requests
+Partner P can test its implementation of requests by sending them to another partner P2 that has been checked by the Validator. Validator confirmed that the P2 implementation rejects invalid requests, so it can be used as a reference. In addition, the partner sending incorrect requests will not be a problem for other partners in the network, only he will have a problem with access to data. 
+
+3.2 Meaningfulness of returned data. We are not able to check whether the partner's responses contain meaningful data, e.g. whether the list he returned is complete and contains all the organizational units. We have no knowledge that would allow us to assess the completeness and sense of data. Each developer must write such tests on his own.
+
+3.3 CNRs
+We can create tests that will send a CNR message to a partner. This will give us information whether the implementation of the partner does not 'roll over' when it receives such a request, whether it verifies the sender, accepts correct and rejects incorrect requests.
+
+We will not be able to check the response to this request because it is not defined in the specification in any way. The correct behavior of the partner is e.g. ignoring messages sent to him or reading changes only after 12 hours.
+
+We cannot check whether the partner who writes in his manifest <sends-notifications> really sends notifications, because we are not able to generate a change event, e.g. omobility.
+
+We are also not able to check whether the CNR API requests are correct because they are the same as in 2.1.
+
