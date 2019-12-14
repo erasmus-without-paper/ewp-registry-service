@@ -33,25 +33,55 @@
                 {% endfor %}
         </div>
         <div class='ewpsrc'>
-            <h2>Duplicates in EWP network:</h2>
+            <h2>Duplicates in the EWP network</h2>
+            <h3>Duplicate (HEI, API) pairs on different hosts (with the same major version)</h3>
             {% if duplicatesInfo.map is empty %}
                 <div style="font-weight: bolder">
                     No duplicates.
                 </div>
             {% else %}
                 {% for entry in duplicatesInfo.map %}
-                    {% set key = entry.key %}
-                    {% set value = entry.value %}
+                    {% set apiAndHei = entry.key %}
+                    {% set implementingHostsMap = entry.value %}
                     <table class="ewpsrc ewpsrc__host_overview_info_table">
                         <tr class="ewpsrc__item">
-                            <td colspan="2">{{ key.heiId }}</td>
-                            <td colspan="3"> API: {{ key.apiName }}</td>
+                            <td colspan="2">{{ apiAndHei.heiId }}</td>
+                            <td colspan="2"> API: {{ apiAndHei.apiName }}</td>
+                            <td colspan="1"> Major version: {{ apiAndHei.majorVersion }}</td>
                         </tr>
-                        {% for implementationInfo in value %}
+                        {% for implementingHostEntry in implementingHostsMap %}
+                            {% set implementationInfo = implementingHostEntry.key %}
+                            {% set implementedVersions = implementingHostEntry.value %}
                             <tr class="ewpsrc__item">
                                 <td colspan="3"> {{ implementationInfo.manifestUrl }} </td>
                                 <td colspan="1"> Host: {{ implementationInfo.hostId }} </td>
-                                <td colspan="1"> Version: {{ implementationInfo.version }} </td>
+                                <td colspan="1"> Versions: {{ implementedVersions | join(', ') }}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                {% endfor %}
+            {% endif %}
+
+            <h3>Duplicate HEIs on the same host</h3>
+            {% if heiDuplicates.map is empty %}
+                <div style="font-weight: bolder">
+                    No duplicates.
+                </div>
+            {% else %}
+            {% for entry in heiDuplicates.map %}
+                {% set manifestAndHostId = entry.key %}
+                {% set heiToCountMap = entry.value %}
+                    <table class="ewpsrc ewpsrc__host_overview_info_table">
+                        <tr class="ewpsrc__item">
+                            <td colspan="2">{{ manifestAndHostId.manifestUrl }}</td>
+                            <td colspan="1">Host {{ manifestAndHostId.hostId }}</td>
+                        </tr>
+                        {% for heiAndCount in heiToCountMap  %}
+                        {% set heiId = heiAndCount.key %}
+                        {% set count = heiAndCount.value %}
+                            <tr class="ewpsrc__item">
+                                <td colspan="2"> {{ heiId }} </td>
+                                <td colspan="1"> Count: {{ count }} </td>
                             </tr>
                         {% endfor %}
                     </table>

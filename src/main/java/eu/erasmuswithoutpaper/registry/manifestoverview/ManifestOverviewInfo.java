@@ -75,15 +75,13 @@ public class ManifestOverviewInfo {
         Match urlElementMatch = $(elem).xpath("*[" + endsWithUrlXPath + "]");
         List<String> apiUrls = urlElementMatch.map(x -> x.element().getTextContent());
 
-        String version = elem.getAttribute("version");
-        if (version.isEmpty()) {
-          version = "<no version>";
-        }
+        String elementVersionTag = elem.getAttribute("version");
+        ApiVersion apiVersion = new ApiVersion(elementVersionTag);
 
         hostOverviewInfo.apisImplemented.add(
             new ImplementedApiInfo(
                 elem.getLocalName(),
-                version,
+                apiVersion,
                 apiUrls
             )
         );

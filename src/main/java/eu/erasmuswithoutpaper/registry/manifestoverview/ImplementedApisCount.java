@@ -11,7 +11,10 @@ public class ImplementedApisCount {
 
   /**
    * Counts institutions and hosts that use certain APIs in certain versions.
-   * @param overviewInfos list of ManifestOverviewInfos from which institutions will be taken.
+   * @param overviewInfos
+   *      List of ManifestOverviewInfos from which institutions will be taken.
+   * @return
+   *      ImplementedApisCount build from List of ManifestOverviewInfos.
    */
   public static ImplementedApisCount fromManifestOverviewInfos(
       List<ManifestOverviewInfo> overviewInfos) {
@@ -27,7 +30,7 @@ public class ImplementedApisCount {
           if (!result.countsMap.containsKey(api.name)) {
             result.countsMap.put(api.name, new ImplementedApiCount(api.name));
           }
-          result.countsMap.get(api.name).add(hostName, api.version, host.coveredHeiIds);
+          result.countsMap.get(api.name).add(hostName, api.version.toString(), host.coveredHeiIds);
         }
       }
     }
@@ -36,6 +39,8 @@ public class ImplementedApisCount {
 
   /**
    * Returns collected statistics, sorted by api name, descending.
+   * @return
+   *      List of ImplementedApiCount stored in this object.
    */
   public List<ImplementedApiCount> getCounts() {
     List<ImplementedApiCount> countsList = new ArrayList<>(this.countsMap.values());

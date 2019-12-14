@@ -21,6 +21,12 @@ public class ImplementedApiCount {
 
   /**
    * Accounts that this api in `version` version is used by `institutions`.
+   * @param hostName
+   *      String representing a host in a manifest.
+   * @param version
+   *      String representing implemented version of API stored in this object.
+   * @param institutions
+   *      Institutions covered by this host.
    */
   public void add(String hostName, String version, List<String> institutions) {
     if (!countsMap.containsKey(version)) {
@@ -41,6 +47,8 @@ public class ImplementedApiCount {
 
   /**
    * Returns collected statistics, sorted by version, descending.
+   * @return
+   *      List of ImplementedApiVersionCount.
    */
   public List<ImplementedApiVersionCount> getCounts() {
     List<ImplementedApiVersionCount> countsList = new ArrayList<>(this.countsMap.values());

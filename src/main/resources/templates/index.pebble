@@ -59,14 +59,17 @@
                 for useful tools and documents.</p>
 
                 <p class='ewp-header__links'>
-                    <a class='ewp-header__link' href='{{ statusUrl }}'>Manifest Importer Status</a>
-                    <span class='ewp-header__link-div'>|</span>
-                    <a class='ewp-header__link' href='{{ coverageUrl }}'>HEI/API Coverage Matrix</a>
-                    <span class='ewp-header__link-div'>|</span>
-                    <a class='ewp-header__link' href='{{ schemaValidatorUrl }}'>XML Schema Validator</a>
+                    <a class='ewp-header__links-item ewp-header__link-item-left' href='{{ statusUrl }}'>Manifest Importer Status</a>
+                    <span class='ewp-header__links-item ewp-header__link-item-center'>|</span>
+                    <a class='ewp-header__links-item ewp-header__link-item-right' href='{{ schemaValidatorUrl }}'>XML Schema Validator</a>
                 </p>
                 <p class='ewp-header__links'>
-                    <a class='ewp-header__link' style="margin: auto;" href='https://developers.erasmuswithoutpaper.eu/'>EWP Developers Hub</a>
+                    <a class='ewp-header__links-item ewp-header__link-item-left' href='{{ manifestOverviewUrl  }}'>Manifests Overview</a>
+                    <span class='ewp-header__links-item ewp-header__link-item-center'>|</span>
+                    <a class='ewp-header__links-item ewp-header__link-item-right' href='{{ coverageUrl }}'>HEI/API Coverage Matrix</a>
+                </p>
+                <p class='ewp-header__links'>
+                    <a class='ewp-header__links-item' href='https://developers.erasmuswithoutpaper.eu/'>EWP Developers Hub</a>
                 </p>
             </div>
             <div class='ewp-header__vertical-divider'></div>
@@ -103,16 +106,11 @@
                 {% endif %}
             </div>
             {% if adminEmails != null %}
-                <div class='ewp-header__footer ewp-footer ewp-footer-right'>
+                <div class='ewp-header__footer ewp-footer'>
                     Contact:
                     {% for adminEmail in adminEmails %}
                         <a href="mailto:{{ adminEmail }}">{{ adminEmail}}</a>
                     {% endfor %}
-                </div>
-            {% endif %}
-            {% if manifestOverviewUrl != null %}
-                <div class='ewp-header__footer ewp-footer ewp-footer-left'>
-                    <a href="{{ manifestOverviewUrl  }}">Manifests Overview</a>
                 </div>
             {% endif %}
         </div>

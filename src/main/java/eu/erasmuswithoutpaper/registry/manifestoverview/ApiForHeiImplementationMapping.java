@@ -10,28 +10,45 @@ import java.util.Map;
  * is implemented.
  */
 public class ApiForHeiImplementationMapping {
-  private Map<ApiForHeiKey, List<ApiForHeiImplementationInfo>> map = new HashMap<>();
+  private Map<ApiHeiAndMajorVersionTuple, Map<ManifestAndHostIndex, List<String>>> map
+      = new HashMap<>();
 
-  public Map<ApiForHeiKey, List<ApiForHeiImplementationInfo>> getMap() {
+  public Map<ApiHeiAndMajorVersionTuple, Map<ManifestAndHostIndex, List<String>>> getMap() {
     return map;
   }
 
   /**
-   * Add information that `key` API/HEI pair is implemented on `apiImplementationInfo`.
+   * Add information that `key` API, HEI, Major version uple is implemented on
+   * `apiImplementationInfo`.
+   * @param key
+   *      API, HEI and Major version tuple for which information is added.
+   * @param apiImplementationInfo
+   *      describes a Manifest, Host pair where key is implemented.
+   * @param version
+   *      exact implemented version.
    */
-  public void addEntry(ApiForHeiKey key, ApiForHeiImplementationInfo apiImplementationInfo) {
+  public void addEntry(ApiHeiAndMajorVersionTuple key, ManifestAndHostIndex apiImplementationInfo,
+      ApiVersion version) {
     if (!this.map.containsKey(key)) {
-      this.map.put(key, new ArrayList<>());
+      this.map.put(key, new HashMap<>());
     }
-    this.map.get(key).add(apiImplementationInfo);
+    Map<ManifestAndHostIndex, List<String>> hostsMap = this.map.get(key);
+    if (!hostsMap.containsKey(apiImplementationInfo)) {
+      hostsMap.put(apiImplementationInfo, new ArrayList<>());
+    }
+
+    hostsMap.get(apiImplementationInfo).add(version.toString());
   }
 
   /**
-   * Returns new Mapping that contains only entries that have more than one implementation.
+   * Creates new Mapping that contains only entries that have more than one implementation.
+   * @return
+   *      New Mapping with duplicates.
    */
   public ApiForHeiImplementationMapping getMappingWithDuplicates() {
     ApiForHeiImplementationMapping duplicates = new ApiForHeiImplementationMapping();
-    for (Map.Entry<ApiForHeiKey, List<ApiForHeiImplementationInfo>> entry : this.map.entrySet()) {
+    for (Map.Entry<ApiHeiAndMajorVersionTuple, Map<ManifestAndHostIndex, List<String>>> entry :
+        this.map.entrySet()) {
       if (entry.getValue().size() > 1) {
         duplicates.map.put(entry.getKey(), entry.getValue());
       }
@@ -41,6 +58,11 @@ public class ApiForHeiImplementationMapping {
 
   /**
    * Creates ApiForHeiImplementationMapping using data collected in `infos`.
+   *
+   * @param infos
+   *      ManifestOverviewInfo list from which new ApiForHeiImplementationMapping will be generated.
+   * @return
+   *      ApiForHeiImplementationMapping created from infos.
    */
   public static ApiForHeiImplementationMapping fromManifestOverviewInfos(
       List<ManifestOverviewInfo> infos) {
@@ -54,10 +76,12 @@ public class ApiForHeiImplementationMapping {
 
         for (String heiId : host.coveredHeiIds) {
           for (ImplementedApiInfo implementedApiInfo : host.apisImplemented) {
-            ApiForHeiImplementationInfo apiForHeiImplementationInfo =
-                new ApiForHeiImplementationInfo(manifestUrl, hostId, implementedApiInfo.version);
-            ApiForHeiKey key = new ApiForHeiKey(heiId, implementedApiInfo.name);
-            apiForHeiImplementationMapping.addEntry(key, apiForHeiImplementationInfo);
+            ManifestAndHostIndex manifestAndHostIndex =
+                new ManifestAndHostIndex(manifestUrl, hostId);
+            ApiHeiAndMajorVersionTuple key = new ApiHeiAndMajorVersionTuple(
+                heiId, implementedApiInfo.name, implementedApiInfo.version);
+            apiForHeiImplementationMapping.addEntry(
+                key, manifestAndHostIndex, implementedApiInfo.version);
           }
         }
       }

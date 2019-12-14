@@ -180,10 +180,22 @@ a:hover {
 }
 .ewp-header__links {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
+    margin: 5px 0px;
 }
-.ewp-header__link {
-    display: block;
+.ewp-header__links-item {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+.ewp-header__link-item-center {
+    max-width: 50px;
+}
+.ewp-header__link-item-left {
+    justify-content: right;
+}
+.ewp-header__link-item-right {
+    justify-content: left;
 }
 .ewp-header__vertical-divider {
     grid-area: divider;
@@ -251,13 +263,7 @@ a:hover {
     opacity: 0.5;
     font-style: italic;
     margin-right: 20px;
-    display: inline;
-}
-.ewp-footer-right {
     text-align: right;
-}
-.ewp-footer-left {
-    text-align: left;
 }
 
 

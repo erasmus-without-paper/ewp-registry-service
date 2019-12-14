@@ -16,6 +16,11 @@ public class ImplementedApiVersionCount {
   /**
    * Accounts `coveredInstitutions` on behalf of this api version. It is assumed that those
    * institutions come from single host `hostName`.
+   *
+   * @param hostName
+   *      String identifying host in a manifest.
+   * @param coveredInstitutions
+   *      Institutions covered by this host.
    */
   public void addInstitutionsCoveredByHost(String hostName, List<String> coveredInstitutions) {
     this.hosts.add(hostName);

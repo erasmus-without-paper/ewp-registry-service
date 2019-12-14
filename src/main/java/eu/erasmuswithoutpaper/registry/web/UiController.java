@@ -17,6 +17,7 @@ import eu.erasmuswithoutpaper.registry.documentbuilder.BuildParams;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildResult;
 import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
 import eu.erasmuswithoutpaper.registry.manifestoverview.ApiForHeiImplementationMapping;
+import eu.erasmuswithoutpaper.registry.manifestoverview.CoveredInstitutionsCounters;
 import eu.erasmuswithoutpaper.registry.manifestoverview.ImplementedApisCount;
 import eu.erasmuswithoutpaper.registry.manifestoverview.ManifestOverviewInfo;
 import eu.erasmuswithoutpaper.registry.notifier.NotifierService;
@@ -686,14 +687,18 @@ public class UiController {
 
     ImplementedApisCount implementedApisCount =
         ImplementedApisCount.fromManifestOverviewInfos(infos);
+    mav.addObject("implementedApisCount", implementedApisCount);
 
     ApiForHeiImplementationMapping apiForHeiImplementationMapping =
         ApiForHeiImplementationMapping.fromManifestOverviewInfos(infos);
     ApiForHeiImplementationMapping duplicates =
         apiForHeiImplementationMapping.getMappingWithDuplicates();
-
-    mav.addObject("implementedApisCount", implementedApisCount);
     mav.addObject("duplicatesInfo", duplicates);
+
+    CoveredInstitutionsCounters coveredInstitutionsCounters =
+        CoveredInstitutionsCounters.fromManifestOverviewInfos(infos);
+    CoveredInstitutionsCounters heiDuplicates = coveredInstitutionsCounters.getOnlyDuplicates();
+    mav.addObject("heiDuplicates", heiDuplicates);
 
     return mav;
   }
