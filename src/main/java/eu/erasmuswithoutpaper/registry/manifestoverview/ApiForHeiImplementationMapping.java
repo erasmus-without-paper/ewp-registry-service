@@ -1,6 +1,8 @@
 package eu.erasmuswithoutpaper.registry.manifestoverview;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,20 +16,21 @@ public class ApiForHeiImplementationMapping {
       = new HashMap<>();
 
   public Map<ApiHeiAndMajorVersionTuple, Map<ManifestAndHostIndex, List<String>>> getMap() {
-    return map;
+    return Collections.unmodifiableMap(map);
   }
 
   /**
    * Add information that `key` API, HEI, Major version uple is implemented on
    * `apiImplementationInfo`.
+   *
    * @param key
-   *      API, HEI and Major version tuple for which information is added.
+   *     API, HEI and Major version tuple for which information is added.
    * @param apiImplementationInfo
-   *      describes a Manifest, Host pair where key is implemented.
+   *     describes a Manifest, Host pair where key is implemented.
    * @param version
-   *      exact implemented version.
+   *     exact implemented version.
    */
-  public void addEntry(ApiHeiAndMajorVersionTuple key, ManifestAndHostIndex apiImplementationInfo,
+  private void addEntry(ApiHeiAndMajorVersionTuple key, ManifestAndHostIndex apiImplementationInfo,
       ApiVersion version) {
     if (!this.map.containsKey(key)) {
       this.map.put(key, new HashMap<>());
@@ -42,8 +45,8 @@ public class ApiForHeiImplementationMapping {
 
   /**
    * Creates new Mapping that contains only entries that have more than one implementation.
-   * @return
-   *      New Mapping with duplicates.
+   *
+   * @return New Mapping with duplicates.
    */
   public ApiForHeiImplementationMapping getMappingWithDuplicates() {
     ApiForHeiImplementationMapping duplicates = new ApiForHeiImplementationMapping();
@@ -60,12 +63,11 @@ public class ApiForHeiImplementationMapping {
    * Creates ApiForHeiImplementationMapping using data collected in `infos`.
    *
    * @param infos
-   *      ManifestOverviewInfo list from which new ApiForHeiImplementationMapping will be generated.
-   * @return
-   *      ApiForHeiImplementationMapping created from infos.
+   *     ManifestOverviewInfo list from which new ApiForHeiImplementationMapping will be generated.
+   * @return ApiForHeiImplementationMapping created from infos.
    */
   public static ApiForHeiImplementationMapping fromManifestOverviewInfos(
-      List<ManifestOverviewInfo> infos) {
+      Collection<ManifestOverviewInfo> infos) {
     ApiForHeiImplementationMapping apiForHeiImplementationMapping
         = new ApiForHeiImplementationMapping();
     for (ManifestOverviewInfo info : infos) {

@@ -11,8 +11,6 @@ import javax.xml.parsers.DocumentBuilder;
 
 import eu.erasmuswithoutpaper.registry.common.Utils;
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
-import eu.erasmuswithoutpaper.registry.repository.ManifestNotFound;
-import eu.erasmuswithoutpaper.registry.repository.ManifestRepository;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.joox.Match;
@@ -30,21 +28,13 @@ public class ManifestOverviewInfo {
    *
    * @param url
    *     url of manifest to describe.
-   * @param manifestRepository
-   *     repository from which manifest can be fetched.
+   * @param manifest
+   *     contents of manifest to describe.
    * @return ManifestOverviewInfo containing basic information about that manifest
    *     or null if it cannot be parsed.
    */
   public static ManifestOverviewInfo generateFromManifest(String url,
-      ManifestRepository manifestRepository) {
-
-    String manifest;
-    try {
-      manifest = manifestRepository.getManifestFiltered(url);
-    } catch (ManifestNotFound manifestNotFound) {
-      return null;
-    }
-
+      String manifest) {
     ManifestOverviewInfo result = new ManifestOverviewInfo();
     result.url = url;
 

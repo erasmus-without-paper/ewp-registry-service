@@ -23,6 +23,7 @@ import eu.erasmuswithoutpaper.registry.documentbuilder.BuildParams;
 import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
 import eu.erasmuswithoutpaper.registry.internet.Internet;
+import eu.erasmuswithoutpaper.registry.manifestoverview.ManifestOverviewManager;
 import eu.erasmuswithoutpaper.registry.notifier.NotifierFlag;
 import eu.erasmuswithoutpaper.registry.notifier.NotifierService;
 import eu.erasmuswithoutpaper.registry.repository.CatalogueNotFound;
@@ -65,6 +66,7 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
   private final Map<ManifestSource, ManifestUpdateStatusNotifierFlag> notifierFlags;
   private final NotifierService notifier;
   private final ManifestConverter converter;
+  private final ManifestOverviewManager manifestOverviewManager;
 
   /**
    * @param manifestSourceProvider
@@ -84,12 +86,16 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
    *     to register our custom {@link NotifierFlag}s.
    * @param converter
    *     to be able to convert older manifests into the latest versions.
+   * @param manifestOverviewManager
+   *     stores {@link eu.erasmuswithoutpaper.registry.manifestoverview.ManifestOverviewInfo} for
+   *     each of covered manifests.
    */
   @Autowired
   public RegistryUpdaterImpl(ManifestSourceProvider manifestSourceProvider,
       ManifestUpdateStatusRepository manifestUpdateStatusRepository, Internet internet,
       ManifestRepository repo, EwpDocBuilder docBuilder, XmlFormatter xmlFormatter,
-      NotifierService notifier, ManifestConverter converter) {
+      NotifierService notifier, ManifestConverter converter,
+      ManifestOverviewManager manifestOverviewManager) {
     this.manifestSourceProvider = manifestSourceProvider;
     this.manifestUpdateStatusRepository = manifestUpdateStatusRepository;
     this.internet = internet;
@@ -97,6 +103,7 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
     this.docBuilder = docBuilder;
     this.xmlFormatter = xmlFormatter;
     this.notifier = notifier;
+    this.manifestOverviewManager = manifestOverviewManager;
     this.notifierFlags = new HashMap<>();
     this.converter = converter;
     this.onSourcesUpdated();
@@ -171,6 +178,8 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
         this.manifestUpdateStatusRepository.delete(status);
       }
     }
+
+    this.manifestOverviewManager.updateAllManifests();
   }
 
   @Override
@@ -316,6 +325,10 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
           // Update the catalogue too.
 
           this.updateTheCatalogue(false);
+
+          // And update manifest overview info in manifest overview manager.
+
+          this.manifestOverviewManager.updateManifest(source.getUrl());
         }
 
         // Commit repository changes.

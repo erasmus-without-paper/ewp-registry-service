@@ -2,6 +2,7 @@ package eu.erasmuswithoutpaper.registry.web;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +21,7 @@ import eu.erasmuswithoutpaper.registry.manifestoverview.ApiForHeiImplementationM
 import eu.erasmuswithoutpaper.registry.manifestoverview.CoveredInstitutionsCounters;
 import eu.erasmuswithoutpaper.registry.manifestoverview.ImplementedApisCount;
 import eu.erasmuswithoutpaper.registry.manifestoverview.ManifestOverviewInfo;
+import eu.erasmuswithoutpaper.registry.manifestoverview.ManifestOverviewManager;
 import eu.erasmuswithoutpaper.registry.notifier.NotifierService;
 import eu.erasmuswithoutpaper.registry.repository.CatalogueDependantCache;
 import eu.erasmuswithoutpaper.registry.repository.ManifestNotFound;
@@ -94,6 +96,7 @@ public class UiController {
   private final ApiValidatorsManager apiValidatorsManager;
   private final ValidatorKeyStore validatorKeyStore;
   private final MyErrorController errorController;
+  private final ManifestOverviewManager manifestOverviewManager;
 
   private byte[] cachedCss;
   private String cachedCssFingerprint;
@@ -145,7 +148,8 @@ public class UiController {
       CatalogueDependantCache catcache,
       ApiValidatorsManager apiValidatorsManager,
       ValidatorKeyStoreSet validatorKeyStoreSet,
-      MyErrorController errorController) {
+      MyErrorController errorController,
+      ManifestOverviewManager manifestOverviewManager) {
     this.taskExecutor = taskExecutor;
     this.manifestStatusRepo = manifestUpdateStatuses;
     this.manifestRepository = manifestRepository;
@@ -161,6 +165,7 @@ public class UiController {
     this.apiValidatorsManager = apiValidatorsManager;
     this.validatorKeyStore = validatorKeyStoreSet.getMainKeyStore();
     this.errorController = errorController;
+    this.manifestOverviewManager = manifestOverviewManager;
   }
 
   /**
@@ -675,29 +680,20 @@ public class UiController {
     mav.setViewName("manifestsOverview");
     response.addHeader("Cache-Control", "public, max-age=300");
 
-    List<ManifestOverviewInfo> infos = new ArrayList<>();
-    for (ManifestSource source : this.sourceProvider.getAll()) {
-      ManifestOverviewInfo manifestOverviewInfo =
-          ManifestOverviewInfo.generateFromManifest(source.getUrl(), this.manifestRepository);
-      if (manifestOverviewInfo != null) {
-        infos.add(manifestOverviewInfo);
-      }
-    }
+    ManifestOverviewManager.ManifestOverviewState manifestOverviewState =
+        this.manifestOverviewManager.getManifestOverviewState();
+
+    Collection<ManifestOverviewInfo> infos = manifestOverviewState.overviewInfos;
     mav.addObject("manifestInfos", infos);
 
-    ImplementedApisCount implementedApisCount =
-        ImplementedApisCount.fromManifestOverviewInfos(infos);
+    ImplementedApisCount implementedApisCount = manifestOverviewState.implementedApisCount;
     mav.addObject("implementedApisCount", implementedApisCount);
 
-    ApiForHeiImplementationMapping apiForHeiImplementationMapping =
-        ApiForHeiImplementationMapping.fromManifestOverviewInfos(infos);
     ApiForHeiImplementationMapping duplicates =
-        apiForHeiImplementationMapping.getMappingWithDuplicates();
+        manifestOverviewState.apiForHeiImplementationMappingDuplicates;
     mav.addObject("duplicatesInfo", duplicates);
 
-    CoveredInstitutionsCounters coveredInstitutionsCounters =
-        CoveredInstitutionsCounters.fromManifestOverviewInfos(infos);
-    CoveredInstitutionsCounters heiDuplicates = coveredInstitutionsCounters.getOnlyDuplicates();
+    CoveredInstitutionsCounters heiDuplicates = manifestOverviewState.getHeiDuplicates;
     mav.addObject("heiDuplicates", heiDuplicates);
 
     return mav;

@@ -1,7 +1,8 @@
 package eu.erasmuswithoutpaper.registry.manifestoverview;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -9,7 +10,7 @@ public class CoveredInstitutionsCounters {
   private final Map<ManifestAndHostIndex, Map<String, Integer>> map = new HashMap<>();
 
   public Map<ManifestAndHostIndex, Map<String, Integer>> getMap() {
-    return map;
+    return Collections.unmodifiableMap(map);
   }
 
   private void addEntry(ManifestAndHostIndex manifestAndHostIndex, String heiId) {
@@ -25,11 +26,13 @@ public class CoveredInstitutionsCounters {
 
   /**
    * Creates CoveredInstitutionsCounters from list of ManifestOverviewInfo.
-   * @param infos list of ManifestOverviewInfo from which data will be read.
+   *
+   * @param infos
+   *     list of ManifestOverviewInfo from which data will be read.
    * @return object with counted appearances of hei ids on institutions-covered lists.
    */
   public static CoveredInstitutionsCounters fromManifestOverviewInfos(
-      List<ManifestOverviewInfo> infos) {
+      Collection<ManifestOverviewInfo> infos) {
     CoveredInstitutionsCounters coveredInstitutionsCounters = new CoveredInstitutionsCounters();
     for (ManifestOverviewInfo info : infos) {
       String manifestUrl = info.url;
@@ -51,8 +54,9 @@ public class CoveredInstitutionsCounters {
 
   /**
    * Filters heiIds in this objects to only those which have count greater than 1.
-   * @return
-   *      CoveredInstitutionsCounters containing only those entries that have count greater than 1.
+   *
+   * @return CoveredInstitutionsCounters containing only those entries that have count
+   *     greater than 1.
    */
   public CoveredInstitutionsCounters getOnlyDuplicates() {
     CoveredInstitutionsCounters coveredInstitutionsCounters = new CoveredInstitutionsCounters();
