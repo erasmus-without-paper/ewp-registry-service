@@ -280,9 +280,27 @@ public class ConsoleValidator {
 
   /**
    * Reads the parameters, asks the user about missing values and performs tests.
+   * @param args
+   *      Arguments passed to the executable.
+   * @param apiValidatorsManager
+   *      ApiValidatorsManager that has information about all implemented validators.
+   * @param docBuilder
+   *      needed to validate responses.
+   * @param converter
+   *      needed to convert V4 manifests to V5.
+   * @param xmlFormatter
+   *      used to format manifest which contents should be validated.
+   * @param keyStoreSet
+   *      ValidatorKeyStoreSet that holds keys used by the validators.
+   * @param registryClient
+   *      Used to fetch data from the registry.
+   * @param registryDomain
+   *      Domain (without https:// and trailing slash) where the registry can be found.
    */
-  public void performValidation(ApplicationArguments args,
-      ApiValidatorsManager apiValidatorsManager, EwpDocBuilder docBuilder,
+  public void performValidation(
+      ApplicationArguments args,
+      ApiValidatorsManager apiValidatorsManager,
+      EwpDocBuilder docBuilder,
       ValidatorKeyStoreSet keyStoreSet,
       ManifestConverter converter,
       XmlFormatter xmlFormatter,

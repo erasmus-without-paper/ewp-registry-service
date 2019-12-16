@@ -23,6 +23,10 @@ public class ReportUtils {
 
   /**
    * Generates short text summary of run tests.
+   * @param steps
+   *      Descriptions of run tests.
+   * @return
+   *      String with summary of tests passed in parameter.
    */
   public static String generateReportSummary(List<ValidationStepWithStatus> steps) {
     List<String> results = new ArrayList<>();
@@ -46,10 +50,20 @@ public class ReportUtils {
 
   /**
    * Generates full HTML report from run tests.
+   * @param steps
+   *      Descriptions of run tests.
+   * @param validationInfoParameters
+   *      Contains some information about performed tests.
+   * @param registryDomain
+   *      Domain of the Registry.
+   * @param docBuilder
+   *      Used to parse and format XML in responses.
+   * @return
+   *      HTML as a String that contains the report.
    */
   public static String generateHtmlReport(List<ValidationStepWithStatus> steps,
       HtmlValidationReportFormatter.ValidationInfoParameters validationInfoParameters,
-      EwpDocBuilder docBuilder, String registryDomain) {
+      EwpDocBuilder docBuilder,String registryDomain) {
     HtmlValidationReportFormatter htmlValidationReportFormatter =
         new HtmlValidationReportFormatter(docBuilder);
 

@@ -14,6 +14,8 @@ public class RegistryDomainProvider {
   /**
    * A service that provides domain name of the registry that should be used to fetch the catalogue.
    * It can be changed by setting ${app.registry-domain}.
+   * @param registryDomain
+   *      Registry domain, without https:// and trailing slash.
    */
   @Autowired
   public RegistryDomainProvider(

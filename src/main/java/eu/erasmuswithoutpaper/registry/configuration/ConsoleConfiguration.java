@@ -19,6 +19,13 @@ public class ConsoleConfiguration {
    * An instance of {@link RegistryClient}.
    * Client to a registry that is available remotely.
    * It's address is taken from RegistryDomainProvider.
+   *
+   * @param registryDomainProvider
+   *      Provider of Registry Domain that will be passed to RegistryClient.
+   * @throws RegistryClient.RefreshFailureException
+   *      If RegistryClient cannot refresh its catalogue.
+   * @return
+   *      RegistryClient that represents data read from remote catalogue.
    */
   @Autowired
   @Bean

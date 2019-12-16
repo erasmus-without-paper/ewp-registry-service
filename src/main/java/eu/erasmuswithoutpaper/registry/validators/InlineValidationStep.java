@@ -38,9 +38,13 @@ public abstract class InlineValidationStep implements ValidationStepWithStatus {
 
     /**
      * Create a Failure with certain message and status for given response.
-     * @param message Cause of this failure.
-     * @param status Severity of this failure.
-     * @param serverResponse Response that caused failure.
+     *
+     * @param message
+     *     Cause of this failure.
+     * @param status
+     *     Severity of this failure.
+     * @param serverResponse
+     *     Response that caused failure.
      */
     public Failure(String message, Status status, Response serverResponse) {
       super(message);
@@ -50,9 +54,13 @@ public abstract class InlineValidationStep implements ValidationStepWithStatus {
 
     /**
      * Create a Failure with certain message and status for given response.
-     * @param message Cause of this failure.
-     * @param status Severity of this failure.
-     * @param fatal true marks this failure as fatal.
+     *
+     * @param message
+     *     Cause of this failure.
+     * @param status
+     *     Severity of this failure.
+     * @param fatal
+     *     true marks this failure as fatal.
      */
     public Failure(String message, Status status, boolean fatal) {
       super(message);
@@ -158,8 +166,9 @@ public abstract class InlineValidationStep implements ValidationStepWithStatus {
    * set to SUCCESS.
    *
    * @return Optional server response object.
-   * @throws Failure When a step fails, and its status is NOT supposed to be set to SUCCESS. The
-   *         instance contains the both the error message and status to be used instead.
+   * @throws Failure
+   *     When a step fails, and its status is NOT supposed to be set to SUCCESS. The
+   *     instance contains the both the error message and status to be used instead.
    */
   protected abstract Optional<Response> innerRun() throws Failure;
 
@@ -176,6 +185,8 @@ public abstract class InlineValidationStep implements ValidationStepWithStatus {
    * exceptions, producing proper validation results.
    *
    * @return The new status of this validation step.
+   * @throws FatalFailure
+   *     Thrown when test fails with a fatal error.
    */
   public final Status run() throws FatalFailure {
     if (this.shouldSkip()) {

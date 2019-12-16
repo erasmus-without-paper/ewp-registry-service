@@ -3,13 +3,11 @@ package eu.erasmuswithoutpaper.registry.web;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 
 import eu.erasmuswithoutpaper.registry.common.Severity;
 import eu.erasmuswithoutpaper.registry.notifier.NotifierFlag;
 import eu.erasmuswithoutpaper.registry.notifier.NotifierService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -36,9 +34,15 @@ public class MyErrorController implements ErrorController {
   private final NotifierFlag http500errorFlag;
 
   /**
-   * @param resLoader needed to fetch the error XML template from the resources.
-   * @param notifier needed to send error notifications.
-   * @param adminEmails email address to notify on HTTP 500 errors.
+   * @param resLoader
+   *     needed to fetch the error XML template from the resources.
+   * @param notifier
+   *     needed to send error notifications.
+   * @param adminEmails
+   *     email address to notify on HTTP 500 errors.
+   * @param useFlagToNotifyAboutExceptions
+   *     is true then NotifierFlag will be used to inform admins
+   *     about exceptions.
    */
   @Autowired
   @SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
@@ -63,7 +67,8 @@ public class MyErrorController implements ErrorController {
   /**
    * Handle a server error.
    *
-   * @param request request which has caused the error.
+   * @param request
+   *     request which has caused the error.
    * @return a HTTP 500 response (with EWP error XML).
    */
   @RequestMapping("/error")

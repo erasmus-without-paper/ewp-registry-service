@@ -24,6 +24,8 @@ public class VersionParameters {
 
   /**
    * Returns help text lines for --version parameter.
+   * @return
+   *      List of String that should be a part of help message.
    */
   public static List<String> getVersionParameterHelpText() {
     return Arrays.asList(
@@ -38,6 +40,14 @@ public class VersionParameters {
 
   /**
    * Filters given APIs to those matching selected versions.
+   * @param selectedApiEntries
+   *      API entries that should be filtered.
+   * @param args
+   *      Arguments passed to the executable.
+   * @return
+   *      Filtered selectedApiEntries.
+   * @throws ApplicationArgumentException
+   *     Thrown when arguments passed to the executable contain incorrect values.
    */
   public static List<ManifestApiEntry> filterApiEntriesVersions(
       List<ManifestApiEntry> selectedApiEntries,

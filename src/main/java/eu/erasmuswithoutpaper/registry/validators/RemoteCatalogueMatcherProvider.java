@@ -27,6 +27,9 @@ public class RemoteCatalogueMatcherProvider implements CatalogueMatcherProvider 
 
   /**
    * Returns {@link Match}er that can be used to match against contents of the catalogue.
+   *
+   * @param registryDomainProvider
+   *      Provides a domain identifying the registry.
    */
   @Autowired
   public RemoteCatalogueMatcherProvider(RegistryDomainProvider registryDomainProvider) {

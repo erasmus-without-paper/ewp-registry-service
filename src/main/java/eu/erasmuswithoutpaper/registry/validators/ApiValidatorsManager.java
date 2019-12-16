@@ -74,6 +74,8 @@ public class ApiValidatorsManager {
    *
    * @param apiName
    *     name of api to test.
+   * @param endpoint
+   *     endpoint of the api to test.
    * @param version
    *     version of api to test.
    * @return true if there are any compatible tests.

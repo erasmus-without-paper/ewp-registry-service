@@ -49,6 +49,7 @@ public class Application {
   }
 
   /**
+   * @param urlToCheck URL to check.
    * @return True, if urlToCheck is the official production site.
    */
   public static boolean isProductionSite(String urlToCheck) {

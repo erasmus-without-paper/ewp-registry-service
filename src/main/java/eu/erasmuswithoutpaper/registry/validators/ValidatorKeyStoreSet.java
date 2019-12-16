@@ -27,6 +27,12 @@ public class ValidatorKeyStoreSet {
 
   /**
    * Generates credential and certificates to be used by validators.
+   * @param rootUrl
+   *      URL where this instance is hosted, used to check, if we are in a production environment.
+   * @param consoleEnvInfo
+   *      Provides info whether this application is run as a standalone console validator.
+   * @param additionalHeiIdsArray
+   *      List of hei ids that should be added to validators covered-institutions list.
    */
   @Autowired
   public ValidatorKeyStoreSet(ConsoleEnvInfo consoleEnvInfo,

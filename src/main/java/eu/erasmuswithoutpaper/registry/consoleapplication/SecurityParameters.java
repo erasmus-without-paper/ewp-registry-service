@@ -24,6 +24,8 @@ public class SecurityParameters {
 
   /**
    * Returns help text lines for --security parameter.
+   * @return
+   *      List of String that should be a part of help message.
    */
   public static List<String> getSecurityParameterHelpText() {
     List<String> securityParameter = Arrays.asList(
@@ -59,6 +61,22 @@ public class SecurityParameters {
 
   /**
    * Returns securities provided in parameters or asks user to select one.
+   * @param securities
+   *      List of Securities to select from. Represent Securities implemented by one of APIs.
+   * @param apiName
+   *      Name of tested API.
+   * @param args
+   *      Arguments passed to the executable.
+   * @param console
+   *      TextIO representing the console used by the user.
+   * @param filterHttp
+   *      If true, then HTTPSig options won't be returned nor presented to the user.
+   * @param filterTls
+   *      If true, then TLS options won't be returned nor presented to the user.
+   * @return
+   *      List of APIs that were selected by the user of specified in arguments.
+   * @throws ApplicationArgumentException
+   *     Thrown when arguments passed to the executable contain incorrect values.
    */
   public static List<HttpSecurityDescription> getSelectedSecurity(
       List<String> securities,

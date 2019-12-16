@@ -97,6 +97,8 @@ public class ManifestConverter {
    *
    * @param manifestXmlContents
    *     XML contents of the presumed manifest file.
+   * @param nonLethalErrors
+   *     List that will be filled with found non lethal errors.
    * @return A DOM {@link Document} with Manifest v5.
    * @throws NotValidManifest
    *     If the provided document was not a valid Manifest (in any of its

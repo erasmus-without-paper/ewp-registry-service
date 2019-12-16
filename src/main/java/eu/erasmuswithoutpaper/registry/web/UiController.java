@@ -130,7 +130,9 @@ public class UiController {
    * @param apiValidatorsManager
    *     needed to check if there are some tests for given api and version.
    * @param validatorKeyStoreSet
-   *     Set of KeyStores providing credentials.
+   *     set of KeyStores providing credentials.
+   * @param errorController
+   *     used to generate 404 pages when the validator is not available.
    */
   @Autowired
   public UiController(TaskExecutor taskExecutor,
@@ -661,6 +663,9 @@ public class UiController {
 
   /**
    * Presents some information from manifests.
+   * @param response
+   *     Needed to add some custom headers.
+   * @return Manifests Overview page.
    */
   @RequestMapping(path = "/manifestsOverview", method = RequestMethod.GET)
   public Object validateApiVersion(HttpServletResponse response) {

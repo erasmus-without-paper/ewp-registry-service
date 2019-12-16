@@ -14,6 +14,8 @@ public class ExternalValidatorKeyStore extends ValidatorKeyStore {
 
   /**
    * Constructor.
+   * @param registryClient
+   *      Client used to obtain hosts covered by set Keys or Certificate.
    */
   public ExternalValidatorKeyStore(RegistryClient registryClient) {
     super();
@@ -28,6 +30,10 @@ public class ExternalValidatorKeyStore extends ValidatorKeyStore {
 
   /**
    * Sets certificate.
+   * @param keyPair
+   *      KeyPair to use with certificate.
+   * @param certificate
+   *      Certificate to use.
    */
   public void setCertificate(KeyPair keyPair, X509Certificate certificate) {
     this.myTlsKeyPair = keyPair;
@@ -47,6 +53,8 @@ public class ExternalValidatorKeyStore extends ValidatorKeyStore {
 
   /**
    * Sets Client RSA Key and fills covered hei ids.
+   * @param keyPair
+   *      KeyPair to use as client RSA Keys.
    */
   public void setClientRsaKey(KeyPair keyPair) {
     this.myClientRsaKeyPair = keyPair;
@@ -62,6 +70,11 @@ public class ExternalValidatorKeyStore extends ValidatorKeyStore {
     this.myCoveredHeiIDs = coveredHeiIDs.stream().distinct().collect(Collectors.toList());
   }
 
+  /**
+   * Sets Server RSA Key and fills covered hei ids.
+   * @param keyPair
+   *      KeyPair to use as server RSA Keys.
+   */
   public void setServerRsaKey(KeyPair keyPair) {
     this.myServerRsaKeyPair = keyPair;
   }

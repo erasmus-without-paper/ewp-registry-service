@@ -22,7 +22,6 @@ import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
 import eu.erasmuswithoutpaper.registry.validators.ValidatorKeyStore;
 import eu.erasmuswithoutpaper.registry.validators.ValidatorKeyStoreSet;
 import eu.erasmuswithoutpaper.registry.xmlformatter.XmlFormatter;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ResourceLoader;
@@ -87,13 +86,29 @@ public class SelfManifestProvider {
   private volatile String cached = null;
 
   /**
-   * @param res Needed to fetch the manifest template from application resources.
-   * @param docBuilder Needed to build a {@link Document} out of the template.
-   * @param formatter Needed to format the end document as XML.
-   * @param adminEmails A list of email addresses, separated by commas. These addresses will be
-   *        included in the <code>ewp:admin-email</code> elements in the generated manifest file.
-   * @param validatorKeyStoreSet Source of public keys and certificates used by validators to be
-   *                         published in our manifest.
+   * @param res
+   *     Needed to fetch the manifest template from application resources.
+   * @param docBuilder
+   *     Needed to build a {@link Document} out of the template.
+   * @param formatter
+   *     Needed to format the end document as XML.
+   * @param adminEmails
+   *     A list of email addresses, separated by commas. These addresses will be
+   *     included in the <code>ewp:admin-email</code> elements in the generated manifest file.
+   * @param validatorKeyStoreSet
+   *     Source of public keys and certificates used by validators to be
+   *     published in our manifest.
+   * @param additionalKeysKeystorePath
+   *     Path where keystore with additional keys, which should be
+   *     available as validator heis keys.
+   * @param aliases
+   *     List of aliases which should be read from `additionalKeysKeystorePath` keystore.
+   * @param password
+   *     Password to `additionalKeysKeystorePath` keystore.
+   * @throws KeyStoreUtilsException
+   *     When there was a problem with reading keys from `additionalKeysKeystorePath`.
+   * @throws CertificateEncodingException
+   *     When there was a problem with encoding a certificate as base64.
    */
   @Autowired
   public SelfManifestProvider(

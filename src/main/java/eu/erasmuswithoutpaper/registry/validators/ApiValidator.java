@@ -102,6 +102,8 @@ public abstract class ApiValidator<S extends SuiteState> {
    *
    * @param version
    *     version of the API for which parameters will be returned.
+   * @return
+   *     List of parameters for all validators compatible with version `version`.
    */
   public List<ValidationParameter> getParameters(SemanticVersion version) {
     List<ValidationParameter> parameters = new ArrayList<>();
@@ -125,6 +127,7 @@ public abstract class ApiValidator<S extends SuiteState> {
 
   /**
    * Get list of parameters for all validators.
+   * @return list of parameters for all validators.
    */
   public List<ParameterWithVersion> getParameters() {
     List<ParameterWithVersion> parameters = new ArrayList<>();

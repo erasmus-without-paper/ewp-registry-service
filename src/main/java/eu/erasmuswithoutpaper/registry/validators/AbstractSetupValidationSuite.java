@@ -541,6 +541,9 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
    *     Name of generated validation step.
    * @param error
    *     Error to report if not a single (heiId, string) pair can be found.
+   * @return (heiId, first selected element as a string) pair.
+   * @throws SuiteBroken
+   *     If one of requests made results in fatal error, e.g. when schema won't match.
    */
   protected HeiIdAndString findResponseWithString(
       List<HeiIdAndUrl> heiIdAndUrls,

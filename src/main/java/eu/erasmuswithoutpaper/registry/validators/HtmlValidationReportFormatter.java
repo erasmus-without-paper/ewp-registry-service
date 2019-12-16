@@ -51,6 +51,18 @@ public class HtmlValidationReportFormatter {
 
     /**
      * Basic info about run tests.
+     * @param apiName
+     *      Name of tested api.
+     * @param url
+     *      Url of tested api.
+     * @param version
+     *      Version of tested api.
+     * @param validationStartedDate
+     *      Date when tests started.
+     * @param httpSecurityDescription
+     *      Description of used HTTP Security.
+     * @param clientKeysRegenerationDate
+     *      Date of client keys generation.
      */
     public ValidationInfoParameters(
         String apiName, String url, String version,

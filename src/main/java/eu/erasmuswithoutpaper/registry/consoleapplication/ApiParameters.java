@@ -35,6 +35,10 @@ public class ApiParameters {
 
   /**
    * Get help text for --api parameter.
+   *
+   * @param apiValidatorsManager
+   *     ApiValidatorsManager that has information about all implemented validators.
+   * @return List of String that should be a part of help message.
    */
   public static List<String> getApiParameterHelpText(ApiValidatorsManager apiValidatorsManager) {
     ArrayList<String> apiParameter = new ArrayList<>(Arrays.asList(
@@ -104,6 +108,8 @@ public class ApiParameters {
 
   /**
    * Get help text for api parameters.
+   *
+   * @return List of String that should be a part of help message.
    */
   public static List<String> getApisParametersHelpText() {
     return Arrays.asList(
@@ -125,6 +131,12 @@ public class ApiParameters {
 
   /**
    * Reads the manifest and returns APIs for which tests are available.
+   *
+   * @param manifest
+   *     Manifest to read.
+   * @param apiValidatorsManager
+   *     ApiValidatorsManager that has information about all implemented validators.
+   * @return List of ManifestApiEntry obtained by parsing the manifest.
    */
   public static List<ManifestApiEntry> readApisFromManifest(String manifest,
       ApiValidatorsManager apiValidatorsManager) {
@@ -134,6 +146,12 @@ public class ApiParameters {
 
   /**
    * Reads the manifest from the URL.
+   *
+   * @param manifestUrl
+   *     URL of the manifest to download.
+   * @return Downloaded manifest as a String.
+   * @throws IOException
+   *     When there were problems while downloading the manifest.
    */
   public static String readManifestFromUrl(String manifestUrl) throws IOException {
     try (InputStream manifestStream = new URL(manifestUrl).openStream();
@@ -144,7 +162,15 @@ public class ApiParameters {
   }
 
   /**
-   * Returns APIs selected by parameters or asks user to select one.
+   * Returns APIs selected by arguments or asks user to select one.
+   *
+   * @param apis
+   *     List of APIs to select from. Represent APIs implemented by one of manifests.
+   * @param args
+   *     Arguments passed to the executable.
+   * @param console
+   *     TextIO representing the console used by the user.
+   * @return List of APIs that were selected by the user of specified in arguments.
    */
   public static List<ManifestApiEntry> getSelectedApiEntries(List<ManifestApiEntry> apis,
       ApplicationArguments args, TextIO console) {
@@ -176,6 +202,16 @@ public class ApiParameters {
 
   /**
    * Returns parameters for given API provided as parameters or asks user to provide one.
+   *
+   * @param entry
+   *     Represents an API for which parameters should be returned.
+   * @param args
+   *     Arguments passed to the executable.
+   * @param console
+   *     TextIO representing the console used by the user.
+   * @return Parameters either read from the arguments or provided by the user.
+   * @throws ApplicationArgumentException
+   *     Thrown when arguments passed to the executable contain incorrect values.
    */
   public static ValidationParameters getParametersForApi(ManifestApiEntry entry,
       ApplicationArguments args, TextIO console) throws ApplicationArgumentException {

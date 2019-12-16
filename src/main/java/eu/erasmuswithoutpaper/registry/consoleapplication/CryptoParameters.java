@@ -32,6 +32,8 @@ public class CryptoParameters {
 
   /**
    * Returns help text lines for crypto parameters.
+   *
+   * @return List of String that should be a part of help message.
    */
   public static List<String> getCryptoParametersHelpText() {
     return Arrays.asList(
@@ -128,6 +130,14 @@ public class CryptoParameters {
 
   /**
    * Read Client HTTP Sig KeyPair from file given in parameters.
+   *
+   * @param args
+   *     Arguments passed to the executable.
+   * @return KeyPair loaded from path found in arguments.
+   * @throws ApplicationArgumentException
+   *     Thrown when arguments passed to the executable contain incorrect values.
+   * @throws KeyStoreUtilsException
+   *     Thrown when there is a problem with reading keys from the keystore specified in arguments.
    */
   public static KeyPair readHttpSigClientKeyPair(ApplicationArguments args)
       throws ApplicationArgumentException, KeyStoreUtilsException {
@@ -144,6 +154,14 @@ public class CryptoParameters {
 
   /**
    * Read Server HTTP Sig KeyPair from file given in parameters.
+   *
+   * @param args
+   *     Arguments passed to the executable.
+   * @return KeyPair loaded from path found in arguments.
+   * @throws ApplicationArgumentException
+   *     Thrown when arguments passed to the executable contain incorrect values.
+   * @throws KeyStoreUtilsException
+   *     Thrown when there is a problem with reading keys from the keystore specified in arguments.
    */
   public static KeyPair readHttpSigServerKeyPair(ApplicationArguments args)
       throws ApplicationArgumentException, KeyStoreUtilsException {
@@ -199,6 +217,14 @@ public class CryptoParameters {
 
   /**
    * Read TLS PrivateKey and Certificate from KeyStore given in parameters for permission testing.
+   *
+   * @param args
+   *     Arguments passed to the executable.
+   * @return KeyPair and Certificate loaded from path found in arguments.
+   * @throws ApplicationArgumentException
+   *     Thrown when arguments passed to the executable contain incorrect values.
+   * @throws KeyStoreUtilsException
+   *     Thrown when there is a problem with reading keys from the keystore specified in arguments.
    */
   public static KeyPairAndCertificate readPermissionTlsKeyAndCertificateFromParameters(
       ApplicationArguments args)
@@ -208,6 +234,14 @@ public class CryptoParameters {
 
   /**
    * Read TLS PrivateKey and Certificate from file given in parameters.
+   *
+   * @param args
+   *     Arguments passed to the executable.
+   * @return KeyPair and Certificate loaded from path found in arguments.
+   * @throws ApplicationArgumentException
+   *     Thrown when arguments passed to the executable contain incorrect values.
+   * @throws KeyStoreUtilsException
+   *     Thrown when there is a problem with reading keys from the keystore specified in arguments.
    */
   public static KeyPairAndCertificate readTlsKeyAndCertificateFromParameters(
       ApplicationArguments args)

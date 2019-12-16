@@ -49,6 +49,8 @@ public class ManifestApiEntry {
    *     true is there are tests available for this API in this version
    * @param parameters
    *     parameters that can be passed to tests for this API in this version
+   * @param securityNotices
+   *     Notices concerning securities implemented by this API.
    */
   public ManifestApiEntry(String name, ApiEndpoint endpoint, String version, String url,
       List<HttpSecurityDescription> securities, boolean available,
