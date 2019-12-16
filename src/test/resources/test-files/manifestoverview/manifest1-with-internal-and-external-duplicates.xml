@@ -1,0 +1,39 @@
+<manifest
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/tree/stable-v5"
+    xmlns:r="https://github.com/erasmus-without-paper/ewp-specs-api-registry/tree/stable-v1"
+>
+    <host>
+        <admin-email xmlns="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd">manifest1-admin1@example.com</admin-email>
+        <admin-email xmlns="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd">manifest1-admin2@example.com</admin-email>
+        <r:apis-implemented>
+            <discovery version="5.0.0" xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/blob/stable-v5/manifest-entry.xsd">
+                <url>https://example.com/tiny-but-valid.xml</url>
+            </discovery>
+        </r:apis-implemented>
+        <institutions-covered>
+            <r:hei id="test3">
+                <r:other-id type="erasmus">Test3</r:other-id>
+                <r:name xml:lang="en">Test 3</r:name>
+            </r:hei>
+            <r:hei id="test1">
+                <r:other-id type="erasmus">Test1</r:other-id>
+                <r:name xml:lang="en">Test 1</r:name>
+            </r:hei>
+        </institutions-covered>
+    </host>
+    <host>
+        <admin-email xmlns="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd">manifest1-admin1@example.com</admin-email>
+        <admin-email xmlns="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd">manifest1-admin2@example.com</admin-email>
+        <r:apis-implemented>
+            <discovery version="5.0.0" xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/blob/stable-v5/manifest-entry.xsd">
+                <url>https://example.com/tiny-but-valid.xml</url>
+            </discovery>
+        </r:apis-implemented>
+        <institutions-covered>
+            <r:hei id="test1">
+                <r:other-id type="erasmus">Test1</r:other-id>
+                <r:name xml:lang="en">Test 1</r:name>
+            </r:hei>
+        </institutions-covered>
+    </host>
+</manifest>

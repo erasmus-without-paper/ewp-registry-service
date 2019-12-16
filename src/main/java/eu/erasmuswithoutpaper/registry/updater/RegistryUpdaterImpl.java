@@ -109,6 +109,10 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
     this.onSourcesUpdated();
   }
 
+  private void onManifestAdminEmailsChanged(String manifestUrl, List<String> adminEmails) {
+    this.manifestOverviewManager.setManifestUrlAdminEmails(manifestUrl, adminEmails);
+  }
+
   /**
    * This needs to be called if the sources provided by {@link ManifestSourceProvider} have changed.
    * And this SHOULD happen ONLY IN TESTS (that's why this method is not part of the
@@ -150,6 +154,7 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
             "r:apis-implemented/d4:discovery/d4:url | " + "r:apis-implemented/d5:discovery/d5:url")
             .texts()) {
           recipients.put(url, adminEmails);
+          this.onManifestAdminEmailsChanged(url, adminEmails);
         }
       }
     } catch (CatalogueNotFound e) {
@@ -320,7 +325,9 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
           // Update the list of our notifierFlag's recipients.
 
           Match manifest = $(doc).namespaces(KnownNamespace.prefixMap());
-          notifierFlag.setRecipientEmails(manifest.xpath("mf5:host/ewp:admin-email").texts());
+          List<String> emails = manifest.xpath("mf5:host/ewp:admin-email").texts();
+          notifierFlag.setRecipientEmails(emails);
+          this.onManifestAdminEmailsChanged(source.getUrl(), emails);
 
           // Update the catalogue too.
 

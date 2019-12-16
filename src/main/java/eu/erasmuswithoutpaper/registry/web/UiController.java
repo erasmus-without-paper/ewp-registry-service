@@ -137,6 +137,8 @@ public class UiController {
    *     set of KeyStores providing credentials.
    * @param errorController
    *     used to generate 404 pages when the validator is not available.
+   * @param manifestOverviewManager
+   *     used to retrieve current data about duplicates in the network.
    */
   @Autowired
   public UiController(TaskExecutor taskExecutor,
