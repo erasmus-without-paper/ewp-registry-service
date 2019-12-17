@@ -230,33 +230,40 @@ public class SelfManifestProvider {
     hosts.get(0).xpath("r:apis-implemented/r1:registry/r1:catalogue-url")
         .text(Application.getRootUrl() + "/catalogue-v1.xml");
 
-    // Add covered HEIs.
+    // If validation is disabled then we shouldn't have second host in our manifest.
+    if (!Application.isValidationEnabled()) {
+      hosts.get(1).remove();
+    } else {
+      // Add covered HEIs.
 
-    Element heisCoveredElem = hosts.get(1).xpath("mf5:institutions-covered").get(0);
-    for (String heiId : this.echoTesterHeiIDs) {
-      Element heiElem =
-          doc.createElementNS(KnownNamespace.RESPONSE_REGISTRY_V1.getNamespaceUri(), "hei");
-      heiElem.setAttribute("id", heiId);
-      Element nameElem =
-          doc.createElementNS(KnownNamespace.RESPONSE_REGISTRY_V1.getNamespaceUri(), "name");
-      nameElem.setTextContent("Artificial HEI for testing APIs");
-      heiElem.appendChild(nameElem);
-      heisCoveredElem.appendChild(heiElem);
-    }
+      Element heisCoveredElem = hosts.get(1).xpath("mf5:institutions-covered").get(0);
+      for (String heiId : this.echoTesterHeiIDs) {
+        Element heiElem =
+            doc.createElementNS(KnownNamespace.RESPONSE_REGISTRY_V1.getNamespaceUri(), "hei");
+        heiElem.setAttribute("id", heiId);
+        Element nameElem =
+            doc.createElementNS(KnownNamespace.RESPONSE_REGISTRY_V1.getNamespaceUri(), "name");
+        nameElem.setTextContent("Artificial HEI for testing APIs");
+        heiElem.appendChild(nameElem);
+        heisCoveredElem.appendChild(heiElem);
+      }
 
-    // Add client certificates in use.
-    for (EncodedCertificateAndKeys encodedCertificateAndKeys : this.certificatesAndKeys) {
-      this.addClientCertificate(hosts, doc, encodedCertificateAndKeys.getCertificateEncoded());
-    }
+      // Add client certificates in use.
+      for (EncodedCertificateAndKeys encodedCertificateAndKeys : this.certificatesAndKeys) {
+        this.addClientCertificate(hosts, doc, encodedCertificateAndKeys.getCertificateEncoded());
+      }
 
-    // Add client keys in use.
-    for (EncodedCertificateAndKeys encodedCertificateAndKeys : this.certificatesAndKeys) {
-      this.addClientRsaPublicKey(hosts, doc, encodedCertificateAndKeys.getClientPublicKeyEncoded());
-    }
+      // Add client keys in use.
+      for (EncodedCertificateAndKeys encodedCertificateAndKeys : this.certificatesAndKeys) {
+        this.addClientRsaPublicKey(hosts, doc,
+            encodedCertificateAndKeys.getClientPublicKeyEncoded());
+      }
 
-    // Add server credentials in use.
-    for (EncodedCertificateAndKeys encodedCertificateAndKeys : this.certificatesAndKeys) {
-      this.addServerCredentials(hosts, doc, encodedCertificateAndKeys.getServerPublicKeyEncoded());
+      // Add server credentials in use.
+      for (EncodedCertificateAndKeys encodedCertificateAndKeys : this.certificatesAndKeys) {
+        this.addServerCredentials(hosts, doc,
+            encodedCertificateAndKeys.getServerPublicKeyEncoded());
+      }
     }
 
     // Reformat.
