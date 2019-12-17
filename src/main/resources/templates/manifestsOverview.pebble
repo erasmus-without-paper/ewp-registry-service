@@ -6,10 +6,10 @@
     <section class='ewp-section ewp-section-centered'>
         <h2 class='ewp-section-title'>Manifests Overview</h2>
 
-        <p class='ewp-para'>Currently defined manifest sources and overview of their contents:</p>
+        <p class='ewp-para'>Currently defined manifest sources and overview of their contents.</p>
 
-        <div class="ewpsrc">
-            <h2>Implemented APIs statistics:</h2>
+        <div class="ewpsrc ewpsrc__section_with_top_margin">
+            <h2>Implemented APIs statistics</h2>
                 {% for implementedApiCount in implementedApisCount.counts %}
                 <table class="ewpsrc ewpsrc__api_stats_table">
                 <tbody>
@@ -32,8 +32,8 @@
                 </table>
                 {% endfor %}
         </div>
-        <div class='ewpsrc'>
-            <h2>Duplicates in the EWP network</h2>
+        <div class='ewpsrc ewpsrc__section_with_top_margin'>
+            <h2>Duplicates in the EWP Network</h2>
             <h3>Duplicate (HEI, API) pairs on different hosts (with the same major version)</h3>
             {% if duplicatesInfo.map is empty %}
                 <div style="font-weight: bolder">
@@ -89,8 +89,8 @@
             {% endif %}
         </div>
 
-        <div class='ewpsrc'>
-            <h2>Implemented APIs and covered HEIs:</h2>
+        <div class='ewpsrc ewpsrc__section_with_top_margin'>
+            <h2>Implemented APIs and covered HEIs</h2>
             <table class="ewpsrc">
             {% for manifestOverviewInfo in manifestInfos %}
                 <h3><a href="{{ manifestOverviewInfo.url }}">{{ manifestOverviewInfo.url }}</a></h3>
