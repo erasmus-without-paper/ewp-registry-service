@@ -290,12 +290,12 @@ public class ManifestOverviewManager {
     StringBuilder sb = new StringBuilder();
     sb.append("Duplicated API status has changed.\n");
     if (!newDuplicates.isEmpty()) {
-      sb.append("New duplicates were found in those manifests:\n");
+      sb.append("New duplicates were found in these manifests:\n");
       sb.append(String.join(", ", newDuplicates));
       sb.append(".\n");
     }
     if (!notDuplicatedAnymore.isEmpty()) {
-      sb.append("Duplicates were removed from those manifests:\n");
+      sb.append("Duplicates were removed from these manifests:\n");
       sb.append(String.join(", ", notDuplicatedAnymore));
       sb.append(".\n");
     }
