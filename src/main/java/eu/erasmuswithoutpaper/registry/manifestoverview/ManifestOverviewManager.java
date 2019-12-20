@@ -233,7 +233,7 @@ public class ManifestOverviewManager {
   }
 
   private void notifyAboutRemovedDuplicate(String manifestWithoutDuplicateUrl) {
-    final String subject = "EWP Duplicate API implementation was removed.";
+    final String subject = "EWP Duplicate API instances was removed.";
     final String contentTemplate = String.join("",
         "Hello %s,\n",
         "duplicate API from manifest at %s was removed.\n\n",
@@ -248,7 +248,7 @@ public class ManifestOverviewManager {
   }
 
   private void notifyAboutNewDuplicate(String manifestWithDuplicateUrl) {
-    final String subject = "EWP Duplicate API implementation detected.";
+    final String subject = "EWP Duplicate API instances detected.";
     final String contentTemplate = String.join("",
         "Hello %s,\n",
         "we have detected duplicate API in your manifest located at %s.\n\n",

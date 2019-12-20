@@ -67,9 +67,9 @@ public class ManifestOverviewManagerTest extends WRTest {
   }
 
   private static final String duplicateDetectedSubject =
-      "EWP Duplicate API implementation detected.";
+      "EWP Duplicate API instances detected.";
   private static final String duplicateRemovedSubject =
-      "EWP Duplicate API implementation was removed.";
+      "EWP Duplicate API instances was removed.";
   private static final String adminEmailSubject = "EWP Duplicate API status has changed.";
   private static final String manifestUrl1 = "https://example.com/1";
   private static final ManifestSource manifestSource1 =
