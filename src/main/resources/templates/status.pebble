@@ -11,6 +11,7 @@
         <table class='ewpsrc'>
             {% for stat in manifestStatuses %}
                 <tr class='ewpsrc__item ewpsrc__item--status-{{ stat.lastAccessFlagStatus }}'>
+                    <td class='ewpsrc__item'> {{ loop.index + 1 }} </td>
                     <td class='ewpsrc__url'>
                         <a href='{{ stat.url }}'>{{ stat.url }}</a>
                     </td>

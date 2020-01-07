@@ -54,17 +54,23 @@ class CoverageMatrixRow {
     row2.append("<tr class='ewpst__row ewpst__row--header'>");
     row3.append("<tr class='ewpst__row ewpst__row--header'>");
 
+    /* Row index */
+
+    row1.append(genRow("#", NAME_COLOR_CLASS, 3, 1));
+
     /* Institution */
 
-    row1.append(genRow("Institution", NAME_COLOR_CLASS, 3, 1));
+    row1.append(genRow("Institution", NAME_COLOR_CLASS, 3, 1, "ewpst__cell--institution"));
 
     /* SCHAC */
 
-    row1.append(genRow("SCHAC", NAME_COLOR_CLASS, 3, 1, "ewpst__cell-schac"));
+    row1.append(genRow("SCHAC", NAME_COLOR_CLASS, 3, 1,
+            "ewpst__cell-schac ewpst__cell--institution"));
 
     /* Erasmus code */
 
-    row1.append(genRow("Erasmus code", NAME_COLOR_CLASS, 3, 1, "ewpst__cell-schac"));
+    row1.append(genRow("Erasmus code", NAME_COLOR_CLASS, 3, 1,
+            "ewpst__cell-schac ewpst__cell--institution"));
 
     /* General Purpose APIs */
 
@@ -147,10 +153,16 @@ class CoverageMatrixRow {
   private final List<CoverageMatrixCell> cells;
   private final OtherApisCell otherApisCell;
 
-  CoverageMatrixRow(HeiEntry hei, RegistryClient client) {
+  CoverageMatrixRow(HeiEntry hei, RegistryClient client, int rowIndex) {
     this.cells = new ArrayList<>();
 
     CoverageMatrixCell cell;
+
+    /* Row index */
+
+    cell = new CoverageMatrixCell(NAME_COLOR_CLASS);
+    this.cells.add(cell);
+    cell.addContentLine(String.valueOf(rowIndex));
 
     /* Institution */
 

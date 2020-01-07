@@ -53,8 +53,9 @@ public class CoverageMatrixGenerator {
   public String generateToHtmlTable(RegistryClient client) {
     List<HeiEntry> heis = this.extractInterestingHeis(client);
     List<CoverageMatrixRow> rows = new ArrayList<>();
-    for (HeiEntry hei : heis) {
-      rows.add(new CoverageMatrixRow(hei, client));
+    for (int i = 0; i < heis.size(); i++) {
+      HeiEntry hei = heis.get(i);
+      rows.add(new CoverageMatrixRow(hei, client, i + 1));
     }
     StringBuilder sb = new StringBuilder();
     sb.append("<div class='ewpst'>");
