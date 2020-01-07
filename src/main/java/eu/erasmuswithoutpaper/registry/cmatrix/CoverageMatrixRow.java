@@ -72,9 +72,17 @@ class CoverageMatrixRow {
     row1.append(genRow("Erasmus code", NAME_COLOR_CLASS, 3, 1,
             "ewpst__cell-schac ewpst__cell--institution"));
 
-    /* General Purpose APIs */
+    /* Primary Network APIs */
 
     int colorClass = getNextColorClass(NAME_COLOR_CLASS);
+
+    row1.append(genRow("Primary Network APIs", colorClass, 1, 2));
+    row2.append(genRow("discov.", colorClass, 2, 1));
+    row2.append(genRow("echo", colorClass, 2, 1));
+
+    /* General Purpose APIs */
+
+    colorClass = getNextColorClass(colorClass);
 
     row1.append(genRow("General Purpose APIs", colorClass, 1, 4));
     row2.append(genRow("inst.", colorClass, 2, 1));
@@ -186,9 +194,22 @@ class CoverageMatrixRow {
     Optional<String> erasmusCode = erasmusCodes.stream().findFirst();
     cell.addContentLine(erasmusCode.orElse(""));
 
+    /* Primary Network APIs */
+    int colorClass = getNextColorClass(NAME_COLOR_CLASS);
+
+    // discov.
+    cell = new ApiVersionsCell(colorClass, client, hei, KnownElement.APIENTRY_DISCOVERY_V4,
+            KnownElement.APIENTRY_DISCOVERY_V5);
+    this.cells.add(cell);
+
+    // echo
+    cell = new ApiVersionsCell(colorClass, client, hei, KnownElement.APIENTRY_ECHO_V1,
+            KnownElement.APIENTRY_ECHO_V2);
+    this.cells.add(cell);
+
     /* General Purpose APIs */
 
-    int colorClass = getNextColorClass(NAME_COLOR_CLASS);
+    colorClass = getNextColorClass(colorClass);
 
     // inst.
     cell = new ApiVersionsCell(colorClass, client, hei, KnownElement.APIENTRY_INSTITUTIONS_V1,
