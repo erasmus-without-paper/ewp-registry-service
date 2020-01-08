@@ -1,10 +1,15 @@
 ## How to run the Registry locally?
 We've created bash scripts to help you. You will need docker and git.
-First, contact EWP Administration, they will create and account for you and you will be able to download docker images.
-To pull image use:
+
+You need to create an [GitHub][github] account, [generate access token][generate-github-access-token] with `repo` and `read:packages` scopes, and then login to docker.pkg.github.com in docker.
 ```bash
-docker login --user <your username> docker.usos.edu.pl:5000
-docker pull docker.usos.edu.pl:5000/ewp-registry-service
+docker login docker.pkg.github.com --username <your username>
+<enter your GitLab access token when prompted for password>
+```
+
+Then, to pull image use:
+```bash
+docker pull docker.pkg.github.com/erasmus-without-paper/ewp-registry-service/ewp-registry-service:latest
 ```
 Then, call `./setup.sh <https URL of your manifest file>` script, it will create required directories and files.
 Next, run `./run_local_docker.sh`. It will start local registry on `localhost:8080`.
@@ -91,6 +96,8 @@ If you've already run `./setup.sh` then you might want to change that value in `
 6. Use registry webpage `https://localhost:<registry-port>` to run your tests. You will need to add ./keys/cert.pem to list of trusted certificates or add browser exception.
 
 
+[github]: https://github.com
+[generate-github-access-token]: https://github.com/settings/tokens
 [running-from-docker]: https://github.com/erasmus-without-paper/ewp-registry-service/blob/master/README.md#running-from-a-docker-image
 [pastebin]: https://pastebin.com/
 [gists]: https://gist.github.com/
