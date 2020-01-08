@@ -99,24 +99,6 @@ public class InstitutionValidatorTest extends AbstractApiTest {
   }
 
   @Test
-  public void testReportsAnErrorWhenPassedUnknownParametersIsDetected() {
-    InstitutionServiceV2Valid service =
-        new InstitutionServiceV2Valid(institutionsUrlHTTT, this.client,
-            validatorKeyStoreSet.getMainKeyStore()) {
-          @Override
-          protected void extractParamsMultipleParams(Map<String, List<String>> params)
-              throws ErrorResponseException {
-            throw new ErrorResponseException(
-                createErrorResponse(this.currentRequest, 400, "Expected only hei_id parameters")
-            );
-          }
-        };
-    TestValidationReport report = this.getRawReport(service);
-    assertThat(report)
-        .containsFailure("Request with additional parameter, expect 200 and one hei_id response.");
-  }
-
-  @Test
   public void testNotReportingAnErrorWhenInvalidHttpMethodIsUsedIsDetected() {
     InstitutionServiceV2Valid service =
         new InstitutionServiceV2Valid(institutionsUrlHTTT, this.client,

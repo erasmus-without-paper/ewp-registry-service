@@ -1234,18 +1234,6 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
         400
     );
 
-    testParameters200(
-        combination,
-        "Request with additional parameter, expect 200 and one "
-            + secondParameterNamePrefix + " in response.",
-        Arrays.asList(
-            new Parameter(heiParameterName, heiId),
-            new Parameter(secondParameterNamePrefix + "_id", id),
-            new Parameter(secondParameterNamePrefix + "_id_param", id)
-        ),
-        verifierFactory.expectResponseToContainExactly(Collections.singletonList(id))
-    );
-
     if (!skipCodeTests) {
       testParametersError(
           combination,

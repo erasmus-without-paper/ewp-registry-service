@@ -103,22 +103,6 @@ public class OUnitsValidatorTest extends AbstractApiTest {
   }
 
   @Test
-  public void testNotAcceptingUnknownParametersIsDetected() {
-    OUnitsServiceV2Valid service =
-        new OUnitsServiceV2Valid(ounitsUrlHTTT, this.client, GetInstitutions()) {
-          @Override
-          protected void handleUnexpectedParams() throws ErrorResponseException {
-            throw new ErrorResponseException(
-                createErrorResponse(this.currentRequest, 400, "Unknown parameter")
-            );
-          }
-        };
-    TestValidationReport report = this.getRawReport(service);
-    assertThat(report).containsFailure(
-        "Request with additional parameter, expect 200 and one ounit in response.");
-  }
-
-  @Test
   public void testNotReportingAnErrorWhenNoHeiIdIsPassedIsDetected() {
     OUnitsServiceV2Valid service =
         new OUnitsServiceV2Valid(ounitsUrlHTTT, this.client, GetInstitutions()) {

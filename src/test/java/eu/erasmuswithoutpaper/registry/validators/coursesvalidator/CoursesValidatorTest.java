@@ -112,23 +112,6 @@ public class CoursesValidatorTest extends AbstractApiTest {
   }
 
   @Test
-  public void testReportingAnErrorWhenUnknownParametersArePassedIsDetected() {
-    CoursesServiceV070Valid service =
-        new CoursesServiceV070Valid(coursesUrlHTTT, this.client, GetCoursesReplication()) {
-          @Override
-          protected void handleUnexpectedParams(RequestData requestData)
-              throws ErrorResponseException {
-            throw new ErrorResponseException(
-                createErrorResponse(requestData.request, 400, "Unknown parameter")
-            );
-          }
-        };
-    TestValidationReport report = this.getRawReport(service);
-    assertThat(report)
-        .containsFailure("Request with additional parameter, expect 200 and one los in response.");
-  }
-
-  @Test
   public void testNotReportingAnErrorWhenHeiIdParameterIsMissingIsDetected() {
     CoursesServiceV070Valid service =
         new CoursesServiceV070Valid(coursesUrlHTTT, this.client, GetCoursesReplication()) {

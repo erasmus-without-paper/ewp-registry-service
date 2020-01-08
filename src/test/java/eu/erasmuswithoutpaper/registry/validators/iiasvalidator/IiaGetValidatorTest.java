@@ -81,22 +81,6 @@ public class IiaGetValidatorTest extends IiaValidatorTestBase {
   }
 
   @Test
-  public void testReturningErrorWhenInvalidParameterIsPassedIsDetected() {
-    IiasServiceV2Valid service = new IiasServiceV2Valid(iiaIndexUrl, iiaGetUrl, this.client) {
-      @Override
-      protected void handleUnexpectedParams(
-          RequestData requestData) throws ErrorResponseException {
-        throw new ErrorResponseException(
-            createErrorResponse(requestData.request, 400, "Unknown parameter")
-        );
-      }
-    };
-    TestValidationReport report = this.getRawReport(service);
-    assertThat(report)
-        .containsFailure("Request with additional parameter, expect 200 and one iia in response.");
-  }
-
-  @Test
   public void testNotReportingMissingHeiIdParameterAsAnErrorIsDetected() {
     IiasServiceV2Valid service = new IiasServiceV2Valid(iiaIndexUrl, iiaGetUrl, this.client) {
       @Override

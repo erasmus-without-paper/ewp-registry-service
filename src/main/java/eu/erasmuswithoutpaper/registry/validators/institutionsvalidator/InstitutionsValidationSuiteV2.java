@@ -102,15 +102,6 @@ class InstitutionsValidationSuiteV2
     testParametersError(combination, "Request with single incorrect parameter, expect 400.",
         Arrays.asList(new Parameter("hei_id_param", currentState.selectedHeiId)), 400
     );
-
-    testParameters200(combination,
-        "Request with additional parameter, expect 200 and one hei_id response.", Arrays
-            .asList(
-                new Parameter("hei_id", currentState.selectedHeiId),
-                new Parameter("hei_id_param", currentState.selectedHeiId)
-            ),
-        new ListEqualInstitutionsVerifier(Collections.singletonList(currentState.selectedHeiId))
-    );
   }
 
 

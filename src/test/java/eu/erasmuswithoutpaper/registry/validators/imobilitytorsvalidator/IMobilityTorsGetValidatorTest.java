@@ -65,23 +65,6 @@ public class IMobilityTorsGetValidatorTest extends IMobilityTorsValidatorTestBas
   }
 
   @Test
-  public void testReturningErrorWhenInvalidParameterIsPassedIsDetected() {
-    IMobilityTorsServiceV2Valid service = new IMobilityTorsServiceV2Valid(omobilityTorsIndexUrl,
-        omobilityTorsGetUrl, this.client, this.resourceLoader) {
-      @Override
-      protected void handleUnexpectedParams(
-          RequestData requestData) throws ErrorResponseException {
-        throw new ErrorResponseException(
-            createErrorResponse(requestData.request, 400, "Unknown parameter")
-        );
-      }
-    };
-    TestValidationReport report = this.getRawReport(service);
-    assertThat(report).containsFailure(
-        "Request with additional parameter, expect 200 and one omobility in response.");
-  }
-
-  @Test
   public void testNotReportingMissingHeiIdParameterAsAnErrorIsDetected() {
     IMobilityTorsServiceV2Valid service = new IMobilityTorsServiceV2Valid(omobilityTorsIndexUrl,
         omobilityTorsGetUrl, this.client, this.resourceLoader) {
