@@ -18,10 +18,14 @@ Running from a Docker Image
 
 ### Pull the image
 
-Currently, we are pushing out latest builds to a private Docker registry.
+Currently, we are pushing out latest builds to a public Docker registry on GitHub.
+
+You need to create an [GitHub][github] account, [generate access token][generate-github-access-token] with `repo` and `read:packages` scopes, and then login to docker.pkg.github.com in docker.
 
 ```sh
-docker pull docker.usos.edu.pl:5000/ewp-registry-service
+docker login docker.pkg.github.com --username <your username>
+<enter your GitLab access token when prompted for password>
+docker pull docker.pkg.github.com/erasmus-without-paper/ewp-registry-service/ewp-registry-service:latest
 ```
 
 (You will need to repeat this step whenever you want to upgrade too.)
