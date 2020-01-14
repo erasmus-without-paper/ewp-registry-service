@@ -209,6 +209,8 @@ our releases:
 [registry-service]: https://registry.erasmuswithoutpaper.eu/
 [registry-api]: https://github.com/erasmus-without-paper/ewp-specs-api-registry
 [registry-client]: https://github.com/erasmus-without-paper/ewp-registry-client
+[github]: https://github.com
+[generate-github-access-token]: https://github.com/settings/tokens
 [props]: https://github.com/erasmus-without-paper/ewp-registry-service/blob/master/src/main/resources/application.properties
 [devel-props]: https://github.com/erasmus-without-paper/ewp-registry-service/blob/master/src/main/resources/application-development.properties
 [spring-config]: http://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-external-config.html
