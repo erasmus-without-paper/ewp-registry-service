@@ -84,7 +84,7 @@ B. Additional explanations
 
 2 What is tested?
 2.1 That partner's response is compliant with the XSD schema and specification (available in GitHub).
-2.2 That partner does not expose confidential data to all partenrs in the EWP Network.
+2.2 That partner does not expose confidential data to all partners in the EWP Network.
 2.3 That partner properly implements communication protocols of the EWP Network.
 
 3 What is not tested?
