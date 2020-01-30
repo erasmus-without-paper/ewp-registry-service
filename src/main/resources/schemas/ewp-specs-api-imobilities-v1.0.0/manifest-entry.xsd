@@ -6,10 +6,9 @@
     xmlns:sec="https://github.com/erasmus-without-paper/ewp-specs-sec-intro/tree/stable-v2"
     elementFormDefault="qualified"
 
-    targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-api-omobility-cnr/blob/stable-v1/manifest-entry.xsd"
-    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-omobility-cnr/blob/stable-v1/manifest-entry.xsd"
+    targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-api-imobilities/blob/stable-v1/manifest-entry.xsd"
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-imobilities/blob/stable-v1/manifest-entry.xsd"
 >
-    <!-- WRTODO: Once released, fix all schemaLocations pointing to its master branch. -->
 
     <xs:import
         schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-architecture/stable-v1/common-types.xsd"
@@ -30,13 +29,13 @@
         </xs:documentation>
     </xs:annotation>
 
-    <xs:element name="omobility-cnr">
+    <xs:element name="imobilities">
         <xs:annotation>
             <xs:documentation>
                 If this element is present in EWP Host's manifest file, then the host states
-                that it implements the Outgoing Mobility CNR API described here:
+                that it implements the Incoming Mobilities API described here:
 
-                https://github.com/erasmus-without-paper/ewp-specs-api-omobility-cnr
+                https://github.com/erasmus-without-paper/ewp-specs-api-imobilities
             </xs:documentation>
         </xs:annotation>
         <xs:complexType>
@@ -50,15 +49,17 @@
                                     given, then the server states that it supports the default set of security
                                     policies (as described in the annotations in sec:HttpSecurityOptions).
 
-                                    Clients SHOULD consult this element before accessing the endpoint given in the
-                                    `url` element (otherwise, their request might be rejected by the server).
+                                    The policies described in this element apply to all endpoints of this API (the
+                                    `*-url` elements below). Clients SHOULD consult this element before accessing
+                                    any of these endpoints (otherwise, their request might be rejected by the
+                                    server).
                                 </xs:documentation>
                             </xs:annotation>
                         </xs:element>
-                        <xs:element name="url" type="ewp:HTTPS" minOccurs="1" maxOccurs="1">
+                        <xs:element name="get-url" type="ewp:HTTPS" minOccurs="1" maxOccurs="1">
                             <xs:annotation>
                                 <xs:documentation>
-                                    An URL at which the the host will be listening.
+                                    An URL at which the `get` endpoint is being served.
                                 </xs:documentation>
                             </xs:annotation>
                         </xs:element>
@@ -67,6 +68,21 @@
                                 <xs:documentation>
                                     The maximum number of `omobility_id` parameters the server is willing to accept
                                     in one request.
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="sends-notifications" type="ewp:Empty" minOccurs="0" maxOccurs="1">
+                            <xs:annotation>
+                                <xs:documentation>
+                                    If this element is present, then the EWP Host states, that it has implemented a
+                                    Notification Sender for Incoming Mobility objects - it will *try* to deliver
+                                    notifications to all Incoming Mobility CNR APIs implemented throughout the EWP
+                                    Network whenever related incoming mobility objects are updated.
+
+                                    It is HIGHLY RECOMMENDED for all EWP Hosts to implement this feature. If it is
+                                    not implemented, then sending institutions will need to resolve into pulling
+                                    fresh data from your Incoming Mobilities API - this method will increase both
+                                    latency and the load on both servers.
                                 </xs:documentation>
                             </xs:annotation>
                         </xs:element>

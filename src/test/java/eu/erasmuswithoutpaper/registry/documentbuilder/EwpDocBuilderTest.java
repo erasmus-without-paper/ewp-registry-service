@@ -227,7 +227,7 @@ public class EwpDocBuilderTest extends WRTest {
          * EWP project, and we cannot force EMREX to fix those.
          */
 
-        if (xsdres.getURI().toString().contains("references/emrex-elmo-")) {
+        if (xsdres.getURI().toString().contains("elmo-schemas-")) {
           continue;
         }
 

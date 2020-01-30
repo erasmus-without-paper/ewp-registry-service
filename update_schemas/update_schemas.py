@@ -76,7 +76,11 @@ def get_repositories_list():
 
 def get_tag_version(tag):
     version = tag.name[1:]  # Remove leading 'v'
-    return semantic_version.Version(version)
+    try:
+        return semantic_version.Version(version)
+    except ValueError as e:
+        print("Invalid version encountered:", tag)
+        return None
 
 
 def git_list_files(repo):
@@ -89,9 +93,12 @@ def get_tag_dict(repos):
         print("Collecting tags for", name)
         cloned_dir = TEMP_REPOS_DIR + name
         repo = Repo(cloned_dir)
-        tags = list(sorted(map(get_tag_version, repo.tags)))
+
+        tags = map(get_tag_version, repo.tags)
+        sorted_tags = sorted([tag for tag in tags if tag is not None])
+
         repo_dict = defaultdict(list)
-        for tag in tags:
+        for tag in sorted_tags:
             repo_dict[tag.major].append(tag)
 
         result_dict[name] = dict(repo_dict)
@@ -240,14 +247,15 @@ class TypesRepoProcessor(RepoProcessor):
         return "schema.xsd"
 
 
-class ApiImobilityTorsProcessor(ApiProcessor):
+class ElmoRepoProcessor(RepoProcessor):
+    def get_main_file(self):
+        return "schema.xsd"
+
     def get_references(self):
         return {
-            "references/emrex-elmo-v1.1.0/schema.xsd":
-                "https://github.com/emrex-eu/elmo-schemas/tree/v1",
-            "references/emrex-elmo-v1.1.0/references/EUROPASS_ISOCountries_V1.1.xsd":
+            "references/EUROPASS_ISOCountries_V1.1.xsd":
                 "http://europass.cedefop.europa.eu/Europass/V2.0",
-            "references/emrex-elmo-v1.1.0/references/xmldsig-core-schema.xsd":
+            "references/xmldsig-core-schema.xsd":
                 "http://www.w3.org/2000/09/xmldsig#"
         }
 
@@ -262,8 +270,8 @@ repository_processors = [
     ("ewp-specs-api-mobility-update", None),
     ("ewp-specs-api-discovery", ApiDiscoveryProcessor),
     ("ewp-specs-api-registry", ApiRegistryProcessor),
-    ("ewp-specs-api-imobility-tors", ApiImobilityTorsProcessor),
     ("ewp-specs-api-.*", ApiProcessor),
+    ("elmo-schemas", ElmoRepoProcessor),
 ]
 
 
@@ -341,6 +349,9 @@ def remove_dir(name):
 
 
 repos = get_repositories_list()
+repos.append(
+    ('elmo-schemas', 'git://github.com/emrex-eu/elmo-schemas.git')
+)
 
 # Clone all repos
 for name, url in repos:
