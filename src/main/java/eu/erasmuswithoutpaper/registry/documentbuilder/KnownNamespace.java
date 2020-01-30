@@ -90,11 +90,11 @@ public class KnownNamespace {
    * As described <a href=
    * 'https://github.com/erasmus-without-paper/ewp-specs-api-course-replication/blob/master/manifest-entry.xsd'>
    * here</a>.
-   */ // WRTODO: master->stable!
+   */ // TODO: master->stable!
   public static final KnownNamespace RESPONSE_COURSE_REPLICATION_V1 = new KnownNamespace("crr1",
       "api-course-replication/tree/stable-v1", "api-course-replication/stable-v1/response.xsd",
       false);
-  // WRTODO: 1. false->true 2. master->stable
+  // TODO: 1. false->true 2. master->stable
 
   /**
    * As described <a href=
@@ -125,36 +125,33 @@ public class KnownNamespace {
   /**
    * As described <a href=
 
-   * 'https://github.com/erasmus-without-paper/ewp-specs-api-mt-projects/tree/master/manifest-entry.xsd'>
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-mt-projects/tree/stable-v1/manifest-entry.xsd'>
    * here</a>.
-   */ // TODO: master->stable!
+   */
   public static final KnownNamespace RESPONSE_MT_PROJECTS_V1 = new KnownNamespace("mtpr1",
       "api-mt-projects/tree/stable-v1",
-      "api-mt-projects/master/response.xsd",
+      "api-mt-projects/stable-v1/response.xsd",
       false);
-  // TODO master -> stable!
 
   /**
    * As described <a href=
-   * 'https://github.com/erasmus-without-paper/ewp-specs-api-mt-institutions/tree/master/manifest-entry.xsd'>
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-mt-institutions/tree/stable-v1/manifest-entry.xsd'>
    * here</a>.
-   */ // TODO: master->stable!
+   */
   public static final KnownNamespace RESPONSE_MT_INSTITUTIONS_V1 = new KnownNamespace("mtir1",
       "api-mt-institutions/tree/stable-v1",
-      "api-mt-institutions/master/response.xsd",
+      "api-mt-institutions/stable-v1/response.xsd",
       false);
-  // TODO master -> stable!
 
   /**
    * As described <a href=
-   * 'https://github.com/erasmus-without-paper/ewp-specs-api-mt-dictionaries/tree/master/manifest-entry.xsd'>
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-mt-dictionaries/tree/stable-v1/manifest-entry.xsd'>
    * here</a>.
-   */ // TODO: master->stable!
+   */
   public static final KnownNamespace RESPONSE_MT_DICTIONARIES_V1 = new KnownNamespace("mtdr1",
       "api-mt-dictionaries/tree/stable-v1",
-      "api-mt-dictionaries/master/response.xsd",
+      "api-mt-dictionaries/stable-v1/response.xsd",
       false);
-  // TODO master -> stable!
 
   /**
    * As described <a href=
@@ -352,23 +349,23 @@ public class KnownNamespace {
 
   /**
    * As described <a href=
-   * 'https://github.com/erasmus-without-paper/ewp-specs-api-imobilities/blob/master/manifest-entry.xsd'>
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-imobilities/blob/stable-v1/manifest-entry.xsd'>
    * here</a>.
-   */ // TODO: master->stable!
+   */
   public static final KnownNamespace APIENTRY_IMOBILITIES_V1 =
       new KnownNamespace("im1", "api-imobilities/blob/stable-v1/manifest-entry.xsd",
-          "api-imobilities/master/manifest-entry.xsd", false);
-  // TODO: 1. false->true 2. master->stable
+          "api-imobilities/stable-v1/manifest-entry.xsd", false);
+  // TODO: 1. false->true
 
   /**
    * As described <a href=
-   * 'https://github.com/erasmus-without-paper/ewp-specs-api-imobility-cnr/blob/master/manifest-entry.xsd'>
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-imobility-cnr/blob/stable-v1/manifest-entry.xsd'>
    * here</a>.
-   */ // TODO: master->stable!
+   */
   public static final KnownNamespace APIENTRY_IMOBILITY_CNR_V1 =
       new KnownNamespace("imc1", "api-imobility-cnr/blob/stable-v1/manifest-entry.xsd",
-          "api-imobility-cnr/master/manifest-entry.xsd", false);
-  // TODO: 1. false->true 2. master->stable
+          "api-imobility-cnr/stable-v1/manifest-entry.xsd", false);
+  // TODO: 1. false->true
 
   /**
    * As described <a href=
@@ -392,33 +389,33 @@ public class KnownNamespace {
 
   /**
    * As described <a href=
-   * 'https://github.com/erasmus-without-paper/ewp-specs-api-mt-projects/blob/master/manifest-entry.xsd'>
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-mt-projects/blob/stable-v1/manifest-entry.xsd'>
    * here</a>.
-   */ // TODO: master->stable!
+   */
   public static final KnownNamespace APIENTRY_MT_PROJECTS_V1 =
       new KnownNamespace("mtp1", "api-mt-projects/blob/stable-v1/manifest-entry.xsd",
-          "api-mt-projects/master/manifest-entry.xsd", false);
-  // TODO: 1. false->true 2. master->stable
+          "api-mt-projects/stable-v1/manifest-entry.xsd", false);
+  // TODO: 1. false->true
 
   /**
    * As described <a href=
-   * 'https://github.com/erasmus-without-paper/ewp-specs-api-mt-institutions/blob/master/manifest-entry.xsd'>
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-mt-institutions/blob/stable-v1/manifest-entry.xsd'>
    * here</a>.
-   */ // TODO: master->stable!
+   */
   public static final KnownNamespace APIENTRY_MT_INSTITUTIONS_V1 =
       new KnownNamespace("mti1", "api-mt-institutions/blob/stable-v1/manifest-entry.xsd",
-          "api-mt-institutions/master/manifest-entry.xsd", false);
-  // TODO: 1. false->true 2. master->stable
+          "api-mt-institutions/stable-v1/manifest-entry.xsd", false);
+  // TODO: 1. false->true
 
   /**
    * As described <a href=
-   * 'https://github.com/erasmus-without-paper/ewp-specs-api-mt-dictionaries/blob/master/manifest-entry.xsd'>
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-mt-dictionaries/blob/stable-v1/manifest-entry.xsd'>
    * here</a>.
-   */ // TODO: master->stable!
+   */
   public static final KnownNamespace APIENTRY_MT_DICTIONARIES_V1 =
       new KnownNamespace("mtd1", "api-mt-dictionaries/blob/stable-v1/manifest-entry.xsd",
-          "api-mt-dictionaries/master/manifest-entry.xsd", false);
-  // TODO: 1. false->true 2. master->stable
+          "api-mt-dictionaries/stable-v1/manifest-entry.xsd", false);
+  // TODO: 1. false->true
 
   /**
    * As described <a href=

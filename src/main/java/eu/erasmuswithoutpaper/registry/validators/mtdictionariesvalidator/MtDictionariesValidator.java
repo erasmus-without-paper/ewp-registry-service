@@ -32,6 +32,17 @@ public class MtDictionariesValidator extends ApiValidator<MtDictionariesSuiteSta
         new SemanticVersion(0, 1, 0),
         new ValidationSuiteInfo<>(MtDictionariesValidationSuiteV1::new)
     );
+    validationSuites.put(
+            new SemanticVersion(1, 0, 0),
+            new ValidationSuiteInfo<>(
+                    MtDictionariesSetupValidationSuiteV1::new,
+                    MtDictionariesSetupValidationSuiteV1.getParameters()
+            )
+    );
+    validationSuites.put(
+            new SemanticVersion(1, 0, 0),
+            new ValidationSuiteInfo<>(MtDictionariesValidationSuiteV1::new)
+    );
   }
 
   public MtDictionariesValidator(EwpDocBuilder docBuilder, Internet internet,

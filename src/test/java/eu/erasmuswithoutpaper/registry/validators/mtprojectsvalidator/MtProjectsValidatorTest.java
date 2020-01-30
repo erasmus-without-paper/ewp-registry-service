@@ -34,7 +34,7 @@ public class MtProjectsValidatorTest extends AbstractApiTest {
 
   @Override
   protected SemanticVersion getVersion() {
-    return new SemanticVersion(0, 1, 0);
+    return new SemanticVersion(1, 0, 0);
   }
 
   @Override

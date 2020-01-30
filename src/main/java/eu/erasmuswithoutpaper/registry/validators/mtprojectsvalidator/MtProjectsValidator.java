@@ -32,6 +32,17 @@ public class MtProjectsValidator extends ApiValidator<MtProjectsSuiteState> {
         new SemanticVersion(0, 1, 0),
         new ValidationSuiteInfo<>(MtProjectsValidationSuiteV1::new)
     );
+    validationSuites.put(
+            new SemanticVersion(1, 0, 0),
+            new ValidationSuiteInfo<>(
+                    MtProjectsSetupValidationSuiteV1::new,
+                    MtProjectsSetupValidationSuiteV1.getParameters()
+            )
+    );
+    validationSuites.put(
+            new SemanticVersion(1, 0, 0),
+            new ValidationSuiteInfo<>(MtProjectsValidationSuiteV1::new)
+    );
   }
 
   public MtProjectsValidator(EwpDocBuilder docBuilder, Internet internet,

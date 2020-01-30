@@ -12,7 +12,7 @@
         </discovery>
         <mt-projects
             xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-mt-projects/blob/stable-v1/manifest-entry.xsd"
-            version="0.1.0"
+            version="1.0.0"
         >
             <http-security>
                 <sec:client-auth-methods>
@@ -28,7 +28,7 @@
         </mt-projects>
         <mt-institutions
             xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-mt-institutions/blob/stable-v1/manifest-entry.xsd"
-            version="0.1.0"
+            version="1.0.0"
         >
             <http-security>
                 <sec:client-auth-methods>
@@ -45,7 +45,7 @@
         </mt-institutions>
         <mt-dictionaries
             xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-mt-dictionaries/blob/stable-v1/manifest-entry.xsd"
-            version="0.1.0"
+            version="1.0.0"
         >
             <http-security>
                 <sec:client-auth-methods>
