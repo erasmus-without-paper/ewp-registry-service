@@ -1,3 +1,5 @@
+MIT License
+
 Copyright 2019 Beneficiaries of the EWP projects
 https://raw.githubusercontent.com/erasmus-without-paper/ewp-contributors/master/CONTRIBUTORS
 
