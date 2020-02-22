@@ -18,6 +18,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import io.sentry.Sentry;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -102,9 +103,11 @@ public class ProductionScheduledTasks {
       this.repo.push();
       this.logPushingStatus.setStatus(Severity.OK);
     } catch (ConfigurationException | GitAPIException e) {
+      Sentry.capture(e);
       logger.error("Exception while pushing repository changes: " + e);
       this.logPushingStatus.setStatus(Severity.WARNING);
     } catch (RuntimeException e) {
+      Sentry.capture(e);
       logger.error("RuntimeException while pushing repository changes", e);
       this.logPushingStatus.setStatus(Severity.ERROR);
     }
@@ -119,6 +122,7 @@ public class ProductionScheduledTasks {
       this.uptimeChecker.refresh();
       this.uptimeCheckerStatus.setStatus(Severity.OK);
     } catch (RuntimeException e) {
+      Sentry.capture(e);
       logger.error("RuntimeException while refreshing uptime stats", e);
       this.uptimeCheckerStatus.setStatus(Severity.ERROR);
     }
@@ -133,6 +137,7 @@ public class ProductionScheduledTasks {
       this.updater.reloadAllManifestSources();
       this.manifestReloadingStatus.setStatus(Severity.OK);
     } catch (RuntimeException e) {
+      Sentry.capture(e);
       logger.error("RuntimeException while reloading manifests", e);
       this.manifestReloadingStatus.setStatus(Severity.ERROR);
     }
@@ -147,6 +152,7 @@ public class ProductionScheduledTasks {
       this.notifier.sendNotifications();
       this.notificationSendingStatus.setStatus(Severity.OK);
     } catch (RuntimeException e) {
+      Sentry.capture(e);
       logger.error("RuntimeException while sending notifications", e);
       this.notificationSendingStatus.setStatus(Severity.ERROR);
     }
