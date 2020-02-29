@@ -26,10 +26,10 @@ import org.slf4j.LoggerFactory;
  * Describes the set of test/steps to be run on an IMobility ToRs API index endpoint implementation
  * in order to properly validate it.
  */
-class IMobilityTorsIndexValidationSuiteV070
+class IMobilityTorsIndexValidationSuiteV1
     extends AbstractValidationSuite<IMobilityTorsSuiteState> {
   private static final Logger logger =
-      LoggerFactory.getLogger(IMobilityTorsIndexValidationSuiteV070.class);
+      LoggerFactory.getLogger(IMobilityTorsIndexValidationSuiteV1.class);
   private static final ValidatedApiInfo apiInfo = new IMobilityTorsIndexValidatedApiInfo();
 
   @Override
@@ -42,7 +42,7 @@ class IMobilityTorsIndexValidationSuiteV070
     return apiInfo;
   }
 
-  IMobilityTorsIndexValidationSuiteV070(ApiValidator<IMobilityTorsSuiteState> validator,
+  IMobilityTorsIndexValidationSuiteV1(ApiValidator<IMobilityTorsSuiteState> validator,
       IMobilityTorsSuiteState state, ValidationSuiteConfig config) {
     super(validator, state, config);
   }
@@ -258,7 +258,7 @@ class IMobilityTorsIndexValidationSuiteV070
         Verifier verifier = omobilityIdVerifierFactory.expectResponseToBeEmpty();
 
         try {
-          IMobilityTorsIndexValidationSuiteV070.this.setValidatorKeyStore(otherValidationKeyStore);
+          IMobilityTorsIndexValidationSuiteV1.this.setValidatorKeyStore(otherValidationKeyStore);
 
           Request request = createRequestWithParameters(this, combination, params);
 
@@ -266,7 +266,7 @@ class IMobilityTorsIndexValidationSuiteV070
               makeRequestAndVerifyResponse(this, combination, request, verifier, Status.FAILURE)
           );
         } finally {
-          IMobilityTorsIndexValidationSuiteV070.this.setValidatorKeyStore(currentValidatorKeyStore);
+          IMobilityTorsIndexValidationSuiteV1.this.setValidatorKeyStore(currentValidatorKeyStore);
         }
       }
     });

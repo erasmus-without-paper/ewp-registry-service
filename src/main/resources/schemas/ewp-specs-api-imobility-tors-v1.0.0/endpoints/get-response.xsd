@@ -66,10 +66,7 @@
                                         particular, there's the fact that some features required by EMREX ELMO are
                                         quite unnecessary in EWP's use case.
 
-                                        For example, there's no longer any reason for the ELMO element to be digitally
-                                        signed (because in EWP we can rely on the transport layer for security, whereas
-                                        in EMREX signing is required because the student acts as an intermediary).
-                                        Similarly, we do not need `learner` and `issuer` elements, because we can
+                                        For example, we do not need `learner` and `issuer` elements, because we can
                                         determine their content by other means.
 
                                         Despite these, we have chosen to require EMREX ELMO XML format here, "as it
@@ -108,19 +105,6 @@
 
                                         * The PDF version of the transcript, if present, SHOULD be located inside the `report` element
                                           and have type 'Transcript of Records'.
-
-                                        ## Signing the ELMO
-
-                                        This API does not currently specify how the ELMO response needs to be signed.
-                                        In EMREX, ELMO files need to be signed with a very specific certificate, but in
-                                        EWP the certificate used does not (currently) matter, because clients use other ways
-                                        of verifying that the response came from appropriate source. This means that clients
-                                        MAY simply ignore the attached digital signature (it is okay to not verify it in any
-                                        way).
-
-                                        That said, it seems that the best certificate to use for this, would be the same
-                                        certificate which was used to actually serve the ToRs API. (Clients SHOULD NOT rely
-                                        on this recommendation however, because it MAY change in the future.)
                                     </xs:documentation>
                                 </xs:annotation>
                             </xs:element>

@@ -15,7 +15,7 @@ public abstract class IMobilityTorsValidatorTestBase extends AbstractApiTest<IMo
 
   @Override
   protected SemanticVersion getVersion() {
-    return new SemanticVersion(0, 7, 0);
+    return new SemanticVersion(1, 0, 0);
   }
 }
 

@@ -3,7 +3,7 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="
         https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/blob/stable-v1/endpoints/index-response.xsd
-        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-omobilities/master/endpoints/index-response.xsd
+        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-omobilities/stable-v1/endpoints/index-response.xsd
     "
 >
     <omobility-id>2a83d860-b9c9-4baf-81f4-5110d217d273</omobility-id>

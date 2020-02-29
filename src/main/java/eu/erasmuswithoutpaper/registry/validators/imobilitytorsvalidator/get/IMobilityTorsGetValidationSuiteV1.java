@@ -18,11 +18,11 @@ import org.slf4j.LoggerFactory;
  * Describes the set of test/steps to be run on an IMobility ToRs API get endpoint implementation
  * in order to properly validate it.
  */
-class IMobilityTorsGetValidationSuiteV070
+class IMobilityTorsGetValidationSuiteV1
     extends AbstractValidationSuite<IMobilityTorsSuiteState> {
 
   private static final Logger logger = LoggerFactory
-      .getLogger(IMobilityTorsGetValidationSuiteV070.class);
+      .getLogger(IMobilityTorsGetValidationSuiteV1.class);
 
   private static final ValidatedApiInfo apiInfo = new IMobilityTorsGetValidatedApiInfo();
 
@@ -36,7 +36,7 @@ class IMobilityTorsGetValidationSuiteV070
     return apiInfo;
   }
 
-  IMobilityTorsGetValidationSuiteV070(ApiValidator<IMobilityTorsSuiteState> validator,
+  IMobilityTorsGetValidationSuiteV1(ApiValidator<IMobilityTorsSuiteState> validator,
       IMobilityTorsSuiteState state, ValidationSuiteConfig config) {
     super(validator, state, config);
   }
@@ -52,10 +52,10 @@ class IMobilityTorsGetValidationSuiteV070
         "Request for one of known omobility_ids, expect 200 OK.",
         Arrays.asList(
             new Parameter("receiving_hei_id",
-                IMobilityTorsGetValidationSuiteV070.this.currentState.receivingHeiId),
+                IMobilityTorsGetValidationSuiteV1.this.currentState.receivingHeiId),
             new Parameter(
                 "omobility_id",
-                IMobilityTorsGetValidationSuiteV070.this.currentState.omobilityId)
+                IMobilityTorsGetValidationSuiteV1.this.currentState.omobilityId)
         ),
         new CorrectResponseVerifier()
     );
@@ -75,7 +75,7 @@ class IMobilityTorsGetValidationSuiteV070
             new Parameter("receiving_hei_id", this.currentState.receivingHeiId),
             new Parameter("receiving_hei_id", fakeId),
             new Parameter("omobility_id",
-                IMobilityTorsGetValidationSuiteV070.this.currentState.omobilityId)
+                IMobilityTorsGetValidationSuiteV1.this.currentState.omobilityId)
         ),
         400
     );

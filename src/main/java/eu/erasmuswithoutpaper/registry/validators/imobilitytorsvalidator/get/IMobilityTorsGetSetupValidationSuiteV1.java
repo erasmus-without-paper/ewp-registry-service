@@ -17,11 +17,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-class IMobilityTorsGetSetupValidationSuiteV070
+class IMobilityTorsGetSetupValidationSuiteV1
     extends AbstractSetupValidationSuite<IMobilityTorsSuiteState> {
 
   private static final Logger logger =
-      LoggerFactory.getLogger(IMobilityTorsGetSetupValidationSuiteV070.class);
+      LoggerFactory.getLogger(IMobilityTorsGetSetupValidationSuiteV1.class);
 
   private static final ValidatedApiInfo apiInfo = new IMobilityTorsGetValidatedApiInfo();
 
@@ -50,7 +50,7 @@ class IMobilityTorsGetSetupValidationSuiteV070
     return getMaxIds("omobility-ids");
   }
 
-  IMobilityTorsGetSetupValidationSuiteV070(ApiValidator<IMobilityTorsSuiteState> validator,
+  IMobilityTorsGetSetupValidationSuiteV1(ApiValidator<IMobilityTorsSuiteState> validator,
       IMobilityTorsSuiteState state, ValidationSuiteConfig config) {
     super(validator, state, config);
   }

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:ewp="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
+    elementFormDefault="qualified"
+
+    targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-api-iias-approval/tree/stable-v1"
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-iias-approval/tree/stable-v1"
+>
+    <xs:import
+        schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-architecture/stable-v1/common-types.xsd"
+        namespace="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd" />
+
+    <xs:annotation>
+        <xs:documentation>
+            This schema is a part of the Erasmus Without Paper project. Before you start
+            using it, make sure you have read the general rules described here:
+
+            http://developers.erasmuswithoutpaper.eu/
+        </xs:documentation>
+    </xs:annotation>
+
+    <xs:element name="iias-approval-response">
+        <xs:annotation>
+            <xs:documentation>
+                This describes the format of the response returned by the 
+                EWP Interinstitutional Agreements Approval API.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="approval" minOccurs="0" maxOccurs="unbounded">
+                    <xs:annotation>
+                        <xs:documentation>
+                            This element represents a single IIA approval. 
+                            For each of the `iia_id` values passed in the API call, server will produce one such
+                            element if and only if the corresponding agreement
+                            (more precisely: partner's copy of the agreement) is approved by him.
+                        </xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="iia-id" type="ewp:AsciiPrintableIdentifier">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        IIA identifier, as assigned by the calling partner.
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                            <xs:element name="conditions-hash" type="ewp:Sha256Hex">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        The SHA-256 digest of the cooperation-conditions element of the agreement that is
+                                        being approved. Before calculating the hash, the cooperation-conditions element
+                                        should be normalized using Exclusive XML Canonicalization.
+
+                                        The digest is present in the IIAs API get response, but MUST be verified by the server
+                                        before sending the approval.
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                            <xs:element name="pdf" type="xs:base64Binary" minOccurs="0" maxOccurs="1">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        PDF version of the agreement. This SHOULD be the PDF that was
+                                        fetched from the partner via the Interinstitutional Agreements API, additionally
+                                        signed by the approving partner.
+                                        
+                                        This element SHOULD be skipped if the `send_pdf` request parameter value is `false`.
+
+                                        Notes for client implementers:
+
+                                        The pdf element can be missing even if the `send_pdf` parameter was set to true.
+                                        Some servers MAY not support PDFs at all or the signed PDF version can be not ready yet.
+
+                                        For security reasons, you may consider checking the content type of the file
+                                        before displaying it in the browser.
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

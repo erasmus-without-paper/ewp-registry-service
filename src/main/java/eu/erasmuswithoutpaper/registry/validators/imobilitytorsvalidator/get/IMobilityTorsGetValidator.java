@@ -24,17 +24,32 @@ public class IMobilityTorsGetValidator extends ApiValidator<IMobilityTorsSuiteSt
 
   static {
     validationSuites = ApiValidator.createMultimap();
+
     validationSuites.put(
         new SemanticVersion(0, 7, 0),
         new ValidationSuiteInfo<>(
-            IMobilityTorsGetSetupValidationSuiteV070::new,
-            IMobilityTorsGetSetupValidationSuiteV070.getParameters()
+            IMobilityTorsGetSetupValidationSuiteV1::new,
+            IMobilityTorsGetSetupValidationSuiteV1.getParameters()
         )
     );
     validationSuites.put(
         new SemanticVersion(0, 7, 0),
         new ValidationSuiteInfo<>(
-            IMobilityTorsGetValidationSuiteV070::new
+            IMobilityTorsGetValidationSuiteV1::new
+        )
+    );
+
+    validationSuites.put(
+        new SemanticVersion(1, 0, 0),
+        new ValidationSuiteInfo<>(
+            IMobilityTorsGetSetupValidationSuiteV1::new,
+            IMobilityTorsGetSetupValidationSuiteV1.getParameters()
+        )
+    );
+    validationSuites.put(
+        new SemanticVersion(1, 0, 0),
+        new ValidationSuiteInfo<>(
+            IMobilityTorsGetValidationSuiteV1::new
         )
     );
   }

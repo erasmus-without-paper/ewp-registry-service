@@ -6,7 +6,7 @@
     <r:apis-implemented>
         <imobility-tors
             xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-imobility-tors/blob/stable-v1/manifest-entry.xsd"
-            version="0.7.0"
+            version="1.0.0"
         >
             <http-security>
                 <sec:client-auth-methods>

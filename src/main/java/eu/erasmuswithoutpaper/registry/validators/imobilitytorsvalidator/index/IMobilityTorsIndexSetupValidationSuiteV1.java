@@ -15,11 +15,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-class IMobilityTorsIndexSetupValidationSuiteV070
+class IMobilityTorsIndexSetupValidationSuiteV1
     extends AbstractSetupValidationSuite<IMobilityTorsSuiteState> {
 
   private static final Logger logger =
-      LoggerFactory.getLogger(IMobilityTorsIndexSetupValidationSuiteV070.class);
+      LoggerFactory.getLogger(IMobilityTorsIndexSetupValidationSuiteV1.class);
 
   private static final ValidatedApiInfo apiInfo = new IMobilityTorsIndexValidatedApiInfo();
 
@@ -52,7 +52,7 @@ class IMobilityTorsIndexSetupValidationSuiteV070
     );
   }
 
-  IMobilityTorsIndexSetupValidationSuiteV070(ApiValidator<IMobilityTorsSuiteState> validator,
+  IMobilityTorsIndexSetupValidationSuiteV1(ApiValidator<IMobilityTorsSuiteState> validator,
       IMobilityTorsSuiteState state, ValidationSuiteConfig config) {
     super(validator, state, config);
   }

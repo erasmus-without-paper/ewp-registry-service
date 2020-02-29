@@ -322,6 +322,15 @@
                                     </xs:documentation>
                                 </xs:annotation>
                             </xs:element>
+                            <xs:element name="global-id" type="xs:string" minOccurs="0" maxOccurs="1">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        Global student identifier. Should follow the specification of the
+                                        European Student Identifier
+                                        (https://github.com/erasmus-without-paper/european-student-identifier).
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
                             <xs:element name="birth-date" type="xs:date" minOccurs="0" maxOccurs="1">
                                 <xs:annotation>
                                     <xs:documentation>

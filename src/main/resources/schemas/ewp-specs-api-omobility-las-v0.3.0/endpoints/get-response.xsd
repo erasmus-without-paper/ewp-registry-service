@@ -124,6 +124,15 @@
                     <xs:sequence>
                         <xs:element name="given-names" type="xs:string" minOccurs="1" maxOccurs="1"/>
                         <xs:element name="family-name" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                        <xs:element name="global-id" type="xs:string" minOccurs="0" maxOccurs="1">
+                            <xs:annotation>
+                                <xs:documentation>
+                                    Global student identifier. Should follow the specification of the
+                                    European Student Identifier
+                                    (https://github.com/erasmus-without-paper/european-student-identifier).
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
                         <xs:element name="birth-date" type="xs:date" minOccurs="1" maxOccurs="1"/>
                         <xs:element name="citizenship" type="ewp:CountryCode" minOccurs="1" maxOccurs="1">
                             <xs:annotation>

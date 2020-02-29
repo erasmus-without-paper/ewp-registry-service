@@ -155,23 +155,23 @@ public class KnownNamespace {
 
   /**
    * As described <a href=
-   * 'https://github.com/erasmus-without-paper/ewp-specs-api-imobility-tors/tree/master/manifest-entry.xsd'>
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-imobility-tors/tree/stable-v1/manifest-entry.xsd'>
    * here</a>.
-   */ // TODO: master->stable!
+   */
   public static final KnownNamespace RESPONSE_IMOBILITY_TORS_INDEX_V1 = new KnownNamespace("imtri1",
       "api-imobility-tors/blob/stable-v1/endpoints/index-response.xsd",
-      "api-imobility-tors/master/endpoints/index-response.xsd", false);
-  // TODO master -> stable!
+      "api-imobility-tors/stable-v1/endpoints/index-response.xsd", false);
+  // TODO false -> true
 
   /**
    * As described <a href=
-   * 'https://github.com/erasmus-without-paper/ewp-specs-api-imobility-tors/tree/master/manifest-entry.xsd'>
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-imobility-tors/tree/stable-v1/manifest-entry.xsd'>
    * here</a>.
-   */ // TODO: master->stable!
+   */
   public static final KnownNamespace RESPONSE_IMOBILITY_TORS_GET_V1 = new KnownNamespace("imtrg1",
       "api-imobility-tors/blob/stable-v1/endpoints/get-response.xsd",
-      "api-imobility-tors/master/endpoints/get-response.xsd", false);
-  // TODO master -> stable!
+      "api-imobility-tors/stable-v1/endpoints/get-response.xsd", false);
+  // TODO false -> true
 
   /**
    * As described <a href=
@@ -309,13 +309,13 @@ public class KnownNamespace {
 
   /**
    * As described <a href=
-   * 'https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/blob/master/manifest-entry.xsd'>
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/blob/stable-v1/manifest-entry.xsd'>
    * here</a>.
-   */ // TODO: master->stable!
+   */
   public static final KnownNamespace APIENTRY_OMOBILITIES_V1 =
       new KnownNamespace("om1", "api-omobilities/blob/stable-v1/manifest-entry.xsd",
-          "api-omobilities/master/manifest-entry.xsd", false);
-  // TODO: 1. false->true 2. master->stable
+          "api-omobilities/stable-v1/manifest-entry.xsd", false);
+  // TODO: false->true
 
   /**
    * As described <a href=
