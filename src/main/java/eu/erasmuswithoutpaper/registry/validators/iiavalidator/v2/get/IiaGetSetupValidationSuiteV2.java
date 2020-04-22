@@ -1,4 +1,4 @@
-package eu.erasmuswithoutpaper.registry.validators.iiavalidator.get;
+package eu.erasmuswithoutpaper.registry.validators.iiavalidator.v2.get;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -16,11 +16,11 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class IiaGetSetupValidationSuiteV2
+public class IiaGetSetupValidationSuiteV2
     extends AbstractSetupValidationSuite<IiaSuiteState> {
 
   private static final Logger logger = LoggerFactory.getLogger(IiaGetSetupValidationSuiteV2.class);
-  private static final ValidatedApiInfo apiInfo = new IiaGetValidatedApiInfo();
+  private static final ValidatedApiInfo apiInfo = new IiaGetValidatedApiInfoV2();
 
   @Override
   protected Logger getLogger() {
@@ -33,7 +33,10 @@ class IiaGetSetupValidationSuiteV2
   }
 
 
-  IiaGetSetupValidationSuiteV2(ApiValidator<IiaSuiteState> validator,
+  /**
+   * Creates a validation suite for IIAs v2 Get endpoint.
+   */
+  public IiaGetSetupValidationSuiteV2(ApiValidator<IiaSuiteState> validator,
       IiaSuiteState state,
       ValidationSuiteConfig config) {
     super(validator, state, config);
@@ -42,6 +45,9 @@ class IiaGetSetupValidationSuiteV2
   protected static final String HEI_ID_PARAMETER = "hei_id";
   private static final String IIA_ID_PARAMETER = "iia_id";
 
+  /**
+   * Returns parameters used for validating IIAs v2 Get.
+   */
   public static List<ValidationParameter> getParameters() {
     return Arrays.asList(
         new ValidationParameter(HEI_ID_PARAMETER),

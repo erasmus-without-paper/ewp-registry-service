@@ -14,5 +14,40 @@
       </jaxb:bindings>
    </jaxb:bindings>
 
-</jaxb:bindings>
+   <jaxb:bindings schemaLocation="../jaxb-schemas/ewp-specs-api-iias-v2.1.0/endpoints/get-response.xsd" node="/xs:schema">
+      <jaxb:schemaBindings>
+         <jaxb:nameXmlTransform>
+           <jaxb:elementName suffix="V2"/>
+           <jaxb:typeName suffix="V2"/>
+         </jaxb:nameXmlTransform>
+      </jaxb:schemaBindings>
+   </jaxb:bindings>
 
+   <jaxb:bindings schemaLocation="../jaxb-schemas/ewp-specs-api-iias-v2.1.0/endpoints/index-response.xsd" node="/xs:schema">
+      <jaxb:schemaBindings>
+         <jaxb:nameXmlTransform>
+           <jaxb:elementName suffix="V2"/>
+           <jaxb:typeName suffix="V2"/>
+         </jaxb:nameXmlTransform>
+      </jaxb:schemaBindings>
+   </jaxb:bindings>
+
+   <jaxb:bindings schemaLocation="../jaxb-schemas/ewp-specs-api-iias-v3.0.0/endpoints/get-response.xsd" node="/xs:schema">
+      <jaxb:schemaBindings>
+         <jaxb:nameXmlTransform>
+           <jaxb:elementName suffix="V3"/>
+           <jaxb:typeName suffix="V3"/>
+         </jaxb:nameXmlTransform>
+      </jaxb:schemaBindings>
+   </jaxb:bindings>
+
+   <jaxb:bindings schemaLocation="../jaxb-schemas/ewp-specs-api-iias-v3.0.0/endpoints/index-response.xsd" node="/xs:schema">
+      <jaxb:schemaBindings>
+         <jaxb:nameXmlTransform>
+            <jaxb:elementName suffix="V3"/>
+            <jaxb:typeName suffix="V3"/>
+         </jaxb:nameXmlTransform>
+      </jaxb:schemaBindings>
+   </jaxb:bindings>
+
+</jaxb:bindings>

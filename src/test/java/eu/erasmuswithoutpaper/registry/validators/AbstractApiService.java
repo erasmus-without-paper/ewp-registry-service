@@ -20,9 +20,13 @@ import eu.erasmuswithoutpaper.registry.validators.types.MultilineString;
 import org.apache.commons.lang.StringEscapeUtils;
 
 public abstract class AbstractApiService implements FakeInternetService {
+  protected String getJaxbContextPackagePath() {
+    return "eu.erasmuswithoutpaper.registry.validators.types";
+  }
+
   protected String marshallObject(Object object) {
     try {
-      JAXBContext jc = JAXBContext.newInstance("eu.erasmuswithoutpaper.registry.validators.types");
+      JAXBContext jc = JAXBContext.newInstance(getJaxbContextPackagePath());
       Marshaller marshaller = jc.createMarshaller();
       marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
       StringWriter sw = new StringWriter();

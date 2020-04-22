@@ -1,4 +1,4 @@
-package eu.erasmuswithoutpaper.registry.validators.iiavalidator.index;
+package eu.erasmuswithoutpaper.registry.validators.iiavalidator.v2.index;
 
 import java.util.Collections;
 import java.util.List;
@@ -15,13 +15,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-class IiaIndexBasicSetupValidationSuiteV2
+public class IiaIndexBasicSetupValidationSuiteV2
     extends AbstractSetupValidationSuite<IiaSuiteState> {
 
   private static final Logger logger =
       LoggerFactory.getLogger(IiaIndexBasicSetupValidationSuiteV2.class);
 
-  private static final ValidatedApiInfo apiInfo = new IiaIndexValidatedApiInfo();
+  private static final ValidatedApiInfo apiInfo = new IiaIndexValidatedApiInfoV2();
 
   @Override
   protected Logger getLogger() {
@@ -33,15 +33,21 @@ class IiaIndexBasicSetupValidationSuiteV2
     return apiInfo;
   }
 
-  static final String HEI_ID_PARAMETER = "hei_id";
+  public static final String HEI_ID_PARAMETER = "hei_id";
 
+  /**
+   * Returns parameters used for validating IIAs v2 Index.
+   */
   public static List<ValidationParameter> getParameters() {
     return Collections.singletonList(
         new ValidationParameter(HEI_ID_PARAMETER)
     );
   }
 
-  IiaIndexBasicSetupValidationSuiteV2(ApiValidator<IiaSuiteState> validator,
+  /**
+   * Creates a validation suite for IIAs v2 Index endpoint.
+   */
+  public IiaIndexBasicSetupValidationSuiteV2(ApiValidator<IiaSuiteState> validator,
       IiaSuiteState state, ValidationSuiteConfig config) {
     super(validator, state, config);
   }

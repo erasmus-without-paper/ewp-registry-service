@@ -8,15 +8,15 @@ import java.util.List;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.TestValidationReport;
 import eu.erasmuswithoutpaper.registry.validators.iiavalidator.IiaSuiteState;
-import eu.erasmuswithoutpaper.registry.validators.iiavalidator.index.IiaIndexValidator;
-import eu.erasmuswithoutpaper.registry.validators.types.IiasGetResponse;
+import eu.erasmuswithoutpaper.registry.validators.iiavalidator.v2.index.IiaIndexValidatorV2;
+import eu.erasmuswithoutpaper.registry.validators.types.IiasGetResponseV2;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.junit.Test;
 
-public class IiaIndexValidatorTest extends IiaValidatorTestBase {
+public class IiaIndexValidatorV2Test extends IiaValidatorTestBase {
   @Autowired
-  protected IiaIndexValidator validator;
+  protected IiaIndexValidatorV2 validator;
 
   @Override
   protected ApiValidator<IiaSuiteState> getValidator() {
@@ -30,14 +30,14 @@ public class IiaIndexValidatorTest extends IiaValidatorTestBase {
 
   @Test
   public void testValidationOnValidServiceIsSuccessful() {
-    IiasServiceV2Valid service = new IiasServiceV2Valid(iiaIndexUrl, iiaGetUrl, this.client);
+    IiasServiceValidV2 service = new IiasServiceValidV2(iiaIndexUrl, iiaGetUrl, this.client);
     TestValidationReport report = this.getRawReport(service);
     assertThat(report).isCorrect();
   }
 
   @Test
   public void testIgnoringAdditionalHeiIdIsDetected() {
-    IiasServiceV2Valid service = new IiasServiceV2Valid(iiaIndexUrl, iiaGetUrl, this.client) {
+    IiasServiceValidV2 service = new IiasServiceValidV2(iiaIndexUrl, iiaGetUrl, this.client) {
       @Override
       protected void errorMultipleHeiIds(RequestData requestData) throws ErrorResponseException {
         requestData.heiId = this.coveredHeiIds.get(0);
@@ -50,7 +50,7 @@ public class IiaIndexValidatorTest extends IiaValidatorTestBase {
 
   @Test
   public void testUsingCoveredHeiIdInsteadOfUnknownHeiIdIsDetected() {
-    IiasServiceV2Valid service = new IiasServiceV2Valid(iiaIndexUrl, iiaGetUrl, this.client) {
+    IiasServiceValidV2 service = new IiasServiceValidV2(iiaIndexUrl, iiaGetUrl, this.client) {
       @Override
       protected void errorUnknownHeiId(RequestData requestData) throws ErrorResponseException {
         requestData.heiId = this.coveredHeiIds.get(0);
@@ -86,7 +86,7 @@ public class IiaIndexValidatorTest extends IiaValidatorTestBase {
 
   @Test
   public void testNotCheckingAcademicYearIdIsDetected() {
-    IiasServiceV2Valid service = new IiasServiceV2Valid(iiaIndexUrl, iiaGetUrl, this.client) {
+    IiasServiceValidV2 service = new IiasServiceValidV2(iiaIndexUrl, iiaGetUrl, this.client) {
       @Override
       protected boolean checkReceivingAcademicYearId(String receivingAcademicYear) {
         return receivingAcademicYear.length() == 9;
@@ -99,7 +99,7 @@ public class IiaIndexValidatorTest extends IiaValidatorTestBase {
 
   @Test
   public void testAcceptingEqualHeiIdAndPartnerHeiIdIsDetected() {
-    IiasServiceV2Valid service = new IiasServiceV2Valid(iiaIndexUrl, iiaGetUrl, this.client) {
+    IiasServiceValidV2 service = new IiasServiceValidV2(iiaIndexUrl, iiaGetUrl, this.client) {
       @Override
       protected void errorHeiIdsEqual(RequestData requestData) throws ErrorResponseException {
         throw new ErrorResponseException(createIiasIndexResponse(new ArrayList<>()));
@@ -112,7 +112,7 @@ public class IiaIndexValidatorTest extends IiaValidatorTestBase {
 
   @Test
   public void testCheckingPartnerHeiIdIsDetected() {
-    IiasServiceV2Valid service = new IiasServiceV2Valid(iiaIndexUrl, iiaGetUrl, this.client) {
+    IiasServiceValidV2 service = new IiasServiceValidV2(iiaIndexUrl, iiaGetUrl, this.client) {
       @Override
       protected void errorPartnerHeiIdUnknown(
           RequestData requestData) throws ErrorResponseException {
@@ -128,7 +128,7 @@ public class IiaIndexValidatorTest extends IiaValidatorTestBase {
 
   @Test
   public void testIgnoringMultipleModifiedSinceIsDetected() {
-    IiasServiceV2Valid service = new IiasServiceV2Valid(iiaIndexUrl, iiaGetUrl, this.client) {
+    IiasServiceValidV2 service = new IiasServiceValidV2(iiaIndexUrl, iiaGetUrl, this.client) {
       @Override
       protected void errorMultipleModifiedSince(
           RequestData requestData) throws ErrorResponseException {
@@ -142,9 +142,9 @@ public class IiaIndexValidatorTest extends IiaValidatorTestBase {
 
   @Test
   public void testReturnsEmptyResponseWhenPartnerIdIsValidIsDetected() {
-    IiasServiceV2Valid service = new IiasServiceV2Valid(iiaIndexUrl, iiaGetUrl, this.client) {
+    IiasServiceValidV2 service = new IiasServiceValidV2(iiaIndexUrl, iiaGetUrl, this.client) {
       @Override
-      protected boolean filterPartnerHeiId(IiasGetResponse.Iia.Partner partner, String hei_id) {
+      protected boolean filterPartnerHeiId(IiasGetResponseV2.Iia.Partner partner, String hei_id) {
         return false;
       }
     };
@@ -155,7 +155,7 @@ public class IiaIndexValidatorTest extends IiaValidatorTestBase {
 
   @Test
   public void testReturnsEmptyResponseWhenReceivingAcademicYearIdIsUsed() {
-    IiasServiceV2Valid service = new IiasServiceV2Valid(iiaIndexUrl, iiaGetUrl, this.client) {
+    IiasServiceValidV2 service = new IiasServiceValidV2(iiaIndexUrl, iiaGetUrl, this.client) {
       @Override
       protected boolean filterAcademicYear(String academicYear,
           List<String> requestedAcademicYears) {
@@ -170,7 +170,7 @@ public class IiaIndexValidatorTest extends IiaValidatorTestBase {
 
   @Test
   public void testNotValidatingReceivingAcademicYearIdIsDetected() {
-    IiasServiceV2Valid service = new IiasServiceV2Valid(iiaIndexUrl, iiaGetUrl, this.client) {
+    IiasServiceValidV2 service = new IiasServiceValidV2(iiaIndexUrl, iiaGetUrl, this.client) {
       @Override
       protected boolean filterAcademicYear(String academicYear,
           List<String> requestedAcademicYears) {
@@ -185,10 +185,10 @@ public class IiaIndexValidatorTest extends IiaValidatorTestBase {
 
   @Test
   public void testNotUsingModifiedSinceIsDetected() {
-    IiasServiceV2Valid service = new IiasServiceV2Valid(iiaIndexUrl, iiaGetUrl, this.client) {
+    IiasServiceValidV2 service = new IiasServiceValidV2(iiaIndexUrl, iiaGetUrl, this.client) {
       @Override
-      protected List<IiasGetResponse.Iia> filterIiasByModifiedSince(
-          List<IiasGetResponse.Iia> selectedIias, RequestData requestData) {
+      protected List<IiasGetResponseV2.Iia> filterIiasByModifiedSince(
+          List<IiasGetResponseV2.Iia> selectedIias, RequestData requestData) {
         return selectedIias;
       }
     };
@@ -200,10 +200,10 @@ public class IiaIndexValidatorTest extends IiaValidatorTestBase {
 
   @Test
   public void testReturnsEmptyResponseWhenModifiedSinceIsUsed() {
-    IiasServiceV2Valid service = new IiasServiceV2Valid(iiaIndexUrl, iiaGetUrl, this.client) {
+    IiasServiceValidV2 service = new IiasServiceValidV2(iiaIndexUrl, iiaGetUrl, this.client) {
       @Override
-      protected List<IiasGetResponse.Iia> filterIiasByModifiedSince(
-          List<IiasGetResponse.Iia> selectedIias, RequestData requestData) {
+      protected List<IiasGetResponseV2.Iia> filterIiasByModifiedSince(
+          List<IiasGetResponseV2.Iia> selectedIias, RequestData requestData) {
         if (requestData.modifiedSince != null) {
           return new ArrayList<>();
         }

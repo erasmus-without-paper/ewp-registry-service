@@ -76,19 +76,28 @@
     uri="ewp-specs-api-iias-v1.0.1/manifest-entry.xsd" />
 <uri
     name="https://github.com/erasmus-without-paper/ewp-specs-api-iias/blob/stable-v2/endpoints/get-response.xsd"
-    uri="ewp-specs-api-iias-v2.2.1/endpoints/get-response.xsd" />
+    uri="ewp-specs-api-iias-v2.2.2/endpoints/get-response.xsd" />
 <uri
     name="https://github.com/erasmus-without-paper/ewp-specs-api-iias/blob/stable-v2/endpoints/index-response.xsd"
-    uri="ewp-specs-api-iias-v2.2.1/endpoints/index-response.xsd" />
+    uri="ewp-specs-api-iias-v2.2.2/endpoints/index-response.xsd" />
 <uri
     name="https://github.com/erasmus-without-paper/ewp-specs-api-iias/blob/stable-v2/manifest-entry.xsd"
-    uri="ewp-specs-api-iias-v2.2.1/manifest-entry.xsd" />
+    uri="ewp-specs-api-iias-v2.2.2/manifest-entry.xsd" />
+<uri
+    name="https://github.com/erasmus-without-paper/ewp-specs-api-iias/blob/stable-v3/endpoints/get-response.xsd"
+    uri="ewp-specs-api-iias-v3.0.0/endpoints/get-response.xsd" />
+<uri
+    name="https://github.com/erasmus-without-paper/ewp-specs-api-iias/blob/stable-v3/endpoints/index-response.xsd"
+    uri="ewp-specs-api-iias-v3.0.0/endpoints/index-response.xsd" />
+<uri
+    name="https://github.com/erasmus-without-paper/ewp-specs-api-iias/blob/stable-v3/manifest-entry.xsd"
+    uri="ewp-specs-api-iias-v3.0.0/manifest-entry.xsd" />
 <uri
     name="https://github.com/erasmus-without-paper/ewp-specs-api-iias-approval/tree/stable-v1"
-    uri="ewp-specs-api-iias-approval-v0.2.0/response.xsd" />
+    uri="ewp-specs-api-iias-approval-v0.2.1/response.xsd" />
 <uri
     name="https://github.com/erasmus-without-paper/ewp-specs-api-iias-approval/blob/stable-v1/manifest-entry.xsd"
-    uri="ewp-specs-api-iias-approval-v0.2.0/manifest-entry.xsd" />
+    uri="ewp-specs-api-iias-approval-v0.2.1/manifest-entry.xsd" />
 <uri
     name="https://github.com/erasmus-without-paper/ewp-specs-api-imobilities/blob/stable-v1/endpoints/get-response.xsd"
     uri="ewp-specs-api-imobilities-v1.0.0/endpoints/get-response.xsd" />

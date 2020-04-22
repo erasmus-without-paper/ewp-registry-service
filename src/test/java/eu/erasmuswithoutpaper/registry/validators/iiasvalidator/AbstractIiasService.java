@@ -8,8 +8,6 @@ import java.util.Map;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registry.validators.AbstractApiService;
-import eu.erasmuswithoutpaper.registry.validators.types.IiasGetResponse;
-import eu.erasmuswithoutpaper.registry.validators.types.IiasIndexResponse;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 public abstract class AbstractIiasService extends AbstractApiService {
@@ -43,18 +41,6 @@ public abstract class AbstractIiasService extends AbstractApiService {
     } catch (ErrorResponseException e) {
       return e.response;
     }
-  }
-
-  protected Response createIiasGetResponse(List<IiasGetResponse.Iia> data) {
-    IiasGetResponse response = new IiasGetResponse();
-    response.getIia().addAll(data);
-    return marshallResponse(200, response);
-  }
-
-  protected Response createIiasIndexResponse(List<String> data) {
-    IiasIndexResponse response = new IiasIndexResponse();
-    response.getIiaId().addAll(data);
-    return marshallResponse(200, response);
   }
 
   protected abstract Response handleIiasIndexRequest(Request request)

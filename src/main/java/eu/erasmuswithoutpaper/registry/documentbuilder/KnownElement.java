@@ -262,6 +262,24 @@ public class KnownElement {
       );
 
   /**
+   * The root of the IIAs API v2 index response.
+   */
+  public static final KnownElement RESPONSE_IIAS_INDEX_V3 =
+      new KnownElement(KnownNamespace.RESPONSE_IIAS_INDEX_V3,
+          "iias-index-response",
+          "IIAs API v2 Index Response"
+      );
+
+  /**
+   * The root of the IIAs API v2 get response.
+   */
+  public static final KnownElement RESPONSE_IIAS_GET_V3 =
+      new KnownElement(KnownNamespace.RESPONSE_IIAS_GET_V3,
+          "iias-get-response",
+          "IIAs API v2 Get Response"
+      );
+
+  /**
    * The root of the MT+ Projects API v1 response.
    */
   public static final KnownElement RESPONSE_MT_PROJECTS_V1 =

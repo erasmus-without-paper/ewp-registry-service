@@ -1,4 +1,4 @@
-package eu.erasmuswithoutpaper.registry.validators.iiavalidator.get;
+package eu.erasmuswithoutpaper.registry.validators.iiavalidator.v2.get;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,12 +24,12 @@ import org.slf4j.LoggerFactory;
  * Describes the set of test/steps to be run on an IIAs API GET endpoint implementation in order to
  * properly validate it.
  */
-class IiaGetValidationSuiteV2
+public class IiaGetValidationSuiteV2
     extends AbstractValidationSuite<IiaSuiteState> {
 
   private static final Logger logger = LoggerFactory.getLogger(IiaGetValidationSuiteV2.class);
 
-  private static final ValidatedApiInfo apiInfo = new IiaGetValidatedApiInfo();
+  private static final ValidatedApiInfo apiInfo = new IiaGetValidatedApiInfoV2();
 
   @Override
   protected Logger getLogger() {
@@ -41,7 +41,7 @@ class IiaGetValidationSuiteV2
     return apiInfo;
   }
 
-  IiaGetValidationSuiteV2(ApiValidator<IiaSuiteState> validator,
+  public IiaGetValidationSuiteV2(ApiValidator<IiaSuiteState> validator,
       IiaSuiteState state, ValidationSuiteConfig config) {
     super(validator, state, config);
   }

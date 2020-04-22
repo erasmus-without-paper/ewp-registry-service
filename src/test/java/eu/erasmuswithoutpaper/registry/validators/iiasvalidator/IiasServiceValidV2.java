@@ -17,13 +17,15 @@ import eu.erasmuswithoutpaper.registry.internet.InternetTestHelpers;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registry.validators.types.Contact;
-import eu.erasmuswithoutpaper.registry.validators.types.IiasGetResponse.Iia;
-import eu.erasmuswithoutpaper.registry.validators.types.MobilitySpecification;
+import eu.erasmuswithoutpaper.registry.validators.types.IiasGetResponseV2;
+import eu.erasmuswithoutpaper.registry.validators.types.IiasGetResponseV2.Iia;
+import eu.erasmuswithoutpaper.registry.validators.types.IiasIndexResponseV2;
+import eu.erasmuswithoutpaper.registry.validators.types.MobilitySpecificationV2;
 import eu.erasmuswithoutpaper.registry.validators.types.StringWithOptionalLang;
-import eu.erasmuswithoutpaper.registry.validators.types.StudentTraineeshipMobilitySpec;
+import eu.erasmuswithoutpaper.registry.validators.types.StudentTraineeshipMobilitySpecV2;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
-public class IiasServiceV2Valid extends AbstractIiasService {
+public class IiasServiceValidV2 extends AbstractIiasService {
   protected List<String> coveredHeiIds = new ArrayList<>();
   protected List<String> partnersHeiIds = new ArrayList<>();
   protected List<Iia> iias = new ArrayList<>();
@@ -36,7 +38,7 @@ public class IiasServiceV2Valid extends AbstractIiasService {
    * @param registryClient
    *     Initialized and refreshed {@link RegistryClient} instance.
    */
-  public IiasServiceV2Valid(String indexUrl, String getUrl, RegistryClient registryClient) {
+  public IiasServiceValidV2(String indexUrl, String getUrl, RegistryClient registryClient) {
     super(indexUrl, getUrl, registryClient);
     try {
       fillDataBase();
@@ -44,7 +46,7 @@ public class IiasServiceV2Valid extends AbstractIiasService {
     }
   }
 
-  private void fillDataBase() throws DatatypeConfigurationException {
+  protected void fillDataBase() throws DatatypeConfigurationException {
     final String THIS_SERVICE_HEI_ID = "test.hei01.uw.edu.pl";
     final String VALIDATOR_HEI_ID = "validator-hei01.developers.erasmuswithoutpaper.eu";
 
@@ -98,8 +100,8 @@ public class IiasServiceV2Valid extends AbstractIiasService {
     iia1.setInEffect(true);
 
     Iia.CooperationConditions cooperationConditions = new Iia.CooperationConditions();
-    StudentTraineeshipMobilitySpec studentTraineeshipMobilitySpec =
-        new StudentTraineeshipMobilitySpec();
+    StudentTraineeshipMobilitySpecV2 studentTraineeshipMobilitySpec =
+        new StudentTraineeshipMobilitySpecV2();
     studentTraineeshipMobilitySpec.setTotalMonths(new BigDecimal(6));
     studentTraineeshipMobilitySpec.setMobilitiesPerYear(BigInteger.valueOf(10));
     studentTraineeshipMobilitySpec.setSendingHeiId(THIS_SERVICE_HEI_ID);
@@ -161,7 +163,7 @@ public class IiasServiceV2Valid extends AbstractIiasService {
     iia2.setInEffect(true);
 
     cooperationConditions = new Iia.CooperationConditions();
-    studentTraineeshipMobilitySpec = new StudentTraineeshipMobilitySpec();
+    studentTraineeshipMobilitySpec = new StudentTraineeshipMobilitySpecV2();
     studentTraineeshipMobilitySpec.setTotalMonths(new BigDecimal(6));
     studentTraineeshipMobilitySpec.setMobilitiesPerYear(BigInteger.valueOf(10));
     studentTraineeshipMobilitySpec.setSendingHeiId(THIS_SERVICE_HEI_ID);
@@ -366,7 +368,7 @@ public class IiasServiceV2Valid extends AbstractIiasService {
 
     List<Iia> result = new ArrayList<>();
     for (Iia iia : iias) {
-      ArrayList<MobilitySpecification> specs = new ArrayList<>();
+      ArrayList<MobilitySpecificationV2> specs = new ArrayList<>();
       specs.addAll(iia.getCooperationConditions().getStudentStudiesMobilitySpec());
       specs.addAll(iia.getCooperationConditions().getStudentTraineeshipMobilitySpec());
       specs.addAll(iia.getCooperationConditions().getStaffTeacherMobilitySpec());
@@ -600,5 +602,18 @@ public class IiasServiceV2Valid extends AbstractIiasService {
             "receiving_academic_year_id has incorrect format")
     );
   }
+
+  protected Response createIiasGetResponse(List<IiasGetResponseV2.Iia> data) {
+    IiasGetResponseV2 response = new IiasGetResponseV2();
+    response.getIia().addAll(data);
+    return marshallResponse(200, response);
+  }
+
+  protected Response createIiasIndexResponse(List<String> data) {
+    IiasIndexResponseV2 response = new IiasIndexResponseV2();
+    response.getIiaId().addAll(data);
+    return marshallResponse(200, response);
+  }
+
 
 }

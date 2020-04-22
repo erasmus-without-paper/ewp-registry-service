@@ -1,4 +1,4 @@
-package eu.erasmuswithoutpaper.registry.validators.iiavalidator.index;
+package eu.erasmuswithoutpaper.registry.validators.iiavalidator.v2.index;
 
 import java.util.Arrays;
 
@@ -17,11 +17,11 @@ import org.slf4j.LoggerFactory;
  * Describes the set of test/steps to be run on an IIAs API index endpoint implementation in order
  * to properly validate it.
  */
-class IiaIndexBasicValidationSuiteV2 extends AbstractValidationSuite<IiaSuiteState> {
+public class IiaIndexBasicValidationSuiteV2 extends AbstractValidationSuite<IiaSuiteState> {
 
   private static final Logger logger =
       LoggerFactory.getLogger(IiaIndexBasicValidationSuiteV2.class);
-  private static final ValidatedApiInfo apiInfo = new IiaIndexValidatedApiInfo();
+  private static final ValidatedApiInfo apiInfo = new IiaIndexValidatedApiInfoV2();
 
   @Override
   protected Logger getLogger() {
@@ -33,7 +33,7 @@ class IiaIndexBasicValidationSuiteV2 extends AbstractValidationSuite<IiaSuiteSta
     return apiInfo;
   }
 
-  IiaIndexBasicValidationSuiteV2(ApiValidator<IiaSuiteState> validator,
+  public IiaIndexBasicValidationSuiteV2(ApiValidator<IiaSuiteState> validator,
       IiaSuiteState state, ValidationSuiteConfig config) {
     super(validator, state, config);
   }

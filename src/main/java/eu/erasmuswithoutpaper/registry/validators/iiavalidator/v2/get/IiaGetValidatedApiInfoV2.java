@@ -1,14 +1,14 @@
-package eu.erasmuswithoutpaper.registry.validators.iiavalidator.index;
+package eu.erasmuswithoutpaper.registry.validators.iiavalidator.v2.get;
 
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownElement;
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
 import eu.erasmuswithoutpaper.registry.validators.ApiEndpoint;
 import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
 
-class IiaIndexValidatedApiInfo implements ValidatedApiInfo {
+class IiaGetValidatedApiInfoV2 implements ValidatedApiInfo {
   @Override
   public KnownElement getResponseKnownElement() {
-    return KnownElement.RESPONSE_IIAS_INDEX_V2;
+    return KnownElement.RESPONSE_IIAS_GET_V2;
   }
 
   @Override
@@ -23,6 +23,6 @@ class IiaIndexValidatedApiInfo implements ValidatedApiInfo {
 
   @Override
   public ApiEndpoint getEndpoint() {
-    return ApiEndpoint.Index;
+    return ApiEndpoint.Get;
   }
 }

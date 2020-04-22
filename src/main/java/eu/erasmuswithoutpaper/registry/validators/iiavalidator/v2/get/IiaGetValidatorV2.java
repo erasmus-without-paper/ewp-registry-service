@@ -1,4 +1,4 @@
-package eu.erasmuswithoutpaper.registry.validators.iiavalidator.get;
+package eu.erasmuswithoutpaper.registry.validators.iiavalidator.v2.get;
 
 import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
 import eu.erasmuswithoutpaper.registry.internet.Internet;
@@ -16,9 +16,9 @@ import org.slf4j.LoggerFactory;
 
 
 @Service
-public class IiaGetValidator extends ApiValidator<IiaSuiteState> {
+public class IiaGetValidatorV2 extends ApiValidator<IiaSuiteState> {
   private static final Logger logger = LoggerFactory.getLogger(
-      IiaGetValidator.class);
+      IiaGetValidatorV2.class);
   private static ListMultimap<SemanticVersion, ValidationSuiteInfo<IiaSuiteState>>
       validationSuites;
 
@@ -37,7 +37,7 @@ public class IiaGetValidator extends ApiValidator<IiaSuiteState> {
     );
   }
 
-  public IiaGetValidator(EwpDocBuilder docBuilder, Internet internet, RegistryClient client,
+  public IiaGetValidatorV2(EwpDocBuilder docBuilder, Internet internet, RegistryClient client,
       ValidatorKeyStoreSet validatorKeyStoreSet) {
     super(docBuilder, internet, client, validatorKeyStoreSet, "iias", ApiEndpoint.Get);
   }

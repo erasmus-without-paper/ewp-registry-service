@@ -1,4 +1,4 @@
-package eu.erasmuswithoutpaper.registry.validators.iiavalidator.index;
+package eu.erasmuswithoutpaper.registry.validators.iiavalidator.v2.index;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
@@ -15,30 +15,36 @@ import javax.xml.bind.Unmarshaller;
 
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
+import eu.erasmuswithoutpaper.registry.validators.AbstractSetupValidationSuite;
 import eu.erasmuswithoutpaper.registry.validators.ApiEndpoint;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.HttpSecurityDescription;
 import eu.erasmuswithoutpaper.registry.validators.InlineValidationStep;
+import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
 import eu.erasmuswithoutpaper.registry.validators.ValidationParameter;
 import eu.erasmuswithoutpaper.registry.validators.iiavalidator.IiaSuiteState;
-import eu.erasmuswithoutpaper.registry.validators.types.IiasGetResponse;
-import eu.erasmuswithoutpaper.registry.validators.types.MobilitySpecification;
+import eu.erasmuswithoutpaper.registry.validators.types.IiasGetResponseV2;
+import eu.erasmuswithoutpaper.registry.validators.types.MobilitySpecificationV2;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 
-public class IiaIndexComplexSetupValidationSuiteV2 extends IiaIndexBasicSetupValidationSuiteV2 {
+public class IiaIndexComplexSetupValidationSuiteV2
+    extends AbstractSetupValidationSuite<IiaSuiteState> {
 
   private static final Logger logger =
       LoggerFactory.getLogger(IiaIndexComplexSetupValidationSuiteV2.class);
+
+  private static final ValidatedApiInfo apiInfo = new IiaIndexValidatedApiInfoV2();
 
   @Override
   protected Logger getLogger() {
     return logger;
   }
 
+  private static final String HEI_ID_PARAMETER = "hei_id";
   private static final String IIA_ID_PARAMETER = "iia_id";
   private static final String PARTNER_HEI_ID_PARAMETER = "partner_hei_id";
   private static final String RECEIVING_ACADEMIC_YEAR_ID = "receiving_academic_year_id";
@@ -66,7 +72,7 @@ public class IiaIndexComplexSetupValidationSuiteV2 extends IiaIndexBasicSetupVal
     );
   }
 
-  IiaIndexComplexSetupValidationSuiteV2(
+  protected IiaIndexComplexSetupValidationSuiteV2(
       ApiValidator<IiaSuiteState> validator,
       IiaSuiteState state,
       ValidationSuiteConfig config) {
@@ -77,6 +83,11 @@ public class IiaIndexComplexSetupValidationSuiteV2 extends IiaIndexBasicSetupVal
   @Override
   protected void runTests(HttpSecurityDescription security) throws SuiteBroken {
     runApiSpecificTests(security);
+  }
+
+  @Override
+  public ValidatedApiInfo getApiInfo() {
+    return apiInfo;
   }
 
   //FindBugs is not smart enough to infer that actual type of this.currentState
@@ -178,12 +189,12 @@ public class IiaIndexComplexSetupValidationSuiteV2 extends IiaIndexBasicSetupVal
         }
         expect200(response);
 
-        IiasGetResponse getResponse;
+        IiasGetResponseV2 getResponse;
         try {
-          JAXBContext jaxbContext = JAXBContext.newInstance(IiasGetResponse.class);
+          JAXBContext jaxbContext = JAXBContext.newInstance(IiasGetResponseV2.class);
           Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
           Element xml = makeXmlFromBytes(response.getBody(), true);
-          getResponse = (IiasGetResponse) unmarshaller.unmarshal(xml);
+          getResponse = (IiasGetResponseV2) unmarshaller.unmarshal(xml);
         } catch (JAXBException e) {
           throw new Failure(
               "Received 200 OK but the response was empty or didn't contain correct "
@@ -199,7 +210,7 @@ public class IiaIndexComplexSetupValidationSuiteV2 extends IiaIndexBasicSetupVal
               Status.NOTICE, response);
         }
 
-        IiasGetResponse.Iia iia = getResponse.getIia().get(0);
+        IiasGetResponseV2.Iia iia = getResponse.getIia().get(0);
 
         // Schema ensures that there are at least two partners in every iia element.
         iiaInfo.heiId = iia.getPartner().get(0).getHeiId();
@@ -213,7 +224,7 @@ public class IiaIndexComplexSetupValidationSuiteV2 extends IiaIndexBasicSetupVal
         }
 
         iiaInfo.partnerHeiId = iia.getPartner().get(1).getHeiId();
-        ArrayList<MobilitySpecification> specs = new ArrayList<>();
+        ArrayList<MobilitySpecificationV2> specs = new ArrayList<>();
         specs.addAll(iia.getCooperationConditions().getStudentStudiesMobilitySpec());
         specs.addAll(iia.getCooperationConditions().getStudentTraineeshipMobilitySpec());
         specs.addAll(iia.getCooperationConditions().getStaffTeacherMobilitySpec());

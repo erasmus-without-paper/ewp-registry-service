@@ -11,15 +11,15 @@ import java.util.List;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.TestValidationReport;
 import eu.erasmuswithoutpaper.registry.validators.iiavalidator.IiaSuiteState;
-import eu.erasmuswithoutpaper.registry.validators.iiavalidator.get.IiaGetValidator;
-import eu.erasmuswithoutpaper.registry.validators.types.IiasGetResponse;
+import eu.erasmuswithoutpaper.registry.validators.iiavalidator.v2.get.IiaGetValidatorV2;
+import eu.erasmuswithoutpaper.registry.validators.types.IiasGetResponseV2;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.junit.Test;
 
-public class IiaGetValidatorTest extends IiaValidatorTestBase {
+public class IiaGetValidatorV2Test extends IiaValidatorTestBase {
   @Autowired
-  protected IiaGetValidator validator;
+  protected IiaGetValidatorV2 validator;
 
   @Override
   protected ApiValidator<IiaSuiteState> getValidator() {
@@ -33,14 +33,14 @@ public class IiaGetValidatorTest extends IiaValidatorTestBase {
 
   @Test
   public void testValidationOnValidServiceIsSuccessful() {
-    IiasServiceV2Valid service = new IiasServiceV2Valid(iiaIndexUrl, iiaGetUrl, this.client);
+    IiasServiceValidV2 service = new IiasServiceValidV2(iiaIndexUrl, iiaGetUrl, this.client);
     TestValidationReport report = this.getRawReport(service);
     assertThat(report).isCorrect();
   }
 
   @Test
   public void testNotValidatingIiaIdListIsDetected() {
-    IiasServiceV2Valid service = new IiasServiceV2Valid(iiaIndexUrl, iiaGetUrl, this.client) {
+    IiasServiceValidV2 service = new IiasServiceValidV2(iiaIndexUrl, iiaGetUrl, this.client) {
       @Override
       protected void errorMaxIdsExceeded(RequestData requestData)
           throws ErrorResponseException {
@@ -54,7 +54,7 @@ public class IiaGetValidatorTest extends IiaValidatorTestBase {
 
   @Test
   public void testNotValidatingIiaCodeListIsDetected() {
-    IiasServiceV2Valid service = new IiasServiceV2Valid(iiaIndexUrl, iiaGetUrl, this.client) {
+    IiasServiceValidV2 service = new IiasServiceValidV2(iiaIndexUrl, iiaGetUrl, this.client) {
       @Override
       protected void errorMaxCodesExceeded(RequestData requestData)
           throws ErrorResponseException {
@@ -68,7 +68,7 @@ public class IiaGetValidatorTest extends IiaValidatorTestBase {
 
   @Test
   public void testNotReportingMissingRequiredParametersAsAnErrorIsDetected() {
-    IiasServiceV2Valid service = new IiasServiceV2Valid(iiaIndexUrl, iiaGetUrl, this.client) {
+    IiasServiceValidV2 service = new IiasServiceValidV2(iiaIndexUrl, iiaGetUrl, this.client) {
       @Override
       protected void errorNoParams(RequestData requestData)
           throws ErrorResponseException {
@@ -82,7 +82,7 @@ public class IiaGetValidatorTest extends IiaValidatorTestBase {
 
   @Test
   public void testNotReportingMissingHeiIdParameterAsAnErrorIsDetected() {
-    IiasServiceV2Valid service = new IiasServiceV2Valid(iiaIndexUrl, iiaGetUrl, this.client) {
+    IiasServiceValidV2 service = new IiasServiceValidV2(iiaIndexUrl, iiaGetUrl, this.client) {
       @Override
       protected void errorNoHeiId(RequestData requestData) throws ErrorResponseException {
         throw new ErrorResponseException(
@@ -97,7 +97,7 @@ public class IiaGetValidatorTest extends IiaValidatorTestBase {
 
   @Test
   public void testNotReportingMissingIiaIdAndIiaCodeAsAnErrorIsDetected() {
-    IiasServiceV2Valid service = new IiasServiceV2Valid(iiaIndexUrl, iiaGetUrl, this.client) {
+    IiasServiceValidV2 service = new IiasServiceValidV2(iiaIndexUrl, iiaGetUrl, this.client) {
       @Override
       protected void errorNoIdsNorCodes(RequestData requestData) throws ErrorResponseException {
         throw new ErrorResponseException(
@@ -112,7 +112,7 @@ public class IiaGetValidatorTest extends IiaValidatorTestBase {
 
   @Test
   public void testIgnoringAdditionalHeiIdsIsDetected() {
-    IiasServiceV2Valid service = new IiasServiceV2Valid(iiaIndexUrl, iiaGetUrl, this.client) {
+    IiasServiceValidV2 service = new IiasServiceValidV2(iiaIndexUrl, iiaGetUrl, this.client) {
       @Override
       protected void errorMultipleHeiIds(RequestData requestData) throws ErrorResponseException {
         //Ignore
@@ -125,7 +125,7 @@ public class IiaGetValidatorTest extends IiaValidatorTestBase {
 
   @Test
   public void testHandlingBothIdsAndCodesIsDetected() {
-    IiasServiceV2Valid service = new IiasServiceV2Valid(iiaIndexUrl, iiaGetUrl, this.client) {
+    IiasServiceValidV2 service = new IiasServiceValidV2(iiaIndexUrl, iiaGetUrl, this.client) {
       @Override
       protected void errorIdsAndCodes(RequestData requestData) throws ErrorResponseException {
         //Ignore
@@ -138,7 +138,7 @@ public class IiaGetValidatorTest extends IiaValidatorTestBase {
 
   @Test
   public void testIgnoringCodesWhenIdsAndCodesArePassedIsDetected() {
-    IiasServiceV2Valid service = new IiasServiceV2Valid(iiaIndexUrl, iiaGetUrl, this.client) {
+    IiasServiceValidV2 service = new IiasServiceValidV2(iiaIndexUrl, iiaGetUrl, this.client) {
       @Override
       protected void errorIdsAndCodes(RequestData requestData) throws ErrorResponseException {
         requestData.iiaCodes.clear();
@@ -151,7 +151,7 @@ public class IiaGetValidatorTest extends IiaValidatorTestBase {
 
   @Test
   public void testIgnoringIdsWhenIdsAndCodesArePassedIsDetected() {
-    IiasServiceV2Valid service = new IiasServiceV2Valid(iiaIndexUrl, iiaGetUrl, this.client) {
+    IiasServiceValidV2 service = new IiasServiceValidV2(iiaIndexUrl, iiaGetUrl, this.client) {
       @Override
       protected void errorIdsAndCodes(RequestData requestData) throws ErrorResponseException {
         requestData.iiaIds.clear();
@@ -164,7 +164,7 @@ public class IiaGetValidatorTest extends IiaValidatorTestBase {
 
   @Test
   public void testReturningCorrectDataWhenNoHeiIdIsPassedIsDetected() {
-    IiasServiceV2Valid service = new IiasServiceV2Valid(iiaIndexUrl, iiaGetUrl, this.client) {
+    IiasServiceValidV2 service = new IiasServiceValidV2(iiaIndexUrl, iiaGetUrl, this.client) {
       @Override
       protected void errorNoHeiId(RequestData requestData) throws ErrorResponseException {
         requestData.heiId = this.coveredHeiIds.get(0);
@@ -177,7 +177,7 @@ public class IiaGetValidatorTest extends IiaValidatorTestBase {
 
   @Test
   public void testReturningCorrectDataWhenNeitherIiaIdNorIiaCodeIsPassedIsDetected() {
-    IiasServiceV2Valid service = new IiasServiceV2Valid(iiaIndexUrl, iiaGetUrl, this.client) {
+    IiasServiceValidV2 service = new IiasServiceValidV2(iiaIndexUrl, iiaGetUrl, this.client) {
       @Override
       protected void errorNoIdsNorCodes(RequestData requestData) throws ErrorResponseException {
         String id = this.iias.get(0).getPartner().get(0).getIiaId();
@@ -191,7 +191,7 @@ public class IiaGetValidatorTest extends IiaValidatorTestBase {
 
   @Test
   public void testNotReportingErrorWhenUnknownHeiIdIsPassedIsDetected() {
-    IiasServiceV2Valid service = new IiasServiceV2Valid(iiaIndexUrl, iiaGetUrl, this.client) {
+    IiasServiceValidV2 service = new IiasServiceValidV2(iiaIndexUrl, iiaGetUrl, this.client) {
       @Override
       protected void errorUnknownHeiId(RequestData requestData) throws ErrorResponseException {
         throw new ErrorResponseException(
@@ -206,7 +206,7 @@ public class IiaGetValidatorTest extends IiaValidatorTestBase {
 
   @Test
   public void testNonEmptyResponseWhenUnknownHeiIdIsPassedIsDetected() {
-    IiasServiceV2Valid service = new IiasServiceV2Valid(iiaIndexUrl, iiaGetUrl, this.client) {
+    IiasServiceValidV2 service = new IiasServiceValidV2(iiaIndexUrl, iiaGetUrl, this.client) {
       @Override
       protected void errorUnknownHeiId(RequestData requestData) throws ErrorResponseException {
         requestData.heiId = this.coveredHeiIds.get(0);
@@ -219,7 +219,7 @@ public class IiaGetValidatorTest extends IiaValidatorTestBase {
 
   @Test
   public void testReturningWrongIiaIsDetected() {
-    IiasServiceV2Valid service = new IiasServiceV2Valid(iiaIndexUrl, iiaGetUrl, this.client) {
+    IiasServiceValidV2 service = new IiasServiceValidV2(iiaIndexUrl, iiaGetUrl, this.client) {
       @Override
       protected String handleKnownIiaId(String iiaId) {
         return iias.stream().filter(
@@ -234,10 +234,10 @@ public class IiaGetValidatorTest extends IiaValidatorTestBase {
 
   @Test
   public void testReturningDataForUnknownIiaIdIsDetected() {
-    IiasServiceV2Valid service = new IiasServiceV2Valid(iiaIndexUrl, iiaGetUrl, this.client) {
+    IiasServiceValidV2 service = new IiasServiceValidV2(iiaIndexUrl, iiaGetUrl, this.client) {
       @Override
       protected String handleUnknownIiaId(String iiaId,
-          List<IiasGetResponse.Iia> selectedIias) {
+          List<IiasGetResponseV2.Iia> selectedIias) {
         return selectedIias.get(0).getPartner().get(0).getIiaId();
       }
     };
@@ -250,10 +250,10 @@ public class IiaGetValidatorTest extends IiaValidatorTestBase {
 
   @Test
   public void testReturningDataForUnknownIiaCodeIsDetected() {
-    IiasServiceV2Valid service = new IiasServiceV2Valid(iiaIndexUrl, iiaGetUrl, this.client) {
+    IiasServiceValidV2 service = new IiasServiceValidV2(iiaIndexUrl, iiaGetUrl, this.client) {
       @Override
       protected String handleUnknownIiaCode(String iiaCode,
-          List<IiasGetResponse.Iia> selectedIias) {
+          List<IiasGetResponseV2.Iia> selectedIias) {
         return selectedIias.get(0).getPartner().get(0).getIiaCode();
       }
     };
@@ -264,9 +264,9 @@ public class IiaGetValidatorTest extends IiaValidatorTestBase {
 
   @Test
   public void testReturningSingleOunitForMultipleEqualOunitIdsIsAccepted() {
-    IiasServiceV2Valid service = new IiasServiceV2Valid(iiaIndexUrl, iiaGetUrl, this.client) {
+    IiasServiceValidV2 service = new IiasServiceValidV2(iiaIndexUrl, iiaGetUrl, this.client) {
       @Override
-      protected List<IiasGetResponse.Iia> filterIiasByCode(List<IiasGetResponse.Iia> selectedIias,
+      protected List<IiasGetResponseV2.Iia> filterIiasByCode(List<IiasGetResponseV2.Iia> selectedIias,
           RequestData requestData) {
         return new ArrayList<>(new HashSet<>(super.filterIiasByCode(selectedIias, requestData)));
       }
@@ -277,7 +277,7 @@ public class IiaGetValidatorTest extends IiaValidatorTestBase {
 
   @Test
   public void testTooLargeMaxIiaIdsInManifestIsDetected() {
-    IiasServiceV2Valid service = new IiasServiceV2Valid(iiaIndexUrl, iiaGetUrl, this.client) {
+    IiasServiceValidV2 service = new IiasServiceValidV2(iiaIndexUrl, iiaGetUrl, this.client) {
       @Override
       protected int getMaxIiaIds() {
         return super.getMaxIiaIds() - 1;
@@ -291,7 +291,7 @@ public class IiaGetValidatorTest extends IiaValidatorTestBase {
 
   @Test
   public void testTooLargeMaxIiaCodesInManifestIsDetected() {
-    IiasServiceV2Valid service = new IiasServiceV2Valid(iiaIndexUrl, iiaGetUrl, this.client) {
+    IiasServiceValidV2 service = new IiasServiceValidV2(iiaIndexUrl, iiaGetUrl, this.client) {
       @Override
       protected int getMaxIiaCodes() {
         return super.getMaxIiaCodes() - 1;
