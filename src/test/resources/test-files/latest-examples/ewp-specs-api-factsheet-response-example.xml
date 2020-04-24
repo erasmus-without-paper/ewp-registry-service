@@ -1,0 +1,85 @@
+<factsheet-response
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-factsheet/tree/stable-v1"
+    xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:p="https://github.com/erasmus-without-paper/ewp-specs-types-phonenumber/tree/stable-v1"
+    xsi:schemaLocation="
+       https://github.com/erasmus-without-paper/ewp-specs-api-factsheet/tree/stable-v1
+       https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-factsheet/master/response.xsd
+     ">
+
+    <factsheet>
+        <hei-id>example-hei.edu</hei-id>
+        <calendar>
+            <!-- date format: - -MM-dd -->
+            <student-nominations>
+                <autumn-term>--04-10</autumn-term>
+                <spring-term>--12-10</spring-term>
+            </student-nominations>
+            <student-applications>
+                <autumn-term>--04-19</autumn-term>
+                <spring-term>--10-19</spring-term>
+            </student-applications>
+        </calendar>
+        <application-info>
+            <email>email@example.com</email>
+            <p:phone-number>
+                <p:e164>+4723456789</p:e164>
+            </p:phone-number>
+            <website-url>http://example-hei.edu/application</website-url>
+        </application-info>
+        <additional-requirement>
+            <name>Academic requirements</name>
+            <details>Number of ECTS completed. Subject area code - ISCED. EQF level.</details>
+            <information-website>http://example-hei.edu/application/requirements</information-website>
+        </additional-requirement>
+        <additional-requirement>
+            <name>CV</name>
+            <details>Curriculum Vitae</details>
+            <information-website>http://example-hei.edu/application/documents/cv</information-website>
+        </additional-requirement>
+        <decision-weeks-limit>4</decision-weeks-limit>
+        <tor-weeks-limit>3</tor-weeks-limit>
+        <accessibility>
+            <type>service</type>
+            <name>Office for persons with disabilities</name>
+            <information>
+                <email>email-bon@example.com</email>
+                <p:phone-number>
+                    <p:e164>+123456789</p:e164>
+                </p:phone-number>
+                <website-url xml:lang="en">https://bon.uw.edu.pl/en/</website-url>
+            </information>
+        </accessibility>
+        <housing-info>
+            <email>email-housing@example.com</email>
+            <p:phone-number>
+                <p:e164>+136794613</p:e164>
+            </p:phone-number>
+            <website-url xml:lang="en">http://iro.example-hei.edu/housing</website-url>
+        </housing-info>
+        <visa-info>
+            <email>email-visa@example.com</email>
+            <p:phone-number>
+                <p:e164>+22556677</p:e164>
+            </p:phone-number>
+            <website-url xml:lang="en">http://www.msz.gov.pl/en/travel_to_poland/visa/</website-url>
+        </visa-info>
+        <insurance-info>
+            <email>email-insurance@example.com</email>
+            <p:phone-number>
+                <p:e164>+1234546789</p:e164>
+            </p:phone-number>
+            <website-url xml:lang="en">http://iro.example-hei.edu/insurance</website-url>
+        </insurance-info>
+        <additional-info>
+            <type>Recognition process</type>
+            <info>
+                <email>email-recognition@example.com</email>
+                <p:phone-number>
+                    <p:e164>+1258846789</p:e164>
+                </p:phone-number>
+                <website-url xml:lang="en">http://iro.example-hei.edu/recognition</website-url>
+            </info>
+        </additional-info>
+    </factsheet>
+</factsheet-response>

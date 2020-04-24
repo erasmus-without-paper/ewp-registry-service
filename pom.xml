@@ -405,6 +405,7 @@
                         <source>src/main/resources/jaxb-schemas/ewp-specs-api-imobility-tors-v0.7.0/endpoints/get-response.xsd</source>
                         <source>src/main/resources/jaxb-schemas/ewp-specs-api-iias-v3.0.0/endpoints/index-response.xsd</source>
                         <source>src/main/resources/jaxb-schemas/ewp-specs-api-iias-v3.0.0/endpoints/get-response.xsd</source>
+                        <source>src/main/resources/jaxb-schemas/ewp-specs-api-factsheet-v0.3.0/response.xsd</source>
                     </sources>
                     <xjbSources>
                         <xjbSource>src/main/resources/schema-bindings/manifests.xjb</xjbSource>

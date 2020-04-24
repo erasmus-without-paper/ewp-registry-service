@@ -170,6 +170,13 @@ public class KnownElement {
           "API entry: Incoming Mobility ToR CNR API v1");
 
   /**
+   * API entry for Incoming Mobility ToR CNR API v1.
+   */
+  public static final KnownElement APIENTRY_FACTSHEET_V1 =
+      new KnownElement(KnownNamespace.APIENTRY_FACTSHEET_V1, "factsheet",
+          "API entry: IIAs Factsheet API");
+
+  /**
    * The root of the Discovery API v4 response.
    */
   public static final KnownElement RESPONSE_MANIFEST_V4 = new KnownElement(
@@ -322,6 +329,15 @@ public class KnownElement {
       new KnownElement(KnownNamespace.RESPONSE_IMOBILITY_TORS_GET_V1,
           "imobility-tors-get-response",
           "IIAs API v2 Get Response"
+      );
+
+  /**
+   * The root of the Factsheet v1 response.
+   */
+  public static final KnownElement RESPONSE_FACTSHEET_V1 =
+      new KnownElement(KnownNamespace.RESPONSE_FACTSHEET_V1,
+          "factsheet-response",
+          "Factsheet v1 Response"
       );
 
   /**

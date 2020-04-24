@@ -1,0 +1,211 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xml="http://www.w3.org/XML/1998/namespace"
+    xmlns:ewp="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
+    xmlns:p="https://github.com/erasmus-without-paper/ewp-specs-types-phonenumber/tree/stable-v1"
+    elementFormDefault="qualified"
+    targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-api-factsheet/tree/stable-v1"
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-factsheet/tree/stable-v1">
+
+    <xs:import
+        schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-architecture/stable-v1/common-types.xsd"
+        namespace="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd" />
+
+    <xs:import
+        schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-types-phonenumber/stable-v1/schema.xsd"
+        namespace="https://github.com/erasmus-without-paper/ewp-specs-types-phonenumber/tree/stable-v1" />
+
+    <xs:annotation>
+        <xs:documentation>
+            This schema is a part of the Erasmus Without Paper project. Before you start using it, make
+            sure you have read the general rules described here:
+
+            http://developers.erasmuswithoutpaper.eu/
+        </xs:documentation>
+    </xs:annotation>
+
+    <xs:element name="factsheet-response">
+        <xs:annotation>
+            <xs:documentation>
+                This describes the format of the response returned by the EWP Mobility Factsheet API.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="factsheet" minOccurs="0" maxOccurs="unbounded">
+                    <xs:annotation>
+                        <xs:documentation>
+                            This represents a single factsheet. Servers will produce one such element for
+                            each of the `hei_id` values passed in the Mobility Factsheet API call.
+                        </xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="hei-id" type="xs:string" minOccurs="1" maxOccurs="1">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        The SCHAC identifier of this HEI.
+                                        https://github.com/erasmus-without-paper/ewp-specs-api-registry/#schac-identifiers
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                            <xs:element name="calendar" minOccurs="1" maxOccurs="1">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        Information on all important dates.
+                                    </xs:documentation>
+                                </xs:annotation>
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="student-nominations" type="CalendarEntry" minOccurs="1"
+                                            maxOccurs="1">
+                                            <xs:annotation>
+                                                <xs:documentation>
+                                                    When do the incoming student nominations must reach the
+                                                    institution.
+                                                </xs:documentation>
+                                            </xs:annotation>
+                                        </xs:element>
+                                        <xs:element name="student-applications" type="CalendarEntry" minOccurs="1"
+                                            maxOccurs="1">
+                                            <xs:annotation>
+                                                <xs:documentation>
+                                                    When do the applications from incoming students must reach the
+                                                    institution.
+                                                </xs:documentation>
+                                            </xs:annotation>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="application-info" type="InformationEntry" minOccurs="1" maxOccurs="1">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        Contact and information about the application process.
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                            <xs:element name="additional-requirement" minOccurs="0" maxOccurs="unbounded">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1" />
+                                        <xs:element name="details" type="xs:string" minOccurs="1" maxOccurs="1" />
+                                        <xs:element name="information-website" type="ewp:HTTPWithOptionalLang"
+                                            minOccurs="0" maxOccurs="unbounded" />
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="decision-weeks-limit" type="xs:integer" minOccurs="1" maxOccurs="1">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        Number of weeks the institution will send its decision within. SHOULD not be
+                                        later than 5 weeks.
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                            <xs:element name="tor-weeks-limit" type="xs:integer" minOccurs="1" maxOccurs="1">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        Number of weeks the institution will issue the Transcript of Records. SHOULD
+                                        not be later than 5 weeks.
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                            <xs:element name="accessibility" minOccurs="0" maxOccurs="unbounded">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        The institution will provide support to incoming mobile participants with
+                                        special needs, according to the requirements of the Erasmus Charter for Higher Education.
+                                        Information and assistance can be provided by the following contact points and information
+                                        sources.
+                                    </xs:documentation>
+                                </xs:annotation>
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="type" minOccurs="1" maxOccurs="1">
+                                            <xs:simpleType>
+                                                <xs:restriction base="xs:string">
+                                                    <xs:enumeration value="infrastructure" />
+                                                    <xs:enumeration value="service" />
+                                                </xs:restriction>
+                                            </xs:simpleType>
+                                        </xs:element>
+                                        <xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1" />
+                                        <xs:element name="description" type="xs:string" minOccurs="0" maxOccurs="1" />
+                                        <xs:element name="information" type="InformationEntry" minOccurs="1"
+                                            maxOccurs="1" />
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="housing-info" type="InformationEntry" minOccurs="1" maxOccurs="1">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        The institution will guide incoming mobile participants in finding
+                                        accommodation, according to the requirements of the Erasmus Charter for Higher Education.
+                                        Information and assistance can be provided by the following contact points and information
+                                        sources.
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                            <xs:element name="visa-info" type="InformationEntry" minOccurs="1" maxOccurs="1">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        The institution will provide assistance, when required, in securing visas for
+                                        incoming and outbound mobile participants, according to the requirements of the Erasmus
+                                        Charter for Higher Education. Information and assistance can be provided by the following
+                                        contact points and information sources.
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                            <xs:element name="insurance-info" type="InformationEntry" minOccurs="1" maxOccurs="1">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        The institution will provide assistance in obtaining insurance for incoming
+                                        and outbound mobile participants, according to the requirements of the Erasmus Charter for
+                                        Higher Education. The receiving institution will inform mobile participants of cases in
+                                        which insurance cover is not automatically provided. Information and assistance can be
+                                        provided by the following contact points and information sources.
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                            <xs:element name="additional-info" minOccurs="0" maxOccurs="unbounded">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="type" type="xs:string" minOccurs="1" maxOccurs="1" />
+                                        <xs:element name="info" type="InformationEntry" minOccurs="1" maxOccurs="1" />
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:complexType name="InformationEntry">
+        <xs:sequence>
+            <xs:element name="email" type="ewp:Email" minOccurs="1" maxOccurs="1" />
+            <xs:element ref="p:phone-number" minOccurs="1" maxOccurs="1" />
+            <xs:element name="website-url" type="ewp:HTTPWithOptionalLang" minOccurs="1" maxOccurs="unbounded" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="CalendarEntry">
+        <xs:sequence>
+            <xs:element name="autumn-term" type="xs:gMonthDay" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>
+                        Date for autumn term.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="spring-term" type="xs:gMonthDay" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>
+                        Date for spring term.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+</xs:schema>

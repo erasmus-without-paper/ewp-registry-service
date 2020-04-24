@@ -93,11 +93,12 @@ class CoverageMatrixRow {
     /* IIAs */
     colorClass = getNextColorClass(colorClass);
 
-    row1.append(genRow("IIAs", colorClass, 1, 3));
+    row1.append(genRow("IIAs", colorClass, 1, 4));
     row2.append(genRow("ver.", colorClass, 2, 1));
     row2.append(genRow("CNR", colorClass, 1, 2));
     row3.append(genRow("sends", colorClass));
     row3.append(genRow("recv.", colorClass));
+    row2.append(genRow("fact.", colorClass, 2, 1));
 
     /* OMobilities */
     colorClass = getNextColorClass(colorClass);
@@ -247,6 +248,10 @@ class CoverageMatrixRow {
     // CNR recv.
     cell = new ApiVersionsCell(colorClass, client, hei, KnownElement.APIENTRY_IIA_CNR_V1,
         KnownElement.APIENTRY_IIA_CNR_V2);
+    this.cells.add(cell);
+
+    // Factsheet
+    cell = new ApiVersionsCell(colorClass, client, hei, KnownElement.APIENTRY_FACTSHEET_V1);
     this.cells.add(cell);
 
     /* OMobilities */

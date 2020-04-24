@@ -192,6 +192,15 @@ public class KnownNamespace {
 
   /**
    * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-factsheet/blob/master/manifest-entry.xsd'>
+   * here</a>.
+   */ // TODO: master->stable!
+  public static final KnownNamespace RESPONSE_FACTSHEET_V1 = new KnownNamespace("fr1",
+      "api-factsheet/tree/stable-v1", "api-factsheet/stable-v1/response.xsd", false);
+  // TODO: 1. false->true 2. master->stable
+
+  /**
+   * As described <a href=
    * 'https://github.com/erasmus-without-paper/ewp-specs-api-discovery/blob/stable-v4/manifest-entry.xsd'>
    * here</a>.
    */
@@ -441,6 +450,15 @@ public class KnownNamespace {
       new KnownNamespace("mtd1", "api-mt-dictionaries/blob/stable-v1/manifest-entry.xsd",
           "api-mt-dictionaries/stable-v1/manifest-entry.xsd", false);
   // TODO: 1. false->true
+  /**
+   * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-factsheet/blob/master/manifest-entry.xsd'>
+   * here</a>.
+   */ // TODO: master->stable!
+  public static final KnownNamespace APIENTRY_FACTSHEET_V1 =
+      new KnownNamespace("f1", "api-factsheet/blob/stable-v1/manifest-entry.xsd",
+          "api-factsheet/master/manifest-entry.xsd", false);
+  // TODO: 1. false->true 2. master->stable
 
   /**
    * As described <a href=
