@@ -13,8 +13,6 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import eu.erasmuswithoutpaper.registry.internet.InternetTestHelpers;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
-import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigRequestAuthorizer;
-import eu.erasmuswithoutpaper.registry.internet.sec.Http4xx;
 import eu.erasmuswithoutpaper.registry.validators.ValidatorKeyStore;
 import eu.erasmuswithoutpaper.registry.validators.types.CalendarEntry;
 import eu.erasmuswithoutpaper.registry.validators.types.InformationEntry;
@@ -27,13 +25,11 @@ import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 public class FactsheetServiceV030Valid extends AbstractFactsheetService {
   protected static final int maxHeiIds = 2;
-  private final EwpHttpSigRequestAuthorizer myAuthorizer;
   protected Map<String, FactsheetResponse.Factsheet> coveredHeis = new HashMap<>();
 
   public FactsheetServiceV030Valid(String url, RegistryClient registryClient,
       ValidatorKeyStore validatorKeyStore) {
     super(url, registryClient);
-    this.myAuthorizer = new EwpHttpSigRequestAuthorizer(this.registryClient);
     for (String heiId : validatorKeyStore.getCoveredHeiIDs()) {
       addHei(createFactsheet(heiId));
     }
@@ -72,8 +68,8 @@ public class FactsheetServiceV030Valid extends AbstractFactsheetService {
     url.setLang("en");
     informationEntry.getWebsiteUrl().add(url);
     factsheet.setApplicationInfo(informationEntry);
-    factsheet.setDecisionWeeksLimit(new BigInteger("2"));
-    factsheet.setTorWeeksLimit(new BigInteger("3"));
+    factsheet.setDecisionWeeksLimit(new BigInteger("12"));
+    factsheet.setTorWeeksLimit(new BigInteger("123"));
     Accessibility accessability = new Accessibility();
     accessability.setName("test");
     accessability.setType("service");
@@ -100,14 +96,6 @@ public class FactsheetServiceV030Valid extends AbstractFactsheetService {
       return createFactsheetResponse(heisData);
     } catch (ErrorResponseException e) {
       return e.response;
-    }
-  }
-
-  private void verifyCertificate(Request request) throws ErrorResponseException {
-    try {
-      this.myAuthorizer.authorize(request);
-    } catch (Http4xx e) {
-      throw new ErrorResponseException(e.generateEwpErrorResponse());
     }
   }
 
@@ -197,22 +185,4 @@ public class FactsheetServiceV030Valid extends AbstractFactsheetService {
       this.request = request;
     }
   }
-
-  protected void checkRequestMethod(Request request) throws ErrorResponseException {
-    if (!(request.getMethod().equals("GET") || request.getMethod().equals("POST"))) {
-      throw new ErrorResponseException(
-          this.createErrorResponse(request, 405, "We expect GETs and POSTs only")
-      );
-    }
-  }
-
-  protected void checkParamsEncoding(Request request) throws ErrorResponseException {
-    if (request.getMethod().equals("POST")
-        && !request.getHeader("content-type").equals("application/x-www-form-urlencoded")) {
-      throw new ErrorResponseException(
-          createErrorResponse(request, 415, "Unsupported content-type")
-      );
-    }
-  }
-
 }

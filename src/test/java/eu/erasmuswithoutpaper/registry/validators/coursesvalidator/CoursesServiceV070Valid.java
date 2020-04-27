@@ -15,8 +15,6 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import eu.erasmuswithoutpaper.registry.internet.InternetTestHelpers;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
-import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigRequestAuthorizer;
-import eu.erasmuswithoutpaper.registry.internet.sec.Http4xx;
 import eu.erasmuswithoutpaper.registry.validators.coursereplicationvalidator.CourseReplicationServiceV1Valid;
 import eu.erasmuswithoutpaper.registry.validators.types.CoursesResponse;
 import eu.erasmuswithoutpaper.registry.validators.types.StringWithOptionalLang;
@@ -24,9 +22,8 @@ import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 public class CoursesServiceV070Valid extends AbstractCoursesService {
   protected final CourseReplicationServiceV1Valid CourseReplicationServiceV2;
-  protected final int max_los_ids = 2;
-  protected final int max_los_codes = 2;
-  private final EwpHttpSigRequestAuthorizer myAuthorizer;
+  protected final int maxLosIds = 2;
+  protected final int maxLosCodes = 2;
   protected Map<String, CoursesResponse.LearningOpportunitySpecification> coveredLosIds =
       new HashMap<>();
   protected Map<String, CoursesResponse.LearningOpportunitySpecification> coveredLosCodes =
@@ -38,7 +35,6 @@ public class CoursesServiceV070Valid extends AbstractCoursesService {
       CourseReplicationServiceV1Valid courseReplicationService) {
     super(url, registryClient, courseReplicationService);
     this.CourseReplicationServiceV2 = courseReplicationService;
-    this.myAuthorizer = new EwpHttpSigRequestAuthorizer(this.registryClient);
 
     List<String> covered_los_ids = CourseReplicationServiceV2.getCoveredLosIds();
 
@@ -52,11 +48,11 @@ public class CoursesServiceV070Valid extends AbstractCoursesService {
   }
 
   protected int getMaxLosCodes() {
-    return max_los_codes;
+    return maxLosCodes;
   }
 
   protected int getMaxLosIds() {
-    return max_los_ids;
+    return maxLosIds;
   }
 
   private void addLos(CoursesResponse.LearningOpportunitySpecification data) {
@@ -143,8 +139,8 @@ public class CoursesServiceV070Valid extends AbstractCoursesService {
   public Response handleCoursesInternetRequest(Request request) {
     try {
       RequestData requestData = new RequestData(request);
-      verifyCertificate(requestData);
-      checkRequestMethod(requestData);
+      verifyCertificate(requestData.request);
+      checkRequestMethod(requestData.request);
       extractParams(requestData);
       checkHei(requestData);
       checkIds(requestData);
@@ -158,18 +154,8 @@ public class CoursesServiceV070Valid extends AbstractCoursesService {
     }
   }
 
-  private void verifyCertificate(RequestData requestData) throws ErrorResponseException {
-    try {
-      this.myAuthorizer.authorize(requestData.request);
-    } catch (Http4xx e) {
-      throw new ErrorResponseException(
-          e.generateEwpErrorResponse()
-      );
-    }
-  }
-
   private void extractParams(RequestData requestData) throws ErrorResponseException {
-    checkParamsEncoding(requestData);
+    checkParamsEncoding(requestData.request);
     Map<String, List<String>> params =
         InternetTestHelpers.extractAllParams(requestData.request);
 
@@ -368,26 +354,6 @@ public class CoursesServiceV070Valid extends AbstractCoursesService {
   protected CoursesResponse.LearningOpportunitySpecification handleUnknownLos(
       RequestData requestData) {
     return null;
-  }
-
-  protected void checkRequestMethod(RequestData requestData) throws ErrorResponseException {
-    if (!(requestData.request.getMethod().equals("GET") || requestData.request
-        .getMethod()
-        .equals("POST"))) {
-      throw new ErrorResponseException(
-          createErrorResponse(requestData.request, 405, "We expect GETs and POSTs only")
-      );
-    }
-  }
-
-  protected void checkParamsEncoding(RequestData requestData) throws ErrorResponseException {
-    if (requestData.request.getMethod().equals("POST")
-        && !requestData.request.getHeader("content-type")
-        .equals("application/x-www-form-urlencoded")) {
-      throw new ErrorResponseException(
-          createErrorResponse(requestData.request, 415, "Unsupported content-type")
-      );
-    }
   }
 
   protected void errorMaxLosCodesExceeded(RequestData requestData) throws ErrorResponseException {

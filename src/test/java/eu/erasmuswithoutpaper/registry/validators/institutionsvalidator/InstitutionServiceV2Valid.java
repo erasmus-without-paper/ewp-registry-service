@@ -10,7 +10,6 @@ import eu.erasmuswithoutpaper.registry.internet.InternetTestHelpers;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigRequestAuthorizer;
-import eu.erasmuswithoutpaper.registry.internet.sec.Http4xx;
 import eu.erasmuswithoutpaper.registry.validators.ValidatorKeyStore;
 import eu.erasmuswithoutpaper.registry.validators.types.FlexibleAddress;
 import eu.erasmuswithoutpaper.registry.validators.types.HTTPWithOptionalLang;
@@ -21,15 +20,11 @@ import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 public class InstitutionServiceV2Valid extends AbstractInstitutionService {
 
   protected static final int max_hei_ids = 2;
-  private final EwpHttpSigRequestAuthorizer myAuthorizer;
   private final List<String> coveredHeiIds;
-  protected Request currentRequest;
   protected Map<String, InstitutionsResponse.Hei> coveredHeis = new HashMap<>();
-  protected List<InstitutionsResponse.Hei> coveredHeisList = new ArrayList<>();
 
   private void addHei(InstitutionsResponse.Hei data) {
     coveredHeis.put(data.getHeiId(), data);
-    coveredHeisList.add(data);
   }
 
   protected InstitutionsResponse.Hei createFakeHeiData(String heiid) {
@@ -100,7 +95,6 @@ public class InstitutionServiceV2Valid extends AbstractInstitutionService {
   public InstitutionServiceV2Valid(String url, RegistryClient registryClient,
     ValidatorKeyStore validatorKeyStore) {
     super(url, registryClient);
-    this.myAuthorizer = new EwpHttpSigRequestAuthorizer(this.registryClient);
     coveredHeiIds = validatorKeyStore.getCoveredHeiIDs();
 
     //Create fake HEIs
@@ -127,105 +121,100 @@ public class InstitutionServiceV2Valid extends AbstractInstitutionService {
       return null;
     }
     try {
-      currentRequest = request;
-      verifyCertificate();
-      checkRequestMethod();
-      List<String> heis = extractParams();
-      checkHeis(heis);
-      List<InstitutionsResponse.Hei> heis_data = processHeis(heis);
+      verifyCertificate(request);
+      checkRequestMethod(request);
+      RequestData requestData = new RequestData(request);
+      extractParams(requestData);
+      checkHeis(requestData);
+      List<InstitutionsResponse.Hei> heis_data = processHeis(requestData);
       return createInstitutionsResponse(heis_data);
     } catch (ErrorResponseException e) {
       return e.response;
     }
   }
 
-  private void verifyCertificate() throws ErrorResponseException {
-    try {
-      this.myAuthorizer.authorize(this.currentRequest);
-    } catch (Http4xx e) {
-      throw new ErrorResponseException(e.generateEwpErrorResponse());
+  protected void checkHeis(RequestData requestData) throws ErrorResponseException {
+    if (requestData.heiIds.size() > max_hei_ids) {
+      errorMaxHeiIdsExceeded(requestData);
     }
   }
 
-  protected void checkHeis(List<String> heis) throws ErrorResponseException {
-    if (heis.size() > max_hei_ids) {
-      throw new ErrorResponseException(
-          createErrorResponse(this.currentRequest, 400, "Exceeded max-hei-ids"));
-    }
-  }
-
-  private List<String> extractParams() throws ErrorResponseException {
-    checkParamsEncoding();
-    Map<String, List<String>> params = InternetTestHelpers.extractAllParams(this.currentRequest);
+  private void extractParams(RequestData requestData) throws ErrorResponseException {
+    checkParamsEncoding(requestData.request);
+    Map<String, List<String>> params = InternetTestHelpers.extractAllParams(requestData.request);
     if (params.size() == 0) {
-      extractParamsNoParams(params);
+      handleNoParams(requestData);
     }
     if (params.size() == 1 && !params.containsKey("hei_id")) {
-      extractParamsNoHeiIds(params);
+      handleNoHeiIdsParams(requestData);
     }
     if (params.size() > 1) {
-      extractParamsMultipleParams(params);
+      handleMultipleParams(requestData);
     }
-    List<String> ret = params.get("hei_id");
-    if (ret != null) {
-      return ret;
+    List<String> heiIds = params.get("hei_id");
+    if (heiIds == null) {
+      heiIds = new ArrayList<>();
     }
-    return new ArrayList<>();
+    requestData.heiIds = heiIds;
   }
 
-  protected void checkParamsEncoding() throws ErrorResponseException {
-    if (this.currentRequest.getMethod().equals("POST")
-        && !this.currentRequest.getHeader("content-type").equals("application/x-www-form-urlencoded")) {
-      throw new ErrorResponseException(
-          createErrorResponse(this.currentRequest, 415, "Unsupported content-type"));
-    }
-  }
-
-  protected void extractParamsMultipleParams(Map<String, List<String>> params)
+  protected void handleMultipleParams(RequestData params)
       throws ErrorResponseException {
     //Ignore unknown parameters
   }
 
-  protected void extractParamsNoHeiIds(Map<String, List<String>> params)
+  protected void handleNoHeiIdsParams(RequestData requestData)
       throws ErrorResponseException {
     throw new ErrorResponseException(
-        createErrorResponse(this.currentRequest, 400, "Expected \"hei_id\" parameters"));
+        createErrorResponse(requestData.request, 400, "Expected \"hei_id\" parameters"));
   }
 
-  protected void extractParamsNoParams(Map<String, List<String>> params)
+  protected void handleNoParams(RequestData requestData)
       throws ErrorResponseException {
     throw new ErrorResponseException(
-        createErrorResponse(this.currentRequest, 400, "No parameters provided"));
+        createErrorResponse(requestData.request, 400, "No parameters provided"));
   }
 
-  protected void checkRequestMethod() throws ErrorResponseException {
-    if (!(this.currentRequest.getMethod().equals("GET")
-        || this.currentRequest.getMethod().equals("POST"))) {
-      throw new ErrorResponseException(
-          this.createErrorResponse(this.currentRequest, 405, "We expect GETs and POSTs only"));
-    }
-  }
-
-  protected void processCoveredHei(String hei, List<InstitutionsResponse.Hei> heis)
+  protected InstitutionsResponse.Hei processCoveredHei(RequestData requestData, String hei)
       throws ErrorResponseException {
-    heis.add(coveredHeis.get(hei));
+    return coveredHeis.get(hei);
   }
 
-  protected void processNotCoveredHei(String hei, List<InstitutionsResponse.Hei> heis)
+  protected InstitutionsResponse.Hei  processNotCoveredHei(RequestData requestData, String hei)
       throws ErrorResponseException {
     //Ignore
+    return null;
   }
 
-  protected List<InstitutionsResponse.Hei> processHeis(List<String> heis)
+  protected List<InstitutionsResponse.Hei> processHeis(RequestData requestData)
       throws ErrorResponseException {
-    List<InstitutionsResponse.Hei> ret = new ArrayList<>();
-    for (String hei : heis) {
+    List<InstitutionsResponse.Hei> result = new ArrayList<>();
+    for (String hei : requestData.heiIds) {
+      InstitutionsResponse.Hei responseHei;
       if (coveredHeis.containsKey(hei)) {
-        processCoveredHei(hei, ret);
+        responseHei = processCoveredHei(requestData, hei);
       } else {
-        processNotCoveredHei(hei, ret);
+        responseHei = processNotCoveredHei(requestData, hei);
+      }
+
+      if (responseHei != null) {
+        result.add(responseHei);
       }
     }
-    return ret;
+    return result;
+  }
+
+  protected void errorMaxHeiIdsExceeded(RequestData requestData) throws ErrorResponseException {
+    throw new ErrorResponseException(
+        createErrorResponse(requestData.request, 400, "Exceeded max-hei-ids"));
+  }
+
+  static class RequestData {
+    Request request;
+    List<String> heiIds;
+
+    public RequestData(Request request) {
+      this.request = request;
+    }
   }
 }

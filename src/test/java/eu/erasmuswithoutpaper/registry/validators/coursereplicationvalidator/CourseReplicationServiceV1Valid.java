@@ -9,22 +9,18 @@ import java.util.Map;
 import eu.erasmuswithoutpaper.registry.internet.InternetTestHelpers;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
-import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigRequestAuthorizer;
-import eu.erasmuswithoutpaper.registry.internet.sec.Http4xx;
 import eu.erasmuswithoutpaper.registry.validators.ValidatorKeyStore;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 public class CourseReplicationServiceV1Valid extends AbstractCourseReplicationService {
 
   protected final List<String> coveredHeiIds;
-  private final EwpHttpSigRequestAuthorizer myAuthorizer;
   private final List<String> coveredLosIds;
 
 
   public CourseReplicationServiceV1Valid(String url, RegistryClient registryClient,
       ValidatorKeyStore validatorKeyStore) {
     super(url, registryClient);
-    this.myAuthorizer = new EwpHttpSigRequestAuthorizer(this.registryClient);
     coveredHeiIds = validatorKeyStore.getCoveredHeiIDs();
     coveredLosIds = createFakeHeiData();
   }
@@ -48,8 +44,8 @@ public class CourseReplicationServiceV1Valid extends AbstractCourseReplicationSe
     }
     try {
       RequestData requestData = new RequestData(request);
-      verifyCertificate(requestData);
-      checkRequestMethod(requestData);
+      verifyCertificate(requestData.request);
+      checkRequestMethod(requestData.request);
       extractParams(requestData);
       checkModifiedSince(requestData);
       List<String> losIds = processHei(requestData);
@@ -70,16 +66,8 @@ public class CourseReplicationServiceV1Valid extends AbstractCourseReplicationSe
     }
   }
 
-  private void verifyCertificate(RequestData requestData) throws ErrorResponseException {
-    try {
-      this.myAuthorizer.authorize(requestData.request);
-    } catch (Http4xx e) {
-      throw new ErrorResponseException(e.generateEwpErrorResponse());
-    }
-  }
-
   private void extractParams(RequestData requestData) throws ErrorResponseException {
-    checkParamsEncoding(requestData);
+    checkParamsEncoding(requestData.request);
     Map<String, List<String>> params = InternetTestHelpers.extractAllParams(requestData.request);
 
     requestData.requestedHeiIds = params.getOrDefault("hei_id", new ArrayList<>());
@@ -137,15 +125,6 @@ public class CourseReplicationServiceV1Valid extends AbstractCourseReplicationSe
         createErrorResponse(requestData.request, 400, "Multiple HEI IDs."));
   }
 
-  protected void checkParamsEncoding(RequestData requestData) throws ErrorResponseException {
-    if (requestData.request.getMethod().equals("POST")
-        && !requestData.request.getHeader("content-type")
-        .equals("application/x-www-form-urlencoded")) {
-      throw new ErrorResponseException(
-          createErrorResponse(requestData.request, 415, "Unsupported content-type"));
-    }
-  }
-
   protected void errorAdditionalParameters(RequestData requestData,
       Map<String, List<String>> params)
       throws ErrorResponseException {
@@ -167,14 +146,6 @@ public class CourseReplicationServiceV1Valid extends AbstractCourseReplicationSe
   protected void errorInvalidModifiedSince(RequestData requestData) throws ErrorResponseException {
     throw new ErrorResponseException(
         createErrorResponse(requestData.request, 400, "Invalid modified_since format."));
-  }
-
-  protected void checkRequestMethod(RequestData requestData) throws ErrorResponseException {
-    if (!(requestData.request.getMethod().equals("GET")
-        || requestData.request.getMethod().equals("POST"))) {
-      throw new ErrorResponseException(
-          this.createErrorResponse(requestData.request, 405, "We expect GETs and POSTs only"));
-    }
   }
 
   protected List<String> processCoveredHei(RequestData requestData)

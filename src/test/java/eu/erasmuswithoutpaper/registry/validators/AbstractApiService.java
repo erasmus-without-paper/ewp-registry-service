@@ -14,14 +14,32 @@ import javax.xml.bind.Marshaller;
 import eu.erasmuswithoutpaper.registry.internet.FakeInternetService;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
+import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigRequestAuthorizer;
+import eu.erasmuswithoutpaper.registry.internet.sec.Http4xx;
+import eu.erasmuswithoutpaper.registry.internet.sec.RequestAuthorizer;
 import eu.erasmuswithoutpaper.registry.validators.types.ErrorResponse;
 import eu.erasmuswithoutpaper.registry.validators.types.MultilineString;
+import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 import org.apache.commons.lang.StringEscapeUtils;
 
 public abstract class AbstractApiService implements FakeInternetService {
+  private RequestAuthorizer myAuthorizer;
+
+  protected RequestAuthorizer createMyAuthorizer(RegistryClient registryClient) {
+    return new EwpHttpSigRequestAuthorizer(registryClient);
+  }
+
+  protected RequestAuthorizer getMyAuthorizer() {
+    return this.myAuthorizer;
+  }
+
   protected String getJaxbContextPackagePath() {
     return "eu.erasmuswithoutpaper.registry.validators.types";
+  }
+
+  protected AbstractApiService(RegistryClient registryClient) {
+    this.myAuthorizer = createMyAuthorizer(registryClient);
   }
 
   protected String marshallObject(Object object) {
@@ -87,6 +105,32 @@ public abstract class AbstractApiService implements FakeInternetService {
       }
     }
     return null;
+  }
+
+  protected void checkRequestMethod(Request request) throws ErrorResponseException {
+    if (!(request.getMethod().equals("GET") || request.getMethod().equals("POST"))) {
+      throw new ErrorResponseException(
+          createErrorResponse(request, 405, "We expect GETs and POSTs only")
+      );
+    }
+  }
+
+  protected void checkParamsEncoding(Request request) throws ErrorResponseException {
+    if (request.getMethod().equals("POST")
+        && !request.getHeader("content-type").equals("application/x-www-form-urlencoded")) {
+      throw new ErrorResponseException(
+          createErrorResponse(request, 415, "Unsupported content-type")
+      );
+    }
+  }
+
+
+  protected void verifyCertificate(Request request) throws ErrorResponseException {
+    try {
+      getMyAuthorizer().authorize(request);
+    } catch (Http4xx e) {
+      throw new ErrorResponseException(e.generateEwpErrorResponse());
+    }
   }
 
 }

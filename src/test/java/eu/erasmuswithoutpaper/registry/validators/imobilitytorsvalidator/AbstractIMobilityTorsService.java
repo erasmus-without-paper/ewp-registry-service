@@ -26,6 +26,7 @@ public abstract class AbstractIMobilityTorsService extends AbstractApiService {
    *     Initialized and refreshed {@link RegistryClient} instance.
    */
   public AbstractIMobilityTorsService(String indexUrl, String getUrl, RegistryClient registryClient) {
+    super(registryClient);
     this.myIndexUrl = indexUrl;
     this.myGetUrl = getUrl;
     this.registryClient = registryClient;
@@ -62,23 +63,6 @@ public abstract class AbstractIMobilityTorsService extends AbstractApiService {
 
   protected abstract Response handleIMobilityTorsGetRequest(Request request)
       throws IOException, ErrorResponseException;
-
-  protected void checkRequestMethod(Request request) throws ErrorResponseException {
-    if (!(request.getMethod().equals("GET") || request.getMethod().equals("POST"))) {
-      throw new ErrorResponseException(
-          this.createErrorResponse(request, 405, "We expect GETs and POSTs only")
-      );
-    }
-  }
-
-  protected void checkParamsEncoding(Request request) throws ErrorResponseException {
-    if (request.getMethod().equals("POST")
-        && !request.getHeader("content-type").equals("application/x-www-form-urlencoded")) {
-      throw new ErrorResponseException(
-          createErrorResponse(request, 415, "Unsupported content-type")
-      );
-    }
-  }
 
   public static class ParameterInfo {
     public static ParameterInfo readParam(Map<String, List<String>> params, String param) {

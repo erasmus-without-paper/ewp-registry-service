@@ -12,7 +12,6 @@ import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 public abstract class AbstractOUnitsService extends AbstractApiService {
   protected final String myEndpoint;
-  protected final RegistryClient registryClient;
   protected final AbstractInstitutionService institutionsService;
 
   /**
@@ -21,8 +20,8 @@ public abstract class AbstractOUnitsService extends AbstractApiService {
    */
   public AbstractOUnitsService(String url, RegistryClient registryClient,
       AbstractInstitutionService institutionService) {
+    super(registryClient);
     this.myEndpoint = url;
-    this.registryClient = registryClient;
     this.institutionsService = institutionService;
   }
 

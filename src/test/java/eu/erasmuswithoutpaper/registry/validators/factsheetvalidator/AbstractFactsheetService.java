@@ -11,7 +11,6 @@ import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 public abstract class AbstractFactsheetService extends AbstractApiService {
   protected final String myEndpoint;
-  protected final RegistryClient registryClient;
 
   /**
    * @param url
@@ -20,8 +19,8 @@ public abstract class AbstractFactsheetService extends AbstractApiService {
    *     Initialized and refreshed {@link RegistryClient} instance.
    */
   public AbstractFactsheetService (String url, RegistryClient registryClient) {
+    super(registryClient);
     this.myEndpoint = url;
-    this.registryClient = registryClient;
   }
 
   public String getEndpoint() {

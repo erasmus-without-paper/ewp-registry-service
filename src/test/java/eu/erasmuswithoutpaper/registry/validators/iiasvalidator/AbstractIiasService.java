@@ -11,7 +11,6 @@ import eu.erasmuswithoutpaper.registry.validators.AbstractApiService;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 public abstract class AbstractIiasService extends AbstractApiService {
-  protected final RegistryClient registryClient;
   private final String myIndexUrl;
   private final String myGetUrl;
 
@@ -24,9 +23,9 @@ public abstract class AbstractIiasService extends AbstractApiService {
    *     Initialized and refreshed {@link RegistryClient} instance.
    */
   public AbstractIiasService(String indexUrl, String getUrl, RegistryClient registryClient) {
+    super(registryClient);
     this.myIndexUrl = indexUrl;
     this.myGetUrl = getUrl;
-    this.registryClient = registryClient;
   }
 
   @Override
@@ -48,23 +47,6 @@ public abstract class AbstractIiasService extends AbstractApiService {
 
   protected abstract Response handleIiasGetRequest(Request request)
       throws IOException, ErrorResponseException;
-
-  protected void checkRequestMethod(Request request) throws ErrorResponseException {
-    if (!(request.getMethod().equals("GET") || request.getMethod().equals("POST"))) {
-      throw new ErrorResponseException(
-          this.createErrorResponse(request, 405, "We expect GETs and POSTs only")
-      );
-    }
-  }
-
-  protected void checkParamsEncoding(Request request) throws ErrorResponseException {
-    if (request.getMethod().equals("POST")
-        && !request.getHeader("content-type").equals("application/x-www-form-urlencoded")) {
-      throw new ErrorResponseException(
-          createErrorResponse(request, 415, "Unsupported content-type")
-      );
-    }
-  }
 
   public static class ParameterInfo {
     public static ParameterInfo readParam(Map<String, List<String>> params, String param) {

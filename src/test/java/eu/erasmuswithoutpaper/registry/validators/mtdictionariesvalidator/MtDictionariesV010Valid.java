@@ -14,13 +14,10 @@ import java.util.stream.Collectors;
 import eu.erasmuswithoutpaper.registry.internet.InternetTestHelpers;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
-import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigRequestAuthorizer;
-import eu.erasmuswithoutpaper.registry.internet.sec.Http4xx;
 import eu.erasmuswithoutpaper.registry.validators.types.MtDictionariesResponse;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 public class MtDictionariesV010Valid extends AbstractMtDictionariesService {
-  private final EwpHttpSigRequestAuthorizer myAuthorizer;
 
   protected static final class DictionaryAndYear {
     public final String dictionary;
@@ -101,7 +98,6 @@ public class MtDictionariesV010Valid extends AbstractMtDictionariesService {
 
   public MtDictionariesV010Valid(String url, RegistryClient registryClient) {
     super(url, registryClient);
-    this.myAuthorizer = new EwpHttpSigRequestAuthorizer(this.registryClient);
     fillCovered();
   }
 
@@ -120,8 +116,8 @@ public class MtDictionariesV010Valid extends AbstractMtDictionariesService {
       Request request) throws IOException, ErrorResponseException {
     try {
       RequestData requestData = new RequestData(request);
-      verifyCertificate(requestData);
-      checkRequestMethod(requestData);
+      verifyCertificate(requestData.request);
+      checkRequestMethod(requestData.request);
       extractParams(requestData);
       List<MtDictionariesResponse.Term> terms = processDictionaries(requestData);
       return createMtDictionariesReponse(terms);
@@ -151,27 +147,8 @@ public class MtDictionariesV010Valid extends AbstractMtDictionariesService {
     );
   }
 
-  private void verifyCertificate(RequestData requestData) throws ErrorResponseException {
-    try {
-      this.myAuthorizer.authorize(requestData.request);
-    } catch (Http4xx e) {
-      throw new ErrorResponseException(
-          e.generateEwpErrorResponse()
-      );
-    }
-  }
-
-  protected void checkRequestMethod(RequestData requestData) throws ErrorResponseException {
-    if (!(requestData.request.getMethod().equals("GET")
-        || requestData.request.getMethod().equals("POST"))) {
-      throw new ErrorResponseException(
-          createErrorResponse(requestData.request, 405, "We expect GETs and POSTs only")
-      );
-    }
-  }
-
   private void extractParams(RequestData requestData) throws ErrorResponseException {
-    checkParamsEncoding(requestData);
+    checkParamsEncoding(requestData.request);
     Map<String, List<String>> params =
         InternetTestHelpers.extractAllParams(requestData.request);
 
@@ -258,16 +235,6 @@ public class MtDictionariesV010Valid extends AbstractMtDictionariesService {
   protected void handleCallYearNegative(
       RequestData requestData) throws ErrorResponseException {
     // do nothing
-  }
-
-  protected void checkParamsEncoding(RequestData requestData) throws ErrorResponseException {
-    if (requestData.request.getMethod().equals("POST")
-        && !requestData.request.getHeader("content-type")
-        .equals("application/x-www-form-urlencoded")) {
-      throw new ErrorResponseException(
-          createErrorResponse(requestData.request, 415, "Unsupported content-type")
-      );
-    }
   }
 
   protected void errorNoParams(RequestData requestData) throws ErrorResponseException {

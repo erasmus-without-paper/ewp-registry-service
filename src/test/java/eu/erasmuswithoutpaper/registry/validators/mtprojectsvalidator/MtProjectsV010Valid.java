@@ -13,13 +13,10 @@ import javax.xml.datatype.DatatypeFactory;
 import eu.erasmuswithoutpaper.registry.internet.InternetTestHelpers;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
-import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigRequestAuthorizer;
-import eu.erasmuswithoutpaper.registry.internet.sec.Http4xx;
 import eu.erasmuswithoutpaper.registry.validators.types.MtProjectsResponse;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 public class MtProjectsV010Valid extends AbstractMtProjectsService {
-  private final EwpHttpSigRequestAuthorizer myAuthorizer;
 
   protected Map<String, List<MtProjectsResponse.Project>> coveredProjects = new HashMap<>();
 
@@ -57,7 +54,6 @@ public class MtProjectsV010Valid extends AbstractMtProjectsService {
 
   public MtProjectsV010Valid(String url, RegistryClient registryClient) {
     super(url, registryClient);
-    this.myAuthorizer = new EwpHttpSigRequestAuthorizer(this.registryClient);
     fillCovered();
   }
 
@@ -76,8 +72,8 @@ public class MtProjectsV010Valid extends AbstractMtProjectsService {
       Request request) throws IOException, ErrorResponseException {
     try {
       RequestData requestData = new RequestData(request);
-      verifyCertificate(requestData);
-      checkRequestMethod(requestData);
+      verifyCertificate(requestData.request);
+      checkRequestMethod(requestData.request);
       extractParams(requestData);
       List<MtProjectsResponse.Project> projects = processPics(requestData);
       return createMtProjectsReponse(projects);
@@ -110,27 +106,8 @@ public class MtProjectsV010Valid extends AbstractMtProjectsService {
         && callYear <= project.getEndDate().getYear();
   }
 
-  private void verifyCertificate(RequestData requestData) throws ErrorResponseException {
-    try {
-      this.myAuthorizer.authorize(requestData.request);
-    } catch (Http4xx e) {
-      throw new ErrorResponseException(
-          e.generateEwpErrorResponse()
-      );
-    }
-  }
-
-  protected void checkRequestMethod(RequestData requestData) throws ErrorResponseException {
-    if (!(requestData.request.getMethod().equals("GET")
-        || requestData.request.getMethod().equals("POST"))) {
-      throw new ErrorResponseException(
-          createErrorResponse(requestData.request, 405, "We expect GETs and POSTs only")
-      );
-    }
-  }
-
   private void extractParams(RequestData requestData) throws ErrorResponseException {
-    checkParamsEncoding(requestData);
+    checkParamsEncoding(requestData.request);
     Map<String, List<String>> params =
         InternetTestHelpers.extractAllParams(requestData.request);
 
@@ -215,16 +192,6 @@ public class MtProjectsV010Valid extends AbstractMtProjectsService {
 
   protected void handleCallYearNegative(RequestData requestData) throws ErrorResponseException {
     // do nothing
-  }
-
-  protected void checkParamsEncoding(RequestData requestData) throws ErrorResponseException {
-    if (requestData.request.getMethod().equals("POST")
-        && !requestData.request.getHeader("content-type")
-        .equals("application/x-www-form-urlencoded")) {
-      throw new ErrorResponseException(
-          createErrorResponse(requestData.request, 415, "Unsupported content-type")
-      );
-    }
   }
 
   protected void errorNoParams(RequestData requestData) throws ErrorResponseException {

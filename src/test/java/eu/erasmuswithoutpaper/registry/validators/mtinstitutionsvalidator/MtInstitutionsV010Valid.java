@@ -16,14 +16,11 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import eu.erasmuswithoutpaper.registry.internet.InternetTestHelpers;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
-import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigRequestAuthorizer;
-import eu.erasmuswithoutpaper.registry.internet.sec.Http4xx;
 import eu.erasmuswithoutpaper.registry.validators.types.MtInstitutionsResponse;
 import eu.erasmuswithoutpaper.registry.validators.types.StringWithOptionalLang;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 public class MtInstitutionsV010Valid extends AbstractMtInstitutionsService {
-  private final EwpHttpSigRequestAuthorizer myAuthorizer;
   protected static final int maxIds = 2;
 
   protected List<MtInstitutionsResponse.Hei> coveredPics = new ArrayList<>();
@@ -95,7 +92,6 @@ public class MtInstitutionsV010Valid extends AbstractMtInstitutionsService {
 
   public MtInstitutionsV010Valid(String url, RegistryClient registryClient) {
     super(url, registryClient);
-    this.myAuthorizer = new EwpHttpSigRequestAuthorizer(this.registryClient);
     fillCovered();
   }
 
@@ -118,8 +114,8 @@ public class MtInstitutionsV010Valid extends AbstractMtInstitutionsService {
       Request request) throws IOException, ErrorResponseException {
     try {
       RequestData requestData = new RequestData(request);
-      verifyCertificate(requestData);
-      checkRequestMethod(requestData);
+      verifyCertificate(requestData.request);
+      checkRequestMethod(requestData.request);
       extractParams(requestData);
       checkPics(requestData);
       List<MtInstitutionsResponse.Hei> heis = processPics(requestData);
@@ -151,27 +147,8 @@ public class MtInstitutionsV010Valid extends AbstractMtInstitutionsService {
 
   }
 
-  private void verifyCertificate(RequestData requestData) throws ErrorResponseException {
-    try {
-      this.myAuthorizer.authorize(requestData.request);
-    } catch (Http4xx e) {
-      throw new ErrorResponseException(
-          e.generateEwpErrorResponse()
-      );
-    }
-  }
-
-  protected void checkRequestMethod(RequestData requestData) throws ErrorResponseException {
-    if (!(requestData.request.getMethod().equals("GET")
-        || requestData.request.getMethod().equals("POST"))) {
-      throw new ErrorResponseException(
-          createErrorResponse(requestData.request, 405, "We expect GETs and POSTs only")
-      );
-    }
-  }
-
   private void extractParams(RequestData requestData) throws ErrorResponseException {
-    checkParamsEncoding(requestData);
+    checkParamsEncoding(requestData.request);
     Map<String, List<String>> params =
         InternetTestHelpers.extractAllParams(requestData.request);
 
@@ -209,16 +186,6 @@ public class MtInstitutionsV010Valid extends AbstractMtInstitutionsService {
     if (requestData.pic == null || requestData.echeAtDate == null) {
       //We expect all of above members to have any value even in invalid scenarios.
       throw new NullPointerException();
-    }
-  }
-
-  protected void checkParamsEncoding(RequestData requestData) throws ErrorResponseException {
-    if (requestData.request.getMethod().equals("POST")
-        && !requestData.request.getHeader("content-type")
-        .equals("application/x-www-form-urlencoded")) {
-      throw new ErrorResponseException(
-          createErrorResponse(requestData.request, 415, "Unsupported content-type")
-      );
     }
   }
 
