@@ -28,7 +28,7 @@
         </xs:documentation>
     </xs:annotation>
 
-    <xs:element name="iia-cnr">
+    <xs:element name="iia-approval-cnr">
         <xs:annotation>
             <xs:documentation>
                 If this element is present in EWP Host's manifest file, then the host states

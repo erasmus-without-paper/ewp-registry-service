@@ -343,6 +343,26 @@ public class KnownNamespace {
 
   /**
    * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-iias-approval/blob/master/manifest-entry.xsd'>
+   * here</a>.
+   */ // TODO: master->stable!
+  public static final KnownNamespace APIENTRY_IIAS_APPROVAL_V1 =
+      new KnownNamespace("iaa1", "api-iias-approval/blob/stable-v1/manifest-entry.xsd",
+          "api-iias-approval/master/manifest-entry.xsd", false);
+  // TODO: 1. false->true 2. master->stable
+
+  /**
+   * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-iia-approval-cnr/blob/master/manifest-entry.xsd'>
+   * here</a>.
+   */ // TODO: master->stable!
+  public static final KnownNamespace APIENTRY_IIA_APPROVAL_CNR_V1 =
+      new KnownNamespace("iaac1", "api-iia-approval-cnr/blob/stable-v1/manifest-entry.xsd",
+          "api-iia-approval-cnr/master/manifest-entry.xsd", false);
+  // TODO: 1. false->true 2. master->stable
+
+  /**
+   * As described <a href=
    * 'https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/blob/stable-v1/manifest-entry.xsd'>
    * here</a>.
    */

@@ -114,6 +114,20 @@ public class KnownElement {
           "API entry: Interinstitutional Agreement CNR API v2");
 
   /**
+   * API entry for Interinstitutional Agreements Approval API v1.
+   */
+  public static final KnownElement APIENTRY_IIAS_APPROVAL_V1 =
+      new KnownElement(KnownNamespace.APIENTRY_IIAS_APPROVAL_V1, "iias-approval",
+          "API entry: Interinstitutional Agreements Approval API v1");
+
+  /**
+   * API entry for Interinstitutional Agreement Approval CNR API v1.
+   */
+  public static final KnownElement APIENTRY_IIA_APPROVAL_CNR_V1  =
+      new KnownElement(KnownNamespace.APIENTRY_IIA_APPROVAL_CNR_V1, "iia-approval-cnr",
+          "API entry: Interinstitutional Agreement Approval CNR API v1");
+
+  /**
    * API entry for Outgoing Mobilities API v1.
    */
   public static final KnownElement APIENTRY_OMOBILITIES_V1 =
