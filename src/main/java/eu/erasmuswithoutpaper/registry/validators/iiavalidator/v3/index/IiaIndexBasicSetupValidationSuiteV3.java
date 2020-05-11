@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-class IiaIndexBasicSetupValidationSuiteV3 extends IiaIndexBasicSetupValidationSuiteV2 {
+public class IiaIndexBasicSetupValidationSuiteV3 extends IiaIndexBasicSetupValidationSuiteV2 {
 
   private static final Logger logger =
       LoggerFactory.getLogger(IiaIndexBasicSetupValidationSuiteV3.class);
@@ -30,7 +30,7 @@ class IiaIndexBasicSetupValidationSuiteV3 extends IiaIndexBasicSetupValidationSu
   /**
    * Creates a validation suite for IIAs v3 Index endpoint.
    */
-  IiaIndexBasicSetupValidationSuiteV3(ApiValidator<IiaSuiteState> validator,
+  public IiaIndexBasicSetupValidationSuiteV3(ApiValidator<IiaSuiteState> validator,
       IiaSuiteState state, ValidationSuiteConfig config) {
     super(validator, state, config);
   }

@@ -72,7 +72,7 @@ public class IiaIndexComplexSetupValidationSuiteV2
     );
   }
 
-  protected IiaIndexComplexSetupValidationSuiteV2(
+  public IiaIndexComplexSetupValidationSuiteV2(
       ApiValidator<IiaSuiteState> validator,
       IiaSuiteState state,
       ValidationSuiteConfig config) {

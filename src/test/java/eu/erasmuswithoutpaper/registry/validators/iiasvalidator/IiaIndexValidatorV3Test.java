@@ -4,7 +4,7 @@ import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.SemanticVersion;
 import eu.erasmuswithoutpaper.registry.validators.TestValidationReport;
 import eu.erasmuswithoutpaper.registry.validators.iiavalidator.IiaSuiteState;
-import eu.erasmuswithoutpaper.registry.validators.iiavalidator.v3.index.IiaIndexValidatorV3;
+import eu.erasmuswithoutpaper.registry.validators.iiavalidator.IiaIndexValidator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import static eu.erasmuswithoutpaper.registry.validators.TestValidationReportAsset.assertThat;
@@ -12,7 +12,7 @@ import org.junit.Test;
 
 public class IiaIndexValidatorV3Test extends IiaValidatorTestBase {
   @Autowired
-  protected IiaIndexValidatorV3 validator;
+  protected IiaIndexValidator validator;
 
   @Override
   protected ApiValidator<IiaSuiteState> getValidator() {

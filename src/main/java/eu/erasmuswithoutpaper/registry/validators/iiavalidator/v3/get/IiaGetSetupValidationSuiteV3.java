@@ -8,7 +8,7 @@ import eu.erasmuswithoutpaper.registry.validators.iiavalidator.v2.get.IiaGetSetu
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class IiaGetSetupValidationSuiteV3 extends IiaGetSetupValidationSuiteV2 {
+public class IiaGetSetupValidationSuiteV3 extends IiaGetSetupValidationSuiteV2 {
 
   private static final Logger logger = LoggerFactory.getLogger(
       IiaGetSetupValidationSuiteV3.class);
@@ -17,7 +17,7 @@ class IiaGetSetupValidationSuiteV3 extends IiaGetSetupValidationSuiteV2 {
   /**
    * Creates a validation suite for IIAs v3 Get endpoint.
    */
-  IiaGetSetupValidationSuiteV3(ApiValidator<IiaSuiteState> validator,
+  public IiaGetSetupValidationSuiteV3(ApiValidator<IiaSuiteState> validator,
       IiaSuiteState state,
       ValidationSuiteConfig config) {
     super(validator, state, config);

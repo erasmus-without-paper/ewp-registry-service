@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
  * Describes the set of test/steps to be run on an IIAs API GET endpoint implementation in order to
  * properly validate it.
  */
-class IiaGetValidationSuiteV3 extends IiaGetValidationSuiteV2 {
+public class IiaGetValidationSuiteV3 extends IiaGetValidationSuiteV2 {
 
   private static final Logger logger = LoggerFactory.getLogger(
       IiaGetValidationSuiteV3.class);
@@ -29,7 +29,7 @@ class IiaGetValidationSuiteV3 extends IiaGetValidationSuiteV2 {
     return apiInfo;
   }
 
-  IiaGetValidationSuiteV3(ApiValidator<IiaSuiteState> validator,
+  public IiaGetValidationSuiteV3(ApiValidator<IiaSuiteState> validator,
       IiaSuiteState state, ValidationSuiteConfig config) {
     super(validator, state, config);
   }

@@ -8,7 +8,7 @@ import java.util.List;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.TestValidationReport;
 import eu.erasmuswithoutpaper.registry.validators.iiavalidator.IiaSuiteState;
-import eu.erasmuswithoutpaper.registry.validators.iiavalidator.v2.index.IiaIndexValidatorV2;
+import eu.erasmuswithoutpaper.registry.validators.iiavalidator.IiaIndexValidator;
 import eu.erasmuswithoutpaper.registry.validators.types.IiasGetResponseV2;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -16,7 +16,7 @@ import org.junit.Test;
 
 public class IiaIndexValidatorV2Test extends IiaValidatorTestBase {
   @Autowired
-  protected IiaIndexValidatorV2 validator;
+  protected IiaIndexValidator validator;
 
   @Override
   protected ApiValidator<IiaSuiteState> getValidator() {

@@ -8,9 +8,6 @@ import java.util.Objects;
 
 import org.springframework.stereotype.Service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 @Service
 public class ApiValidatorsManager {
   public static class ApiNameAndEndpoint {
@@ -41,17 +38,22 @@ public class ApiValidatorsManager {
     }
   }
 
-  private static final Logger logger = LoggerFactory.getLogger(ApiValidatorsManager.class);
+  static class DuplicateApiValidatorError extends RuntimeException {
+    DuplicateApiValidatorError(String apiName, ApiEndpoint endpoint) {
+      super(
+          String.format("ApiValidator for %s%s overridden.",
+              apiName, (endpoint == null ? "" : ":" + endpoint))
+      );
+    }
+  }
+
   private final Map<ApiNameAndEndpoint, ApiValidator<?>> registeredApiValidators = new HashMap<>();
 
   void registerApiValidator(String apiName, ApiEndpoint endpoint, ApiValidator<?> validator) {
     ApiNameAndEndpoint key = new ApiNameAndEndpoint(apiName, endpoint);
 
     if (registeredApiValidators.containsKey(key)) {
-      logger.warn("ApiValidator for \""
-          + apiName
-          + (endpoint == null ? "" : ":" + endpoint)
-          + "\" overridden.");
+      throw new DuplicateApiValidatorError(apiName, endpoint);
     }
     registeredApiValidators.put(new ApiNameAndEndpoint(apiName, endpoint), validator);
   }

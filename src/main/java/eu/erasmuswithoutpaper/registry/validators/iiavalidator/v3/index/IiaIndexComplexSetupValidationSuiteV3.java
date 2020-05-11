@@ -39,7 +39,7 @@ public class IiaIndexComplexSetupValidationSuiteV3 extends IiaIndexComplexSetupV
     return logger;
   }
 
-  IiaIndexComplexSetupValidationSuiteV3(
+  public IiaIndexComplexSetupValidationSuiteV3(
       ApiValidator<IiaSuiteState> validator,
       IiaSuiteState state,
       ValidationSuiteConfig config) {

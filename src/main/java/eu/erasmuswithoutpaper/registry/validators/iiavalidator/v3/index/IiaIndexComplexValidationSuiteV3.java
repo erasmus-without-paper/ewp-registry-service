@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
  * Describes the set of test/steps to be run on an IIAs API index endpoint implementation in order
  * to properly validate it.
  */
-class IiaIndexComplexValidationSuiteV3 extends IiaIndexComplexValidationSuiteV2 {
+public class IiaIndexComplexValidationSuiteV3 extends IiaIndexComplexValidationSuiteV2 {
 
   private static final Logger logger =
       LoggerFactory.getLogger(IiaIndexComplexValidationSuiteV3.class);
@@ -28,7 +28,7 @@ class IiaIndexComplexValidationSuiteV3 extends IiaIndexComplexValidationSuiteV2 
     return apiInfo;
   }
 
-  IiaIndexComplexValidationSuiteV3(ApiValidator<IiaSuiteState> validator,
+  public IiaIndexComplexValidationSuiteV3(ApiValidator<IiaSuiteState> validator,
       IiaSuiteState state, ValidationSuiteConfig config) {
     super(validator, state, config);
   }
