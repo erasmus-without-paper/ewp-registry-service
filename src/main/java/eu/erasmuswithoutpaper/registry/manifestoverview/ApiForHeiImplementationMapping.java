@@ -20,7 +20,7 @@ public class ApiForHeiImplementationMapping {
   }
 
   /**
-   * Add information that `key` API, HEI, Major version uple is implemented on
+   * Add information that `key` API, HEI, Major version tuple is implemented on
    * `apiImplementationInfo`.
    *
    * @param key
@@ -57,6 +57,23 @@ public class ApiForHeiImplementationMapping {
       }
     }
     return duplicates;
+  }
+
+  /**
+   * Returns new Mapping without APIs on apisToExclude list.
+   *
+   * @param apisToExclude APIs to exclude from the Mapping.
+   * @return New Mapping without some of the APIs.
+   */
+  public ApiForHeiImplementationMapping excludeApis(List<String> apisToExclude) {
+    ApiForHeiImplementationMapping filtered = new ApiForHeiImplementationMapping();
+    for (Map.Entry<ApiHeiAndMajorVersionTuple, Map<ManifestAndHostIndex, List<String>>> entry :
+        this.map.entrySet()) {
+      if (!apisToExclude.contains(entry.getKey().getApiName())) {
+        filtered.map.put(entry.getKey(), entry.getValue());
+      }
+    }
+    return filtered;
   }
 
   /**

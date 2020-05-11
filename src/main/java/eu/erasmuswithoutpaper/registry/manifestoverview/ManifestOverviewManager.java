@@ -1,6 +1,7 @@
 package eu.erasmuswithoutpaper.registry.manifestoverview;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -150,8 +151,9 @@ public class ManifestOverviewManager {
 
     ApiForHeiImplementationMapping apiForHeiImplementationMapping =
         ApiForHeiImplementationMapping.fromManifestOverviewInfos(infos);
-    this.apiForHeiImplementationMappingDuplicates =
-        apiForHeiImplementationMapping.getMappingWithDuplicates();
+    this.apiForHeiImplementationMappingDuplicates = apiForHeiImplementationMapping
+            .getMappingWithDuplicates()
+            .excludeApis(Arrays.asList("echo", "discovery"));
 
     CoveredInstitutionsCounters coveredInstitutionsCounters =
         CoveredInstitutionsCounters.fromManifestOverviewInfos(infos);
@@ -276,7 +278,7 @@ public class ManifestOverviewManager {
       return false;
     }
 
-    Set<String> emails = this.manifestUrlToAdminEmails.get(manifestUrl);
+    Set<String> emails = this.manifestUrlToAdminEmails.getOrDefault(manifestUrl, new HashSet<>());
 
     for (String email : emails) {
       String contents = String.format(contentTemplate, email, manifestUrl, manifestsOverviewUrl);

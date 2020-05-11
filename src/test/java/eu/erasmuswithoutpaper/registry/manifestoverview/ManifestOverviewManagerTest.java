@@ -13,7 +13,9 @@ import eu.erasmuswithoutpaper.registry.updater.RegistryUpdater;
 import eu.erasmuswithoutpaper.registry.updater.RegistryUpdaterImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.test.annotation.DirtiesContext;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -22,6 +24,7 @@ import org.junit.Test;
  * Tests whether duplicates are detected when manifests are updated and is repository correctly
  * updated.
  */
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ManifestOverviewManagerTest extends WRTest {
 
   @Autowired
@@ -162,7 +165,7 @@ public class ManifestOverviewManagerTest extends WRTest {
     assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findOne(manifestUrl1)).isNotNull();
     assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findOne(manifestUrl2)).isNotNull();
 
-    // Manifest 2 changes - not it will contain different major version and duplicates will be gone.
+    // Manifest 2 changes - now it will contain different major version and duplicates will be gone.
     this.internet.putURL(manifestUrl2, getManifest2WithDuplicatedHeiIdButDifferentVersion());
     this.reloadManifest(manifestUrl2);
 
@@ -226,6 +229,43 @@ public class ManifestOverviewManagerTest extends WRTest {
     assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findOne(manifestUrl2)).isNull();
   }
 
+  @Test
+  public void testManifestsWithDuplicatedEchoAndDiscoveryAreNotReported() {
+    this.internet.putURL(manifestUrl1, getManifest1WithEchoAndDiscovery());
+    this.internet.putURL(manifestUrl2, getManifest2WithEchoAndDiscovery());
+
+    this.reloadManifest(manifestUrl1);
+    this.reloadManifest(manifestUrl2);
+    assertThat(this.internet.popEmailsSent()).isEmpty();
+
+    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findOne(manifestUrl1)).isNull();
+    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findOne(manifestUrl2)).isNull();
+  }
+
+  @Test
+  public void testManifestsWithDuplicatedEchoAndDiscoveryReportsOtherDuplicates() {
+    this.internet.putURL(manifestUrl1, getManifest1WithEchoDiscoveryAndInstitutions());
+    this.internet.putURL(manifestUrl2, getManifest2WithEchoDiscoveryAndInstitutions());
+
+    this.reloadManifest(manifestUrl1);
+    this.reloadManifest(manifestUrl2);
+
+    assertThat(this.internet.popEmailsSent()).isNotEmpty();
+    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findOne(manifestUrl1)).isNotNull();
+    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findOne(manifestUrl2)).isNotNull();
+  }
+
+  @Test
+  public void testManifestWithDuplicateInsideASingleHostIsNotReported() {
+    this.internet.putURL(manifestUrl1, getManifest1WithDuplicateInsideASingleHost());
+
+    this.reloadManifest(manifestUrl1);
+
+    assertThat(this.internet.popEmailsSent()).isEmpty();
+
+    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findOne(manifestUrl1)).isNull();
+  }
+
   private void checkEmail(List<String> emailsSent, String recipient, String subject,
       String contents) {
     checkEmail(emailsSent, Arrays.asList(recipient), subject, Arrays.asList(contents));
@@ -269,6 +309,26 @@ public class ManifestOverviewManagerTest extends WRTest {
 
   private byte[] getManifest2WithDuplicatedHeiIdButDifferentVersion() {
     return this.getFile("manifestoverview/manifest2-duplicated-hei-different-version.xml");
+  }
+
+  private byte[] getManifest1WithEchoAndDiscovery() {
+    return this.getFile("manifestoverview/manifest1-with-echo-and-discovery.xml");
+  }
+
+  private byte[] getManifest2WithEchoAndDiscovery() {
+    return this.getFile("manifestoverview/manifest2-with-echo-and-discovery.xml");
+  }
+
+  private byte[] getManifest1WithEchoDiscoveryAndInstitutions() {
+    return this.getFile("manifestoverview/manifest1-with-echo-discovery-and-institutions.xml");
+  }
+
+  private byte[] getManifest2WithEchoDiscoveryAndInstitutions() {
+    return this.getFile("manifestoverview/manifest2-with-echo-discovery-and-institutions.xml");
+  }
+
+  private byte[] getManifest1WithDuplicateInsideASingleHost() {
+    return this.getFile("manifestoverview/manifest1-with-duplicate-inside-a-single-host.xml");
   }
 
 }
