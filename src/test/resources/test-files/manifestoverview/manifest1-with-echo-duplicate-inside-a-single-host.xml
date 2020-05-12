@@ -1,0 +1,23 @@
+<manifest
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/tree/stable-v5"
+    xmlns:r="https://github.com/erasmus-without-paper/ewp-specs-api-registry/tree/stable-v1"
+>
+    <host>
+        <admin-email xmlns="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd">manifest1-admin1@example.com</admin-email>
+        <admin-email xmlns="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd">manifest1-admin2@example.com</admin-email>
+        <r:apis-implemented>
+            <echo version="2.3.0" xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-echo/blob/stable-v2/manifest-entry.xsd">
+                <url>https://example.com/echo230</url>
+            </echo>
+            <echo version="2.0.0" xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-echo/blob/stable-v2/manifest-entry.xsd">
+                <url>https://example.com/echo200</url>
+            </echo>
+        </r:apis-implemented>
+        <institutions-covered>
+            <r:hei id="test3">
+                <r:other-id type="erasmus">Test3</r:other-id>
+                <r:name xml:lang="en">Test 3</r:name>
+            </r:hei>
+        </institutions-covered>
+    </host>
+</manifest>

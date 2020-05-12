@@ -256,14 +256,38 @@ public class ManifestOverviewManagerTest extends WRTest {
   }
 
   @Test
-  public void testManifestWithDuplicateInsideASingleHostIsNotReported() {
+  public void testManifestWithDuplicateInsideASingleHostIsReported() {
     this.internet.putURL(manifestUrl1, getManifest1WithDuplicateInsideASingleHost());
+    this.reloadManifest(manifestUrl1);
+    assertThat(this.internet.popEmailsSent()).isNotEmpty();
+    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findOne(manifestUrl1)).isNotNull();
+  }
+
+  @Test
+  public void testManifestWithEchoDuplicateInsideASingleHostIsReported() {
+    this.internet.putURL(manifestUrl1, getManifest1WithEchoDuplicateInsideASingleHost());
+    this.reloadManifest(manifestUrl1);
+    assertThat(this.internet.popEmailsSent()).isNotEmpty();
+    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findOne(manifestUrl1)).isNotNull();
+  }
+
+  @Test
+  public void testEchoDuplicateInsideASingleHostAndInAnotherHost() {
+    this.internet.putURL(manifestUrl1, getManifest1WithEchoDuplicateInsideASingleHost());
+    this.internet.putURL(manifestUrl2, getManifest2WithEchoDiscoveryAndInstitutions());
 
     this.reloadManifest(manifestUrl1);
+    this.reloadManifest(manifestUrl2);
 
-    assertThat(this.internet.popEmailsSent()).isEmpty();
+    List<String> emailsSent = this.internet.popEmailsSent();
+    assertThat(emailsSent).hasSize(adminEmailsCount1 + 1);
+    this.checkEmail(emailsSent, manifestEmails1.get(0), duplicateDetectedSubject, manifestUrl1);
+    this.checkEmail(emailsSent, manifestEmails1.get(1), duplicateDetectedSubject, manifestUrl1);
+    this.checkEmail(emailsSent, adminEmails, adminEmailSubject, manifestUrl1);
+    assertThat(emailsSent).allMatch(s -> !s.contains(manifestUrl2));
 
-    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findOne(manifestUrl1)).isNull();
+    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findOne(manifestUrl1)).isNotNull();
+    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findOne(manifestUrl2)).isNull();
   }
 
   private void checkEmail(List<String> emailsSent, String recipient, String subject,
@@ -329,6 +353,10 @@ public class ManifestOverviewManagerTest extends WRTest {
 
   private byte[] getManifest1WithDuplicateInsideASingleHost() {
     return this.getFile("manifestoverview/manifest1-with-duplicate-inside-a-single-host.xml");
+  }
+
+  private byte[] getManifest1WithEchoDuplicateInsideASingleHost() {
+    return this.getFile("manifestoverview/manifest1-with-echo-duplicate-inside-a-single-host.xml");
   }
 
 }

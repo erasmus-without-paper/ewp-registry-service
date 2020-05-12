@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Defines a mapping between API implemented for HEI to place (manifest, host, version) where it
@@ -52,12 +53,25 @@ public class ApiForHeiImplementationMapping {
     ApiForHeiImplementationMapping duplicates = new ApiForHeiImplementationMapping();
     for (Map.Entry<ApiHeiAndMajorVersionTuple, Map<ManifestAndHostIndex, List<String>>> entry :
         this.map.entrySet()) {
-      if (entry.getValue().size() > 1) {
+      if (isDuplicate(entry.getValue())) {
         duplicates.map.put(entry.getKey(), entry.getValue());
       }
     }
     return duplicates;
   }
+
+  private boolean isDuplicate(Map<ManifestAndHostIndex, List<String>> heiImplementationInfo) {
+    if (heiImplementationInfo.size() > 1) {
+      return true;
+    }
+
+    if (heiImplementationInfo.size() == 1) {
+      List<String> implementedVersions = heiImplementationInfo.values().iterator().next();
+      return implementedVersions.size() > 1;
+    }
+    return false;
+  }
+
 
   /**
    * Returns new Mapping without APIs on apisToExclude list.
@@ -65,22 +79,39 @@ public class ApiForHeiImplementationMapping {
    * @param apisToExclude APIs to exclude from the Mapping.
    * @return New Mapping without some of the APIs.
    */
-  public ApiForHeiImplementationMapping excludeApis(List<String> apisToExclude) {
+  public ApiForHeiImplementationMapping excludeExternalDuplicates(List<String> apisToExclude) {
     ApiForHeiImplementationMapping filtered = new ApiForHeiImplementationMapping();
     for (Map.Entry<ApiHeiAndMajorVersionTuple, Map<ManifestAndHostIndex, List<String>>> entry :
         this.map.entrySet()) {
+      // If API is not on the list - add it to the result.
       if (!apisToExclude.contains(entry.getKey().getApiName())) {
         filtered.map.put(entry.getKey(), entry.getValue());
+      } else {
+        // API is on the list - get all hosts that contain duplicated API entries.
+        Map<ManifestAndHostIndex, List<String>> hostsWithInternalDuplicates =
+            selectHostsWithInternalDuplicates(entry.getValue());
+
+        // Hosts that contain internal duplicates are still considered as duplicates.
+        if (hostsWithInternalDuplicates.size() > 0) {
+          filtered.map.put(entry.getKey(), hostsWithInternalDuplicates);
+        }
       }
     }
     return filtered;
   }
 
+  private Map<ManifestAndHostIndex, List<String>> selectHostsWithInternalDuplicates(
+      Map<ManifestAndHostIndex, List<String>> value) {
+    return value.entrySet().stream()
+        .filter(e -> e.getValue().size() > 1)
+        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+  }
+
   /**
    * Creates ApiForHeiImplementationMapping using data collected in `infos`.
    *
-   * @param infos
-   *     ManifestOverviewInfo list from which new ApiForHeiImplementationMapping will be generated.
+   * @param infos ManifestOverviewInfo list from which new ApiForHeiImplementationMapping will be
+   *             generated.
    * @return ApiForHeiImplementationMapping created from infos.
    */
   public static ApiForHeiImplementationMapping fromManifestOverviewInfos(

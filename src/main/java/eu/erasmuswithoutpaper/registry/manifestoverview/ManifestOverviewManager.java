@@ -153,7 +153,7 @@ public class ManifestOverviewManager {
         ApiForHeiImplementationMapping.fromManifestOverviewInfos(infos);
     this.apiForHeiImplementationMappingDuplicates = apiForHeiImplementationMapping
             .getMappingWithDuplicates()
-            .excludeApis(Arrays.asList("echo", "discovery"));
+            .excludeExternalDuplicates(Arrays.asList("echo", "discovery"));
 
     CoveredInstitutionsCounters coveredInstitutionsCounters =
         CoveredInstitutionsCounters.fromManifestOverviewInfos(infos);
