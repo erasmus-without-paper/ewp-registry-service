@@ -246,7 +246,7 @@ class CoverageMatrixRow {
 
     // ver. + CNR sends
     cell = new ApiVersionsCell(colorClass, client, hei, KnownElement.APIENTRY_IIAS_V1,
-        KnownElement.APIENTRY_IIAS_V2);
+        KnownElement.APIENTRY_IIAS_V2, KnownElement.APIENTRY_IIAS_V3);
     this.cells.add(cell);
 
     // CNR sends
