@@ -172,6 +172,16 @@ public class KnownNamespace {
 
   /**
    * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-imobilities/tree/stable-v1/manifest-entry.xsd'>
+   * here</a>.
+   */
+  public static final KnownNamespace RESPONSE_IMOBILITIES_GET_V1 = new KnownNamespace("img1",
+      "api-imobilities/blob/stable-v1/endpoints/get-response.xsd",
+      "api-imobilities/stable-v1/endpoints/get-response.xsd", false);
+  // TODO false -> true
+
+  /**
+   * As described <a href=
    * 'https://github.com/erasmus-without-paper/ewp-specs-api-imobility-tors/tree/stable-v1/manifest-entry.xsd'>
    * here</a>.
    */

@@ -63,6 +63,15 @@ public class SelfManifestProvider {
       this.serverPublicKeyEncoded = serverPublicKeyEncoded;
     }
 
+    private EncodedCertificateAndKeys(ValidatorKeyStore validatorKeyStore)
+        throws CertificateEncodingException {
+      this(
+          encodeCertificate(validatorKeyStore.getTlsClientCertificateInUse()),
+          encodePublicKey(validatorKeyStore.getClientRsaPublicKeyInUse()),
+          encodePublicKey(validatorKeyStore.getServerRsaPublicKeyInUse())
+      );
+    }
+
     public String getCertificateEncoded() {
       return certificateEncoded;
     }
@@ -80,8 +89,12 @@ public class SelfManifestProvider {
   private final EwpDocBuilder docBuilder;
   private final XmlFormatter formatter;
   private final List<String> adminEmails;
-  private final List<String> echoTesterHeiIDs;
-  private final List<EncodedCertificateAndKeys> certificatesAndKeys = new ArrayList<>();
+  private final List<String> validatorHostCoveredHeiIds;
+  private final List<EncodedCertificateAndKeys> validatorHostCertificatesAndKeys
+      = new ArrayList<>();
+
+  private final List<String> secondaryValidatorHostCoveredHeiIds;
+  private final List<EncodedCertificateAndKeys> secondaryValidatorHostCertificatesAndKeys;
 
   private volatile String cached = null;
 
@@ -125,22 +138,33 @@ public class SelfManifestProvider {
     this.docBuilder = docBuilder;
     this.formatter = formatter;
     this.adminEmails = adminEmails;
-    ValidatorKeyStore validatorKeyStore = validatorKeyStoreSet.getMainKeyStore();
 
-    this.certificatesAndKeys.add(new EncodedCertificateAndKeys(
-        this.encodeCertificate(validatorKeyStore.getTlsClientCertificateInUse()),
-        this.encodePublicKey(validatorKeyStore.getClientRsaPublicKeyInUse()),
-        this.encodePublicKey(validatorKeyStore.getServerRsaPublicKeyInUse())
-    ));
+    ValidatorKeyStore validatorHostKeyStore = validatorKeyStoreSet.getMainKeyStore();
 
-    this.echoTesterHeiIDs = validatorKeyStore.getCoveredHeiIDs();
+    this.validatorHostCertificatesAndKeys.add(new EncodedCertificateAndKeys(validatorHostKeyStore));
+    this.validatorHostCoveredHeiIds = validatorHostKeyStore.getCoveredHeiIDs();
 
     if (additionalKeysKeystorePath != null && aliases != null && password != null) {
-      readKeysFromKeyStore(additionalKeysKeystorePath, aliases, password);
+      this.validatorHostCertificatesAndKeys.addAll(
+          readCertificatesAndKeysFromKeyStore(additionalKeysKeystorePath, aliases, password)
+      );
+    }
+
+    ValidatorKeyStore secondaryValidatorHostKeyStore = validatorKeyStoreSet.getSecondaryKeyStore();
+
+    if (secondaryValidatorHostKeyStore != null) {
+      this.secondaryValidatorHostCertificatesAndKeys = new ArrayList<>();
+      this.secondaryValidatorHostCertificatesAndKeys.add(
+          new EncodedCertificateAndKeys(secondaryValidatorHostKeyStore)
+      );
+      this.secondaryValidatorHostCoveredHeiIds = secondaryValidatorHostKeyStore.getCoveredHeiIDs();
+    } else {
+      this.secondaryValidatorHostCertificatesAndKeys = null;
+      this.secondaryValidatorHostCoveredHeiIds = null;
     }
   }
 
-  private void readKeysFromKeyStore(
+  private List<EncodedCertificateAndKeys> readCertificatesAndKeysFromKeyStore(
       String additionalKeysKeystorePath, List<String> aliases, String password)
       throws KeyStoreUtilsException, CertificateEncodingException {
     char[] charPassword = password.toCharArray();
@@ -149,30 +173,32 @@ public class SelfManifestProvider {
         additionalKeysKeystorePath, "jks", charPassword
     );
 
+    List<EncodedCertificateAndKeys> readCertificatesAndKeys = new ArrayList<>();
     for (String alias : aliases) {
       logger.debug("Reading keys under alias '{}'", alias);
       KeyPairAndCertificate keyPairAndCertificate =
           KeyStoreUtils.readKeyPairAndCertificateFromKeyStore(keyStore, alias, charPassword);
-      certificatesAndKeys.add(
+      readCertificatesAndKeys.add(
           new EncodedCertificateAndKeys(
-              this.encodeCertificate(keyPairAndCertificate.certificate),
-              this.encodePublicKey(keyPairAndCertificate.keyPair.getPublic()),
-              this.encodePublicKey(keyPairAndCertificate.keyPair.getPublic())
+              encodeCertificate(keyPairAndCertificate.certificate),
+              encodePublicKey(keyPairAndCertificate.keyPair.getPublic()),
+              encodePublicKey(keyPairAndCertificate.keyPair.getPublic())
           )
       );
     }
+    return readCertificatesAndKeys;
   }
 
-  private String encodeCertificate(X509Certificate certificate)
+  private static String encodeCertificate(X509Certificate certificate)
       throws CertificateEncodingException {
     return encodeAsBase64(certificate.getEncoded());
   }
 
-  private String encodePublicKey(PublicKey key) {
+  private static String encodePublicKey(PublicKey key) {
     return encodeAsBase64(key.getEncoded());
   }
 
-  private String encodeAsBase64(byte[] bytes) {
+  private static String encodeAsBase64(byte[] bytes) {
     return new String(
         Base64.encodeBase64(bytes),
         StandardCharsets.US_ASCII
@@ -230,39 +256,23 @@ public class SelfManifestProvider {
     hosts.get(0).xpath("r:apis-implemented/r1:registry/r1:catalogue-url")
         .text(Application.getRootUrl() + "/catalogue-v1.xml");
 
+    Match validatorHostEntry = hosts.get(1);
+    Match secondaryValidatorHostEntry = hosts.get(2);
     // If validation is disabled then we shouldn't have second host in our manifest.
     if (!Application.isValidationEnabled()) {
-      hosts.get(1).remove();
+      validatorHostEntry.remove();
+      secondaryValidatorHostEntry.remove();
     } else {
       // Add covered HEIs.
 
-      Element heisCoveredElem = hosts.get(1).xpath("mf5:institutions-covered").get(0);
-      for (String heiId : this.echoTesterHeiIDs) {
-        Element heiElem =
-            doc.createElementNS(KnownNamespace.RESPONSE_REGISTRY_V1.getNamespaceUri(), "hei");
-        heiElem.setAttribute("id", heiId);
-        Element nameElem =
-            doc.createElementNS(KnownNamespace.RESPONSE_REGISTRY_V1.getNamespaceUri(), "name");
-        nameElem.setTextContent("Artificial HEI for testing APIs");
-        heiElem.appendChild(nameElem);
-        heisCoveredElem.appendChild(heiElem);
-      }
+      fillHostEntry(doc, validatorHostEntry, this.validatorHostCoveredHeiIds,
+          this.validatorHostCertificatesAndKeys);
 
-      // Add client certificates in use.
-      for (EncodedCertificateAndKeys encodedCertificateAndKeys : this.certificatesAndKeys) {
-        this.addClientCertificate(hosts, doc, encodedCertificateAndKeys.getCertificateEncoded());
-      }
-
-      // Add client keys in use.
-      for (EncodedCertificateAndKeys encodedCertificateAndKeys : this.certificatesAndKeys) {
-        this.addClientRsaPublicKey(hosts, doc,
-            encodedCertificateAndKeys.getClientPublicKeyEncoded());
-      }
-
-      // Add server credentials in use.
-      for (EncodedCertificateAndKeys encodedCertificateAndKeys : this.certificatesAndKeys) {
-        this.addServerCredentials(hosts, doc,
-            encodedCertificateAndKeys.getServerPublicKeyEncoded());
+      if (this.secondaryValidatorHostCoveredHeiIds != null) {
+        fillHostEntry(doc, secondaryValidatorHostEntry,this.secondaryValidatorHostCoveredHeiIds,
+            this.secondaryValidatorHostCertificatesAndKeys);
+      } else {
+        secondaryValidatorHostEntry.remove();
       }
     }
 
@@ -271,25 +281,61 @@ public class SelfManifestProvider {
     return this.formatter.format(doc);
   }
 
-  private void addClientCertificate(List<Match> hosts, Document doc, String certEncoded) {
-    Element cliCredentialsElem = hosts.get(1).xpath("mf5:client-credentials-in-use").get(0);
+  private void fillHostEntry(Document doc, Match validatorHostEntry,
+      List<String> validatorHostCoveredHeiIds,
+      List<EncodedCertificateAndKeys> validatorHostCertificatesAndKeys) {
+
+    Element heisCoveredElem = validatorHostEntry.xpath("mf5:institutions-covered").get(0);
+    for (String heiId : validatorHostCoveredHeiIds) {
+      Element heiElem =
+          doc.createElementNS(KnownNamespace.RESPONSE_REGISTRY_V1.getNamespaceUri(), "hei");
+      heiElem.setAttribute("id", heiId);
+      Element nameElem =
+          doc.createElementNS(KnownNamespace.RESPONSE_REGISTRY_V1.getNamespaceUri(), "name");
+      nameElem.setTextContent("Artificial HEI for testing APIs");
+      heiElem.appendChild(nameElem);
+      heisCoveredElem.appendChild(heiElem);
+    }
+
+    // Add client certificates in use.
+    for (EncodedCertificateAndKeys encodedCertificateAndKeys : validatorHostCertificatesAndKeys) {
+      this.addClientCertificate(validatorHostEntry, doc,
+          encodedCertificateAndKeys.getCertificateEncoded());
+    }
+
+    // Add client keys in use.
+    for (EncodedCertificateAndKeys encodedCertificateAndKeys : validatorHostCertificatesAndKeys) {
+      this.addClientRsaPublicKey(validatorHostEntry, doc,
+          encodedCertificateAndKeys.getClientPublicKeyEncoded());
+    }
+
+    // Add server credentials in use.
+    for (EncodedCertificateAndKeys encodedCertificateAndKeys : validatorHostCertificatesAndKeys) {
+      this.addServerCredentials(validatorHostEntry, doc,
+          encodedCertificateAndKeys.getServerPublicKeyEncoded());
+    }
+
+  }
+
+  private void addClientCertificate(Match host, Document doc, String certEncoded) {
+    Element cliCredentialsElem = host.xpath("mf5:client-credentials-in-use").get(0);
     Element certElem =
         doc.createElementNS(KnownNamespace.RESPONSE_MANIFEST_V5.getNamespaceUri(), "certificate");
     certElem.setTextContent(certEncoded);
     cliCredentialsElem.appendChild(certElem);
   }
 
-  private void addClientRsaPublicKey(List<Match> hosts, Document doc, String rsaPublicKeyEncoded) {
-    Element cliCredentialsElem = hosts.get(1).xpath("mf5:client-credentials-in-use").get(0);
+  private void addClientRsaPublicKey(Match host, Document doc, String rsaPublicKeyEncoded) {
+    Element cliCredentialsElem = host.xpath("mf5:client-credentials-in-use").get(0);
     Element rsaKeyElem = doc.createElementNS(KnownNamespace.RESPONSE_MANIFEST_V5.getNamespaceUri(),
         "rsa-public-key");
     rsaKeyElem.setTextContent(rsaPublicKeyEncoded);
     cliCredentialsElem.appendChild(rsaKeyElem);
   }
 
-  private void addServerCredentials(List<Match> hosts, Document doc,
+  private void addServerCredentials(Match host, Document doc,
       String rsaPublicKeyEncoded) {
-    Element srvCredentialsElem = hosts.get(1).xpath("mf5:server-credentials-in-use").get(0);
+    Element srvCredentialsElem = host.xpath("mf5:server-credentials-in-use").get(0);
     Element srvKeyElem = doc.createElementNS(KnownNamespace.RESPONSE_MANIFEST_V5.getNamespaceUri(),
         "rsa-public-key");
     srvKeyElem.setTextContent(rsaPublicKeyEncoded);

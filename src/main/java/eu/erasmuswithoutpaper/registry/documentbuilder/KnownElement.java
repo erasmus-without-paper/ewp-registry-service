@@ -334,12 +334,21 @@ public class KnownElement {
       );
 
   /**
+   * The root of the Incoming Mobilities API v1 get response.
+   */
+  public static final KnownElement RESPONSE_IMOBILITIES_GET_V1 =
+      new KnownElement(KnownNamespace.RESPONSE_IMOBILITIES_GET_V1,
+          "imobilities-get-response",
+          "IMobilities v1 Index Response"
+      );
+
+  /**
    * The root of the Incoming Mobility ToRs API v1 index response.
    */
   public static final KnownElement RESPONSE_IMOBILITY_TORS_INDEX_V1 =
       new KnownElement(KnownNamespace.RESPONSE_IMOBILITY_TORS_INDEX_V1,
           "imobility-tors-index-response",
-          "IIAs API v2 Index Response"
+          "IMobility ToRs API v1 Index Response"
       );
 
   /**
@@ -348,7 +357,7 @@ public class KnownElement {
   public static final KnownElement RESPONSE_IMOBILITY_TORS_GET_V1 =
       new KnownElement(KnownNamespace.RESPONSE_IMOBILITY_TORS_GET_V1,
           "imobility-tors-get-response",
-          "IIAs API v2 Get Response"
+          "IMobility ToRs API v1 Get Response"
       );
 
   /**

@@ -14,9 +14,9 @@ import javax.xml.bind.Marshaller;
 import eu.erasmuswithoutpaper.registry.internet.FakeInternetService;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
+import eu.erasmuswithoutpaper.registry.internet.sec.EwpClientWithRsaKey;
 import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigRequestAuthorizer;
 import eu.erasmuswithoutpaper.registry.internet.sec.Http4xx;
-import eu.erasmuswithoutpaper.registry.internet.sec.RequestAuthorizer;
 import eu.erasmuswithoutpaper.registry.validators.types.ErrorResponse;
 import eu.erasmuswithoutpaper.registry.validators.types.MultilineString;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
@@ -24,13 +24,14 @@ import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 import org.apache.commons.lang.StringEscapeUtils;
 
 public abstract class AbstractApiService implements FakeInternetService {
-  private RequestAuthorizer myAuthorizer;
+  protected final RegistryClient registryClient;
+  private EwpHttpSigRequestAuthorizer myAuthorizer;
 
-  protected RequestAuthorizer createMyAuthorizer(RegistryClient registryClient) {
+  protected EwpHttpSigRequestAuthorizer createMyAuthorizer(RegistryClient registryClient) {
     return new EwpHttpSigRequestAuthorizer(registryClient);
   }
 
-  protected RequestAuthorizer getMyAuthorizer() {
+  protected EwpHttpSigRequestAuthorizer getMyAuthorizer() {
     return this.myAuthorizer;
   }
 
@@ -40,6 +41,7 @@ public abstract class AbstractApiService implements FakeInternetService {
 
   protected AbstractApiService(RegistryClient registryClient) {
     this.myAuthorizer = createMyAuthorizer(registryClient);
+    this.registryClient = registryClient;
   }
 
   protected String marshallObject(Object object) {
@@ -125,9 +127,9 @@ public abstract class AbstractApiService implements FakeInternetService {
   }
 
 
-  protected void verifyCertificate(Request request) throws ErrorResponseException {
+  protected EwpClientWithRsaKey verifyCertificate(Request request) throws ErrorResponseException {
     try {
-      getMyAuthorizer().authorize(request);
+      return getMyAuthorizer().authorize(request);
     } catch (Http4xx e) {
       throw new ErrorResponseException(e.generateEwpErrorResponse());
     }

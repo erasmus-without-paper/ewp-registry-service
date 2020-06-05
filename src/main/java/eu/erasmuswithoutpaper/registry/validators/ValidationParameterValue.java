@@ -7,6 +7,13 @@ public class ValidationParameterValue {
   private String name;
   private String value;
 
+  public ValidationParameterValue() {}
+
+  public ValidationParameterValue(String name, String value) {
+    this.name = name;
+    this.value = value;
+  }
+
   public String getName() {
     return name;
   }

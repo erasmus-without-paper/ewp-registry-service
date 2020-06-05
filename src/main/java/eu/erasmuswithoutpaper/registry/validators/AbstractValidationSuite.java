@@ -71,20 +71,19 @@ import org.xml.sax.SAXException;
 
 public abstract class AbstractValidationSuite<S extends SuiteState> {
   protected static final String fakeId = "this-is-some-unknown-and-unexpected-id";
-
-  protected ValidatorKeyStore validatorKeyStore;
-  protected ValidatorKeyStoreSet validatorKeyStoreSet;
   protected final List<ValidationStepWithStatus> steps;
   protected final EwpDocBuilder docBuilder;
   protected final Internet internet;
   protected final RegistryClient regClient;
+  protected final Integer timeoutMillis = 10000;
+  private final CatalogueMatcherProvider catalogueMatcherProvider;
+  protected ValidatorKeyStore validatorKeyStore;
+  protected ValidatorKeyStoreSet validatorKeyStoreSet;
   protected AnonymousRequestSigner reqSignerAnon;
   protected EwpCertificateRequestSigner reqSignerCert;
   protected EwpHttpSigRequestSigner reqSignerHttpSig;
   protected DecodingHelper resDecoderHelper;
-  private final CatalogueMatcherProvider catalogueMatcherProvider;
   protected S currentState;
-  protected final Integer timeoutMillis = 10000;
   private Match catalogueMatcher;
 
   protected AbstractValidationSuite(
@@ -100,6 +99,11 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
     this.validatorKeyStoreSet = validator.getValidatorKeyStoreSet();
 
     this.setValidatorKeyStore(validator.getValidatorKeyStoreSet().getMainKeyStore());
+  }
+
+  @SafeVarargs
+  public static <T> List<T> concatArrays(List<T>... lists) {
+    return Stream.of(lists).flatMap(List::stream).collect(Collectors.toList());
   }
 
   protected void setValidatorKeyStore(ValidatorKeyStore validatorKeyStore) {
@@ -121,11 +125,6 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
 
   }
 
-  @SafeVarargs
-  public static <T> List<T> concatArrays(List<T>... lists) {
-    return Stream.of(lists).flatMap(List::stream).collect(Collectors.toList());
-  }
-
   protected void runTests(HttpSecurityDescription security) throws SuiteBroken {
     boolean hasCompatibleTest = false;
     for (Combination combination : this.currentState.combinations) {
@@ -143,8 +142,8 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
   /**
    * Runs all tests.
    *
-   * @param security
-   *     security method to be used in tests. If security == null then all tests are run.
+   * @param security security method to be used in tests. If security == null then all tests are
+   *                 run.
    */
   public void run(HttpSecurityDescription security) {
     try {
@@ -159,10 +158,8 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
   /**
    * Add a new setup step and run it. Setup steps are required to finish without even a notice.
    *
-   * @param step
-   *     Setup step to be added and run.
-   * @throws SuiteBroken
-   *     If setup step fails.
+   * @param step Setup step to be added and run.
+   * @throws SuiteBroken If setup step fails.
    */
   protected void setup(InlineValidationStep step) throws SuiteBroken {
     // Allow only success.
@@ -172,12 +169,10 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
   /**
    * Add a new step (to the public list of steps been run) and run it.
    *
-   * @param requireSuccess
-   *     If true, then a {@link SuiteBroken} exception will be raised, if this steps fails.
-   * @param step
-   *     The step to be added and run.
-   * @throws SuiteBroken
-   *     If the step, which was required to succeed, fails.
+   * @param requireSuccess If true, then a {@link SuiteBroken} exception will be raised, if this
+   *                       steps fails.
+   * @param step           The step to be added and run.
+   * @throws SuiteBroken If the step, which was required to succeed, fails.
    */
   protected void addAndRun(boolean requireSuccess, InlineValidationStep step) throws SuiteBroken {
     Status failureStatus = null;
@@ -191,13 +186,10 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
   /**
    * Add a new step (to the public list of steps been run) and run it.
    *
-   * @param failedStatus
-   *     If validation returns `failedStatus` or more severe status,
-   *     then a {@link SuiteBroken} exception will be raised.
-   * @param step
-   *     The step to be added and run.
-   * @throws SuiteBroken
-   *     If the step, which was required to succeed, fails.
+   * @param failedStatus If validation returns `failedStatus` or more severe status,
+   *                     then a {@link SuiteBroken} exception will be raised.
+   * @param step         The step to be added and run.
+   * @throws SuiteBroken If the step, which was required to succeed, fails.
    */
   protected void addAndRun(Status failedStatus, InlineValidationStep step) throws SuiteBroken {
     this.steps.add(step);
@@ -339,8 +331,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
    * Helper method for creating simple request method validation steps (e.g. run a PUT request and
    * expect error, run a POST and expect success).
    *
-   * @param combination
-   *     combination to test with.
+   * @param combination combination to test with.
    * @return ValidationStep performing simple request with selected method.
    */
   protected InlineValidationStep createHttpMethodValidationStep(Combination combination) {
@@ -955,6 +946,47 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
     });
   }
 
+  protected void testParameters200AsOtherEwpParticipant(Combination combination, String name,
+      List<Parameter> parameters, Verifier verifier,
+      ValidationStepWithStatus.Status failureStatus) throws SuiteBroken {
+    testParameters200AsOtherEwpParticipant(
+        combination, name, parameters, verifier, failureStatus, false, null
+    );
+  }
+
+  protected void testParameters200AsOtherEwpParticipant(Combination combination, String name,
+      List<Parameter> parameters, Verifier verifier,
+      ValidationStepWithStatus.Status failureStatus,
+      boolean shouldSkip, String skipReason) throws SuiteBroken {
+    final ValidatorKeyStore currentValidatorKeyStore = this.validatorKeyStore;
+    final ValidatorKeyStore otherValidationKeyStore =
+        this.validatorKeyStoreSet.getSecondaryKeyStore();
+
+    String realSkipReason =
+        "Keys for another EWP participant not provided. Run the Validator locally and provide "
+            + "secondary keys.";
+    boolean realShouldSkip = otherValidationKeyStore == null;
+    if (shouldSkip) {
+      realShouldSkip = shouldSkip;
+      realSkipReason = skipReason;
+    }
+
+    try {
+      this.setValidatorKeyStore(otherValidationKeyStore);
+      testParameters200(
+          combination,
+          name,
+          parameters,
+          verifier,
+          failureStatus,
+          realShouldSkip,
+          realSkipReason
+      );
+    } finally {
+      this.setValidatorKeyStore(currentValidatorKeyStore);
+    }
+  }
+
   public abstract ValidatedApiInfo getApiInfo();
 
   protected void validateCombinationPost(Combination combination)
@@ -1093,8 +1125,10 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
 
     testParametersError(
         combination,
-        "Request without " + secondParameterNamePrefix + "_ids and "
-            + secondParameterNamePrefix + "_codes, expect 400.",
+        String.format("Request without %s%s, expect 400.",
+            secondParameterNamePrefix + "_ids",
+            skipCodeTests ? "" : (" and " + secondParameterNamePrefix + "_codes")
+        ),
         Arrays.asList(new Parameter(heiParameterName, heiId)),
         400
     );
@@ -1284,16 +1318,11 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
     /**
      * Creates data structure with all configurations required for AbstractValidationSuite to work.
      *
-     * @param docBuilder
-     *     Needed for validating API responses against the schemas.
-     * @param internet
-     *     Needed to make API requests across the network.
-     * @param regClient
-     *     Needed to fetch (and verify) APIs' security settings.
-     * @param catalogueMatcherProvider
-     *     to get {@link Match} for catalogue.
-     * @param gitHubTagsGetter
-     *     to fetch API tags from GitHub.
+     * @param docBuilder               Needed for validating API responses against the schemas.
+     * @param internet                 Needed to make API requests across the network.
+     * @param regClient                Needed to fetch (and verify) APIs' security settings.
+     * @param catalogueMatcherProvider to get {@link Match} for catalogue.
+     * @param gitHubTagsGetter         to fetch API tags from GitHub.
      */
     public ValidationSuiteConfig(
         EwpDocBuilder docBuilder,

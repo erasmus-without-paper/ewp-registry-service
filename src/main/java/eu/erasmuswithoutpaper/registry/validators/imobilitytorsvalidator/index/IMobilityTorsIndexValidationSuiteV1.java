@@ -2,18 +2,12 @@ package eu.erasmuswithoutpaper.registry.validators.imobilitytorsvalidator.index;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
 
-import eu.erasmuswithoutpaper.registry.internet.Request;
-import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registry.validators.AbstractValidationSuite;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.Combination;
-import eu.erasmuswithoutpaper.registry.validators.InlineValidationStep;
 import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
 import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus.Status;
-import eu.erasmuswithoutpaper.registry.validators.ValidatorKeyStore;
 import eu.erasmuswithoutpaper.registry.validators.imobilitytorsvalidator.IMobilityTorsSuiteState;
 import eu.erasmuswithoutpaper.registry.validators.verifiers.Verifier;
 import eu.erasmuswithoutpaper.registry.validators.verifiers.VerifierFactory;
@@ -225,51 +219,18 @@ class IMobilityTorsIndexValidationSuiteV1
     );
 
     // Are others able to see ToRs issued by me?
-    final ValidatorKeyStore currentValidatorKeyStore = this.validatorKeyStore;
-    final ValidatorKeyStore otherValidationKeyStore =
-        this.validatorKeyStoreSet.getSecondaryKeyStore();
-    final String receivingHeiId = this.currentState.receivingHeiId;
-
-    this.addAndRun(false, new InlineValidationStep() {
-      @Override
-      public String getName() {
-        return "Request one known receiving_hei_id as other EWP participant, "
-            + "expect 200 OK and empty response.";
-      }
-
-      @Override
-      protected boolean shouldSkip() {
-        return noOMobilityIdReturned || otherValidationKeyStore == null;
-      }
-
-      @Override
-      protected String getSkipReason() {
-        if (noOMobilityIdReturned) {
-          return noOMobilitySkipReason;
-        }
-        return "Keys not provided, ask EWP Administrator for one.";
-      }
-
-      @Override
-      protected Optional<Response> innerRun() throws Failure {
-        List<Parameter> params = Arrays.asList(
-            new Parameter("receiving_hei_id", receivingHeiId)
-        );
-        Verifier verifier = omobilityIdVerifierFactory.expectResponseToBeEmpty();
-
-        try {
-          IMobilityTorsIndexValidationSuiteV1.this.setValidatorKeyStore(otherValidationKeyStore);
-
-          Request request = createRequestWithParameters(this, combination, params);
-
-          return Optional.of(
-              makeRequestAndVerifyResponse(this, combination, request, verifier, Status.FAILURE)
-          );
-        } finally {
-          IMobilityTorsIndexValidationSuiteV1.this.setValidatorKeyStore(currentValidatorKeyStore);
-        }
-      }
-    });
+    testParameters200AsOtherEwpParticipant(
+        combination,
+        "Request one known receiving_hei_id as other EWP participant, expect 200 OK and empty "
+            + "response.",
+        Arrays.asList(
+            new Parameter("receiving_hei_id", this.currentState.receivingHeiId)
+        ),
+        omobilityIdVerifierFactory.expectResponseToBeEmpty(),
+        Status.FAILURE,
+        noOMobilityIdReturned,
+        noOMobilitySkipReason
+    );
   }
 
   private VerifierFactory omobilityIdVerifierFactory = new VerifierFactory(

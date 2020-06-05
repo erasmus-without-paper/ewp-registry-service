@@ -316,6 +316,7 @@ public class ConsoleValidator {
 
     this.externalValidatorKeyStore = new ExternalValidatorKeyStore(this.registryClient);
     keyStoreSet.setMainKeyStore(this.externalValidatorKeyStore);
+    keyStoreSet.setSecondaryKeyStore(null);
     this.keyStoreSet = keyStoreSet;
 
     if (isHelpParameterPresent(args)) {

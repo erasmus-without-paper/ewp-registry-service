@@ -39,7 +39,7 @@ public class ListEqualVerifier extends Verifier {
 
     if (!unexpectedValues.isEmpty()) {
       throw new InlineValidationStep.Failure(
-          "The response has proper HTTP status and it passed the schema validation. However"
+          "The response has proper HTTP status and it passed the schema validation. However, "
               + "the set of returned " + getParamName() + "s doesn't match what we expect. "
               + "It contains those unexpected values: " + unexpectedValues + " "
               + "It should contain the following values: " + expected,

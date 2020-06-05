@@ -41,4 +41,13 @@
         <client-credentials-in-use/>
         <server-credentials-in-use/>
     </host>
+    <host>
+        <ewp:admin-notes>This host is needed for the API Validator.</ewp:admin-notes>
+        <r:apis-implemented>
+            <fake-api-without-a-version xmlns="https://github.com/erasmus-without-paper/ewp-registry-service/issues/8"/>
+        </r:apis-implemented>
+        <institutions-covered/>
+        <client-credentials-in-use/>
+        <server-credentials-in-use/>
+    </host>
 </manifest>

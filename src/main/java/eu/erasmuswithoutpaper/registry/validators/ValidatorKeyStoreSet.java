@@ -37,8 +37,8 @@ public class ValidatorKeyStoreSet {
   @Autowired
   public ValidatorKeyStoreSet(ConsoleEnvInfo consoleEnvInfo,
       @Value("${app.root-url}") String rootUrl,
-      @Value("${app.local-registry.additional-hei-ids:#{null}}")
-          List<String> additionalHeiIdsArray) {
+      @Value("${app.local-registry.additional-hei-ids:#{null}}") List<String> additionalHeiIdsArray
+  ) {
     if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
       logger.debug("Registering BouncyCastle security provider");
       Security.addProvider(new BouncyCastleProvider());
@@ -63,7 +63,7 @@ public class ValidatorKeyStoreSet {
     }
 
     this.mainKeyStore = new ValidatorKeyStore(additionalHeiIds);
-    this.secondaryKeyStore = null;
+    this.secondaryKeyStore = new ValidatorKeyStore();
   }
 
   public ValidatorKeyStore getMainKeyStore() {

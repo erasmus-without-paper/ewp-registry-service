@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xml="http://www.w3.org/XML/1998/namespace"
+    xmlns:ewp="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
+    elementFormDefault="qualified"
+
+    targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-api-imobilities/blob/stable-v1/endpoints/get-response.xsd"
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-imobilities/blob/stable-v1/endpoints/get-response.xsd"
+>
+
+    <xs:import
+        schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-architecture/stable-v1/common-types.xsd"
+        namespace="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
+    />
+
+    <xs:annotation>
+        <xs:documentation>
+            This schema is a part of the Erasmus Without Paper project. Before you start
+            using it, make sure you have read the general rules described here:
+
+            http://developers.erasmuswithoutpaper.eu/
+        </xs:documentation>
+    </xs:annotation>
+
+    <xs:element name="imobilities-get-response">
+        <xs:annotation>
+            <xs:documentation>
+                This describes the format of the response returned by the EWP Incoming
+                Mobilities API.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:group ref="SequenceOfIncomingMobilities" minOccurs="1" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>
+                            Clients should use the `omobility-id` subelements to match objects with their
+                            `omobility_id` request parameters.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:group>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:group name="SequenceOfIncomingMobilities">
+        <xs:annotation>
+            <xs:documentation>
+                This is global, because it is used in external XSDs. It MUST stay this way, for
+                backward compatibility.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:group ref="SingleIncomingMobilityObject" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>
+                        A list of matching mobilities.
+
+                        Currently there's only type of mobility exposed by this API. More types MAY
+                        come in the future.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:group>
+        </xs:sequence>
+    </xs:group>
+
+    <xs:group name="SingleIncomingMobilityObject">
+        <xs:annotation>
+            <xs:documentation>
+                Represents a single mobility of any type.
+
+                This is global, because it is used in external XSDs. It MUST stay this way, for
+                backward compatibility.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:choice>
+            <xs:element ref="student-mobility-for-studies"/>
+        </xs:choice>
+    </xs:group>
+
+    <xs:element name="student-mobility-for-studies">
+        <xs:complexType>
+            <xs:annotation>
+                <xs:documentation>
+                    This describes the "incoming part" of a single Student Mobility for Studies.
+                    "Incoming part" is the set of mobility's properties which the *receiving* HEI
+                    is the master of.
+
+                    In the future, it may become a "subclass" of a more generic Mobility parent class
+                    (and some of the fields might be moved to the parent).
+                </xs:documentation>
+            </xs:annotation>
+            <xs:sequence>
+                <xs:element name="omobility-id" type="ewp:AsciiPrintableIdentifier" minOccurs="1" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>
+                            Identifier of the mobility (as assigned by the sending HEI).
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="status" type="NominationStatus" minOccurs="1" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>
+                            Current status of the nomination.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="comment" type="xs:string" minOccurs="0" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>
+                            An optional comment. It is RECOMMENDED for comments to be provided only when
+                            necessary (e.g. when nominations are rejected, student did not appear on receiving HEI
+                            or leaved unexpectedly).
+                            These comments MUST be visible only to the IRO members, not the students.
+
+                            Note, that this API allows for every mobility to have a different
+                            comment. However, it is also okay for the clients to simply "batch copy" a single comment to all
+                            mobilities being rejected.
+
+                            It is left unspecified how servers should handle these comments - e.g.
+                            they may store them along their mobilities, or they may forward them to specific persons, etc.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="actual-arrival-date" type="xs:date" minOccurs="0" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>
+                            Actual start date of the mobility. "Actual" means "when the student has
+                            actually arrived". This stands in contrast with the "planned" date, as provided
+                            by the sending HEI in Outgoing Mobilities API.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="actual-departure-date" type="xs:date" minOccurs="0" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>
+                            Actual end date of the mobility. "Actual" means "when the student has actually
+                            left". This stands in contrast with the "planned" date, as provided by the
+                            sending HEI in Outgoing Mobilities API.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:simpleType name="NominationStatus">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="pending">
+                <xs:annotation>
+                    <xs:documentation>
+                        The nomination proposal has not yet been accepted nor rejected by the
+                        receiving HEI.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="verified">
+                <xs:annotation>
+                    <xs:documentation>
+                        The nomination was recognized by the receiving HEI as formally correct and
+                        complying with cooperation conditions. Now it's time for settling formalities,
+                        sending
+                        student's documents, creating the first Learning Agreement, etc.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="rejected">
+                <xs:annotation>
+                    <xs:documentation>
+                        The nomination has been rejected by the receiving HEI.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+
+</xs:schema>

@@ -17,6 +17,7 @@ import javax.xml.datatype.DatatypeFactory;
 import eu.erasmuswithoutpaper.registry.internet.InternetTestHelpers;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
+import eu.erasmuswithoutpaper.registry.validators.ParameterInfo;
 import eu.erasmuswithoutpaper.registry.validators.types.Contact;
 import eu.erasmuswithoutpaper.registry.validators.types.IiasGetResponseV3;
 import eu.erasmuswithoutpaper.registry.validators.types.IiasGetResponseV3.Iia;

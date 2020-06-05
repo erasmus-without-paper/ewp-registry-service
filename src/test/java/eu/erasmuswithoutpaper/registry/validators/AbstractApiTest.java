@@ -3,6 +3,7 @@ package eu.erasmuswithoutpaper.registry.validators;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.security.KeyPair;
+import java.util.Arrays;
 import java.util.List;
 
 import eu.erasmuswithoutpaper.registry.WRTest;
@@ -46,6 +47,10 @@ public abstract class AbstractApiTest<StateType extends SuiteState> extends WRTe
 
   @Autowired
   protected ValidatorKeyStoreSet validatorKeyStoreSet;
+
+  protected ValidatorKeyStore serviceKeyStore = new ValidatorKeyStore(
+      Arrays.asList("test.hei01.uw.edu.pl", "test.hei02.uw.edu.pl")
+  );
 
   private static final String selfManifestUrl = "https://registry.example.com/manifest.xml";
   private static final String apiManifestUrl = "https://university.example.com/manifest.xml";
@@ -95,7 +100,14 @@ public abstract class AbstractApiTest<StateType extends SuiteState> extends WRTe
   protected List<ValidationStepWithStatus> getValidationReportSteps(String url,
       SemanticVersion semanticVersion,
       HttpSecurityDescription security) {
-    return getValidator().runTests(url, semanticVersion, security, new ValidationParameters());
+    return getValidationReportSteps(url, semanticVersion, security, new ValidationParameters());
+  }
+
+  protected List<ValidationStepWithStatus> getValidationReportSteps(String url,
+      SemanticVersion semanticVersion,
+      HttpSecurityDescription security,
+      ValidationParameters validationParameters) {
+    return getValidator().runTests(url, semanticVersion, security, validationParameters);
   }
 
   protected void serviceTestContains(FakeInternetService service, String url,
@@ -135,6 +147,14 @@ public abstract class AbstractApiTest<StateType extends SuiteState> extends WRTe
 
       String apiManifest = this.getFileAsString(getManifestFilename());
       myKeyPair = this.getValidator().getValidatorKeyStoreSet().getMainKeyStore().generateKeyPair();
+      if (this.getValidator().getValidatorKeyStoreSet().getSecondaryKeyStore() != null) {
+        apiManifest = apiManifest.replace(
+            "SERVER-KEY-PLACEHOLDER-SECONDARY",
+            Base64.encode(
+                this.serviceKeyStore.getTlsKeyPairInUse().getPublic().getEncoded()
+            )
+        );
+      }
       apiManifest = apiManifest.replace(
           "SERVER-KEY-PLACEHOLDER",
           Base64.encode(myKeyPair.getPublic().getEncoded())
@@ -151,12 +171,17 @@ public abstract class AbstractApiTest<StateType extends SuiteState> extends WRTe
   protected abstract String getManifestFilename();
 
   protected TestValidationReport getRawReport(FakeInternetService service) {
+    return getRawReport(service, new ValidationParameters());
+  }
+
+  protected TestValidationReport getRawReport(FakeInternetService service,
+      ValidationParameters validationParameters) {
     String url = getUrl();
     SemanticVersion semanticVersion = getVersion();
     HttpSecurityDescription security = getSecurity();
     this.internet.addFakeInternetService(service);
     List<ValidationStepWithStatus> results =
-        getValidationReportSteps(url, semanticVersion, security);
+        getValidationReportSteps(url, semanticVersion, security, validationParameters);
     this.internet.removeFakeInternetService(service);
     this.internet.clearAll();
     return new TestValidationReport(results);

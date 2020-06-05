@@ -264,7 +264,8 @@ public class IMobilityTorsIndexValidatorTest extends IMobilityTorsValidatorTestB
     IMobilityTorsServiceV2Valid service = new IMobilityTorsServiceV2Valid(
         omobilityTorsIndexUrl, omobilityTorsGetUrl, this.client, this.resourceLoader) {
       @Override
-      protected boolean isCallerPermittedToSeeSendingHeiId(String sendingHeiId) {
+      protected boolean isCallerPermittedToSeeSendingHeiId(
+          RequestData requestData, String sendingHeiId) {
         return true;
       }
     };
@@ -280,13 +281,11 @@ public class IMobilityTorsIndexValidatorTest extends IMobilityTorsValidatorTestB
     IMobilityTorsServiceV2Valid service = new IMobilityTorsServiceV2Valid(
         omobilityTorsIndexUrl, omobilityTorsGetUrl, this.client, this.resourceLoader) {
       @Override
-      protected boolean isCallerPermittedToSeeSendingHeiId(String sendingHeiId) {
+      protected boolean isCallerPermittedToSeeSendingHeiId(
+          RequestData requestData, String sendingHeiId) {
         return true;
       }
     };
-    this.validator.getValidatorKeyStoreSet().setSecondaryKeyStore(
-        new ValidatorKeyStore()
-    );
     TestValidationReport report = this.getRawReport(service);
     assertThat(report).containsFailure(
         "Request one known receiving_hei_id as other EWP participant, "

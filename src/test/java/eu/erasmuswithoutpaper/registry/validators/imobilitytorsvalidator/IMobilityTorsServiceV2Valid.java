@@ -8,40 +8,28 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
 import eu.erasmuswithoutpaper.registry.internet.InternetTestHelpers;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
+import eu.erasmuswithoutpaper.registry.internet.sec.EwpClientWithRsaKey;
+import eu.erasmuswithoutpaper.registry.validators.ParameterInfo;
 import eu.erasmuswithoutpaper.registry.validators.types.ImobilityTorsGetResponse;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
+
 import org.springframework.core.io.ResourceLoader;
 
 public class IMobilityTorsServiceV2Valid extends AbstractIMobilityTorsService {
-  protected static class IMobilityTorEntry {
-    public ImobilityTorsGetResponse.Tor tor;
-    public String receiving_hei_id;
-    public String sending_hei_id;
-
-    public IMobilityTorEntry(ImobilityTorsGetResponse.Tor tor, String receiving_hei_id,
-        String sending_hei_id) {
-      this.tor = tor;
-      this.receiving_hei_id = receiving_hei_id;
-      this.sending_hei_id = sending_hei_id;
-    }
-  }
-
   protected List<IMobilityTorEntry> tors = new ArrayList<>();
 
 
   /**
-   * @param indexUrl
-   *     The endpoint at which to listen for requests.
-   * @param getUrl
-   *     The endpoint at which to listen for requests.
-   * @param registryClient
-   *     Initialized and refreshed {@link RegistryClient} instance.
+   * @param indexUrl       The endpoint at which to listen for requests.
+   * @param getUrl         The endpoint at which to listen for requests.
+   * @param registryClient Initialized and refreshed {@link RegistryClient} instance.
    */
   public IMobilityTorsServiceV2Valid(String indexUrl, String getUrl,
       RegistryClient registryClient, ResourceLoader resourceLoader) {
@@ -80,8 +68,10 @@ public class IMobilityTorsServiceV2Valid extends AbstractIMobilityTorsService {
   protected Response handleIMobilityTorsIndexRequest(
       Request request) throws ErrorResponseException {
     try {
-      RequestData requestData = new RequestData(request);
-      checkRequestMethod(requestData.request);
+      EwpClientWithRsaKey connectedClient = verifyCertificate(request);
+      checkRequestMethod(request);
+
+      RequestData requestData = new RequestData(request, connectedClient);
       extractIndexParams(requestData);
       checkReceivingHeiId(requestData);
       checkSendingHeiId(requestData);
@@ -98,23 +88,26 @@ public class IMobilityTorsServiceV2Valid extends AbstractIMobilityTorsService {
     }
   }
 
-  protected boolean isCallerPermittedToSeeSendingHeiId(String sendingHeiId) {
-    final String validatorHeiId = "validator-hei01.developers.erasmuswithoutpaper.eu";
-    return sendingHeiId.equals(validatorHeiId);
+  protected boolean isCallerPermittedToSeeSendingHeiId(
+      RequestData requestData, String sendingHeiId) {
+    return this.registryClient.getHeisCoveredByClientKey(requestData.client.getRsaPublicKey())
+        .contains(sendingHeiId);
   }
 
   private List<IMobilityTorEntry> filterNotPermittedIMobilityTors(
       List<IMobilityTorEntry> selectedIMobilityTors, RequestData requestData) {
     return selectedIMobilityTors.stream()
-        .filter(tor -> isCallerPermittedToSeeSendingHeiId(tor.sending_hei_id))
+        .filter(tor -> isCallerPermittedToSeeSendingHeiId(requestData, tor.sending_hei_id))
         .collect(Collectors.toList());
   }
 
   @Override
   protected Response handleIMobilityTorsGetRequest(Request request) throws ErrorResponseException {
     try {
-      RequestData requestData = new RequestData(request);
-      checkRequestMethod(requestData.request);
+      EwpClientWithRsaKey connectedClient = verifyCertificate(request);
+      checkRequestMethod(request);
+
+      RequestData requestData = new RequestData(request, connectedClient);
       extractGetParams(requestData);
       checkReceivingHeiId(requestData);
       checkOMobilityIds(requestData);
@@ -361,6 +354,20 @@ public class IMobilityTorsServiceV2Valid extends AbstractIMobilityTorsService {
   }
 
 
+  protected static class IMobilityTorEntry {
+    public ImobilityTorsGetResponse.Tor tor;
+    public String receiving_hei_id;
+    public String sending_hei_id;
+
+    public IMobilityTorEntry(ImobilityTorsGetResponse.Tor tor, String receiving_hei_id,
+        String sending_hei_id) {
+      this.tor = tor;
+      this.receiving_hei_id = receiving_hei_id;
+      this.sending_hei_id = sending_hei_id;
+    }
+  }
+
+
   static class RequestData {
     public String receivingHeiId;
     public List<String> sendingHeiIds;
@@ -368,9 +375,11 @@ public class IMobilityTorsServiceV2Valid extends AbstractIMobilityTorsService {
     public String modifiedSinceString;
     public List<String> omobilityIds;
     Request request;
+    EwpClientWithRsaKey client;
 
-    RequestData(Request request) {
+    RequestData(Request request, EwpClientWithRsaKey client) {
       this.request = request;
+      this.client = client;
     }
 
   }
