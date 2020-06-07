@@ -361,6 +361,24 @@ public class KnownElement {
       );
 
   /**
+   * The root of the Outgoing Mobility API v1 index response.
+   */
+  public static final KnownElement RESPONSE_OMOBILITIES_INDEX_V1 =
+      new KnownElement(KnownNamespace.RESPONSE_OMOBILITIES_INDEX_V1 ,
+          "omobilities-index-response",
+          "OMobility API v1 Index Response"
+      );
+
+  /**
+   * The root of the Oncoming Mobility API v1 get response.
+   */
+  public static final KnownElement RESPONSE_OMOBILITIES_GET_V1 =
+      new KnownElement(KnownNamespace.RESPONSE_OMOBILITIES_GET_V1,
+          "omobilities-get-response",
+          "OMobility API v1 Get Response"
+      );
+
+  /**
    * The root of the Factsheet v1 response.
    */
   public static final KnownElement RESPONSE_FACTSHEET_V1 =

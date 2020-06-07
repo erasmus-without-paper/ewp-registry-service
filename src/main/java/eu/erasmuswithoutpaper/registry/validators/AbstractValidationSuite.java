@@ -12,6 +12,7 @@ import java.security.interfaces.RSAPublicKey;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -1293,6 +1294,414 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
             new Parameter(secondParameterNamePrefix + "_id", id)
         ),
         400
+    );
+
+    testParametersError(
+        combination,
+        String.format(
+            "Request with correct %s and incorrect %s, expect 400.",
+            heiParameterName, heiParameterName
+        ),
+        Arrays.asList(
+            new Parameter(heiParameterName, heiId),
+            new Parameter(heiParameterName, fakeId),
+            new Parameter(secondParameterNamePrefix + "_id", id)
+        ),
+        400
+    );
+  }
+
+  private static class ModifiedSinceTestsSkipInfo {
+    final boolean skipErrorTests;
+    final String skipErrorTestsReason;
+    final boolean skipNoErrorTests;
+    final String skipNoErrorTestsReason;
+    static final String modifiedSinceNotSupportedSkipReason =
+        "modified_since parameter not supported.";
+
+    public ModifiedSinceTestsSkipInfo(
+        boolean modifiedSinceSupported,
+        boolean shouldSkip, String skipReason
+    ) {
+      if (!modifiedSinceSupported) {
+        skipErrorTests = true;
+        skipErrorTestsReason = modifiedSinceNotSupportedSkipReason;
+        skipNoErrorTests = true;
+        skipNoErrorTestsReason = modifiedSinceNotSupportedSkipReason;
+      } else {
+        skipErrorTests = false;
+        skipErrorTestsReason = null;
+        skipNoErrorTests = shouldSkip;
+        skipNoErrorTestsReason = skipReason;
+      }
+    }
+
+  }
+
+  // TODO move other modified_since tests into this method and use it everywhere.
+  protected void modifiedSinceTests(Combination combination,
+      String heiIdParameterName,
+      String knownHeiId,
+      boolean modifiedSinceSupported,
+      boolean shouldSkip, String skipReason,
+      VerifierFactory verifierFactory) throws SuiteBroken {
+
+    ModifiedSinceTestsSkipInfo skipInfo = new ModifiedSinceTestsSkipInfo(
+        modifiedSinceSupported, shouldSkip, skipReason
+    );
+
+    testParametersError(
+        combination,
+        "Request with multiple modified_since parameters, expect 400.",
+        Arrays.asList(
+            new Parameter(heiIdParameterName, knownHeiId),
+            new Parameter("modified_since", "2019-02-12T15:19:21+01:00"),
+            new Parameter("modified_since", "2019-02-12T15:19:21+01:00")
+        ),
+        400,
+        skipInfo.skipErrorTests,
+        skipInfo.skipErrorTestsReason
+    );
+
+    int yearInFuture = Calendar.getInstance().get(Calendar.YEAR) + 20;
+
+    testParameters200(
+        combination,
+        String.format(
+            "Request with known %s and modified_since in the future, expect 200 OK and empty "
+                + "response",
+            heiIdParameterName
+        ),
+        Arrays.asList(
+            new Parameter(heiIdParameterName, knownHeiId),
+            new Parameter("modified_since", yearInFuture + "-02-12T15:19:21+01:00")
+        ),
+        verifierFactory.expectResponseToBeEmpty(),
+        Status.WARNING,
+        skipInfo.skipNoErrorTests,
+        skipInfo.skipNoErrorTestsReason
+    );
+
+    testParameters200(
+        combination,
+        String.format(
+            "Request with known %s and modified_since far in the past, expect 200 OK and "
+                + "non-empty response.",
+            heiIdParameterName
+        ),
+        Arrays.asList(
+            new Parameter(heiIdParameterName, knownHeiId),
+            new Parameter("modified_since", "2000-02-12T15:19:21+01:00")
+        ),
+        verifierFactory.expectResponseToBeNotEmpty(),
+        skipInfo.skipNoErrorTests,
+        skipInfo.skipNoErrorTestsReason
+    );
+
+    testParameters200(
+        combination,
+        String.format(
+            "Request with known %s and correct date, expect 200.",
+            heiIdParameterName
+        ),
+        Arrays.asList(
+            new Parameter(heiIdParameterName, knownHeiId),
+            new Parameter("modified_since", "2004-02-12T15:19:21+01:00")
+        ),
+        verifierFactory.expectCorrectResponse()
+    );
+
+    testParametersError(
+        combination,
+        "Request with invalid value of modified_since, expect 400.",
+        Arrays.asList(
+            new Parameter(heiIdParameterName, knownHeiId),
+            new Parameter("modified_since", fakeId)
+        ),
+        400
+    );
+
+    testParametersError(
+        combination,
+        "Request with modified_since being only a date, expect 400.",
+        Arrays.asList(
+            new Parameter(heiIdParameterName, knownHeiId),
+            new Parameter("modified_since", "2004-02-12")
+        ),
+        400
+    );
+
+    testParametersError(
+        combination,
+        "Request with modified_since being a dateTime in wrong format, expect 400.",
+        Arrays.asList(
+            new Parameter(heiIdParameterName, knownHeiId),
+            new Parameter("modified_since", "05/29/2015 05:50")
+        ),
+        400
+    );
+  }
+
+  // TODO use it in IIAs complex test
+  protected void testModifiedSinceReturnsSpecifiedId(Combination combination,
+      String heiIdParameterName,
+      String knownHeiId,
+      boolean modifiedSinceSupported,
+      boolean shouldSkip, String skipReason,
+      VerifierFactory verifierFactory,
+      String expectedId) throws SuiteBroken {
+    // TODO is shouldSkip parameters necessary? Check after using this method in IIAs.
+    ModifiedSinceTestsSkipInfo skipInfo = new ModifiedSinceTestsSkipInfo(
+        modifiedSinceSupported, shouldSkip, skipReason
+    );
+
+    testParameters200(
+        combination,
+        String.format(
+            "Request with known %s and modified_since far in the past, "
+                + "expect 200 OK and non-empty response.",
+            heiIdParameterName
+        ),
+        Arrays.asList(
+            new Parameter(heiIdParameterName, knownHeiId),
+            new Parameter("modified_since", "2000-02-12T15:19:21+01:00")
+        ),
+        verifierFactory.expectResponseToContain(Arrays.asList(expectedId)),
+        skipInfo.skipNoErrorTests,
+        skipInfo.skipNoErrorTestsReason
+    );
+  }
+
+  // TODO use it in IIAs basic tests
+  protected void testReceivingAcademicYears(Combination combination,
+      String heiIdParameterName,
+      String knownHeiId,
+      VerifierFactory verifierFactory
+  ) throws SuiteBroken {
+    /*
+    testParameters200(
+        combination,
+        "Request with known hei_id and receiving_academic_year_id in southern hemisphere "
+            + "format, expect 200 OK.",
+        Arrays.asList(
+            new Parameter(heiIdParameterName, knownHeiId),
+            new Parameter("receiving_academic_year_id", "2010/2010")
+        ),
+        iiaIdVerifierFactory.expectCorrectResponse()
+    );
+     */
+
+    testParameters200(
+        combination,
+        String.format(
+            "Request with known %s and receiving_academic_year_id in northern hemisphere "
+                + "format, expect 200 OK.",
+            heiIdParameterName
+        ),
+        Arrays.asList(
+            new Parameter(heiIdParameterName, knownHeiId),
+            new Parameter("receiving_academic_year_id", "2010/2011")
+        ),
+        verifierFactory.expectCorrectResponse()
+    );
+
+    testParametersError(
+        combination,
+        "Request with receiving_academic_year_id in incorrect format, expect 400.",
+        Arrays.asList(
+            new Parameter(heiIdParameterName, knownHeiId),
+            new Parameter("receiving_academic_year_id", "test/test")
+        ),
+        400
+    );
+
+    int unknownAcademicYear = 1653; //Arbitrary, but most probably unknown.
+
+    String unknownAcademicYearString =
+        String.format("%04d/%04d", unknownAcademicYear, unknownAcademicYear + 1);
+    testParameters200(
+        combination,
+        String.format(
+            "Request with known %s and unknown receiving_academic_year_id parameter, "
+                + "expect 200 OK and empty response.",
+            heiIdParameterName
+        ),
+        Arrays.asList(
+            new Parameter(heiIdParameterName, knownHeiId),
+            new Parameter("receiving_academic_year_id", unknownAcademicYearString)
+        ),
+        verifierFactory.expectResponseToBeEmpty()
+    );
+  }
+
+  // TODO use it in IIAs complex test
+  protected void testReceivingAcademicYearsReturnsExpectedId(Combination combination,
+      String heiIdParameterName,
+      String knownHeiId,
+      VerifierFactory verifierFactory,
+      String knownAcademicYear,
+      String expectedId) throws SuiteBroken {
+    testParameters200(
+        combination,
+        String.format(
+            "Request with known %s and known receiving_academic_year_id parameter, "
+                + "expect 200 OK and non-empty response.",
+            heiIdParameterName
+        ),
+        Arrays.asList(
+            new Parameter(heiIdParameterName, knownHeiId),
+            new Parameter("receiving_academic_year_id", knownAcademicYear)
+        ),
+        verifierFactory.expectResponseToContain(Arrays.asList(expectedId)),
+        knownAcademicYear == null,
+        "No known receiving_academic_year_id, try to pass additional parameters."
+    );
+  }
+
+  protected void testsRequestingReceivingHeiIds(Combination combination,
+      String requestingHeiIdParameterName,
+      String knownRequestingHeiIdParameter,
+      String respondingHeiIdParameterName,
+      String knownRespondingHeiIdParameter,
+      boolean shouldSkip,
+      String skipReason,
+      VerifierFactory verifierFactory,
+      boolean shouldUnknownRespondingHeiIdsFail
+  ) throws SuiteBroken {
+    testParametersError(
+        combination,
+        String.format(
+            "Request with known %s twice, expect 400.",
+            respondingHeiIdParameterName
+        ),
+        Arrays.asList(
+            new Parameter(respondingHeiIdParameterName, knownRespondingHeiIdParameter),
+            new Parameter(respondingHeiIdParameterName, knownRespondingHeiIdParameter)
+        ),
+        400
+    );
+
+    testParametersError(
+        combination,
+        String.format(
+            "Request without %s and known %s, expect 400.",
+            respondingHeiIdParameterName, requestingHeiIdParameterName
+        ),
+        Arrays.asList(
+            new Parameter(requestingHeiIdParameterName, knownRequestingHeiIdParameter)
+        ),
+        400
+    );
+
+    testParametersError(
+        combination,
+        String.format(
+            "Request with known %s and unknown %s, expect 400.",
+            respondingHeiIdParameterName, respondingHeiIdParameterName
+        ),
+        Arrays.asList(
+            new Parameter(respondingHeiIdParameterName, knownRespondingHeiIdParameter),
+            new Parameter(respondingHeiIdParameterName, fakeId)
+        ),
+        400
+    );
+
+    testParametersError(
+        combination,
+        "Request without parameters, expect 400.",
+        Collections.emptyList(),
+        400
+    );
+
+    testParameters200(
+        combination,
+        String.format(
+            "Request with known %s and unknown %s, expect 200 and empty response.",
+            respondingHeiIdParameterName, requestingHeiIdParameterName
+        ),
+        Arrays.asList(
+            new Parameter(respondingHeiIdParameterName, knownRespondingHeiIdParameter),
+            new Parameter(requestingHeiIdParameterName, fakeId)
+        ),
+        verifierFactory.expectResponseToBeEmpty(),
+        shouldSkip,
+        skipReason
+    );
+
+    testParameters200(
+        combination,
+        String.format(
+            "Request with known %s and without %s, expect 200 and non-empty response.",
+            respondingHeiIdParameterName, requestingHeiIdParameterName
+        ),
+        Arrays.asList(
+            new Parameter(respondingHeiIdParameterName, knownRespondingHeiIdParameter)
+        ),
+        verifierFactory.expectResponseToBeNotEmpty(),
+        shouldSkip,
+        skipReason
+    );
+
+    if (shouldUnknownRespondingHeiIdsFail) {
+      testParametersError(
+          combination,
+          String.format(
+              "Request with unknown %s, expect 400.",
+              respondingHeiIdParameterName
+          ),
+          Arrays.asList(
+              new Parameter(respondingHeiIdParameterName, fakeId)
+          ),
+          400,
+          shouldSkip,
+          skipReason
+      );
+    } else {
+      testParameters200(
+          combination,
+          String.format(
+              "Request with unknown %s, expect 200 and empty response.",
+              respondingHeiIdParameterName
+          ),
+          Arrays.asList(
+              new Parameter(respondingHeiIdParameterName, fakeId)
+          ),
+          verifierFactory.expectResponseToBeEmpty(),
+          shouldSkip,
+          skipReason
+      );
+    }
+
+    testParameters200(
+        combination,
+        String.format(
+            "Request with known %s and known and unknown %s, expect 200 and non-empty response.",
+            respondingHeiIdParameterName, requestingHeiIdParameterName
+        ),
+        Arrays.asList(
+            new Parameter(respondingHeiIdParameterName, knownRespondingHeiIdParameter),
+            new Parameter(requestingHeiIdParameterName, knownRequestingHeiIdParameter),
+            new Parameter(requestingHeiIdParameterName, fakeId)
+        ),
+        verifierFactory.expectResponseToBeNotEmpty(),
+        shouldSkip,
+        skipReason
+    );
+
+    testParameters200(
+        combination,
+        String.format(
+            "Request with known %s and two unknown %s, expect 200 OK and empty response.",
+            respondingHeiIdParameterName, requestingHeiIdParameterName
+        ),
+        Arrays.asList(
+            new Parameter(respondingHeiIdParameterName, knownRespondingHeiIdParameter),
+            new Parameter(requestingHeiIdParameterName, fakeId),
+            new Parameter(requestingHeiIdParameterName, fakeId)
+        ),
+        verifierFactory.expectResponseToBeEmpty(),
+        shouldSkip,
+        skipReason
     );
   }
 

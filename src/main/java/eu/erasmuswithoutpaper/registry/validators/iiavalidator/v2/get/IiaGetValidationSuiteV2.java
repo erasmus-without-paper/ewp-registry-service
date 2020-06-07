@@ -52,7 +52,7 @@ public class IiaGetValidationSuiteV2
   protected void validateCombinationAny(Combination combination)
       throws SuiteBroken {
     ArrayList<String> iiaCodes = new ArrayList<>();
-    //Success is required here, we need to fetch ounit-codes using this method
+    //Success is required here, we need to fetch iia-codes using this method
     this.addAndRun(true, new InlineValidationStep() {
       @Override
       public String getName() {
@@ -92,17 +92,6 @@ public class IiaGetValidationSuiteV2
         this.currentState.selectedIiaId, this.currentState.maxIiaIds,
         iiaCodes.get(0), this.currentState.maxIiaCodes,
         partnerIiaIdVerifierFactory
-    );
-
-    testParametersError(
-        combination,
-        "Request with correct hei_id and incorrect hei_id, expect 400.",
-        Arrays.asList(
-            new Parameter("hei_id", this.currentState.selectedHeiId),
-            new Parameter("hei_id", fakeId),
-            new Parameter("iia_id", IiaGetValidationSuiteV2.this.currentState.selectedIiaId)
-        ),
-        400
     );
   }
 

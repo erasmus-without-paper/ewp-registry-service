@@ -211,6 +211,26 @@ public class KnownNamespace {
 
   /**
    * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/tree/stable-v1/manifest-entry.xsd'>
+   * here</a>.
+   */
+  public static final KnownNamespace RESPONSE_OMOBILITIES_INDEX_V1 = new KnownNamespace("omri1",
+      "api-omobilities/blob/stable-v1/endpoints/index-response.xsd",
+      "api-omobilities/stable-v1/endpoints/index-response.xsd", false);
+  // TODO false -> true
+
+  /**
+   * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/tree/stable-v1/manifest-entry.xsd'>
+   * here</a>.
+   */
+  public static final KnownNamespace RESPONSE_OMOBILITIES_GET_V1  = new KnownNamespace("omrg1",
+      "api-omobilities/blob/stable-v1/endpoints/get-response.xsd",
+      "api-omobilities/stable-v1/endpoints/get-response.xsd", false);
+  // TODO false -> true
+
+  /**
+   * As described <a href=
    * 'https://github.com/erasmus-without-paper/ewp-specs-api-discovery/blob/stable-v4/manifest-entry.xsd'>
    * here</a>.
    */

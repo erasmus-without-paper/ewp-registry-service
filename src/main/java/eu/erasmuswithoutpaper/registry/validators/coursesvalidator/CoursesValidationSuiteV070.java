@@ -157,17 +157,6 @@ class CoursesValidationSuiteV070
         losIdVerifierFactory
     );
 
-    testParametersError(
-        combination,
-        "Request with correct hei_id and incorrect hei_id, expect 400.",
-        Arrays.asList(
-            new Parameter("hei_id", this.currentState.selectedHeiId),
-            new Parameter("hei_id", fakeId),
-            new Parameter("los_id", this.currentState.selectedLosId)
-        ),
-        400
-    );
-
     String losId = this.currentState.selectedLosId;
 
     String dayAfterStart = null;

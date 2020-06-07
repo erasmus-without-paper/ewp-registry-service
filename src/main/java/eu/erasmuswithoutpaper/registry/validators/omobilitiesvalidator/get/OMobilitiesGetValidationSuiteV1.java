@@ -1,4 +1,4 @@
-package eu.erasmuswithoutpaper.registry.validators.imobilitytorsvalidator.get;
+package eu.erasmuswithoutpaper.registry.validators.omobilitiesvalidator.get;
 
 import java.util.Arrays;
 
@@ -6,7 +6,8 @@ import eu.erasmuswithoutpaper.registry.validators.AbstractValidationSuite;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.Combination;
 import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
-import eu.erasmuswithoutpaper.registry.validators.imobilitytorsvalidator.IMobilityTorsSuiteState;
+import eu.erasmuswithoutpaper.registry.validators.omobilitiesvalidator.OMobilitiesSuiteState;
+import eu.erasmuswithoutpaper.registry.validators.verifiers.CorrectResponseVerifier;
 import eu.erasmuswithoutpaper.registry.validators.verifiers.VerifierFactory;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -14,16 +15,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Describes the set of test/steps to be run on an IMobility ToRs API get endpoint implementation
+ * Describes the set of test/steps to be run on an OMobilities API get endpoint implementation
  * in order to properly validate it.
  */
-class IMobilityTorsGetValidationSuiteV1
-    extends AbstractValidationSuite<IMobilityTorsSuiteState> {
+class OMobilitiesGetValidationSuiteV1
+    extends AbstractValidationSuite<OMobilitiesSuiteState> {
 
   private static final Logger logger = LoggerFactory
-      .getLogger(IMobilityTorsGetValidationSuiteV1.class);
+      .getLogger(
+          OMobilitiesGetValidationSuiteV1.class);
 
-  private static final ValidatedApiInfo apiInfo = new IMobilityTorsGetValidatedApiInfo();
+  private static final ValidatedApiInfo apiInfo = new OMobilitiesGetValidatedApiInfo();
 
   @Override
   protected Logger getLogger() {
@@ -35,13 +37,13 @@ class IMobilityTorsGetValidationSuiteV1
     return apiInfo;
   }
 
-  IMobilityTorsGetValidationSuiteV1(ApiValidator<IMobilityTorsSuiteState> validator,
-      IMobilityTorsSuiteState state, ValidationSuiteConfig config) {
+  OMobilitiesGetValidationSuiteV1(ApiValidator<OMobilitiesSuiteState> validator,
+      OMobilitiesSuiteState state, ValidationSuiteConfig config) {
     super(validator, state, config);
   }
 
   //FindBugs is not smart enough to infer that actual type of this.currentState
-  //is IMobilityTorsSuiteState not just SuiteState
+  //is OMobilitiesSuiteState not just SuiteState
   @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
   protected void validateCombinationAny(Combination combination)
       throws SuiteBroken {
@@ -50,26 +52,24 @@ class IMobilityTorsGetValidationSuiteV1
         combination,
         "Request for one of known omobility_ids, expect 200 OK.",
         Arrays.asList(
-            new Parameter("receiving_hei_id",
-                this.currentState.receivingHeiId),
+            new Parameter("sending_hei_id",
+                OMobilitiesGetValidationSuiteV1.this.currentState.sendingHeiId),
             new Parameter(
                 "omobility_id",
-                this.currentState.omobilityId)
+                OMobilitiesGetValidationSuiteV1.this.currentState.omobilityId)
         ),
-        omobilityIdVerifierFactory.expectResponseToContainExactly(
-            Arrays.asList(this.currentState.omobilityId)
-        )
+        new CorrectResponseVerifier()
     );
 
     generalTestsIds(combination,
-        "receiving_hei_id", this.currentState.receivingHeiId,
+        "sending_hei_id", this.currentState.sendingHeiId,
         "omobility",
         this.currentState.omobilityId, this.currentState.maxOmobilityIds,
-        false,
+        true,
         omobilityIdVerifierFactory
     );
   }
 
   private VerifierFactory omobilityIdVerifierFactory =
-      new VerifierFactory(Arrays.asList("tor", "omobility-id"));
+      new VerifierFactory(Arrays.asList("student-mobility-for-studies", "omobility-id"));
 }

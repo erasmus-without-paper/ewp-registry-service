@@ -1,0 +1,36 @@
+<manifest
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/tree/stable-v4"
+    xmlns:r="https://github.com/erasmus-without-paper/ewp-specs-api-registry/tree/stable-v1"
+    xmlns:sec="https://github.com/erasmus-without-paper/ewp-specs-sec-intro/tree/stable-v2"
+>
+    <r:apis-implemented>
+        <omobilities
+            xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/blob/stable-v1/manifest-entry.xsd"
+            version="1.0.0"
+        >
+            <http-security>
+                <sec:client-auth-methods>
+                    <httpsig xmlns="https://github.com/erasmus-without-paper/ewp-specs-sec-cliauth-httpsig/tree/stable-v1"/>
+                </sec:client-auth-methods>
+                <sec:server-auth-methods>
+                    <httpsig xmlns="https://github.com/erasmus-without-paper/ewp-specs-sec-srvauth-httpsig/tree/stable-v1"/>
+                    <tlscert xmlns="https://github.com/erasmus-without-paper/ewp-specs-sec-srvauth-tlscert/tree/stable-v1"/>
+                </sec:server-auth-methods>
+            </http-security>
+            <get-url>https://university.example.com/omobilities/HTTT/get</get-url>
+            <index-url>https://university.example.com/omobilities/HTTT/index</index-url>
+            <max-omobility-ids>3</max-omobility-ids>
+        </omobilities>
+    </r:apis-implemented>
+    <institutions-covered>
+        <r:hei id="test.hei01.uw.edu.pl">
+            <r:name xml:lang="en">University of Warsaw test 01</r:name>
+        </r:hei>
+        <r:hei id="test.hei02.uw.edu.pl">
+            <r:name xml:lang="en">University of Warsaw test 02</r:name>
+        </r:hei>
+    </institutions-covered>
+    <server-credentials-in-use>
+        <rsa-public-key>SERVER-KEY-PLACEHOLDER-SECONDARY</rsa-public-key>
+    </server-credentials-in-use>
+</manifest>

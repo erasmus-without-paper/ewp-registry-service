@@ -50,4 +50,13 @@
       </jaxb:schemaBindings>
    </jaxb:bindings>
 
+   <jaxb:bindings schemaLocation="../jaxb-schemas/ewp-specs-api-omobilities-v1.0.0/endpoints/get-response.xsd" node="/xs:schema">
+      <jaxb:schemaBindings>
+         <jaxb:nameXmlTransform>
+           <jaxb:elementName suffix="OMobilitiesV1"/>
+           <jaxb:typeName suffix="OMobilitiesV1"/>
+         </jaxb:nameXmlTransform>
+      </jaxb:schemaBindings>
+   </jaxb:bindings>
+
 </jaxb:bindings>

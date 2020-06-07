@@ -1,4 +1,4 @@
-package eu.erasmuswithoutpaper.registry.validators.imobilitytorsvalidator.index;
+package eu.erasmuswithoutpaper.registry.validators.omobilitiesvalidator.index;
 
 import java.util.Arrays;
 
@@ -7,7 +7,7 @@ import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.Combination;
 import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
 import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus.Status;
-import eu.erasmuswithoutpaper.registry.validators.imobilitytorsvalidator.IMobilityTorsSuiteState;
+import eu.erasmuswithoutpaper.registry.validators.omobilitiesvalidator.OMobilitiesSuiteState;
 import eu.erasmuswithoutpaper.registry.validators.verifiers.Verifier;
 import eu.erasmuswithoutpaper.registry.validators.verifiers.VerifierFactory;
 
@@ -16,14 +16,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Describes the set of test/steps to be run on an IMobility ToRs API index endpoint implementation
+ * Describes the set of test/steps to be run on an OMobilities API index endpoint implementation
  * in order to properly validate it.
  */
-class IMobilityTorsIndexValidationSuiteV1
-    extends AbstractValidationSuite<IMobilityTorsSuiteState> {
+class OMobilitiesIndexValidationSuiteV1
+    extends AbstractValidationSuite<OMobilitiesSuiteState> {
   private static final Logger logger =
-      LoggerFactory.getLogger(IMobilityTorsIndexValidationSuiteV1.class);
-  private static final ValidatedApiInfo apiInfo = new IMobilityTorsIndexValidatedApiInfo();
+      LoggerFactory.getLogger(
+          OMobilitiesIndexValidationSuiteV1.class);
+  private static final ValidatedApiInfo apiInfo = new OMobilitiesIndexValidatedApiInfo();
 
   @Override
   protected Logger getLogger() {
@@ -35,8 +36,8 @@ class IMobilityTorsIndexValidationSuiteV1
     return apiInfo;
   }
 
-  IMobilityTorsIndexValidationSuiteV1(ApiValidator<IMobilityTorsSuiteState> validator,
-      IMobilityTorsSuiteState state, ValidationSuiteConfig config) {
+  OMobilitiesIndexValidationSuiteV1(ApiValidator<OMobilitiesSuiteState> validator,
+      OMobilitiesSuiteState state, ValidationSuiteConfig config) {
     super(validator, state, config);
   }
 
@@ -51,32 +52,38 @@ class IMobilityTorsIndexValidationSuiteV1
         + " provide parameters that will allow us to receive omobility-ids.");
     testParameters200(
         combination,
-        "Request one known receiving_hei_id, expect 200 OK.",
+        "Request one known sending_hei_id, expect 200 OK.",
         Arrays.asList(
-            new Parameter("receiving_hei_id", this.currentState.receivingHeiId)
+            new Parameter("sending_hei_id", this.currentState.sendingHeiId)
         ),
         hasAnyElementVerifier,
-        Status.NOTICE
+        Status.FAILURE
     );
 
     final boolean noOMobilityIdReturned = !hasAnyElementVerifier.getVerificationResult();
     final String noOMobilitySkipReason = "OMobilities list was empty.";
 
     testsRequestingReceivingHeiIds(combination,
-        "sending_hei_id",
-        this.currentState.sendingHeiId,
         "receiving_hei_id",
         this.currentState.receivingHeiId,
+        "sending_hei_id",
+        this.currentState.sendingHeiId,
         noOMobilityIdReturned,
         noOMobilitySkipReason,
         omobilityIdVerifierFactory,
-        false
+        true
+    );
+
+    testReceivingAcademicYears(combination,
+        "sending_hei_id",
+        this.currentState.sendingHeiId,
+        omobilityIdVerifierFactory
     );
 
     // Modified since
     modifiedSinceTests(combination,
-        "receiving_hei_id",
-        this.currentState.receivingHeiId,
+        "sending_hei_id",
+        this.currentState.sendingHeiId,
         true,
         noOMobilityIdReturned,
         noOMobilitySkipReason,
@@ -84,14 +91,14 @@ class IMobilityTorsIndexValidationSuiteV1
     );
 
     // Permission tests
-    // Am I allowed to see ToRs issued by others?
+    // Am I allowed to see omobilities issued by others?
     testParameters200(
         combination,
-        "Request with known receiving_hei_id and sending_hei_id valid but not covered by"
+        "Request with known sending_hei_id and receiving_hei_id valid but not covered by"
             + " the validator, expect empty response.",
         Arrays.asList(
-            new Parameter("receiving_hei_id", this.currentState.receivingHeiId),
-            new Parameter("sending_hei_id", this.currentState.notPermittedHeiId)
+            new Parameter("sending_hei_id", this.currentState.sendingHeiId),
+            new Parameter("receiving_hei_id", this.currentState.notPermittedHeiId)
         ),
         omobilityIdVerifierFactory.expectResponseToBeEmpty(),
         Status.WARNING,
@@ -99,13 +106,13 @@ class IMobilityTorsIndexValidationSuiteV1
         noOMobilitySkipReason
     );
 
-    // Are others able to see ToRs issued by me?
+    // Are others able to see omobilities issued by me?
     testParameters200AsOtherEwpParticipant(
         combination,
-        "Request one known receiving_hei_id as other EWP participant, expect 200 OK and empty "
+        "Request one known sending_hei_id as other EWP participant, expect 200 OK and empty "
             + "response.",
         Arrays.asList(
-            new Parameter("receiving_hei_id", this.currentState.receivingHeiId)
+            new Parameter("sending_hei_id", this.currentState.sendingHeiId)
         ),
         omobilityIdVerifierFactory.expectResponseToBeEmpty(),
         Status.FAILURE,

@@ -94,17 +94,6 @@ class OUnitsValidationSuiteV2
         ounitCodes.get(0), this.currentState.maxOunitCodes,
         ounitIdVerifier
     );
-
-    testParametersError(
-        combination,
-        "Request with correct hei_id and incorrect hei_id, expect 400.",
-        Arrays.asList(
-            new Parameter("hei_id", this.currentState.selectedHeiId),
-            new Parameter("hei_id", this.fakeId),
-            new Parameter("ounit_id", OUnitsValidationSuiteV2.this.currentState.selectedOunitId)
-        ),
-        400
-    );
   }
 
   private VerifierFactory ounitIdVerifier = new VerifierFactory(Arrays.asList("ounit", "ounit-id"));

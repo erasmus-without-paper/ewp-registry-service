@@ -72,18 +72,6 @@ class IMobilitiesGetValidationSuiteV1
         omobilityIdVerifierFactory
     );
 
-    testParametersError(
-        combination,
-        "Request with correct receiving_hei_id and incorrect receiving_hei_id, expect 400.",
-        Arrays.asList(
-            new Parameter("receiving_hei_id", this.currentState.receivingHeiId),
-            new Parameter("receiving_hei_id", fakeId),
-            new Parameter("omobility_id",
-                IMobilitiesGetValidationSuiteV1.this.currentState.omobilityId)
-        ),
-        400
-    );
-
     // Are others able to see imobilities visible to me?
     testParameters200AsOtherEwpParticipant(
         combination,
