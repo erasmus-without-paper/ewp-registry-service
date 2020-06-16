@@ -3,8 +3,10 @@ package eu.erasmuswithoutpaper.registry.cmatrix;
 import static org.joox.JOOX.$;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownElement;
 import eu.erasmuswithoutpaper.registryclient.ApiSearchConditions;
@@ -22,6 +24,14 @@ class ApiEntriesCell extends CoverageMatrixCell {
   @SuppressFBWarnings("SE_COMPARATOR_SHOULD_BE_SERIALIZABLE")
   private static class ApiVersionComparator implements Comparator<Element> {
 
+    private final List<String> apiNamespacesOrder;
+
+    public ApiVersionComparator(KnownElement[] apiEntryClasses) {
+      this.apiNamespacesOrder = Arrays.stream(apiEntryClasses)
+          .map(KnownElement::getNamespaceUri)
+          .collect(Collectors.toList());
+    }
+
     @Override
     public int compare(Element e1, Element e2) {
       List<Integer> p1 = this.extractVersionInts(e1);
@@ -34,7 +44,18 @@ class ApiEntriesCell extends CoverageMatrixCell {
       }
       Integer s1 = p1.size();
       Integer s2 = p2.size();
-      return s1.compareTo(s2);
+      int result = s1.compareTo(s2);
+      if (result != 0) {
+        return result;
+      }
+      // Version are equal, but maybe their namespaces are not.
+      String namespace1 = e1.getNamespaceURI();
+      Integer namespace1Index = this.apiNamespacesOrder.indexOf(namespace1);
+
+      String namespace2 = e2.getNamespaceURI();
+      Integer namespace2Index = this.apiNamespacesOrder.indexOf(namespace2);
+
+      return namespace1Index.compareTo(namespace2Index);
     }
 
     private List<Integer> extractVersionInts(Element elem) {
@@ -82,7 +103,7 @@ class ApiEntriesCell extends CoverageMatrixCell {
       conds.setApiClassRequired(apiClass.getNamespaceUri(), apiClass.getLocalName());
       this.matchedApiEntries.addAll(this.client.findApis(conds));
     }
-    this.matchedApiEntries.sort(new ApiVersionComparator().reversed());
+    this.matchedApiEntries.sort(new ApiVersionComparator(this.apiEntryClasses).reversed());
     // Check the first one. Is it the most recent API class?
     boolean isLastClassImplemented = (this.matchedApiEntries.size() > 0
         && this.lastClass.matches(this.matchedApiEntries.get(0)));

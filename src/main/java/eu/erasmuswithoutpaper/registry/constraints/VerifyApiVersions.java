@@ -26,6 +26,31 @@ import org.w3c.dom.Document;
  */
 public class VerifyApiVersions implements ManifestConstraint {
 
+  /**
+   * Returns prefixes of API versions allowed to be used with provided namespace,
+   * in format "X.", where X is major version.
+   */
+  public static List<String> getExpectedVersionPrefixes(String namespaceUri) {
+    Matcher pm = Pattern.compile(".*/stable-v([0-9]+).*").matcher(namespaceUri);
+    List<String> expectedVersionPrefixes = new ArrayList<>();
+    if (!pm.matches()) {
+      // No "stable-*" sequence found.
+      if (namespaceUri.contains("/master")) {
+        // Most probably a draft API.
+        expectedVersionPrefixes.add("0.");
+      } else {
+        // Non-standard. We will ignore this API.
+      }
+    } else {
+      expectedVersionPrefixes.add(pm.group(1) + ".");
+      if (pm.group(1).equals("1")) {
+        // It is also allowed for 0.x.y APIs to use stable-v1 namespace.
+        expectedVersionPrefixes.add("0.");
+      }
+    }
+    return expectedVersionPrefixes;
+  }
+
   @Override
   public List<FailedConstraintNotice> filter(Document doc) {
     List<FailedConstraintNotice> notices = new ArrayList<>();
@@ -40,24 +65,7 @@ public class VerifyApiVersions implements ManifestConstraint {
          */
         continue;
       }
-      Matcher pm = Pattern.compile(".*/stable-v([0-9]+).*").matcher(namespaceUri);
-      List<String> expectedVersionPrefixes = new ArrayList<>();
-      if (!pm.matches()) {
-        // No "stable-*" sequence found.
-        if (namespaceUri.contains("/master")) {
-          // Most probably a draft API.
-          expectedVersionPrefixes.add("0.");
-        } else {
-          // Non-standard. We will ignore this API.
-          continue;
-        }
-      } else {
-        expectedVersionPrefixes.add(pm.group(1) + ".");
-        if (pm.group(1).equals("1")) {
-          // It is also allowed for 0.x.y APIs to use stable-v1 namespace.
-          expectedVersionPrefixes.add("0.");
-        }
-      }
+      List<String> expectedVersionPrefixes = getExpectedVersionPrefixes(namespaceUri);
       if (match.attr("version") == null) {
         continue;
       }

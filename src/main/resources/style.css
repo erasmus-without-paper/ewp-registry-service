@@ -377,6 +377,9 @@ a:hover {
     color: #000;
     opacity: 0.5;
 }
+.ewpst__apiVersion--error {
+    color: #f00;
+}
 
 /* yes/no values */
 
