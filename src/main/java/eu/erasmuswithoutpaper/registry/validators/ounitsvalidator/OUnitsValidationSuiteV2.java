@@ -65,7 +65,7 @@ class OUnitsValidationSuiteV2
       @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
       protected Optional<Response> innerRun() throws Failure {
         Request request = createRequestWithParameters(this, combination,
-            Arrays.asList(
+            new ParameterList(
                 new Parameter("hei_id", OUnitsValidationSuiteV2.this.currentState.selectedHeiId),
                 new Parameter(
                     "ounit_id", OUnitsValidationSuiteV2.this.currentState.selectedOunitId)

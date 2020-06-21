@@ -49,7 +49,7 @@ class IMobilityTorsGetValidationSuiteV1
     testParameters200(
         combination,
         "Request for one of known omobility_ids, expect 200 OK.",
-        Arrays.asList(
+        new ParameterList(
             new Parameter("receiving_hei_id",
                 this.currentState.receivingHeiId),
             new Parameter(

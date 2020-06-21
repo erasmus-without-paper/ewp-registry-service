@@ -379,6 +379,33 @@ public class KnownElement {
       );
 
   /**
+   * The root of the Outgoing Mobility Learning Agreements API v1 index response.
+   */
+  public static final KnownElement RESPONSE_OMOBILITY_LAS_INDEX_V1 =
+      new KnownElement(KnownNamespace.RESPONSE_OMOBILITY_LAS_INDEX_V1,
+          "omobility-las-index-response",
+          "OMobility LAs API v1 Index Response"
+      );
+
+  /**
+   * The root of the Outgoing Mobility Learning Agreements API v1 get response.
+   */
+  public static final KnownElement RESPONSE_OMOBILITY_LAS_GET_V1  =
+      new KnownElement(KnownNamespace.RESPONSE_OMOBILITY_LAS_GET_V1,
+          "omobility-las-get-response",
+          "OMobility LAs API v1 Get Response"
+      );
+
+  /**
+   * The root of the Outgoing Mobility Learning Agreements API v1 update response.
+   */
+  public static final KnownElement RESPONSE_OMOBILITY_LAS_UPDATE_V1  =
+      new KnownElement(KnownNamespace.RESPONSE_OMOBILITY_LAS_UPDATE_V1,
+          "omobility-las-update-response",
+          "OMobility LAs API v1 Update Response"
+      );
+
+  /**
    * The root of the Factsheet v1 response.
    */
   public static final KnownElement RESPONSE_FACTSHEET_V1 =

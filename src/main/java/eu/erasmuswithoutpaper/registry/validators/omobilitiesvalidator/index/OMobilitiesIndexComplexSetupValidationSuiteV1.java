@@ -135,7 +135,7 @@ public class OMobilitiesIndexComplexSetupValidationSuiteV1
         Request request = makeApiRequestWithPreferredSecurity(
             this,
             getEndpointUrl, ApiEndpoint.Get, securityDescription,
-            Arrays.asList(
+            new ParameterList(
                 new Parameter("sending_hei_id", heiId),
                 new Parameter("omobility_id", omobilityId)
             ));

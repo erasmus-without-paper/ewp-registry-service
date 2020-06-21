@@ -392,11 +392,6 @@ public class IiasServiceValidV2 extends AbstractIiasService {
     }
   }
 
-  protected boolean checkReceivingAcademicYearId(String receivingAcademicYear) {
-    String receivingAcademicYearPattern = "[0-9]{4}/[0-9]{4}";
-    return Pattern.matches(receivingAcademicYearPattern, receivingAcademicYear);
-  }
-
   private void extractGetParams(RequestData requestData) throws ErrorResponseException {
     checkParamsEncoding(requestData.request);
     Map<String, List<String>> params = InternetTestHelpers.extractAllParams(requestData.request);

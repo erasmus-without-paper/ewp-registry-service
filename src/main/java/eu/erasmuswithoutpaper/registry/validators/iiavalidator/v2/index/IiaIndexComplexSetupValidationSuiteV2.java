@@ -165,7 +165,7 @@ public class IiaIndexComplexSetupValidationSuiteV2
         Request request = makeApiRequestWithPreferredSecurity(
             this,
             url, ApiEndpoint.Get, securityDescription,
-            Arrays.asList(
+            new ParameterList(
                 new Parameter("hei_id", heiId),
                 new Parameter("iia_id", iiaId)
             ));

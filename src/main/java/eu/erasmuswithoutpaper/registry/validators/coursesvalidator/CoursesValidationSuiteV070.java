@@ -76,7 +76,7 @@ class CoursesValidationSuiteV070
       protected Optional<Response> innerRun() throws Failure {
         String losId = CoursesValidationSuiteV070.this.currentState.selectedLosId;
         Request request = createRequestWithParameters(this, combination,
-            Arrays.asList(
+            new ParameterList(
                 new Parameter("hei_id", CoursesValidationSuiteV070.this.currentState.selectedHeiId),
                 new Parameter("los_id", losId)
             )
@@ -169,7 +169,7 @@ class CoursesValidationSuiteV070
     testParameters200(
         combination,
         "Ask for LOIs after one of the courses started, expect it is not included in results.",
-        Arrays.asList(
+        new ParameterList(
             new Parameter("hei_id", this.currentState.selectedHeiId),
             new Parameter("los_id", this.currentState.selectedLosId),
             new Parameter("lois_after", dayAfterStart)
@@ -183,7 +183,7 @@ class CoursesValidationSuiteV070
     testParameters200(
         combination,
         "Ask for LOIs before one of the courses ended, expect it is not included in results.",
-        Arrays.asList(
+        new ParameterList(
             new Parameter("hei_id", this.currentState.selectedHeiId),
             new Parameter("los_id", this.currentState.selectedLosId),
             new Parameter("lois_before", dayBeforeEnd)
@@ -197,7 +197,7 @@ class CoursesValidationSuiteV070
     testParametersError(
         combination,
         "Multiple lois_before parameters, expect 400.",
-        Arrays.asList(
+        new ParameterList(
             new Parameter("hei_id", this.currentState.selectedHeiId),
             new Parameter("los_id", this.currentState.selectedLosId),
             new Parameter("lois_before", "2010-01-01"),
@@ -209,7 +209,7 @@ class CoursesValidationSuiteV070
     testParametersError(
         combination,
         "Multiple lois_after parameters, expect 400.",
-        Arrays.asList(
+        new ParameterList(
             new Parameter("hei_id", this.currentState.selectedHeiId),
             new Parameter("los_id", this.currentState.selectedLosId),
             new Parameter("lois_after", "2010-01-01"),
@@ -221,7 +221,7 @@ class CoursesValidationSuiteV070
     testParametersError(
         combination,
         "lois_before parameter is not a date, expect 400.",
-        Arrays.asList(
+        new ParameterList(
             new Parameter("hei_id", this.currentState.selectedHeiId),
             new Parameter("los_id", this.currentState.selectedLosId),
             new Parameter("lois_before", "abcd-ef-gh")
@@ -232,7 +232,7 @@ class CoursesValidationSuiteV070
     testParametersError(
         combination,
         "lois_before has format dd-MM-yyyy, expect 400.",
-        Arrays.asList(
+        new ParameterList(
             new Parameter("hei_id", this.currentState.selectedHeiId),
             new Parameter("los_id", this.currentState.selectedLosId),
             new Parameter("lois_before", "31-12-2019")
@@ -243,7 +243,7 @@ class CoursesValidationSuiteV070
     testParametersError(
         combination,
         "lois_before consists of date and time, expect 400.",
-        Arrays.asList(
+        new ParameterList(
             new Parameter("hei_id", this.currentState.selectedHeiId),
             new Parameter("los_id", this.currentState.selectedLosId),
             new Parameter("lois_before", "2009-12-31 23:59:59")

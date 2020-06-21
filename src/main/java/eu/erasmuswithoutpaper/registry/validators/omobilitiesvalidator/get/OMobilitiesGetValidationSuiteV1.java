@@ -51,7 +51,7 @@ class OMobilitiesGetValidationSuiteV1
     testParameters200(
         combination,
         "Request for one of known omobility_ids, expect 200 OK.",
-        Arrays.asList(
+        new ParameterList(
             new Parameter("sending_hei_id",
                 OMobilitiesGetValidationSuiteV1.this.currentState.sendingHeiId),
             new Parameter(

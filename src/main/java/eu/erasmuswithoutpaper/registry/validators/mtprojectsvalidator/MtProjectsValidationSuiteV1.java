@@ -1,8 +1,5 @@
 package eu.erasmuswithoutpaper.registry.validators.mtprojectsvalidator;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
 import eu.erasmuswithoutpaper.registry.validators.AbstractValidationSuite;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.Combination;
@@ -47,7 +44,7 @@ class MtProjectsValidationSuiteV1 extends AbstractValidationSuite<MtProjectsSuit
     testParameters200(
         combination,
         "Request with known pic and call_year, expect 200 and non empty response.",
-        Arrays.asList(
+        new ParameterList(
             new Parameter("pic", this.currentState.selectedPic),
             new Parameter("call_year", this.currentState.selectedCallYear)
         ),
@@ -57,7 +54,7 @@ class MtProjectsValidationSuiteV1 extends AbstractValidationSuite<MtProjectsSuit
     testParameters200(
         combination,
         "Request with known pic, call_year and invalid parameter, expect 200.",
-        Arrays.asList(
+        new ParameterList(
             new Parameter("pic", this.currentState.selectedPic),
             new Parameter("call_year", this.currentState.selectedCallYear),
             new Parameter("pic_param", this.currentState.selectedPic)
@@ -68,7 +65,7 @@ class MtProjectsValidationSuiteV1 extends AbstractValidationSuite<MtProjectsSuit
     testParametersError(
         combination,
         "Request with correct pic twice, expect 400.",
-        Arrays.asList(
+        new ParameterList(
             new Parameter("pic", this.currentState.selectedPic),
             new Parameter("pic", this.currentState.selectedPic),
             new Parameter("call_year", this.currentState.selectedCallYear)
@@ -79,7 +76,7 @@ class MtProjectsValidationSuiteV1 extends AbstractValidationSuite<MtProjectsSuit
     testParametersError(
         combination,
         "Request with correct call_year twice, expect 400.",
-        Arrays.asList(
+        new ParameterList(
             new Parameter("pic", this.currentState.selectedPic),
             new Parameter("call_year", this.currentState.selectedCallYear),
             new Parameter("call_year", this.currentState.selectedCallYear)
@@ -90,14 +87,14 @@ class MtProjectsValidationSuiteV1 extends AbstractValidationSuite<MtProjectsSuit
     testParametersError(
         combination,
         "Request with single incorrect parameter, expect 400.",
-        Arrays.asList(new Parameter("pic_param", fakeId)),
+        new ParameterList(new Parameter("pic_param", fakeId)),
         400
     );
 
     testParametersError(
         combination,
         "Request without pic, expect 400.",
-        Arrays.asList(
+        new ParameterList(
             new Parameter("call_year", this.currentState.selectedCallYear)
         ),
         400
@@ -106,7 +103,7 @@ class MtProjectsValidationSuiteV1 extends AbstractValidationSuite<MtProjectsSuit
     testParametersError(
         combination,
         "Request without call_year, expect 400.",
-        Arrays.asList(
+        new ParameterList(
             new Parameter("pic", this.currentState.selectedPic)
         ),
         400
@@ -115,14 +112,14 @@ class MtProjectsValidationSuiteV1 extends AbstractValidationSuite<MtProjectsSuit
     testParametersError(
         combination,
         "Request without any parameter, expect 400.",
-        new ArrayList<>(),
+        new ParameterList(),
         400
     );
 
     testParametersError(
         combination,
         "Request with unknown pic parameter, expect 400.",
-        Arrays.asList(
+        new ParameterList(
             new Parameter("pic", fakeId),
             new Parameter("call_year", this.currentState.selectedCallYear)
         ),
@@ -132,7 +129,7 @@ class MtProjectsValidationSuiteV1 extends AbstractValidationSuite<MtProjectsSuit
     testParametersError(
         combination,
         "Request with invalid value of call_year - not a number, expect 400.",
-        Arrays.asList(
+        new ParameterList(
             new Parameter("pic", this.currentState.selectedPic),
             new Parameter("call_year", "not-a-number")
         ),
@@ -142,7 +139,7 @@ class MtProjectsValidationSuiteV1 extends AbstractValidationSuite<MtProjectsSuit
     testParameters200(
         combination,
         "Request with call_year equal zero, expect 200.",
-        Arrays.asList(
+        new ParameterList(
             new Parameter("pic", this.currentState.selectedPic),
             new Parameter("call_year", "0")
         ),
@@ -152,7 +149,7 @@ class MtProjectsValidationSuiteV1 extends AbstractValidationSuite<MtProjectsSuit
     testParameters200(
         combination,
         "Request with negative call_year, expect 200.",
-        Arrays.asList(
+        new ParameterList(
             new Parameter("pic", this.currentState.selectedPic),
             new Parameter("call_year", "-2019")
         ),
@@ -162,7 +159,7 @@ class MtProjectsValidationSuiteV1 extends AbstractValidationSuite<MtProjectsSuit
     testParametersError(
         combination,
         "Request with call_year being a date, expect 400.",
-        Arrays.asList(
+        new ParameterList(
             new Parameter("pic", this.currentState.selectedPic),
             new Parameter("call_year", "2004-02-12")
         ),
@@ -172,7 +169,7 @@ class MtProjectsValidationSuiteV1 extends AbstractValidationSuite<MtProjectsSuit
     testParametersError(
         combination,
         "Request with call_year being a date and time, expect 400.",
-        Arrays.asList(
+        new ParameterList(
             new Parameter("pic", this.currentState.selectedPic),
             new Parameter("call_year", "2004-02-12T15:19:21+01:00")
         ),
@@ -182,7 +179,7 @@ class MtProjectsValidationSuiteV1 extends AbstractValidationSuite<MtProjectsSuit
     testParameters200(
         combination,
         "Request with valid but strange value of call_year - less than 100, expect 200.",
-        Arrays.asList(
+        new ParameterList(
             new Parameter("pic", this.currentState.selectedPic),
             new Parameter("call_year", "50")
         ),
@@ -192,7 +189,7 @@ class MtProjectsValidationSuiteV1 extends AbstractValidationSuite<MtProjectsSuit
     testParameters200(
         combination,
         "Request with valid but strange value of call_year - more than 1e6, expect 200.",
-        Arrays.asList(
+        new ParameterList(
             new Parameter("pic", this.currentState.selectedPic),
             new Parameter("call_year", "1140080")
         ),

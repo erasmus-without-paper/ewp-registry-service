@@ -1,7 +1,5 @@
 package eu.erasmuswithoutpaper.registry.validators.coursesreplicationvalidator;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Optional;
 
 import eu.erasmuswithoutpaper.registry.internet.Response;
@@ -51,7 +49,7 @@ class CourseReplicationValidationSuiteV1
     testParameters200(
         combination,
         "Request with known hei_id, expect 200.",
-        Arrays.asList(
+        new ParameterList(
             new Parameter("hei_id", this.currentState.selectedHeiId)
         ),
         new CorrectResponseVerifier()
@@ -60,7 +58,7 @@ class CourseReplicationValidationSuiteV1
     testParameters200(
         combination,
         "Request with known hei_id and invalid parameter, expect 200.",
-        Arrays.asList(
+        new ParameterList(
             new Parameter("hei_id", this.currentState.selectedHeiId),
             new Parameter("param_hei_id", this.currentState.selectedHeiId)
         ),
@@ -71,7 +69,7 @@ class CourseReplicationValidationSuiteV1
     testParametersError(
         combination,
         "Request with correct hei_id twice, expect 400.",
-        Arrays.asList(
+        new ParameterList(
             new Parameter("hei_id", this.currentState.selectedHeiId),
             new Parameter("hei_id", this.currentState.selectedHeiId)
         ),
@@ -81,21 +79,21 @@ class CourseReplicationValidationSuiteV1
     testParametersError(
         combination,
         "Request with single incorrect parameter, expect 400.",
-        Arrays.asList(new Parameter("hei_id_param", fakeId)),
+        new ParameterList(new Parameter("hei_id_param", fakeId)),
         400
     );
 
     testParametersError(
         combination,
         "Request with unknown hei_id parameter, expect 400.",
-        Arrays.asList(new Parameter("hei_id", fakeId)),
+        new ParameterList(new Parameter("hei_id", fakeId)),
         400
     );
 
     testParametersError(
         combination,
         "Request without any parameter, expect 400.",
-        new ArrayList<>(),
+        new ParameterList(),
         400
     );
 
@@ -122,7 +120,7 @@ class CourseReplicationValidationSuiteV1
       testParameters200(
           combination,
           "Request with known hei_id and correct date, expect 200.",
-          Arrays.asList(
+          new ParameterList(
               new Parameter("hei_id", this.currentState.selectedHeiId),
               new Parameter("modified_since", "2004-02-12T15:19:21+01:00")
           ),
@@ -132,7 +130,7 @@ class CourseReplicationValidationSuiteV1
       testParametersError(
           combination,
           "Request with invalid value of modified_since, expect 400.",
-          Arrays.asList(
+          new ParameterList(
               new Parameter("hei_id", this.currentState.selectedHeiId),
               new Parameter("modified_since", fakeId)
           ),
@@ -142,7 +140,7 @@ class CourseReplicationValidationSuiteV1
       testParametersError(
           combination,
           "Request with modified_since being only a date, expect 400.",
-          Arrays.asList(
+          new ParameterList(
               new Parameter("hei_id", this.currentState.selectedHeiId),
               new Parameter("modified_since", "2004-02-12")
           ),
@@ -152,7 +150,7 @@ class CourseReplicationValidationSuiteV1
       testParametersError(
           combination,
           "Request with modified_since being a dateTime in wrong format, expect 400.",
-          Arrays.asList(
+          new ParameterList(
               new Parameter("hei_id", this.currentState.selectedHeiId),
               new Parameter("modified_since", "05/29/2015 05:50")
           ),

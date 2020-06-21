@@ -54,7 +54,7 @@ class IMobilitiesGetValidationSuiteV1
     testParameters200(
         combination,
         "Request for one of known omobility_ids, expect 200 OK.",
-        Arrays.asList(
+        new ParameterList(
             new Parameter("receiving_hei_id",
                 IMobilitiesGetValidationSuiteV1.this.currentState.receivingHeiId),
             new Parameter(
@@ -77,7 +77,7 @@ class IMobilitiesGetValidationSuiteV1
         combination,
         "Request one known receiving_hei_id and omobility_id as other EWP participant, expect 200"
             + " OK and empty response.",
-        Arrays.asList(
+        new ParameterList(
             new Parameter("receiving_hei_id", this.currentState.receivingHeiId),
             new Parameter("omobility_id", this.currentState.omobilityId)
         ),

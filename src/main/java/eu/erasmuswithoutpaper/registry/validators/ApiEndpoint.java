@@ -7,6 +7,7 @@ public enum ApiEndpoint {
   NoEndpoint(""),
   Get("get"),
   Index("index"),
+  Update("update"),
   ;
 
   private static Map<String, ApiEndpoint> namesToEndpoints = new HashMap<>();

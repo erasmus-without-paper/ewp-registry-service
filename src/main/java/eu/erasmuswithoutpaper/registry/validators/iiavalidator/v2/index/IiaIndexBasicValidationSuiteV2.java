@@ -46,7 +46,7 @@ public class IiaIndexBasicValidationSuiteV2 extends AbstractValidationSuite<IiaS
     testParameters200(
         combination,
         "Request one known hei_id, expect 200 OK.",
-        Arrays.asList(
+        new ParameterList(
             new Parameter("hei_id", this.currentState.selectedHeiId)
         ),
         iiaIdVerifierFactory.expectCorrectResponse()
@@ -55,7 +55,7 @@ public class IiaIndexBasicValidationSuiteV2 extends AbstractValidationSuite<IiaS
     testParametersError(
         combination,
         "Request with known hei_id and unknown hei_id, expect 400.",
-        Arrays.asList(
+        new ParameterList(
             new Parameter("hei_id", this.currentState.selectedHeiId),
             new Parameter("hei_id", fakeId)
         ),
@@ -65,7 +65,7 @@ public class IiaIndexBasicValidationSuiteV2 extends AbstractValidationSuite<IiaS
     testParametersError(
         combination,
         "Request with unknown hei_id, expect 400.",
-        Arrays.asList(
+        new ParameterList(
             new Parameter("hei_id", fakeId)
         ),
         400
@@ -76,7 +76,7 @@ public class IiaIndexBasicValidationSuiteV2 extends AbstractValidationSuite<IiaS
         combination,
         "Request with known hei_id and receiving_academic_year_id in southern hemisphere "
             + "format, expect 200 OK.",
-        Arrays.asList(
+        new ParameterList(
             new Parameter("hei_id", this.currentState.selectedHeiId),
             new Parameter("receiving_academic_year_id", "2010/2010")
         ),
@@ -88,7 +88,7 @@ public class IiaIndexBasicValidationSuiteV2 extends AbstractValidationSuite<IiaS
         combination,
         "Request with known hei_id and receiving_academic_year_id in northern hemisphere "
             + "format, expect 200 OK.",
-        Arrays.asList(
+        new ParameterList(
             new Parameter("hei_id", this.currentState.selectedHeiId),
             new Parameter("receiving_academic_year_id", "2010/2011")
         ),
@@ -98,7 +98,7 @@ public class IiaIndexBasicValidationSuiteV2 extends AbstractValidationSuite<IiaS
     testParametersError(
         combination,
         "Request with receiving_academic_year_id in incorrect format, expect 400.",
-        Arrays.asList(
+        new ParameterList(
             new Parameter("hei_id", this.currentState.selectedHeiId),
             new Parameter("receiving_academic_year_id", "test/test")
         ),
@@ -108,7 +108,7 @@ public class IiaIndexBasicValidationSuiteV2 extends AbstractValidationSuite<IiaS
     testParametersError(
         combination,
         "Request with known hei_id equal to partner_hei_id, expect 400.",
-        Arrays.asList(
+        new ParameterList(
             new Parameter("hei_id", this.currentState.selectedHeiId),
             new Parameter("partner_hei_id", this.currentState.selectedHeiId)
         ),
@@ -118,7 +118,7 @@ public class IiaIndexBasicValidationSuiteV2 extends AbstractValidationSuite<IiaS
     testParameters200(
         combination,
         "Request with known hei_id and unknown partner_hei_id, expect 200 OK and empty list.",
-        Arrays.asList(
+        new ParameterList(
             new Parameter("hei_id", this.currentState.selectedHeiId),
             new Parameter("partner_hei_id", fakeId)
         ),
@@ -128,7 +128,7 @@ public class IiaIndexBasicValidationSuiteV2 extends AbstractValidationSuite<IiaS
     testParametersError(
         combination,
         "Request with multiple modified_since parameters, expect 400.",
-        Arrays.asList(
+        new ParameterList(
             new Parameter("hei_id", this.currentState.selectedHeiId),
             new Parameter("modified_since", "2004-02-12T15:19:21+01:00"),
             new Parameter("modified_since", "2004-02-13T15:19:21+01:00")

@@ -50,7 +50,7 @@ public class OMobilitiesIndexComplexValidationSuiteV1
         combination,
         "Request known sending_hei_id, expect 200 OK and "
             + "specific omobility in response.",
-        Arrays.asList(
+        new ParameterList(
             new Parameter("sending_hei_id", this.currentState.sendingHeiId)
         ),
         omobilityIdVerifierFactory.expectResponseToContain(Arrays.asList(

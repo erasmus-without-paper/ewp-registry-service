@@ -123,6 +123,17 @@ public class TestValidationReportAsset extends AbstractAssert<TestValidationRepo
     return this;
   }
 
+  public TestValidationReportAsset containsSkipped(String partOfExpectedName) {
+    isNotNull();
+    if (!actual.containsSkipped(partOfExpectedName)) {
+      failWithMessage(
+          "Report doesn't contain an SKIPPED. Expected to contain SKIPPED with"
+              + " name: <%s>, actual: <%s>",
+          partOfExpectedName, actual.toString());
+    }
+    return this;
+  }
+
   public TestValidationReportAsset containsText(String partOfExpectedName) {
     isNotNull();
     if (!actual.containsText(partOfExpectedName)) {

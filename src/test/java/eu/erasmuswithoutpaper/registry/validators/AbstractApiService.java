@@ -3,13 +3,16 @@ package eu.erasmuswithoutpaper.registry.validators;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import javax.xml.bind.DatatypeConverter;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 
 import eu.erasmuswithoutpaper.registry.internet.FakeInternetService;
 import eu.erasmuswithoutpaper.registry.internet.Request;
@@ -22,6 +25,7 @@ import eu.erasmuswithoutpaper.registry.validators.types.MultilineString;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.w3c.dom.Element;
 
 public abstract class AbstractApiService implements FakeInternetService {
   protected final RegistryClient registryClient;
@@ -56,6 +60,13 @@ public abstract class AbstractApiService implements FakeInternetService {
       e.printStackTrace();
       return null;
     }
+  }
+
+  protected <T> T unmarshallObject(byte[] data) throws JAXBException {
+    JAXBContext jc = JAXBContext.newInstance(getJaxbContextPackagePath());
+    Unmarshaller unmarshaller = jc.createUnmarshaller();
+    Element xml = AbstractValidationSuite.makeXmlFromBytes(data, true);
+    return (T) unmarshaller.unmarshal(xml);
   }
 
   protected Response marshallResponse(int status, Object response) {
@@ -110,16 +121,25 @@ public abstract class AbstractApiService implements FakeInternetService {
   }
 
   protected void checkRequestMethod(Request request) throws ErrorResponseException {
-    if (!(request.getMethod().equals("GET") || request.getMethod().equals("POST"))) {
+    checkRequestMethod(request, Arrays.asList("GET", "POST"));
+  }
+
+  protected void checkRequestMethod(Request request, List<String> allowedMethods) throws ErrorResponseException {
+    if (!allowedMethods.contains(request.getMethod())) {
       throw new ErrorResponseException(
-          createErrorResponse(request, 405, "We expect GETs and POSTs only")
+          createErrorResponse(request, 405, "Method not allowed.")
       );
     }
   }
 
   protected void checkParamsEncoding(Request request) throws ErrorResponseException {
+    checkParamsEncoding(request, "application/x-www-form-urlencoded");
+  }
+
+  protected void checkParamsEncoding(Request request,
+      String expectedContentType) throws ErrorResponseException {
     if (request.getMethod().equals("POST")
-        && !request.getHeader("content-type").equals("application/x-www-form-urlencoded")) {
+        && !request.getHeader("content-type").equals(expectedContentType)) {
       throw new ErrorResponseException(
           createErrorResponse(request, 415, "Unsupported content-type")
       );
@@ -133,6 +153,11 @@ public abstract class AbstractApiService implements FakeInternetService {
     } catch (Http4xx e) {
       throw new ErrorResponseException(e.generateEwpErrorResponse());
     }
+  }
+
+  protected boolean checkReceivingAcademicYearId(String receivingAcademicYear) {
+    String receivingAcademicYearPattern = "[0-9]{4}/[0-9]{4}";
+    return Pattern.matches(receivingAcademicYearPattern, receivingAcademicYear);
   }
 
 }

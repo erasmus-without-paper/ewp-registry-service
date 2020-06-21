@@ -95,6 +95,10 @@ public class TestValidationReport {
     return containsError(ANY_MESSAGE);
   }
 
+  public boolean containsSkipped(String partOfExpectedName) {
+    return contains(ValidationStepWithStatus.Status.SKIPPED, partOfExpectedName);
+  }
+
   public boolean containsText(String partOfExpectedName) {
     return steps.stream().anyMatch(step -> step.getMessage().contains(partOfExpectedName));
   }

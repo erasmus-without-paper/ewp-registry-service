@@ -5,6 +5,7 @@ import static org.joox.JOOX.$;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.net.SocketTimeoutException;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
@@ -23,6 +24,12 @@ import java.util.stream.Stream;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
@@ -259,18 +266,24 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
 
   protected Request createValidRequestForCombination(InlineValidationStep step,
       Combination combination) {
-    return this.createValidRequestForCombination(step, combination, (byte[]) null);
+    return this.createValidRequestForCombination(step, combination,
+        ContentType.ApplicationWwwFormUrlencoded);
   }
 
   protected Request createValidRequestForCombination(InlineValidationStep step,
-      Combination combination, byte[] body) {
+      Combination combination, ContentType postContentType) {
+    return this.createValidRequestForCombination(step, combination, (byte[]) null, postContentType);
+  }
+
+  protected Request createValidRequestForCombination(InlineValidationStep step,
+      Combination combination, byte[] body, ContentType postContentType) {
 
     Request request = new Request(combination.getHttpMethod(), combination.getUrl());
     if (body != null) {
       request.setBodyAndContentLength(body);
     }
     if (combination.getHttpMethod().equals("POST") || combination.getHttpMethod().equals("PUT")) {
-      request.putHeader("Content-Type", "application/x-www-form-urlencoded");
+      request.putHeader("Content-Type", postContentType.getContentTypeString());
     }
     step.addRequestSnapshot(request);
 
@@ -316,16 +329,23 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
   }
 
   protected Request createValidRequestForCombination(InlineValidationStep step,
-      Combination combination, String body) {
+      Combination combination, String body, ContentType postContentType) {
     if (body == null) {
-      return this.createValidRequestForCombination(step, combination);
+      return this.createValidRequestForCombination(step, combination, postContentType);
     } else {
       return this.createValidRequestForCombination(
           step,
           combination,
-          body.getBytes(StandardCharsets.UTF_8)
+          body.getBytes(StandardCharsets.UTF_8),
+          postContentType
       );
     }
+  }
+
+  protected Request createValidRequestForCombination(InlineValidationStep step,
+      Combination combination, String body) {
+    return createValidRequestForCombination(step, combination, body,
+        ContentType.ApplicationWwwFormUrlencoded);
   }
 
   /**
@@ -633,11 +653,11 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
     return sb.toString();
   }
 
-  protected Element makeXmlFromBytes(byte[] bytes) {
+  protected static Element makeXmlFromBytes(byte[] bytes) {
     return makeXmlFromBytes(bytes, false);
   }
 
-  protected Element makeXmlFromBytes(byte[] bytes, boolean namespaceAware) {
+  protected static Element makeXmlFromBytes(byte[] bytes, boolean namespaceAware) {
     try {
       final InputStream stream = new ByteArrayInputStream(bytes);
       DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
@@ -726,31 +746,16 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
   }
 
   protected Request createRequestWithParameters(InlineValidationStep step, Combination combination,
-      List<Parameter> parameters) {
-    URIBuilder builder;
-    try {
-      if (combination.getHttpMethod().equals("POST")) {
-        builder = new URIBuilder();
-      } else {
-        builder = new URIBuilder(combination.getUrl());
-      }
-    } catch (URISyntaxException e) {
-      throw new RuntimeException("Invalid URI scheme, shouldn't happen.");
-    }
-
-    for (Parameter p : parameters) {
-      builder.addParameter(p.name, p.value);
-    }
-
-    String params = builder.toString();
-
+      Parameters parameters) {
     if (combination.getHttpMethod().equals("POST")) {
-      if (!params.isEmpty()) {
-        params = params.substring(1); //remove leading ?
-      }
-      return this.createValidRequestForCombination(step, combination, params);
+      return this.createValidRequestForCombination(
+          step, combination, parameters.getPostBody(),
+          parameters.getPostContentType()
+        );
     } else if (combination.getHttpMethod().equals("GET")) {
-      return this.createValidRequestForCombination(step, combination.withChangedUrl(params));
+      return this.createValidRequestForCombination(
+          step, combination.withChangedUrl(parameters.getGetUrl(combination.getUrl()))
+      );
     }
     throw new RuntimeException("Should never reach here");
   }
@@ -822,22 +827,22 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
     verifier.performVerificaion(this, root, response, failureStatus);
   }
 
-  protected void testParameters200(Combination combination, String name, List<Parameter> params,
+  protected void testParameters200(Combination combination, String name, Parameters params,
       Verifier verifier) throws SuiteBroken {
     testParameters200(combination, name, params, verifier, Status.FAILURE, false, null);
   }
 
-  protected void testParameters200(Combination combination, String name, List<Parameter> params,
+  protected void testParameters200(Combination combination, String name, Parameters params,
       Verifier verifier, boolean shouldSkip, String skipReason) throws SuiteBroken {
     testParameters200(combination, name, params, verifier, Status.FAILURE, shouldSkip, skipReason);
   }
 
-  protected void testParameters200(Combination combination, String name, List<Parameter> params,
+  protected void testParameters200(Combination combination, String name, Parameters params,
       Verifier verifier, Status failureStatus) throws SuiteBroken {
     testParameters200(combination, name, params, verifier, failureStatus, false, null);
   }
 
-  protected void testParameters200(Combination combination, String name, List<Parameter> params,
+  protected void testParameters200(Combination combination, String name, Parameters params,
       Verifier verifier, Status failureStatus,
       boolean shouldSkip, String skipReason) throws SuiteBroken {
     this.addAndRun(false, new InlineValidationStep() {
@@ -889,37 +894,37 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
     });
   }
 
-  protected void testParametersError(Combination combination, String name, List<Parameter> params,
+  protected void testParametersError(Combination combination, String name, Parameters params,
       int error) throws SuiteBroken {
     testParametersError(combination, name, params, Arrays.asList(error));
   }
 
-  protected void testParametersError(Combination combination, String name, List<Parameter> params,
+  protected void testParametersError(Combination combination, String name, Parameters params,
       int error, boolean shouldSkip, String skipReason) throws SuiteBroken {
     testParametersError(combination, name, params, Arrays.asList(error), shouldSkip, skipReason);
   }
 
-  protected void testParametersError(Combination combination, String name, List<Parameter> params,
+  protected void testParametersError(Combination combination, String name, Parameters params,
       int error, Status failureStatus) throws SuiteBroken {
     testParametersError(combination, name, params, Arrays.asList(error), failureStatus);
   }
 
-  protected void testParametersError(Combination combination, String name, List<Parameter> params,
+  protected void testParametersError(Combination combination, String name, Parameters params,
       List<Integer> errors, boolean shouldSkip, String skipReason) throws SuiteBroken {
     testParametersError(combination, name, params, errors, Status.FAILURE, shouldSkip, skipReason);
   }
 
-  protected void testParametersError(Combination combination, String name, List<Parameter> params,
+  protected void testParametersError(Combination combination, String name, Parameters params,
       List<Integer> errors) throws SuiteBroken {
     testParametersError(combination, name, params, errors, Status.FAILURE);
   }
 
-  protected void testParametersError(Combination combination, String name, List<Parameter> params,
+  protected void testParametersError(Combination combination, String name, Parameters params,
       List<Integer> errors, Status failureStatus) throws SuiteBroken {
     testParametersError(combination, name, params, errors, failureStatus, false, null);
   }
 
-  protected void testParametersError(Combination combination, String name, List<Parameter> params,
+  protected void testParametersError(Combination combination, String name, Parameters params,
       List<Integer> errors, Status failureStatus,
       boolean shouldSkip, String skipReason) throws SuiteBroken {
     this.addAndRun(false, new InlineValidationStep() {
@@ -948,7 +953,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
   }
 
   protected void testParameters200AsOtherEwpParticipant(Combination combination, String name,
-      List<Parameter> parameters, Verifier verifier,
+      Parameters parameters, Verifier verifier,
       ValidationStepWithStatus.Status failureStatus) throws SuiteBroken {
     testParameters200AsOtherEwpParticipant(
         combination, name, parameters, verifier, failureStatus, false, null
@@ -956,7 +961,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
   }
 
   protected void testParameters200AsOtherEwpParticipant(Combination combination, String name,
-      List<Parameter> parameters, Verifier verifier,
+      Parameters parameters, Verifier verifier,
       ValidationStepWithStatus.Status failureStatus,
       boolean shouldSkip, String skipReason) throws SuiteBroken {
     final ValidatorKeyStore currentValidatorKeyStore = this.validatorKeyStore;
@@ -979,6 +984,39 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
           name,
           parameters,
           verifier,
+          failureStatus,
+          realShouldSkip,
+          realSkipReason
+      );
+    } finally {
+      this.setValidatorKeyStore(currentValidatorKeyStore);
+    }
+  }
+
+  protected void testParametersErrorAsOtherEwpParticipant(Combination combination, String name,
+      Parameters parameters, int error,
+      ValidationStepWithStatus.Status failureStatus,
+      boolean shouldSkip, String skipReason) throws SuiteBroken {
+    final ValidatorKeyStore currentValidatorKeyStore = this.validatorKeyStore;
+    final ValidatorKeyStore otherValidationKeyStore =
+        this.validatorKeyStoreSet.getSecondaryKeyStore();
+
+    String realSkipReason =
+        "Keys for another EWP participant not provided. Run the Validator locally and provide "
+            + "secondary keys.";
+    boolean realShouldSkip = otherValidationKeyStore == null;
+    if (shouldSkip) {
+      realShouldSkip = shouldSkip;
+      realSkipReason = skipReason;
+    }
+
+    try {
+      this.setValidatorKeyStore(otherValidationKeyStore);
+      testParametersError(
+          combination,
+          name,
+          parameters,
+          Collections.singletonList(error),
           failureStatus,
           realShouldSkip,
           realSkipReason
@@ -1058,7 +1096,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
       testParameters200(
           combination,
           "Request for one of known " + secondParameterNamePrefix + "_codes, expect 200 OK.",
-          Arrays.asList(
+          new ParameterList(
               new Parameter(heiParameterName, heiId),
               new Parameter(secondParameterNamePrefix + "_code", code)
           ),
@@ -1071,7 +1109,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
     testParameters200(
         combination,
         "Request one unknown " + secondParameterNamePrefix + "_id, expect 200 and empty response.",
-        Arrays.asList(
+        new ParameterList(
             new Parameter(heiParameterName, heiId),
             new Parameter(secondParameterNamePrefix + "_id", fakeId)
         ),
@@ -1082,7 +1120,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
         combination,
         "Request one known and one unknown " + secondParameterNamePrefix
             + "_id, expect 200 and only one " + secondParameterNamePrefix + " in response.",
-        Arrays.asList(
+        new ParameterList(
             new Parameter(heiParameterName, heiId),
             new Parameter(secondParameterNamePrefix + "_id", id),
             new Parameter(secondParameterNamePrefix + "_id", fakeId)
@@ -1098,7 +1136,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
           combination,
           "Request one known and one unknown " + secondParameterNamePrefix
               + "_code, expect 200 and only one " + secondParameterNamePrefix + " in response.",
-          Arrays.asList(
+          new ParameterList(
               new Parameter(heiParameterName, heiId),
               new Parameter(secondParameterNamePrefix + "_code", code),
               new Parameter(secondParameterNamePrefix + "_code", fakeId)
@@ -1113,14 +1151,14 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
         combination,
         "Request without " + heiParameterName + " and "
             + secondParameterNamePrefix + "_ids, expect 400.",
-        new ArrayList<>(),
+        new ParameterList(),
         400
     );
 
     testParametersError(
         combination,
         "Request without " + heiParameterName + ", expect 400.",
-        Arrays.asList(new Parameter(secondParameterNamePrefix + "_id", id)),
+        new ParameterList(new Parameter(secondParameterNamePrefix + "_id", id)),
         400
     );
 
@@ -1130,7 +1168,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
             secondParameterNamePrefix + "_ids",
             skipCodeTests ? "" : (" and " + secondParameterNamePrefix + "_codes")
         ),
-        Arrays.asList(new Parameter(heiParameterName, heiId)),
+        new ParameterList(new Parameter(heiParameterName, heiId)),
         400
     );
 
@@ -1139,7 +1177,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
           combination,
           "Request for one of known " + secondParameterNamePrefix + "_ids with unknown "
               + heiParameterName + ", expect 400.",
-          Arrays.asList(
+          new ParameterList(
               new Parameter(heiParameterName, fakeId),
               new Parameter(secondParameterNamePrefix + "_id", id)
           ),
@@ -1150,7 +1188,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
           combination,
           "Request for one of known " + secondParameterNamePrefix + "_ids with unknown "
               + heiParameterName + ", expect 200 and empty response.",
-          Arrays.asList(
+          new ParameterList(
               new Parameter(heiParameterName, fakeId),
               new Parameter(secondParameterNamePrefix + "_id", id)
           ),
@@ -1163,7 +1201,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
           combination,
           "Request for one of known " + secondParameterNamePrefix + "_codes with unknown "
               + heiParameterName + ", expect 400.",
-          Arrays.asList(
+          new ParameterList(
               new Parameter(heiParameterName, fakeId),
               new Parameter(secondParameterNamePrefix + "_code", code)
           ),
@@ -1177,10 +1215,12 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
         combination,
         "Request more than <max-" + secondParameterNamePrefix + "-ids> known "
             + secondParameterNamePrefix + "_ids, expect 400.",
-        concatArrays(
-            Arrays.asList(new Parameter(heiParameterName, heiId)),
-            Collections.nCopies(
-                maxIds + 1, new Parameter(secondParameterNamePrefix + "_id", id)
+        new ParameterList(
+            concatArrays(
+              Arrays.asList(new Parameter(heiParameterName, heiId)),
+              Collections.nCopies(
+                  maxIds + 1, new Parameter(secondParameterNamePrefix + "_id", id)
+              )
             )
         ),
         400
@@ -1191,12 +1231,14 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
           combination,
           "Request more than <max-" + secondParameterNamePrefix + "-codes> known "
               + secondParameterNamePrefix + "_codes, expect 400.",
-          concatArrays(
-              Arrays.asList(new Parameter(heiParameterName, heiId)),
-              Collections.nCopies(
-                  maxCodes + 1,
-                  new Parameter(secondParameterNamePrefix + "_code", code)
-              )
+          new ParameterList(
+            concatArrays(
+                Arrays.asList(new Parameter(heiParameterName, heiId)),
+                Collections.nCopies(
+                    maxCodes + 1,
+                    new Parameter(secondParameterNamePrefix + "_code", code)
+                )
+            )
           ),
           400,
           code == null,
@@ -1208,10 +1250,12 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
         combination,
         "Request more than <max-" + secondParameterNamePrefix + "-ids> unknown "
             + secondParameterNamePrefix + "_ids, expect 400.",
-        concatArrays(
-            Arrays.asList(new Parameter(heiParameterName, heiId)),
-            Collections.nCopies(
-                maxIds + 1, new Parameter(secondParameterNamePrefix + "_id", fakeId)
+        new ParameterList(
+            concatArrays(
+              Arrays.asList(new Parameter(heiParameterName, heiId)),
+              Collections.nCopies(
+                  maxIds + 1, new Parameter(secondParameterNamePrefix + "_id", fakeId)
+              )
             )
         ),
         400
@@ -1221,10 +1265,12 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
         combination,
         "Request more than <max-" + secondParameterNamePrefix + "-codes> unknown "
             + secondParameterNamePrefix + "_codes, expect 400.",
-        concatArrays(
-            Arrays.asList(new Parameter(heiParameterName, heiId)),
-            Collections.nCopies(
-                maxCodes + 1, new Parameter(secondParameterNamePrefix + "_code", fakeId)
+        new ParameterList(
+            concatArrays(
+                Arrays.asList(new Parameter(heiParameterName, heiId)),
+                Collections.nCopies(
+                    maxCodes + 1, new Parameter(secondParameterNamePrefix + "_code", fakeId)
+                )
             )
         ),
         400
@@ -1236,9 +1282,12 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
             + "<max-" + secondParameterNamePrefix + "-ids> "
             + "known " + secondParameterNamePrefix + "_ids, "
             + "expect 200 and non-empty response.",
-        concatArrays(
-            Arrays.asList(new Parameter(heiParameterName, heiId)),
-            Collections.nCopies(maxIds, new Parameter(secondParameterNamePrefix + "_id", id))
+
+        new ParameterList(
+            concatArrays(
+                Arrays.asList(new Parameter(heiParameterName, heiId)),
+                Collections.nCopies(maxIds, new Parameter(secondParameterNamePrefix + "_id", id))
+            )
         ),
         verifierFactory.expectResponseToContain(Collections.singletonList(id))
     );
@@ -1250,11 +1299,13 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
               + "<max-" + secondParameterNamePrefix + "-codes> "
               + "known " + secondParameterNamePrefix + "_codes, "
               + "expect 200 and non-empty response.",
-          concatArrays(
-              Arrays.asList(new Parameter(heiParameterName, heiId)),
-              Collections.nCopies(
-                  maxCodes, new Parameter(secondParameterNamePrefix + "_code", code)
-              )
+          new ParameterList(
+            concatArrays(
+                Arrays.asList(new Parameter(heiParameterName, heiId)),
+                Collections.nCopies(
+                    maxCodes, new Parameter(secondParameterNamePrefix + "_code", code)
+                )
+            )
           ),
           verifierFactory.expectResponseToContain(Collections.singletonList(id)),
           code == null,
@@ -1265,7 +1316,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
     testParametersError(
         combination,
         "Request with single incorrect parameter, expect 400.",
-        Arrays.asList(new Parameter(secondParameterNamePrefix + "_id_param", id)),
+        new ParameterList(new Parameter(secondParameterNamePrefix + "_id_param", id)),
         400
     );
 
@@ -1274,7 +1325,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
           combination,
           "Request with correct " + secondParameterNamePrefix + "_id and correct "
               + secondParameterNamePrefix + "_code, expect 400.",
-          Arrays.asList(
+          new ParameterList(
               new Parameter(heiParameterName, heiId),
               new Parameter(secondParameterNamePrefix + "_id", id),
               new Parameter(secondParameterNamePrefix + "_code", code)
@@ -1288,7 +1339,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
     testParametersError(
         combination,
         "Request with correct " + heiParameterName + " twice, expect 400.",
-        Arrays.asList(
+        new ParameterList(
             new Parameter(heiParameterName, heiId),
             new Parameter(heiParameterName, heiId),
             new Parameter(secondParameterNamePrefix + "_id", id)
@@ -1302,7 +1353,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
             "Request with correct %s and incorrect %s, expect 400.",
             heiParameterName, heiParameterName
         ),
-        Arrays.asList(
+        new ParameterList(
             new Parameter(heiParameterName, heiId),
             new Parameter(heiParameterName, fakeId),
             new Parameter(secondParameterNamePrefix + "_id", id)
@@ -1353,7 +1404,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
     testParametersError(
         combination,
         "Request with multiple modified_since parameters, expect 400.",
-        Arrays.asList(
+        new ParameterList(
             new Parameter(heiIdParameterName, knownHeiId),
             new Parameter("modified_since", "2019-02-12T15:19:21+01:00"),
             new Parameter("modified_since", "2019-02-12T15:19:21+01:00")
@@ -1372,7 +1423,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
                 + "response",
             heiIdParameterName
         ),
-        Arrays.asList(
+        new ParameterList(
             new Parameter(heiIdParameterName, knownHeiId),
             new Parameter("modified_since", yearInFuture + "-02-12T15:19:21+01:00")
         ),
@@ -1389,7 +1440,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
                 + "non-empty response.",
             heiIdParameterName
         ),
-        Arrays.asList(
+        new ParameterList(
             new Parameter(heiIdParameterName, knownHeiId),
             new Parameter("modified_since", "2000-02-12T15:19:21+01:00")
         ),
@@ -1404,7 +1455,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
             "Request with known %s and correct date, expect 200.",
             heiIdParameterName
         ),
-        Arrays.asList(
+        new ParameterList(
             new Parameter(heiIdParameterName, knownHeiId),
             new Parameter("modified_since", "2004-02-12T15:19:21+01:00")
         ),
@@ -1414,7 +1465,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
     testParametersError(
         combination,
         "Request with invalid value of modified_since, expect 400.",
-        Arrays.asList(
+        new ParameterList(
             new Parameter(heiIdParameterName, knownHeiId),
             new Parameter("modified_since", fakeId)
         ),
@@ -1424,7 +1475,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
     testParametersError(
         combination,
         "Request with modified_since being only a date, expect 400.",
-        Arrays.asList(
+        new ParameterList(
             new Parameter(heiIdParameterName, knownHeiId),
             new Parameter("modified_since", "2004-02-12")
         ),
@@ -1434,7 +1485,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
     testParametersError(
         combination,
         "Request with modified_since being a dateTime in wrong format, expect 400.",
-        Arrays.asList(
+        new ParameterList(
             new Parameter(heiIdParameterName, knownHeiId),
             new Parameter("modified_since", "05/29/2015 05:50")
         ),
@@ -1462,7 +1513,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
                 + "expect 200 OK and non-empty response.",
             heiIdParameterName
         ),
-        Arrays.asList(
+        new ParameterList(
             new Parameter(heiIdParameterName, knownHeiId),
             new Parameter("modified_since", "2000-02-12T15:19:21+01:00")
         ),
@@ -1483,7 +1534,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
         combination,
         "Request with known hei_id and receiving_academic_year_id in southern hemisphere "
             + "format, expect 200 OK.",
-        Arrays.asList(
+        new ParameterList(
             new Parameter(heiIdParameterName, knownHeiId),
             new Parameter("receiving_academic_year_id", "2010/2010")
         ),
@@ -1498,7 +1549,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
                 + "format, expect 200 OK.",
             heiIdParameterName
         ),
-        Arrays.asList(
+        new ParameterList(
             new Parameter(heiIdParameterName, knownHeiId),
             new Parameter("receiving_academic_year_id", "2010/2011")
         ),
@@ -1508,7 +1559,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
     testParametersError(
         combination,
         "Request with receiving_academic_year_id in incorrect format, expect 400.",
-        Arrays.asList(
+        new ParameterList(
             new Parameter(heiIdParameterName, knownHeiId),
             new Parameter("receiving_academic_year_id", "test/test")
         ),
@@ -1526,7 +1577,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
                 + "expect 200 OK and empty response.",
             heiIdParameterName
         ),
-        Arrays.asList(
+        new ParameterList(
             new Parameter(heiIdParameterName, knownHeiId),
             new Parameter("receiving_academic_year_id", unknownAcademicYearString)
         ),
@@ -1548,7 +1599,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
                 + "expect 200 OK and non-empty response.",
             heiIdParameterName
         ),
-        Arrays.asList(
+        new ParameterList(
             new Parameter(heiIdParameterName, knownHeiId),
             new Parameter("receiving_academic_year_id", knownAcademicYear)
         ),
@@ -1574,7 +1625,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
             "Request with known %s twice, expect 400.",
             respondingHeiIdParameterName
         ),
-        Arrays.asList(
+        new ParameterList(
             new Parameter(respondingHeiIdParameterName, knownRespondingHeiIdParameter),
             new Parameter(respondingHeiIdParameterName, knownRespondingHeiIdParameter)
         ),
@@ -1587,7 +1638,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
             "Request without %s and known %s, expect 400.",
             respondingHeiIdParameterName, requestingHeiIdParameterName
         ),
-        Arrays.asList(
+        new ParameterList(
             new Parameter(requestingHeiIdParameterName, knownRequestingHeiIdParameter)
         ),
         400
@@ -1599,7 +1650,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
             "Request with known %s and unknown %s, expect 400.",
             respondingHeiIdParameterName, respondingHeiIdParameterName
         ),
-        Arrays.asList(
+        new ParameterList(
             new Parameter(respondingHeiIdParameterName, knownRespondingHeiIdParameter),
             new Parameter(respondingHeiIdParameterName, fakeId)
         ),
@@ -1609,7 +1660,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
     testParametersError(
         combination,
         "Request without parameters, expect 400.",
-        Collections.emptyList(),
+        new ParameterList(),
         400
     );
 
@@ -1619,7 +1670,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
             "Request with known %s and unknown %s, expect 200 and empty response.",
             respondingHeiIdParameterName, requestingHeiIdParameterName
         ),
-        Arrays.asList(
+        new ParameterList(
             new Parameter(respondingHeiIdParameterName, knownRespondingHeiIdParameter),
             new Parameter(requestingHeiIdParameterName, fakeId)
         ),
@@ -1634,7 +1685,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
             "Request with known %s and without %s, expect 200 and non-empty response.",
             respondingHeiIdParameterName, requestingHeiIdParameterName
         ),
-        Arrays.asList(
+        new ParameterList(
             new Parameter(respondingHeiIdParameterName, knownRespondingHeiIdParameter)
         ),
         verifierFactory.expectResponseToBeNotEmpty(),
@@ -1649,7 +1700,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
               "Request with unknown %s, expect 400.",
               respondingHeiIdParameterName
           ),
-          Arrays.asList(
+          new ParameterList(
               new Parameter(respondingHeiIdParameterName, fakeId)
           ),
           400,
@@ -1663,7 +1714,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
               "Request with unknown %s, expect 200 and empty response.",
               respondingHeiIdParameterName
           ),
-          Arrays.asList(
+          new ParameterList(
               new Parameter(respondingHeiIdParameterName, fakeId)
           ),
           verifierFactory.expectResponseToBeEmpty(),
@@ -1678,7 +1729,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
             "Request with known %s and known and unknown %s, expect 200 and non-empty response.",
             respondingHeiIdParameterName, requestingHeiIdParameterName
         ),
-        Arrays.asList(
+        new ParameterList(
             new Parameter(respondingHeiIdParameterName, knownRespondingHeiIdParameter),
             new Parameter(requestingHeiIdParameterName, knownRequestingHeiIdParameter),
             new Parameter(requestingHeiIdParameterName, fakeId)
@@ -1694,7 +1745,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
             "Request with known %s and two unknown %s, expect 200 OK and empty response.",
             respondingHeiIdParameterName, requestingHeiIdParameterName
         ),
-        Arrays.asList(
+        new ParameterList(
             new Parameter(respondingHeiIdParameterName, knownRespondingHeiIdParameter),
             new Parameter(requestingHeiIdParameterName, fakeId),
             new Parameter(requestingHeiIdParameterName, fakeId)
@@ -1809,6 +1860,97 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
     public Parameter(String name, String value) {
       this.name = name;
       this.value = value;
+    }
+  }
+
+  protected interface Parameters {
+    String getPostBody();
+
+    String getGetUrl(String url);
+
+    ContentType getPostContentType();
+  }
+
+  protected static class ParameterList implements Parameters {
+    private final List<Parameter> parameters;
+
+    public ParameterList(List<Parameter> parameters) {
+      this.parameters = parameters;
+    }
+
+    public ParameterList(Parameter... parameters) {
+      this.parameters = Arrays.asList(parameters);
+    }
+
+    @Override
+    public String getPostBody() {
+      URIBuilder builder = new URIBuilder();
+      for (Parameter parameter : this.parameters) {
+        builder.addParameter(parameter.name, parameter.value);
+      }
+      String parameters = builder.toString();
+      if (parameters.isEmpty()) {
+        return parameters;
+      }
+      return parameters.substring(1); // Remove leading '?'
+    }
+
+    @Override
+    public String getGetUrl(String url) {
+      URIBuilder builder = null;
+      try {
+        builder = new URIBuilder(url);
+      } catch (URISyntaxException e) {
+        throw new RuntimeException("Invalid URI syntax, shouldn't happen.");
+      }
+      for (Parameter parameter : this.parameters) {
+        builder.addParameter(parameter.name, parameter.value);
+      }
+      return builder.toString();
+    }
+
+    @Override
+    public ContentType getPostContentType() {
+      return ContentType.ApplicationWwwFormUrlencoded;
+    }
+  }
+
+  protected static class XmlParameters implements Parameters {
+    private final Document xmlBody;
+
+    public XmlParameters(Document xmlBody) {
+      this.xmlBody = xmlBody;
+    }
+
+    public Document getXmlBody() {
+      return xmlBody;
+    }
+
+    @Override
+    public String getPostBody() {
+      try {
+        TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        Transformer transformer = transformerFactory.newTransformer();
+        transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
+        transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+        transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+        StringWriter sw = new StringWriter();
+        transformer.transform(new DOMSource(this.xmlBody), new StreamResult(sw));
+        return sw.toString();
+      } catch (TransformerException e) {
+        throw new RuntimeException(e);
+      }
+    }
+
+    @Override
+    public String getGetUrl(String url) {
+      throw new RuntimeException("XMLParameters cannot be used as GET query string.");
+    }
+
+    @Override
+    public ContentType getPostContentType() {
+      return ContentType.TextXml;
     }
   }
 }

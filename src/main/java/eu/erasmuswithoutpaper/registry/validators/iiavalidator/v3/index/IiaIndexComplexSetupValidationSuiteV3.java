@@ -3,7 +3,6 @@ package eu.erasmuswithoutpaper.registry.validators.iiavalidator.v3.index;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -63,7 +62,7 @@ public class IiaIndexComplexSetupValidationSuiteV3 extends IiaIndexComplexSetupV
         Request request = makeApiRequestWithPreferredSecurity(
             this,
             url, ApiEndpoint.Get, securityDescription,
-            Arrays.asList(
+            new ParameterList(
                 new Parameter("hei_id", heiId),
                 new Parameter("iia_id", iiaId)
             ));

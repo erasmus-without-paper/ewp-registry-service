@@ -499,7 +499,7 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
   protected Request makeApiRequestWithPreferredSecurity(
       InlineValidationStep step, String url, ApiEndpoint endpoint,
       HttpSecurityDescription preferredSecurityDescription,
-      List<Parameter> parameters) {
+      Parameters parameters) {
     Element apiEntry = AbstractSetupValidationSuite.this
         .getApiEntryFromUrlFormCatalogue(url, endpoint);
     if (apiEntry == null) {
@@ -520,7 +520,7 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
       HttpSecurityDescription preferredSecurityDescription) {
     return makeApiRequestWithPreferredSecurity(
         step, heiIdAndUrl.url, heiIdAndUrl.endpoint, preferredSecurityDescription,
-        Arrays.asList(new Parameter(heiIdAndUrl.heiIdParameterName, heiIdAndUrl.heiId))
+        new ParameterList(new Parameter(heiIdAndUrl.heiIdParameterName, heiIdAndUrl.heiId))
     );
   }
 

@@ -231,6 +231,38 @@ public class KnownNamespace {
 
   /**
    * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-omobility-las/blob/master/manifest-entry.xsd'>
+   * here</a>.
+   */ // TODO: master->stable!
+  public static final KnownNamespace RESPONSE_OMOBILITY_LAS_GET_V1  = new KnownNamespace("omlrg1",
+      "api-omobility-las/blob/stable-v1/endpoints/get-response.xsd",
+      "api-omobility-las/blob/master/get-response.xsd", false);
+  // TODO: 1. false->true 2. master->stable
+
+  /**
+   * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-omobility-las/blob/master/manifest-entry.xsd'>
+   * here</a>.
+   */ // TODO: master->stable!
+  public static final KnownNamespace RESPONSE_OMOBILITY_LAS_INDEX_V1  = new KnownNamespace("omlri1",
+      "api-omobility-las/blob/stable-v1/endpoints/index-response.xsd",
+      "api-omobility-las/blob/master/index-response.xsd", false);
+  // TODO: 1. false->true 2. master->stable
+
+  /**
+   * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-omobility-las/blob/master/manifest-entry.xsd'>
+   * here</a>.
+   */ // TODO: master->stable!
+  public static final KnownNamespace RESPONSE_OMOBILITY_LAS_UPDATE_V1  = new KnownNamespace(
+      "omlru1",
+      "api-omobility-las/blob/stable-v1/endpoints/update-response.xsd",
+      "api-omobility-las/blob/master/update-response.xsd", false);
+  // TODO: 1. false->true 2. master->stable
+
+
+  /**
+   * As described <a href=
    * 'https://github.com/erasmus-without-paper/ewp-specs-api-discovery/blob/stable-v4/manifest-entry.xsd'>
    * here</a>.
    */

@@ -52,7 +52,7 @@ class IMobilityTorsIndexValidationSuiteV1
     testParameters200(
         combination,
         "Request one known receiving_hei_id, expect 200 OK.",
-        Arrays.asList(
+        new ParameterList(
             new Parameter("receiving_hei_id", this.currentState.receivingHeiId)
         ),
         hasAnyElementVerifier,
@@ -89,7 +89,7 @@ class IMobilityTorsIndexValidationSuiteV1
         combination,
         "Request with known receiving_hei_id and sending_hei_id valid but not covered by"
             + " the validator, expect empty response.",
-        Arrays.asList(
+        new ParameterList(
             new Parameter("receiving_hei_id", this.currentState.receivingHeiId),
             new Parameter("sending_hei_id", this.currentState.notPermittedHeiId)
         ),
@@ -104,7 +104,7 @@ class IMobilityTorsIndexValidationSuiteV1
         combination,
         "Request one known receiving_hei_id as other EWP participant, expect 200 OK and empty "
             + "response.",
-        Arrays.asList(
+        new ParameterList(
             new Parameter("receiving_hei_id", this.currentState.receivingHeiId)
         ),
         omobilityIdVerifierFactory.expectResponseToBeEmpty(),

@@ -42,7 +42,7 @@ class OMobilitiesIndexValidationSuiteV1
   }
 
   //FindBugs is not smart enough to infer that actual type of this.currentState
-  //is IMobilityTorsSuiteState not just SuiteState
+  //is OMobilitiesSuiteState not just SuiteState
   @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
   protected void validateCombinationAny(Combination combination)
       throws SuiteBroken {
@@ -53,7 +53,7 @@ class OMobilitiesIndexValidationSuiteV1
     testParameters200(
         combination,
         "Request one known sending_hei_id, expect 200 OK.",
-        Arrays.asList(
+        new ParameterList(
             new Parameter("sending_hei_id", this.currentState.sendingHeiId)
         ),
         hasAnyElementVerifier,
@@ -96,7 +96,7 @@ class OMobilitiesIndexValidationSuiteV1
         combination,
         "Request with known sending_hei_id and receiving_hei_id valid but not covered by"
             + " the validator, expect empty response.",
-        Arrays.asList(
+        new ParameterList(
             new Parameter("sending_hei_id", this.currentState.sendingHeiId),
             new Parameter("receiving_hei_id", this.currentState.notPermittedHeiId)
         ),
@@ -111,7 +111,7 @@ class OMobilitiesIndexValidationSuiteV1
         combination,
         "Request one known sending_hei_id as other EWP participant, expect 200 OK and empty "
             + "response.",
-        Arrays.asList(
+        new ParameterList(
             new Parameter("sending_hei_id", this.currentState.sendingHeiId)
         ),
         omobilityIdVerifierFactory.expectResponseToBeEmpty(),

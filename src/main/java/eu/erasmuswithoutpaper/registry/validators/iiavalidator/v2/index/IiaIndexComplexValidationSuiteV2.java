@@ -50,7 +50,7 @@ public class IiaIndexComplexValidationSuiteV2 extends AbstractValidationSuite<Ii
         combination,
         "Request known hei_id and known partner_hei_id, expect 200 OK and "
             + "non-empty response.",
-        Arrays.asList(
+        new ParameterList(
             new Parameter("hei_id", this.currentState.selectedHeiId),
             new Parameter("partner_hei_id", this.currentState.selectedIiaInfo.partnerHeiId)
         ),
@@ -63,7 +63,7 @@ public class IiaIndexComplexValidationSuiteV2 extends AbstractValidationSuite<Ii
           combination,
           "Request with known hei_id and known receiving_academic_year_id parameter, "
               + "expect 200 OK and non-empty response.",
-          Arrays.asList(
+          new ParameterList(
               new Parameter("hei_id", this.currentState.selectedHeiId),
               new Parameter("receiving_academic_year_id", knownAcademicYear)
           ),
@@ -80,7 +80,7 @@ public class IiaIndexComplexValidationSuiteV2 extends AbstractValidationSuite<Ii
         combination,
         "Request with known hei_id and unknown receiving_academic_year_id parameter, "
             + "expect 200 OK and empty response.",
-        Arrays.asList(
+        new ParameterList(
             new Parameter("hei_id", this.currentState.selectedHeiId),
             new Parameter("receiving_academic_year_id", unknownAcademicYearString)
         ),
@@ -93,7 +93,7 @@ public class IiaIndexComplexValidationSuiteV2 extends AbstractValidationSuite<Ii
         combination,
         "Request with known hei_id and modified_since in the future, "
             + "expect 200 OK and empty response.",
-        Arrays.asList(
+        new ParameterList(
             new Parameter("hei_id", this.currentState.selectedHeiId),
             new Parameter("modified_since",
                 yearInFuture + "-02-12T15:19:21+01:00")
@@ -106,7 +106,7 @@ public class IiaIndexComplexValidationSuiteV2 extends AbstractValidationSuite<Ii
         combination,
         "Request with known hei_id and modified_since far in the past, "
             + "expect 200 OK and non-empty response.",
-        Arrays.asList(
+        new ParameterList(
             new Parameter("hei_id", this.currentState.selectedHeiId),
             new Parameter("modified_since", "2000-02-12T15:19:21+01:00")
         ),

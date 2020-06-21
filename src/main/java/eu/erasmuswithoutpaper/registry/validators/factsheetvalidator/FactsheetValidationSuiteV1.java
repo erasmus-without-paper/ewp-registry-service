@@ -1,6 +1,5 @@
 package eu.erasmuswithoutpaper.registry.validators.factsheetvalidator;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -52,14 +51,14 @@ class FactsheetValidationSuiteV1
 
 
     testParameters200(combination, "Request for one of known hei_ids, expect 200 OK.",
-        Arrays.asList(new Parameter("hei_id", currentState.selectedHeiId)),
+        new ParameterList(new Parameter("hei_id", currentState.selectedHeiId)),
         verfierFactory.expectResponseToContainExactly(
             Collections.singletonList(currentState.selectedHeiId)
         )
     );
 
     testParameters200(combination, "Request one unknown hei_id, expect 200 and empty response.",
-        Collections.singletonList(new Parameter("hei_id", fakeHeiId)),
+        new ParameterList(new Parameter("hei_id", fakeHeiId)),
         verfierFactory.expectResponseToBeEmpty()
     );
 
@@ -67,7 +66,7 @@ class FactsheetValidationSuiteV1
       testParameters200(
           combination,
           "Request one known and one unknown hei_id, expect 200 and only one <hei-id> in response.",
-          Arrays.asList(new Parameter("hei_id", currentState.selectedHeiId),
+          new ParameterList(new Parameter("hei_id", currentState.selectedHeiId),
               new Parameter("hei_id", fakeHeiId)
           ),
           verfierFactory.expectResponseToContainExactly(
@@ -76,33 +75,42 @@ class FactsheetValidationSuiteV1
       );
     }
 
-    testParametersError(combination, "Request without hei_ids, expect 400.", new ArrayList<>(),
+    testParametersError(combination,
+        "Request without hei_ids, expect 400.",
+        new ParameterList(),
         400
     );
 
     testParametersError(combination, "Request more than <max-hei-ids> known hei_ids, expect 400.",
-        Collections.nCopies(this.currentState.maxHeiIds + 1,
-            new Parameter("hei_id", currentState.selectedHeiId)
+        new ParameterList(
+            Collections.nCopies(this.currentState.maxHeiIds + 1,
+                new Parameter("hei_id", currentState.selectedHeiId)
+            )
         ),
         400
     );
 
-    testParametersError(combination, "Request more than <max-hei-ids> unknown hei_ids, expect 400.",
-        Collections.nCopies(this.currentState.maxHeiIds + 1, new Parameter("hei_id", fakeHeiId)),
+    testParametersError(combination,
+        "Request more than <max-hei-ids> unknown hei_ids, expect 400.",
+        new ParameterList(
+            Collections.nCopies(this.currentState.maxHeiIds + 1, new Parameter("hei_id", fakeHeiId))
+        ),
         400
     );
 
     testParameters200(combination, "Request exactly <max-hei-ids> known hei_ids, "
             + "expect 200 and non-empty response.",
-        Collections.nCopies(this.currentState.maxHeiIds,
-            new Parameter("hei_id", currentState.selectedHeiId)
+        new ParameterList(
+            Collections.nCopies(this.currentState.maxHeiIds,
+                new Parameter("hei_id", currentState.selectedHeiId)
+            )
         ),
         verfierFactory
             .expectResponseToContain(Collections.singletonList(currentState.selectedHeiId))
     );
 
     testParametersError(combination, "Request with single incorrect parameter, expect 400.",
-        Arrays.asList(new Parameter("hei_id_param", currentState.selectedHeiId)), 400
+        new ParameterList(new Parameter("hei_id_param", currentState.selectedHeiId)), 400
     );
   }
 }
