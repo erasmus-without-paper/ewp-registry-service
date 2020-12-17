@@ -37,7 +37,7 @@ public class ConsoleConfiguration {
     String registryDomain = registryDomainProvider.getRegistryDomain();
 
     options.setCatalogueFetcher(new DefaultCatalogueFetcher(registryDomain));
-    options.setMaxAcceptableStaleness(1000 * 60 * 60 * 24 * 365);
+    options.setMaxAcceptableStaleness(1000L * 60 * 60 * 24 * 365);
     options.setAutoRefreshing(false);
     RegistryClient client = new ClientImpl(options);
     client.refresh();

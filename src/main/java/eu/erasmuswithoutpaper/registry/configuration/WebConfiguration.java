@@ -59,7 +59,7 @@ public class WebConfiguration {
     });
     // Refresh will be called whenever catalogue is changed, so we don't need to worry
     // about staleness.
-    options.setMaxAcceptableStaleness(1000 * 60 * 60 * 24 * 365);
+    options.setMaxAcceptableStaleness(1000L * 60 * 60 * 24 * 365);
     RegistryClient client = new ClientImpl(options);
     try {
       client.refresh();
