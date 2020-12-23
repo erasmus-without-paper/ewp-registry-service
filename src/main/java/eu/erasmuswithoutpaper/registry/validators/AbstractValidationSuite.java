@@ -109,6 +109,18 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
     this.setValidatorKeyStore(validator.getValidatorKeyStoreSet().getMainKeyStore());
   }
 
+  public static class InvalidNumberOfApiEntries extends RuntimeException {
+    private final int matchedApiEntries;
+
+    public InvalidNumberOfApiEntries(int matchedApiEntries) {
+      this.matchedApiEntries = matchedApiEntries;
+    }
+
+    public int getMatchedApiEntries() {
+      return matchedApiEntries;
+    }
+  }
+
   @SafeVarargs
   public static <T> List<T> concatArrays(List<T>... lists) {
     return Stream.of(lists).flatMap(List::stream).collect(Collectors.toList());
@@ -251,9 +263,35 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
 
   protected HttpSecuritySettings getSecuritySettings() {
     Element httpSecurityElem =
-        $(this.currentState.matchedApiEntry).namespaces(KnownNamespace.prefixMap())
+        $(getMatchedApiEntry()).namespaces(KnownNamespace.prefixMap())
             .xpath(getApiInfo().getApiPrefix() + ":http-security").get(0);
     return new HttpSecuritySettings(httpSecurityElem);
+  }
+
+    /**
+     * Please note we cannot cache API entry elements:
+     * https://github.com/erasmus-without-paper/ewp-registry-client/issues/8
+     *
+     * @return API entries matched by current state API search conditions
+     */
+  protected Element getMatchedApiEntry() {
+    int matchedApiEntries = 0;
+    Element matchedApiEntry = null;
+
+    Collection<Element> entries = this.regClient.findApis(this.currentState.apiSearchConditions);
+    for (Element entry : entries) {
+      if ($(entry).find(this.getUrlElementName()).text().equals(this.currentState.url)
+              && entry.getAttribute("version").equals(this.currentState.version.toString())) {
+        matchedApiEntry = entry;
+        matchedApiEntries++;
+      }
+    }
+
+    if (matchedApiEntries != 1) {
+      throw new InvalidNumberOfApiEntries(matchedApiEntries);
+    }
+
+    return matchedApiEntry;
   }
 
   protected void validateCombination(Combination combination) throws SuiteBroken {
@@ -413,11 +451,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
   }
 
   protected EwpHttpSigResponseAuthorizer getEwpHttpSigResponseAuthorizer() {
-    if (this.currentState.resAuthorizerHttpSig == null) {
-      this.currentState.resAuthorizerHttpSig =
-          new EwpHttpSigResponseAuthorizer(this.regClient, this.currentState.matchedApiEntry);
-    }
-    return this.currentState.resAuthorizerHttpSig;
+    return new EwpHttpSigResponseAuthorizer(this.regClient, getMatchedApiEntry());
   }
 
   protected void validateResponseCommonsForxHxx(Combination combination, Request request,
@@ -741,7 +775,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
   }
 
   protected Match getManifestParameter(String what) {
-    return $(this.currentState.matchedApiEntry).namespaces(KnownNamespace.prefixMap())
+    return $(getMatchedApiEntry()).namespaces(KnownNamespace.prefixMap())
         .xpath(getApiInfo().getApiPrefix() + ":" + what);
   }
 

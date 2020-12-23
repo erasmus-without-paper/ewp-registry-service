@@ -6,7 +6,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -266,18 +265,12 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
             if (supportsGetRequests) {
               this.currentState.combinations.add(
                   new Combination("GET", AbstractSetupValidationSuite.this.currentState.url,
-                      AbstractSetupValidationSuite.this.currentState.matchedApiEntry, cliauth,
-                      srvauth,
-                      reqencr,
-                      resencr
+                      getMatchedApiEntry(), cliauth, srvauth, reqencr, resencr
                   ));
             }
             this.currentState.combinations.add(
                 new Combination("POST", AbstractSetupValidationSuite.this.currentState.url,
-                    AbstractSetupValidationSuite.this.currentState.matchedApiEntry, cliauth,
-                    srvauth,
-                    reqencr,
-                    resencr
+                    getMatchedApiEntry(), cliauth, srvauth, reqencr, resencr
                 ));
           }
         }
@@ -295,41 +288,32 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
 
       @Override
       protected Optional<Response> innerRun() throws Failure {
-        int matchedApiEntries = 0;
-
-        ApiSearchConditions conds = new ApiSearchConditions();
-        conds.setApiClassRequired(
+        ApiSearchConditions apiSearchConditions = new ApiSearchConditions();
+        apiSearchConditions.setApiClassRequired(
             AbstractSetupValidationSuite.this.getApiInfo().getApiNamespace(),
             AbstractSetupValidationSuite.this.getApiInfo().getApiName(),
             AbstractSetupValidationSuite.this.currentState.version.toString()
         );
+        AbstractSetupValidationSuite.this.currentState.apiSearchConditions = apiSearchConditions;
 
-        String urlElement = AbstractSetupValidationSuite.this.getUrlElementName();
-
-        String expectedVersionStr =
-            AbstractSetupValidationSuite.this.currentState.version.toString();
-        String expectedUrl = AbstractSetupValidationSuite.this.currentState.url;
-        Collection<Element> entries = AbstractSetupValidationSuite.this.regClient.findApis(conds);
-        for (Element entry : entries) {
-          String version = entry.getAttribute("version");
-          if ($(entry).find(urlElement).text().equals(expectedUrl)
-              && version.equals(expectedVersionStr)) {
-            AbstractSetupValidationSuite.this.currentState.matchedApiEntry = entry;
-            matchedApiEntries++;
+        try {
+          getMatchedApiEntry();
+        } catch (InvalidNumberOfApiEntries exception) {
+          int matchedApiEntries = exception.getMatchedApiEntries();
+          if (matchedApiEntries == 0) {
+            throw new Failure("Could not find this URL and version in the Registry Catalogue. "
+                    + "Make sure that it is properly registered "
+                    + "(as declared in API's `manifest-entry.xsd` file): "
+                    + AbstractSetupValidationSuite.this.getUrlElementName()
+                    + " " + AbstractSetupValidationSuite.this.currentState.url
+                    + ", v" + AbstractSetupValidationSuite.this.currentState.version.toString(),
+                    Status.FAILURE, null);
           }
-        }
 
-        if (matchedApiEntries == 0) {
-          throw new Failure("Could not find this URL and version in the Registry Catalogue. "
-              + "Make sure that it is properly registered "
-              + "(as declared in API's `manifest-entry.xsd` file): "
-              + urlElement + " " + AbstractSetupValidationSuite.this.currentState.url
-              + ", v" + expectedVersionStr, Status.FAILURE, null);
-        }
-
-        if (matchedApiEntries > 1) {
-          throw new Failure("Multiple (" + Integer.toString(matchedApiEntries)
-              + ") API entries found for this URL and version.", Status.FAILURE, null);
+          if (matchedApiEntries > 1) {
+            throw new Failure("Multiple (" + Integer.toString(matchedApiEntries)
+                    + ") API entries found for this URL and version.", Status.FAILURE, null);
+          }
         }
 
         return Optional.empty();

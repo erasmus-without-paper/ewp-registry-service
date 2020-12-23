@@ -38,22 +38,22 @@ public class EchoSetupValidationSuiteV1 extends EchoSetupValidationSuite {
   protected void validateSecurityMethods() throws SuiteBroken {
     // GATTT, PATTT, GSTTT, PSTTT
     this.currentState.combinations.add(
-        new Combination("GET", this.currentState.url, this.currentState.matchedApiEntry,
+        new Combination("GET", this.currentState.url, getMatchedApiEntry(),
             CombEntry.CLIAUTH_NONE,
             CombEntry.SRVAUTH_TLSCERT, CombEntry.REQENCR_TLS, CombEntry.RESENCR_TLS
         ));
     this.currentState.combinations.add(
-        new Combination("POST", this.currentState.url, this.currentState.matchedApiEntry,
+        new Combination("POST", this.currentState.url, getMatchedApiEntry(),
             CombEntry.CLIAUTH_NONE,
             CombEntry.SRVAUTH_TLSCERT, CombEntry.REQENCR_TLS, CombEntry.RESENCR_TLS
         ));
     this.currentState.combinations.add(
-        new Combination("GET", this.currentState.url, this.currentState.matchedApiEntry,
+        new Combination("GET", this.currentState.url, getMatchedApiEntry(),
             CombEntry.CLIAUTH_TLSCERT_SELFSIGNED, CombEntry.SRVAUTH_TLSCERT, CombEntry.REQENCR_TLS,
             CombEntry.RESENCR_TLS
         ));
     this.currentState.combinations.add(
-        new Combination("POST", this.currentState.url, this.currentState.matchedApiEntry,
+        new Combination("POST", this.currentState.url, getMatchedApiEntry(),
             CombEntry.CLIAUTH_TLSCERT_SELFSIGNED, CombEntry.SRVAUTH_TLSCERT, CombEntry.REQENCR_TLS,
             CombEntry.RESENCR_TLS
         ));
