@@ -106,6 +106,12 @@ public class KnownElement {
       KnownNamespace.APIENTRY_IIAS_V3, "iias", "API entry: Interinstitutional Agreements API v3");
 
   /**
+   * API entry for Interinstitutional Agreements API v4.
+   */
+  public static final KnownElement APIENTRY_IIAS_V4 = new KnownElement(
+      KnownNamespace.APIENTRY_IIAS_V4, "iias", "API entry: Interinstitutional Agreements API v4");
+
+  /**
    * API entry for Interinstitutional Agreement CNR API v1.
    */
   public static final KnownElement APIENTRY_IIA_CNR_V1 =

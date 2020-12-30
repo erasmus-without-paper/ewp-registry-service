@@ -387,6 +387,14 @@ public class KnownNamespace {
 
   /**
    * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-iias/blob/stable-v4/manifest-entry.xsd'>
+   * here</a>.
+   */
+  public static final KnownNamespace APIENTRY_IIAS_V4 = new KnownNamespace("ia4",
+      "api-iias/blob/stable-v4/manifest-entry.xsd", "api-iias/stable-v4/manifest-entry.xsd", false);
+
+  /**
+   * As described <a href=
    * 'https://github.com/erasmus-without-paper/ewp-specs-api-iia-cnr/blob/stable-v1/manifest-entry.xsd'>
    * here</a>.
    */
