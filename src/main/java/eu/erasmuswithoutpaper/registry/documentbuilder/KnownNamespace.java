@@ -139,6 +139,25 @@ public class KnownNamespace {
   public static final KnownNamespace RESPONSE_IIAS_GET_V3 = new KnownNamespace("iarg3",
       "api-iias/blob/stable-v3/endpoints/get-response.xsd",
       "api-iias/stable-v3/endpoints/get-response.xsd", false);
+
+  /**
+   * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-iias/blob/stable-v4/manifest-entry.xsd'>
+   * here</a>.
+   */
+  public static final KnownNamespace RESPONSE_IIAS_INDEX_V4 = new KnownNamespace("iari4",
+      "api-iias/blob/stable-v4/endpoints/index-response.xsd",
+      "api-iias/stable-v4/endpoints/index-response.xsd", false);
+
+  /**
+   * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-iias/blob/stable-v4/manifest-entry.xsd'>
+   * here</a>.
+   */
+  public static final KnownNamespace RESPONSE_IIAS_GET_V4 = new KnownNamespace("iarg4",
+      "api-iias/blob/stable-v4/endpoints/get-response.xsd",
+      "api-iias/stable-v4/endpoints/get-response.xsd", false);
+
   /**
    * As described <a href=
 

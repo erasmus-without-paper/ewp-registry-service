@@ -295,21 +295,39 @@ public class KnownElement {
       );
 
   /**
-   * The root of the IIAs API v2 index response.
+   * The root of the IIAs API v3 index response.
    */
   public static final KnownElement RESPONSE_IIAS_INDEX_V3 =
       new KnownElement(KnownNamespace.RESPONSE_IIAS_INDEX_V3,
           "iias-index-response",
-          "IIAs API v2 Index Response"
+          "IIAs API v3 Index Response"
       );
 
   /**
-   * The root of the IIAs API v2 get response.
+   * The root of the IIAs API v3 get response.
    */
   public static final KnownElement RESPONSE_IIAS_GET_V3 =
       new KnownElement(KnownNamespace.RESPONSE_IIAS_GET_V3,
           "iias-get-response",
-          "IIAs API v2 Get Response"
+          "IIAs API v3 Get Response"
+      );
+
+  /**
+   * The root of the IIAs API v4 index response.
+   */
+  public static final KnownElement RESPONSE_IIAS_INDEX_V4 =
+      new KnownElement(KnownNamespace.RESPONSE_IIAS_INDEX_V4,
+          "iias-index-response",
+          "IIAs API v4 Index Response"
+      );
+
+  /**
+   * The root of the IIAs API v4 get response.
+   */
+  public static final KnownElement RESPONSE_IIAS_GET_V4 =
+      new KnownElement(KnownNamespace.RESPONSE_IIAS_GET_V4,
+          "iias-get-response",
+          "IIAs API v4 Get Response"
       );
 
   /**

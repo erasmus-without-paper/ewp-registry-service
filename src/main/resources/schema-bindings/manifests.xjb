@@ -50,6 +50,24 @@
       </jaxb:schemaBindings>
    </jaxb:bindings>
 
+   <jaxb:bindings schemaLocation="../jaxb-schemas/ewp-specs-api-iias-v4.0.0/endpoints/get-response.xsd" node="/xs:schema">
+      <jaxb:schemaBindings>
+         <jaxb:nameXmlTransform>
+            <jaxb:elementName suffix="V4"/>
+            <jaxb:typeName suffix="V4"/>
+         </jaxb:nameXmlTransform>
+      </jaxb:schemaBindings>
+   </jaxb:bindings>
+
+   <jaxb:bindings schemaLocation="../jaxb-schemas/ewp-specs-api-iias-v4.0.0/endpoints/index-response.xsd" node="/xs:schema">
+      <jaxb:schemaBindings>
+         <jaxb:nameXmlTransform>
+            <jaxb:elementName suffix="V4"/>
+            <jaxb:typeName suffix="V4"/>
+         </jaxb:nameXmlTransform>
+      </jaxb:schemaBindings>
+   </jaxb:bindings>
+
    <jaxb:bindings schemaLocation="../jaxb-schemas/ewp-specs-api-omobilities-v1.0.0/endpoints/get-response.xsd" node="/xs:schema">
       <jaxb:schemaBindings>
          <jaxb:nameXmlTransform>

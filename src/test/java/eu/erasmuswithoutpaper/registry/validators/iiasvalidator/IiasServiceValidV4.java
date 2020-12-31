@@ -1,5 +1,7 @@
 package eu.erasmuswithoutpaper.registry.validators.iiasvalidator;
 
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.Instant;
@@ -8,25 +10,22 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
 
 import eu.erasmuswithoutpaper.registry.internet.InternetTestHelpers;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registry.validators.ParameterInfo;
 import eu.erasmuswithoutpaper.registry.validators.types.Contact;
-import eu.erasmuswithoutpaper.registry.validators.types.IiasGetResponseV2;
-import eu.erasmuswithoutpaper.registry.validators.types.IiasGetResponseV2.Iia;
-import eu.erasmuswithoutpaper.registry.validators.types.IiasIndexResponseV2;
-import eu.erasmuswithoutpaper.registry.validators.types.MobilitySpecificationV2;
+import eu.erasmuswithoutpaper.registry.validators.types.IiasGetResponseV4;
+import eu.erasmuswithoutpaper.registry.validators.types.IiasGetResponseV4.Iia;
+import eu.erasmuswithoutpaper.registry.validators.types.IiasIndexResponseV4;
+import eu.erasmuswithoutpaper.registry.validators.types.MobilitySpecificationV4;
 import eu.erasmuswithoutpaper.registry.validators.types.StringWithOptionalLang;
-import eu.erasmuswithoutpaper.registry.validators.types.StudentTraineeshipMobilitySpecV2;
+import eu.erasmuswithoutpaper.registry.validators.types.StudentTraineeshipMobilitySpecV4;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
-public class IiasServiceValidV2 extends AbstractIiasService {
+public class IiasServiceValidV4 extends AbstractIiasService {
   protected List<String> coveredHeiIds = new ArrayList<>();
   protected List<String> partnersHeiIds = new ArrayList<>();
   protected List<Iia> iias = new ArrayList<>();
@@ -39,7 +38,7 @@ public class IiasServiceValidV2 extends AbstractIiasService {
    * @param registryClient
    *     Initialized and refreshed {@link RegistryClient} instance.
    */
-  public IiasServiceValidV2(String indexUrl, String getUrl, RegistryClient registryClient) {
+  public IiasServiceValidV4(String indexUrl, String getUrl, RegistryClient registryClient) {
     super(indexUrl, getUrl, registryClient);
     try {
       fillDataBase();
@@ -101,8 +100,8 @@ public class IiasServiceValidV2 extends AbstractIiasService {
     iia1.setInEffect(true);
 
     Iia.CooperationConditions cooperationConditions = new Iia.CooperationConditions();
-    StudentTraineeshipMobilitySpecV2 studentTraineeshipMobilitySpec =
-        new StudentTraineeshipMobilitySpecV2();
+    StudentTraineeshipMobilitySpecV4 studentTraineeshipMobilitySpec =
+        new StudentTraineeshipMobilitySpecV4();
     studentTraineeshipMobilitySpec.setTotalMonths(new BigDecimal(6));
     studentTraineeshipMobilitySpec.setMobilitiesPerYear(BigInteger.valueOf(10));
     studentTraineeshipMobilitySpec.setSendingHeiId(THIS_SERVICE_HEI_ID);
@@ -164,7 +163,7 @@ public class IiasServiceValidV2 extends AbstractIiasService {
     iia2.setInEffect(true);
 
     cooperationConditions = new Iia.CooperationConditions();
-    studentTraineeshipMobilitySpec = new StudentTraineeshipMobilitySpecV2();
+    studentTraineeshipMobilitySpec = new StudentTraineeshipMobilitySpecV4();
     studentTraineeshipMobilitySpec.setTotalMonths(new BigDecimal(6));
     studentTraineeshipMobilitySpec.setMobilitiesPerYear(BigInteger.valueOf(10));
     studentTraineeshipMobilitySpec.setSendingHeiId(THIS_SERVICE_HEI_ID);
@@ -369,7 +368,7 @@ public class IiasServiceValidV2 extends AbstractIiasService {
 
     List<Iia> result = new ArrayList<>();
     for (Iia iia : iias) {
-      ArrayList<MobilitySpecificationV2> specs = new ArrayList<>();
+      ArrayList<MobilitySpecificationV4> specs = new ArrayList<>();
       specs.addAll(iia.getCooperationConditions().getStudentStudiesMobilitySpec());
       specs.addAll(iia.getCooperationConditions().getStudentTraineeshipMobilitySpec());
       specs.addAll(iia.getCooperationConditions().getStaffTeacherMobilitySpec());
@@ -599,14 +598,14 @@ public class IiasServiceValidV2 extends AbstractIiasService {
     );
   }
 
-  protected Response createIiasGetResponse(List<IiasGetResponseV2.Iia> data) {
-    IiasGetResponseV2 response = new IiasGetResponseV2();
+  protected Response createIiasGetResponse(List<Iia> data) {
+    IiasGetResponseV4 response = new IiasGetResponseV4();
     response.getIia().addAll(data);
     return marshallResponse(200, response);
   }
 
   protected Response createIiasIndexResponse(List<String> data) {
-    IiasIndexResponseV2 response = new IiasIndexResponseV2();
+    IiasIndexResponseV4 response = new IiasIndexResponseV4();
     response.getIiaId().addAll(data);
     return marshallResponse(200, response);
   }
