@@ -280,7 +280,8 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
 
     Collection<Element> entries = this.regClient.findApis(this.currentState.apiSearchConditions);
     for (Element entry : entries) {
-      if ($(entry).find(this.getUrlElementName()).text().equals(this.currentState.url)
+      Match urlElement = $(entry).find(this.getUrlElementName());
+      if (urlElement != null && urlElement.text().equals(this.currentState.url)
               && entry.getAttribute("version").equals(this.currentState.version.toString())) {
         matchedApiEntry = entry;
         matchedApiEntries++;
