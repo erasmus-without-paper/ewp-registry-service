@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:ewp="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
+    xmlns:la="https://github.com/erasmus-without-paper/ewp-specs-api-omobility-las/blob/stable-v1/endpoints/get-response.xsd"
+    elementFormDefault="qualified"
+
+    targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-api-omobility-las/blob/stable-v1/endpoints/update-request.xsd"
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-omobility-las/blob/stable-v1/endpoints/update-request.xsd"
+>
+    <xs:import
+        schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-architecture/stable-v1/common-types.xsd"
+        namespace="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
+    />
+
+    <xs:import
+        schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-omobility-las/stable-v1/endpoints/get-response.xsd"
+        namespace="https://github.com/erasmus-without-paper/ewp-specs-api-omobility-las/blob/stable-v1/endpoints/get-response.xsd"
+    />
+
+    <xs:annotation>
+        <xs:documentation>
+            This schema is a part of the Erasmus Without Paper project. Before you start
+            using it, make sure you have read the general rules described here:
+
+            http://developers.erasmuswithoutpaper.eu/
+        </xs:documentation>
+    </xs:annotation>
+
+    <xs:element name="omobility-las-update-request">
+        <xs:annotation>
+            <xs:documentation>
+                This describes the format of the REQUEST to be submitted to the `update`
+                endpoint of EWP Outgoing Mobility Learning Agreements API.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="sending-hei-id" type="ewp:AsciiPrintableIdentifier" minOccurs="1" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>
+                            ID of the sending HEI of the learning agreement being updated.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:choice minOccurs="1" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>
+                            One request contains exactly one update element. But there are many possible
+                            types of this update element.
+                        </xs:documentation>
+                    </xs:annotation>
+                    <xs:element ref="approve-proposal-v1"/>
+                    <xs:element ref="comment-proposal-v1"/>
+                    <!--
+                    Note for future XSD designers: When adding new types here, remember to add them
+                    in the manifest-entry.xsd file too.
+                    -->
+                </xs:choice>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="approve-proposal-v1">
+        <xs:annotation>
+            <xs:documentation>
+                This request is sent by the receiving HEI when it wants to approve the `changes-proposal`.
+                This approval has the same meaning as "signing" the LA.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="omobility-id" type="ewp:AsciiPrintableIdentifier" minOccurs="1" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>
+                            ID of the mobility/learning agreement which this update request is about.
+
+                            The sending partner of this mobility MUST match the partner provided in `sending-hei-id`.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="changes-proposal-id" type="xs:string" minOccurs="1" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>
+                            Identifier of the current state of the `changes-proposal`, which is also the state which
+                            is being approved. This element is required here to prevent edit conflicts:
+
+                            https://en.wikipedia.org/wiki/Edit_conflict
+
+                            The client - the receiving HEI - extracts this identifier from the response of the
+                            Outgoing Mobility Learning Agreements API's `get` endpoint served at the sending HEI.
+
+                            If the content of `changes-proposal-id` does not match the current
+                            values as kept in the server's database, then the server MUST respond with
+                            HTTP 409 error response.
+                            https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.10
+
+                            Error response SHOULD include the `user-message` element with a brief
+                            explanation (e.g. "Your copy of the Learning Agreement is not up-to-date.
+                            Please refresh your copy from our servers and repeat your request.").
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="signature" type="la:Signature" minOccurs="1" maxOccurs="1"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="comment-proposal-v1">
+        <xs:annotation>
+            <xs:documentation>
+                This request is sent by the receiving HEI when it want to comment on a `changes-proposal`.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="omobility-id" type="ewp:AsciiPrintableIdentifier" minOccurs="1" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>
+                            ID of the mobility/learning agreement which this update request is about.
+
+                            The sending partner of this mobility MUST match the partner provided in `sending-hei-id`.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="changes-proposal-id" type="xs:string" minOccurs="1" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>
+                            Identifier of the current state of the `changes-proposal`, which is being commented.
+                            This element is required here to prevent edit conflicts as in `approve-proposal-v1`.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="comment" type="xs:string" minOccurs="1" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>
+                            Field to describe why LA has not been accepted and what are the suggested changes.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="signature" type="la:Signature" minOccurs="1" maxOccurs="1"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>

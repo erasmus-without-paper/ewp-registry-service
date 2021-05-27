@@ -1,16 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
-    xmlns:xml="http://www.w3.org/XML/1998/namespace"
     xmlns:ewp="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
     xmlns:sec="https://github.com/erasmus-without-paper/ewp-specs-sec-intro/tree/stable-v2"
     elementFormDefault="qualified"
 
-    targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-api-omobility-la-cnr/blob/stable-v1/manifest-entry.xsd"
-    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-omobility-la-cnr/blob/stable-v1/manifest-entry.xsd"
+    targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-api-iias/blob/stable-v6/manifest-entry.xsd"
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-iias/blob/stable-v6/manifest-entry.xsd"
 >
-    <!-- TODO: Once released, fix all schemaLocations pointing to its master branch. -->
-
     <xs:import
         schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-architecture/stable-v1/common-types.xsd"
         namespace="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
@@ -30,13 +27,13 @@
         </xs:documentation>
     </xs:annotation>
 
-    <xs:element name="omobility-la-cnr">
+    <xs:element name="iias">
         <xs:annotation>
             <xs:documentation>
                 If this element is present in EWP Host's manifest file, then the host states
-                that it implements the Outgoing Mobility Learning Agreement CNR API described here:
+                that it implements the Interinstitutional Agreements API described here:
 
-                https://github.com/erasmus-without-paper/ewp-specs-api-omobility-la-cnr
+                https://github.com/erasmus-without-paper/ewp-specs-api-iias
             </xs:documentation>
         </xs:annotation>
         <xs:complexType>
@@ -50,23 +47,40 @@
                                     given, then the server states that it supports the default set of security
                                     policies (as described in the annotations in sec:HttpSecurityOptions).
 
-                                    Clients SHOULD consult this element before accessing the endpoint given in the
-                                    `url` element (otherwise, their request might be rejected by the server).
+                                    The policies described in this element apply to all endpoints of this API (the
+                                    `*-url` elements below). Clients SHOULD consult this element before accessing
+                                    any of these endpoints (otherwise, their request might be rejected by the
+                                    server).
                                 </xs:documentation>
                             </xs:annotation>
                         </xs:element>
-                        <xs:element name="url" type="ewp:HTTPS" minOccurs="1" maxOccurs="1">
+                        <xs:element name="get-url" type="ewp:HTTPS" minOccurs="1" maxOccurs="1">
                             <xs:annotation>
                                 <xs:documentation>
-                                    An URL at which the the host will be listening.
+                                    An URL at which the IIA `get` endpoint is being served.
                                 </xs:documentation>
                             </xs:annotation>
                         </xs:element>
-                        <xs:element name="max-omobility-ids" type="xs:positiveInteger" minOccurs="1" maxOccurs="1">
+                        <xs:element name="max-iia-ids" type="xs:positiveInteger" minOccurs="1" maxOccurs="1">
                             <xs:annotation>
                                 <xs:documentation>
-                                    The maximum number of `omobility_id` parameters the server is willing to accept
-                                    in one request.
+                                    The maximum number of `iia_id` parameters the server is willing to accept
+                                    in one `get` request.
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="max-iia-codes" type="xs:positiveInteger" minOccurs="1" maxOccurs="1">
+                            <xs:annotation>
+                                <xs:documentation>
+                                    The maximum number of `iia_code` parameters the server is willing to accept
+                                    in one `get` request.
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="index-url" type="ewp:HTTPS" minOccurs="1" maxOccurs="1">
+                            <xs:annotation>
+                                <xs:documentation>
+                                    An URL at which the IIA `index` endpoint is being served.
                                 </xs:documentation>
                             </xs:annotation>
                         </xs:element>

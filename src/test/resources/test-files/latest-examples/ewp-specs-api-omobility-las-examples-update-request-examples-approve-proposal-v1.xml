@@ -1,0 +1,22 @@
+<req:omobility-las-update-request
+    xmlns:req="https://github.com/erasmus-without-paper/ewp-specs-api-omobility-las/blob/stable-v1/endpoints/update-request.xsd"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:la="https://github.com/erasmus-without-paper/ewp-specs-api-omobility-las/blob/stable-v1/endpoints/get-response.xsd"
+    xsi:schemaLocation="
+        https://github.com/erasmus-without-paper/ewp-specs-api-omobility-las/blob/stable-v1/endpoints/update-request.xsd
+        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-omobility-las/stable-v1/endpoints/update-request.xsd
+    "
+>
+    <req:sending-hei-id>uw.edu.pl</req:sending-hei-id>
+    <req:approve-proposal-v1>
+        <req:omobility-id>c442c289-5541-4cae-9edb-8ad83e133613</req:omobility-id>
+        <req:changes-proposal-id>AE61266750D019063512516C7EE01968012C81F25A89</req:changes-proposal-id>
+        <req:signature>
+            <la:signer-name>Paweł Tomasz Kowalski</la:signer-name>
+            <la:signer-position>Mobility coordinator</la:signer-position>
+            <la:signer-email>pawel.kowalski@example.com</la:signer-email>
+            <la:timestamp>2018-11-14T08:18:19+02:00</la:timestamp>
+            <la:signer-app>USOS</la:signer-app>
+        </req:signature>
+    </req:approve-proposal-v1>
+</req:omobility-las-update-request>

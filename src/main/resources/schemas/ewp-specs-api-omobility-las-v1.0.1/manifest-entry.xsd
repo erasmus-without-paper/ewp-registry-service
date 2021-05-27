@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
-    xmlns:xml="http://www.w3.org/XML/1998/namespace"
     xmlns:ewp="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
     xmlns:sec="https://github.com/erasmus-without-paper/ewp-specs-sec-intro/tree/stable-v2"
     elementFormDefault="qualified"
@@ -84,40 +83,6 @@
                                     in one request.
                                 </xs:documentation>
                             </xs:annotation>
-                        </xs:element>
-                        <xs:element name="sends-notifications" type="ewp:Empty" minOccurs="0" maxOccurs="1">
-                            <xs:annotation>
-                                <xs:documentation>
-                                    If this element is present, then the EWP Host states, that it has implemented a
-                                    Notification Sender for Learning Agreement objects - it will *try* to deliver
-                                    notifications to all Outgoing Mobility Learning Agreement CNR APIs
-                                    implemented throughout the EWP Network whenever related mobility objects are updated.
-
-                                    It is HIGHLY RECOMMENDED for all EWP Hosts to implement this feature. If it is
-                                    not implemented, then receiving institutions will need to resolve into pulling
-                                    fresh data from your Outgoing Mobility Learning Agreements API quite often - this method
-                                    will increase both latency and the load on both servers.
-                                </xs:documentation>
-                            </xs:annotation>
-                        </xs:element>
-                        <xs:element name="supported-update-types" minOccurs="0" maxOccurs="1">
-                            <xs:annotation>
-                                <xs:documentation>
-                                    In this section the server publishes which types of updates it supports.
-                                    Clients SHOULD take this information into account before sending their requests
-                                    (otherwise, they will get HTTP 400 errors).
-
-                                    The name of each element on this list corresponds to an update element of the
-                                    same name, as described in request.xsd. If the element is present, then the
-                                    server states that it supports the corresponding update type.
-                                </xs:documentation>
-                            </xs:annotation>
-                            <xs:complexType>
-                                <xs:sequence>
-                                    <xs:element name="approve-components-studied-proposal-v1" minOccurs="0" maxOccurs="1" type="ewp:Empty"/>
-                                    <xs:element name="update-components-studied-v1" minOccurs="0" maxOccurs="1" type="ewp:Empty"/>
-                                </xs:sequence>
-                            </xs:complexType>
                         </xs:element>
                     </xs:sequence>
                 </xs:extension>

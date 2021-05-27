@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
-    xmlns:xml="http://www.w3.org/XML/1998/namespace"
     xmlns:ewp="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
     xmlns:sec="https://github.com/erasmus-without-paper/ewp-specs-sec-intro/tree/stable-v2"
     elementFormDefault="qualified"
 
-    targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-api-iia-approval-cnr/blob/stable-v1/manifest-entry.xsd"
-    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-iia-approval-cnr/blob/stable-v1/manifest-entry.xsd"
+    targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-api-iias-approval/blob/stable-v1/manifest-entry.xsd"
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-iias-approval/blob/stable-v1/manifest-entry.xsd"
 >
     <xs:import
         schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-architecture/stable-v1/common-types.xsd"
@@ -28,20 +27,20 @@
         </xs:documentation>
     </xs:annotation>
 
-    <xs:element name="iia-approval-cnr">
+    <xs:element name="iias-approval">
         <xs:annotation>
             <xs:documentation>
                 If this element is present in EWP Host's manifest file, then the host states
-                that it implements the Interinstitutional Agreement Approval CNR API described here:
+                that it implements the Interinstitutional Agreements Approval API described here:
 
-                https://github.com/erasmus-without-paper/ewp-specs-api-iia-approval-cnr
+                https://github.com/erasmus-without-paper/ewp-specs-api-iias-approval
             </xs:documentation>
         </xs:annotation>
         <xs:complexType>
             <xs:complexContent>
                 <xs:extension base="ewp:ManifestApiEntryBase">
                     <xs:sequence>
-                        <xs:element name="http-security" type="sec:HttpSecurityOptions" minOccurs="0" maxOccurs="1">
+                        <xs:element name="http-security" type="sec:HttpSecurityOptions" minOccurs="0">
                             <xs:annotation>
                                 <xs:documentation>
                                     Describes which security policies the server supports for this API. If not
@@ -53,10 +52,18 @@
                                 </xs:documentation>
                             </xs:annotation>
                         </xs:element>
-                        <xs:element name="url" type="ewp:HTTPS" minOccurs="1" maxOccurs="1">
+                        <xs:element name="url" type="ewp:HTTPS">
                             <xs:annotation>
                                 <xs:documentation>
-                                    An URL at which the the host will be listening.
+                                    An URL at which the IIAs Approval API is being served.
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="max-iia-ids" type="xs:positiveInteger">
+                            <xs:annotation>
+                                <xs:documentation>
+                                    The maximum number of `iia_id` parameters the server is willing to accept
+                                    in one request.
                                 </xs:documentation>
                             </xs:annotation>
                         </xs:element>
