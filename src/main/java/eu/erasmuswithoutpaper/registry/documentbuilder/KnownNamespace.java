@@ -160,6 +160,24 @@ public class KnownNamespace {
 
   /**
    * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-iias/blob/stable-v6/manifest-entry.xsd'>
+   * here</a>.
+   */
+  public static final KnownNamespace RESPONSE_IIAS_INDEX_V6 = new KnownNamespace("iari6",
+          "api-iias/blob/stable-v6/endpoints/index-response.xsd",
+          "api-iias/stable-v6/endpoints/index-response.xsd", false);
+
+  /**
+   * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-iias/blob/stable-v6/manifest-entry.xsd'>
+   * here</a>.
+   */
+  public static final KnownNamespace RESPONSE_IIAS_GET_V6 = new KnownNamespace("iarg6",
+          "api-iias/blob/stable-v6/endpoints/get-response.xsd",
+          "api-iias/stable-v6/endpoints/get-response.xsd", false);
+
+  /**
+   * As described <a href=
 
    * 'https://github.com/erasmus-without-paper/ewp-specs-api-mt-projects/tree/stable-v1/manifest-entry.xsd'>
    * here</a>.

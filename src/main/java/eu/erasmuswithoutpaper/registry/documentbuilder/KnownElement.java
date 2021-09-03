@@ -340,6 +340,24 @@ public class KnownElement {
       new KnownElement(KnownNamespace.RESPONSE_IIAS_GET_V4,
           "iias-get-response",
           "IIAs API v4 Get Response"
+     );
+
+  /**
+   * The root of the IIAs API v6 index response.
+   */
+  public static final KnownElement RESPONSE_IIAS_INDEX_V6 =
+      new KnownElement(KnownNamespace.RESPONSE_IIAS_INDEX_V6,
+          "iias-index-response",
+          "IIAs API v6 Index Response"
+      );
+
+  /**
+   * The root of the IIAs API v6 get response.
+   */
+  public static final KnownElement RESPONSE_IIAS_GET_V6 =
+      new KnownElement(KnownNamespace.RESPONSE_IIAS_GET_V6,
+          "iias-get-response",
+          "IIAs API v6 Get Response"
       );
 
   /**

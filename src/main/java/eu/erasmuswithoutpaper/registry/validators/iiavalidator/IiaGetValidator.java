@@ -12,6 +12,8 @@ import eu.erasmuswithoutpaper.registry.validators.iiavalidator.v3.get.IiaGetSetu
 import eu.erasmuswithoutpaper.registry.validators.iiavalidator.v3.get.IiaGetValidationSuiteV3;
 import eu.erasmuswithoutpaper.registry.validators.iiavalidator.v4.get.IiaGetSetupValidationSuiteV4;
 import eu.erasmuswithoutpaper.registry.validators.iiavalidator.v4.get.IiaGetValidationSuiteV4;
+import eu.erasmuswithoutpaper.registry.validators.iiavalidator.v6.get.IiaGetSetupValidationSuiteV6;
+import eu.erasmuswithoutpaper.registry.validators.iiavalidator.v6.get.IiaGetValidationSuiteV6;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 import org.springframework.stereotype.Service;
@@ -65,6 +67,18 @@ public class IiaGetValidator extends ApiValidator<IiaSuiteState> {
     validationSuites.put(
         new SemanticVersion(4, 0, 0),
         new ValidationSuiteInfo<>(IiaGetValidationSuiteV4::new)
+    );
+
+    validationSuites.put(
+        new SemanticVersion(6, 0, 0),
+        new ValidationSuiteInfo<>(
+            IiaGetSetupValidationSuiteV6::new,
+            IiaGetSetupValidationSuiteV6.getParameters()
+        )
+    );
+    validationSuites.put(
+        new SemanticVersion(6, 0, 0),
+        new ValidationSuiteInfo<>(IiaGetValidationSuiteV6::new)
     );
   }
 

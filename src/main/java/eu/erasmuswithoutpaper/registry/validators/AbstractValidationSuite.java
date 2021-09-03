@@ -530,7 +530,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
       return response;
     } catch (SocketTimeoutException e) {
       getLogger().debug(
-          "Timeout when retrieving response from server: " + ExceptionUtils.getFullStackTrace(e));
+          "Timeout when retrieving response from server: {}", ExceptionUtils.getFullStackTrace(e));
       throw new Failure(
           String.format("Timeout when retrieving %s response from url %s.",
               request.getMethod(), request.getUrl()),
@@ -539,7 +539,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
       );
     } catch (IOException e) {
       getLogger().debug(
-          "Problems retrieving response from server: " + ExceptionUtils.getFullStackTrace(e));
+          "Problems retrieving response from server: {}", ExceptionUtils.getFullStackTrace(e));
       throw new Failure(
           "Problems retrieving response from server: " + e.getMessage(),
           Status.ERROR,

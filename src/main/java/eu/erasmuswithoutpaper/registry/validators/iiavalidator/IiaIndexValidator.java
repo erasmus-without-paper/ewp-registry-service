@@ -18,6 +18,10 @@ import eu.erasmuswithoutpaper.registry.validators.iiavalidator.v4.index.IiaIndex
 import eu.erasmuswithoutpaper.registry.validators.iiavalidator.v4.index.IiaIndexBasicValidationSuiteV4;
 import eu.erasmuswithoutpaper.registry.validators.iiavalidator.v4.index.IiaIndexComplexSetupValidationSuiteV4;
 import eu.erasmuswithoutpaper.registry.validators.iiavalidator.v4.index.IiaIndexComplexValidationSuiteV4;
+import eu.erasmuswithoutpaper.registry.validators.iiavalidator.v6.index.IiaIndexBasicSetupValidationSuiteV6;
+import eu.erasmuswithoutpaper.registry.validators.iiavalidator.v6.index.IiaIndexBasicValidationSuiteV6;
+import eu.erasmuswithoutpaper.registry.validators.iiavalidator.v6.index.IiaIndexComplexSetupValidationSuiteV6;
+import eu.erasmuswithoutpaper.registry.validators.iiavalidator.v6.index.IiaIndexComplexValidationSuiteV6;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 import org.springframework.stereotype.Service;
@@ -103,6 +107,29 @@ public class IiaIndexValidator extends ApiValidator<IiaSuiteState> {
     validationSuites.put(
         new SemanticVersion(4, 0, 0),
         new ValidationSuiteInfo<>(IiaIndexComplexValidationSuiteV4::new)
+    );
+
+    validationSuites.put(
+        new SemanticVersion(6, 0, 0),
+        new ValidationSuiteInfo<>(
+            IiaIndexBasicSetupValidationSuiteV6::new,
+            IiaIndexBasicSetupValidationSuiteV6.getParameters()
+        )
+    );
+    validationSuites.put(
+        new SemanticVersion(6, 0, 0),
+        new ValidationSuiteInfo<>(IiaIndexBasicValidationSuiteV6::new)
+    );
+    validationSuites.put(
+        new SemanticVersion(6, 0, 0),
+        new ValidationSuiteInfo<>(
+            IiaIndexComplexSetupValidationSuiteV6::new,
+            IiaIndexComplexSetupValidationSuiteV6.getParameters()
+        )
+    );
+    validationSuites.put(
+        new SemanticVersion(6, 0, 0),
+        new ValidationSuiteInfo<>(IiaIndexComplexValidationSuiteV6::new)
     );
   }
 
