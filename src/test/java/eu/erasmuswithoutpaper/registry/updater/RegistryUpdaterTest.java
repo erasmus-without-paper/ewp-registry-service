@@ -183,7 +183,7 @@ public class RegistryUpdaterTest extends WRTest {
     this.timePasses();
     this.assertManifestStatuses("Error", null, null);
     this.assertNoticesMatch(url1,
-        "(?s).*Invalid client public key \\(1st of 2\\).*premature EOF.*");
+        "(?s).*Invalid client public key \\(1st of 2\\).*");
     assertThat(this.lastCatalogue
         .xpath("/r:catalogue/r:host/r:client-credentials-in-use/r:rsa-public-key").size())
             .isEqualTo(1);
@@ -237,7 +237,7 @@ public class RegistryUpdaterTest extends WRTest {
     this.timePasses();
     this.assertManifestStatuses("Error", null, null);
     this.assertNoticesMatch(url1,
-        "(?s).*Invalid server public key \\(1st of 2\\).*premature EOF.*");
+        "(?s).*Invalid server public key \\(1st of 2\\).*");
     assertThat(this.lastCatalogue
         .xpath("/r:catalogue/r:host/r:server-credentials-in-use/r:rsa-public-key").size())
             .isEqualTo(1);
