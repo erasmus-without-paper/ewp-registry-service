@@ -10,11 +10,12 @@ import eu.erasmuswithoutpaper.registry.internet.InternetTestHelpers;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registry.validators.institutionsvalidator.InstitutionServiceV2Valid;
-import eu.erasmuswithoutpaper.registry.validators.types.FlexibleAddress;
-import eu.erasmuswithoutpaper.registry.validators.types.HTTPWithOptionalLang;
-import eu.erasmuswithoutpaper.registry.validators.types.OunitsResponse;
-import eu.erasmuswithoutpaper.registry.validators.types.StringWithOptionalLang;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
+
+import https.github_com.erasmus_without_paper.ewp_specs_api_ounits.tree.stable_v2.OunitsResponse;
+import https.github_com.erasmus_without_paper.ewp_specs_architecture.blob.stable_v1.common_types.HTTPWithOptionalLang;
+import https.github_com.erasmus_without_paper.ewp_specs_architecture.blob.stable_v1.common_types.StringWithOptionalLang;
+import https.github_com.erasmus_without_paper.ewp_specs_types_address.tree.stable_v1.FlexibleAddress;
 
 public class OUnitsServiceV2Valid extends AbstractOUnitsService {
   protected static final int maxOUnitIds = 2;

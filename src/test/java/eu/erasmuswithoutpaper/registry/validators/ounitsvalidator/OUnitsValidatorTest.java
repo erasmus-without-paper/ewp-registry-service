@@ -13,9 +13,10 @@ import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.SemanticVersion;
 import eu.erasmuswithoutpaper.registry.validators.TestValidationReport;
 import eu.erasmuswithoutpaper.registry.validators.institutionsvalidator.InstitutionServiceV2Valid;
-import eu.erasmuswithoutpaper.registry.validators.types.OunitsResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
+import https.github_com.erasmus_without_paper.ewp_specs_api_ounits.tree.stable_v2.OunitsResponse;
 import org.junit.Test;
 
 public class OUnitsValidatorTest extends AbstractApiTest<OUnitsSuiteState> {

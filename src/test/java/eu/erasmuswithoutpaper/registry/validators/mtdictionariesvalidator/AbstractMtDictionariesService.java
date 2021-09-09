@@ -6,8 +6,9 @@ import java.util.List;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registry.validators.AbstractApiService;
-import eu.erasmuswithoutpaper.registry.validators.types.MtDictionariesResponse;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
+
+import https.github_com.erasmus_without_paper.ewp_specs_api_mt_dictionaries.tree.stable_v1.MtDictionariesResponse;
 
 public abstract class AbstractMtDictionariesService extends AbstractApiService {
   protected final String myEndpoint;

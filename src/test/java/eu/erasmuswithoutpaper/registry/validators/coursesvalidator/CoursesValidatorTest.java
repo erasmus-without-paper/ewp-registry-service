@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -18,9 +19,10 @@ import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.SemanticVersion;
 import eu.erasmuswithoutpaper.registry.validators.TestValidationReport;
 import eu.erasmuswithoutpaper.registry.validators.coursereplicationvalidator.CourseReplicationServiceV1Valid;
-import eu.erasmuswithoutpaper.registry.validators.types.CoursesResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
+import https.github_com.erasmus_without_paper.ewp_specs_api_courses.tree.stable_v1.CoursesResponse;
 import org.junit.Test;
 
 public class CoursesValidatorTest extends AbstractApiTest {

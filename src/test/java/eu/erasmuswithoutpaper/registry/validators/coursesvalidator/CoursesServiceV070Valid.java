@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
@@ -16,9 +17,10 @@ import eu.erasmuswithoutpaper.registry.internet.InternetTestHelpers;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registry.validators.coursereplicationvalidator.CourseReplicationServiceV1Valid;
-import eu.erasmuswithoutpaper.registry.validators.types.CoursesResponse;
-import eu.erasmuswithoutpaper.registry.validators.types.StringWithOptionalLang;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
+
+import https.github_com.erasmus_without_paper.ewp_specs_api_courses.tree.stable_v1.CoursesResponse;
+import https.github_com.erasmus_without_paper.ewp_specs_architecture.blob.stable_v1.common_types.StringWithOptionalLang;
 
 public class CoursesServiceV070Valid extends AbstractCoursesService {
   protected final CourseReplicationServiceV1Valid CourseReplicationServiceV2;

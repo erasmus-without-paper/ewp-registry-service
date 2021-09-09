@@ -6,9 +6,9 @@ import java.util.List;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registry.validators.AbstractApiService;
-import eu.erasmuswithoutpaper.registry.validators.types.InstitutionsResponse;
-import eu.erasmuswithoutpaper.registry.validators.types.InstitutionsResponse.Hei;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
+
+import https.github_com.erasmus_without_paper.ewp_specs_api_institutions.tree.stable_v2.InstitutionsResponse;
 
 public abstract class AbstractInstitutionService extends AbstractApiService {
   protected final String myEndpoint;
@@ -37,7 +37,7 @@ public abstract class AbstractInstitutionService extends AbstractApiService {
     }
   }
 
-  protected Response createInstitutionsResponse(List<Hei> heis) {
+  protected Response createInstitutionsResponse(List<InstitutionsResponse.Hei> heis) {
     InstitutionsResponse response = new InstitutionsResponse();
     response.getHei().addAll(heis);
     return marshallResponse(200, response);

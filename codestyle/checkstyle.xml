@@ -22,7 +22,10 @@ https://google-styleguide.googlecode.com/svn-history/r130/trunk/javaguide.html
         <property name="file" value="codestyle/checkstyle_suppressions.xml"/>
     </module>
 
+    <module name="SuppressWarningsFilter"/>
+
     <module name="TreeWalker">
+        <module name="SuppressWarningsHolder"/>
         <module name="OuterTypeFilename"/>
         <module name="IllegalTokenText">
             <property name="tokens" value="STRING_LITERAL, CHAR_LITERAL"/>

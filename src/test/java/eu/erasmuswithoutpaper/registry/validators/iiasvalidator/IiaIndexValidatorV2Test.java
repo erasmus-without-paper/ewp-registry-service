@@ -7,11 +7,12 @@ import java.util.List;
 
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.TestValidationReport;
-import eu.erasmuswithoutpaper.registry.validators.iiavalidator.IiaSuiteState;
 import eu.erasmuswithoutpaper.registry.validators.iiavalidator.IiaIndexValidator;
-import eu.erasmuswithoutpaper.registry.validators.types.IiasGetResponseV2;
+import eu.erasmuswithoutpaper.registry.validators.iiavalidator.IiaSuiteState;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
+import https.github_com.erasmus_without_paper.ewp_specs_api_iias.blob.stable_v2.endpoints.get_response.IiasGetResponse;
 import org.junit.Test;
 
 public class IiaIndexValidatorV2Test extends IiaValidatorTestBase {
@@ -144,7 +145,7 @@ public class IiaIndexValidatorV2Test extends IiaValidatorTestBase {
   public void testReturnsEmptyResponseWhenPartnerIdIsValidIsDetected() {
     IiasServiceValidV2 service = new IiasServiceValidV2(iiaIndexUrl, iiaGetUrl, this.client) {
       @Override
-      protected boolean filterPartnerHeiId(IiasGetResponseV2.Iia.Partner partner, String hei_id) {
+      protected boolean filterPartnerHeiId(IiasGetResponse.Iia.Partner partner, String hei_id) {
         return false;
       }
     };
@@ -187,8 +188,8 @@ public class IiaIndexValidatorV2Test extends IiaValidatorTestBase {
   public void testNotUsingModifiedSinceIsDetected() {
     IiasServiceValidV2 service = new IiasServiceValidV2(iiaIndexUrl, iiaGetUrl, this.client) {
       @Override
-      protected List<IiasGetResponseV2.Iia> filterIiasByModifiedSince(
-          List<IiasGetResponseV2.Iia> selectedIias, RequestData requestData) {
+      protected List<IiasGetResponse.Iia> filterIiasByModifiedSince(
+          List<IiasGetResponse.Iia> selectedIias, RequestData requestData) {
         return selectedIias;
       }
     };
@@ -202,8 +203,8 @@ public class IiaIndexValidatorV2Test extends IiaValidatorTestBase {
   public void testReturnsEmptyResponseWhenModifiedSinceIsUsed() {
     IiasServiceValidV2 service = new IiasServiceValidV2(iiaIndexUrl, iiaGetUrl, this.client) {
       @Override
-      protected List<IiasGetResponseV2.Iia> filterIiasByModifiedSince(
-          List<IiasGetResponseV2.Iia> selectedIias, RequestData requestData) {
+      protected List<IiasGetResponse.Iia> filterIiasByModifiedSince(
+          List<IiasGetResponse.Iia> selectedIias, RequestData requestData) {
         if (requestData.modifiedSince != null) {
           return new ArrayList<>();
         }

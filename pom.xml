@@ -248,7 +248,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>2.17</version>
+                <version>3.0.0</version>
                 <executions>
                     <execution>
                         <id>validate</id>
@@ -288,7 +288,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <excludePackageNames>eu.erasmuswithoutpaper.registry.validators.types</excludePackageNames>
+                    <excludePackageNames>https.github_com</excludePackageNames>
                 </configuration>
             </plugin>
             <plugin>
@@ -389,7 +389,6 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <packageName>eu.erasmuswithoutpaper.registry.validators.types</packageName>
                     <sources>
                         <source>src/main/resources/jaxb-schemas/ewp-specs-api-institutions-v2.1.0/response.xsd</source>
                         <source>src/main/resources/jaxb-schemas/ewp-specs-api-ounits-v2.1.0/response.xsd</source>
@@ -419,9 +418,6 @@
                         <source>src/main/resources/jaxb-schemas/ewp-specs-api-omobility-las-v0.3.0/endpoints/update-response.xsd</source>
                         <source>src/main/resources/jaxb-schemas/ewp-specs-api-omobility-las-v0.3.0/endpoints/update-request.xsd</source>
                     </sources>
-                    <xjbSources>
-                        <xjbSource>src/main/resources/schema-bindings/manifests.xjb</xjbSource>
-                    </xjbSources>
                 </configuration>
             </plugin>
             <plugin>

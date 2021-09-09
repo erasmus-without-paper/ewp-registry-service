@@ -20,10 +20,10 @@ import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registry.internet.sec.EwpClientWithRsaKey;
 import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigRequestAuthorizer;
 import eu.erasmuswithoutpaper.registry.internet.sec.Http4xx;
-import eu.erasmuswithoutpaper.registry.validators.types.ErrorResponse;
-import eu.erasmuswithoutpaper.registry.validators.types.MultilineString;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
+import https.github_com.erasmus_without_paper.ewp_specs_architecture.blob.stable_v1.common_types.ErrorResponse;
+import https.github_com.erasmus_without_paper.ewp_specs_architecture.blob.stable_v1.common_types.MultilineString;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.w3c.dom.Element;
 
@@ -39,10 +39,6 @@ public abstract class AbstractApiService implements FakeInternetService {
     return this.myAuthorizer;
   }
 
-  protected String getJaxbContextPackagePath() {
-    return "eu.erasmuswithoutpaper.registry.validators.types";
-  }
-
   protected AbstractApiService(RegistryClient registryClient) {
     this.myAuthorizer = createMyAuthorizer(registryClient);
     this.registryClient = registryClient;
@@ -50,7 +46,7 @@ public abstract class AbstractApiService implements FakeInternetService {
 
   protected String marshallObject(Object object) {
     try {
-      JAXBContext jc = JAXBContext.newInstance(getJaxbContextPackagePath());
+      JAXBContext jc = JAXBContext.newInstance(object.getClass().getPackage().getName());
       Marshaller marshaller = jc.createMarshaller();
       marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
       StringWriter sw = new StringWriter();
@@ -62,8 +58,8 @@ public abstract class AbstractApiService implements FakeInternetService {
     }
   }
 
-  protected <T> T unmarshallObject(byte[] data) throws JAXBException {
-    JAXBContext jc = JAXBContext.newInstance(getJaxbContextPackagePath());
+  protected <T> T unmarshallObject(byte[] data, Class aClass) throws JAXBException {
+    JAXBContext jc = JAXBContext.newInstance(aClass.getPackage().getName());
     Unmarshaller unmarshaller = jc.createUnmarshaller();
     Element xml = AbstractValidationSuite.makeXmlFromBytes(data, true);
     return (T) unmarshaller.unmarshal(xml);

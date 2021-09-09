@@ -7,9 +7,10 @@ import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registry.validators.AbstractApiService;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
-import eu.erasmuswithoutpaper.registry.validators.types.StudentMobilityForStudiesOMobilitiesV1;
-import eu.erasmuswithoutpaper.registry.validators.types.OmobilitiesGetResponseOMobilitiesV1;
-import eu.erasmuswithoutpaper.registry.validators.types.OmobilitiesIndexResponse;
+
+import https.github_com.erasmus_without_paper.ewp_specs_api_omobilities.blob.stable_v1.endpoints.get_response.OmobilitiesGetResponse;
+import https.github_com.erasmus_without_paper.ewp_specs_api_omobilities.blob.stable_v1.endpoints.get_response.StudentMobilityForStudies;
+import https.github_com.erasmus_without_paper.ewp_specs_api_omobilities.blob.stable_v1.endpoints.index_response.OmobilitiesIndexResponse;
 
 public abstract class AbstractOMobilitiesService extends AbstractApiService {
   protected final RegistryClient registryClient;
@@ -46,8 +47,8 @@ public abstract class AbstractOMobilitiesService extends AbstractApiService {
   }
 
   protected Response createOMobilitiesGetResponse(
-      List<StudentMobilityForStudiesOMobilitiesV1> data) {
-    OmobilitiesGetResponseOMobilitiesV1 response = new OmobilitiesGetResponseOMobilitiesV1 ();
+      List<StudentMobilityForStudies> data) {
+    OmobilitiesGetResponse response = new OmobilitiesGetResponse();
     response.getSingleMobilityObject().addAll(data);
     return marshallResponse(200, response);
   }

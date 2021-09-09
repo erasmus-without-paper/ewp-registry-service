@@ -16,6 +16,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.Stack;
 import java.util.stream.Collectors;
+
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -33,6 +34,7 @@ import javax.xml.validation.Validator;
 
 import eu.erasmuswithoutpaper.registry.common.Utils;
 import eu.erasmuswithoutpaper.registry.xmlformatter.XmlFormatter;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -285,6 +287,7 @@ public class EwpDocBuilder {
    *     Required set of input parameters (including the XML content).
    * @return An object describing the results of the validation.
    */
+  @SuppressWarnings("checkstyle:LineLength")
   public BuildResult buildManifest(BuildParams input) {
 
     byte[] xml = input.getXml();
@@ -325,8 +328,8 @@ public class EwpDocBuilder {
       source = new SAXSource(xmlFilter, new InputSource(new ByteArrayInputStream(xml)));
 
       JAXBContext jc = JAXBContext.newInstance(
-          eu.erasmuswithoutpaper.registry.validators.types.ManifestV4.class,
-          eu.erasmuswithoutpaper.registry.validators.types.ManifestV5.class);
+          https.github_com.erasmus_without_paper.ewp_specs_api_discovery.tree.stable_v4.Manifest.class,
+          https.github_com.erasmus_without_paper.ewp_specs_api_discovery.tree.stable_v5.Manifest.class);
       unmarshaller = jc.createUnmarshaller();
       unmarshaller.setSchema(this.compoundSchema);
       unmarshaller.setEventHandler(eventHandler);

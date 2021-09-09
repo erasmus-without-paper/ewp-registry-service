@@ -1,16 +1,15 @@
 package eu.erasmuswithoutpaper.registry.validators.imobilitytorsvalidator;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registry.validators.AbstractApiService;
-import eu.erasmuswithoutpaper.registry.validators.types.ImobilityTorsGetResponse;
-import eu.erasmuswithoutpaper.registry.validators.types.ImobilityTorsIndexResponse;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
+
+import https.github_com.erasmus_without_paper.ewp_specs_api_imobility_tors.blob.stable_v1.endpoints.get_response.ImobilityTorsGetResponse;
+import https.github_com.erasmus_without_paper.ewp_specs_api_imobility_tors.blob.stable_v1.endpoints.index_response.ImobilityTorsIndexResponse;
 
 public abstract class AbstractIMobilityTorsService extends AbstractApiService {
   protected final RegistryClient registryClient;

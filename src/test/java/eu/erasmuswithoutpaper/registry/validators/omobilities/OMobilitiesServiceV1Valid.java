@@ -6,7 +6,6 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import eu.erasmuswithoutpaper.registry.internet.InternetTestHelpers;
@@ -14,10 +13,11 @@ import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registry.internet.sec.EwpClientWithRsaKey;
 import eu.erasmuswithoutpaper.registry.validators.ParameterInfo;
-import eu.erasmuswithoutpaper.registry.validators.types.MobilityStatusOMobilitiesV1;
-import eu.erasmuswithoutpaper.registry.validators.types.StringWithOptionalLang;
-import eu.erasmuswithoutpaper.registry.validators.types.StudentMobilityForStudiesOMobilitiesV1;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
+
+import https.github_com.erasmus_without_paper.ewp_specs_api_omobilities.blob.stable_v1.endpoints.get_response.MobilityStatus;
+import https.github_com.erasmus_without_paper.ewp_specs_api_omobilities.blob.stable_v1.endpoints.get_response.StudentMobilityForStudies;
+import https.github_com.erasmus_without_paper.ewp_specs_architecture.blob.stable_v1.common_types.StringWithOptionalLang;
 
 
 public class OMobilitiesServiceV1Valid extends AbstractOMobilitiesService {
@@ -44,39 +44,39 @@ public class OMobilitiesServiceV1Valid extends AbstractOMobilitiesService {
     final String RECEIVING_HEI_ID_1 = "validator-hei01.developers.erasmuswithoutpaper.eu";
     final String RECEIVING_HEI_ID_2 = "uw.edu.pl";
 
-    StudentMobilityForStudiesOMobilitiesV1 mobility1 = new StudentMobilityForStudiesOMobilitiesV1();
+    StudentMobilityForStudies mobility1 = new StudentMobilityForStudies();
     mobility1.setOmobilityId("omobility-1");
     mobility1.setReceivingAcademicYearId("2020/2021");
-    StudentMobilityForStudiesOMobilitiesV1.SendingHei sendingHei1 = new StudentMobilityForStudiesOMobilitiesV1.SendingHei();
+    StudentMobilityForStudies.SendingHei sendingHei1 = new StudentMobilityForStudies.SendingHei();
     sendingHei1.setHeiId(heiIdToCover);
     mobility1.setSendingHei(sendingHei1);
-    StudentMobilityForStudiesOMobilitiesV1.ReceivingHei receivingHei1 = new StudentMobilityForStudiesOMobilitiesV1.ReceivingHei();
+    StudentMobilityForStudies.ReceivingHei receivingHei1 = new StudentMobilityForStudies.ReceivingHei();
     receivingHei1.setHeiId(RECEIVING_HEI_ID_1);
     mobility1.setReceivingHei(receivingHei1);
     mobility1.setSendingAcademicTermEwpId("2020/2021-1/2");
-    StudentMobilityForStudiesOMobilitiesV1.Student student1 = new StudentMobilityForStudiesOMobilitiesV1.Student();
+    StudentMobilityForStudies.Student student1 = new StudentMobilityForStudies.Student();
     student1.getGivenNames().add(stringWithOptionalLang("test1"));
     student1.getFamilyName().add(stringWithOptionalLang("test2"));
     mobility1.setStudent(student1);
-    mobility1.setStatus(MobilityStatusOMobilitiesV1.LIVE);
+    mobility1.setStatus(MobilityStatus.LIVE);
     mobilities.add(new OMobilityEntry(mobility1, heiIdToCover, RECEIVING_HEI_ID_1));
 
 
-    StudentMobilityForStudiesOMobilitiesV1 mobility2 = new StudentMobilityForStudiesOMobilitiesV1();
+    StudentMobilityForStudies mobility2 = new StudentMobilityForStudies();
     mobility2.setOmobilityId("omobility-2");
     mobility2.setReceivingAcademicYearId("2020/2021");
-    StudentMobilityForStudiesOMobilitiesV1.SendingHei sendingHei2 = new StudentMobilityForStudiesOMobilitiesV1.SendingHei();
+    StudentMobilityForStudies.SendingHei sendingHei2 = new StudentMobilityForStudies.SendingHei();
     sendingHei2.setHeiId(heiIdToCover);
     mobility2.setSendingHei(sendingHei2);
-    StudentMobilityForStudiesOMobilitiesV1.ReceivingHei receivingHei2 = new StudentMobilityForStudiesOMobilitiesV1.ReceivingHei();
+    StudentMobilityForStudies.ReceivingHei receivingHei2 = new StudentMobilityForStudies.ReceivingHei();
     receivingHei2.setHeiId(RECEIVING_HEI_ID_2);
     mobility2.setReceivingHei(receivingHei2);
     mobility2.setSendingAcademicTermEwpId("2020/2021-8/9");
-    StudentMobilityForStudiesOMobilitiesV1.Student student2 = new StudentMobilityForStudiesOMobilitiesV1.Student();
+    StudentMobilityForStudies.Student student2 = new StudentMobilityForStudies.Student();
     student2.getGivenNames().add(stringWithOptionalLang("test1"));
     student2.getFamilyName().add(stringWithOptionalLang("test2"));
     mobility2.setStudent(student2);
-    mobility2.setStatus(MobilityStatusOMobilitiesV1.LIVE);
+    mobility2.setStatus(MobilityStatus.LIVE);
     mobilities.add(new OMobilityEntry(mobility2, heiIdToCover, RECEIVING_HEI_ID_2));
   }
 
@@ -144,7 +144,7 @@ public class OMobilitiesServiceV1Valid extends AbstractOMobilitiesService {
       checkSendingHeiId(requestData);
       checkOMobilityIds(requestData);
       List<OMobilityEntry> selectedOMobilities = filterOMobilitiesForGet(mobilities, requestData);
-      List<StudentMobilityForStudiesOMobilitiesV1> result = selectedOMobilities.stream()
+      List<StudentMobilityForStudies> result = selectedOMobilities.stream()
           .map(oMobilityEntry -> oMobilityEntry.mobility)
           .collect(Collectors.toList());
       return createOMobilitiesGetResponse(result);
@@ -416,11 +416,11 @@ public class OMobilitiesServiceV1Valid extends AbstractOMobilitiesService {
 
 
   protected static class OMobilityEntry {
-    public StudentMobilityForStudiesOMobilitiesV1 mobility;
+    public StudentMobilityForStudies mobility;
     public String sending_hei_id;
     public String receiving_hei_id;
 
-    public OMobilityEntry(StudentMobilityForStudiesOMobilitiesV1 mobility, String sending_hei_id,
+    public OMobilityEntry(StudentMobilityForStudies mobility, String sending_hei_id,
         String receiving_hei_id) {
       this.mobility = mobility ;
       this.sending_hei_id = sending_hei_id;

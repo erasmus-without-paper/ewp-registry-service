@@ -14,13 +14,13 @@ import eu.erasmuswithoutpaper.registry.internet.InternetTestHelpers;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registry.validators.ValidatorKeyStore;
-import eu.erasmuswithoutpaper.registry.validators.types.CalendarEntry;
-import eu.erasmuswithoutpaper.registry.validators.types.InformationEntry;
-import eu.erasmuswithoutpaper.registry.validators.types.FactsheetResponse;
-import eu.erasmuswithoutpaper.registry.validators.types.PhoneNumber;
-import eu.erasmuswithoutpaper.registry.validators.types.FactsheetResponse.Factsheet.Accessibility;
-import eu.erasmuswithoutpaper.registry.validators.types.HTTPWithOptionalLang;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
+
+import https.github_com.erasmus_without_paper.ewp_specs_api_factsheet.tree.stable_v1.CalendarEntry;
+import https.github_com.erasmus_without_paper.ewp_specs_api_factsheet.tree.stable_v1.FactsheetResponse;
+import https.github_com.erasmus_without_paper.ewp_specs_api_factsheet.tree.stable_v1.InformationEntry;
+import https.github_com.erasmus_without_paper.ewp_specs_architecture.blob.stable_v1.common_types.HTTPWithOptionalLang;
+import https.github_com.erasmus_without_paper.ewp_specs_types_phonenumber.tree.stable_v1.PhoneNumber;
 
 
 public class FactsheetServiceV030Valid extends AbstractFactsheetService {
@@ -70,7 +70,7 @@ public class FactsheetServiceV030Valid extends AbstractFactsheetService {
     factsheet.setApplicationInfo(informationEntry);
     factsheet.setDecisionWeeksLimit(new BigInteger("12"));
     factsheet.setTorWeeksLimit(new BigInteger("123"));
-    Accessibility accessability = new Accessibility();
+    FactsheetResponse.Factsheet.Accessibility accessability = new FactsheetResponse.Factsheet.Accessibility();
     accessability.setName("test");
     accessability.setType("service");
     accessability.setInformation(informationEntry);

@@ -23,13 +23,14 @@ import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registry.internet.sec.EwpClientWithRsaKey;
 import eu.erasmuswithoutpaper.registry.validators.ParameterInfo;
-import eu.erasmuswithoutpaper.registry.validators.types.LearningAgreement;
-import eu.erasmuswithoutpaper.registry.validators.types.MobilityInstitution;
-import eu.erasmuswithoutpaper.registry.validators.types.StringWithOptionalLang;
-import eu.erasmuswithoutpaper.registry.validators.types.OmobilityLasUpdateRequest;
-import eu.erasmuswithoutpaper.registry.validators.types.ApproveComponentsStudiedProposalV1;
-import eu.erasmuswithoutpaper.registry.validators.types.UpdateComponentsStudiedV1;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
+
+import https.github_com.erasmus_without_paper.ewp_specs_api_omobility_las.blob.stable_v1.endpoints.get_response.LearningAgreement;
+import https.github_com.erasmus_without_paper.ewp_specs_api_omobility_las.blob.stable_v1.endpoints.get_response.MobilityInstitution;
+import https.github_com.erasmus_without_paper.ewp_specs_api_omobility_las.blob.stable_v1.endpoints.update_request.ApproveComponentsStudiedProposalV1;
+import https.github_com.erasmus_without_paper.ewp_specs_api_omobility_las.blob.stable_v1.endpoints.update_request.OmobilityLasUpdateRequest;
+import https.github_com.erasmus_without_paper.ewp_specs_api_omobility_las.blob.stable_v1.endpoints.update_request.UpdateComponentsStudiedV1;
+import https.github_com.erasmus_without_paper.ewp_specs_architecture.blob.stable_v1.common_types.StringWithOptionalLang;
 
 
 public class OMobilityLAsServiceV030Valid extends AbstractOMobilityLAsService {
@@ -160,24 +161,24 @@ public class OMobilityLAsServiceV030Valid extends AbstractOMobilityLAsService {
 
     learningAgreements.add(la2);
 
-//    StudentMobilityForStudiesOMobilitiesV1 mobility2 = new StudentMobilityForStudiesOMobilitiesV1();
+//    StudentMobilityForStudies mobility2 = new StudentMobilityForStudies();
 //    mobility2.setOmobilityId("omobility-2");
 //    mobility2.setReceivingAcademicYearId("2020/2021");
-//    StudentMobilityForStudiesOMobilitiesV1.SendingHei sendingHei2 =
-//        new StudentMobilityForStudiesOMobilitiesV1.SendingHei();
+//    StudentMobilityForStudies.SendingHei sendingHei2 =
+//        new StudentMobilityForStudies.SendingHei();
 //    sendingHei2.setHeiId(heiIdToCover);
 //    mobility2.setSendingHei(sendingHei2);
-//    StudentMobilityForStudiesOMobilitiesV1.ReceivingHei receivingHei2 =
-//        new StudentMobilityForStudiesOMobilitiesV1.ReceivingHei();
+//    StudentMobilityForStudies.ReceivingHei receivingHei2 =
+//        new StudentMobilityForStudies.ReceivingHei();
 //    receivingHei2.setHeiId(RECEIVING_HEI_ID_2);
 //    mobility2.setReceivingHei(receivingHei2);
 //    mobility2.setSendingAcademicTermEwpId("2020/2021-8/9");
-//    StudentMobilityForStudiesOMobilitiesV1.Student student2 =
-//        new StudentMobilityForStudiesOMobilitiesV1.Student();
+//    StudentMobilityForStudies.Student student2 =
+//        new StudentMobilityForStudies.Student();
 //    student2.getGivenNames().add(stringWithOptionalLang("test1"));
 //    student2.getFamilyName().add(stringWithOptionalLang("test2"));
 //    mobility2.setStudent(student2);
-//    mobility2.setStatus(MobilityStatusOMobilitiesV1.LIVE);
+//    mobility2.setStatus(MobilityStatus.LIVE);
 //    learningAgreements.add(new LearningAgreement(mobility2, heiIdToCover, RECEIVING_HEI_ID_2));
   }
 
@@ -442,7 +443,7 @@ public class OMobilityLAsServiceV030Valid extends AbstractOMobilityLAsService {
   private void extractUpdateParams(RequestData requestData) throws ErrorResponseException {
     checkParamsEncoding(requestData.request, "text/xml");
     try {
-      requestData.updateRequest = unmarshallObject(requestData.request.getBody().get());
+      requestData.updateRequest = unmarshallObject(requestData.request.getBody().get(), OmobilityLasUpdateRequest.class);
       requestData.sendingHeiId = requestData.updateRequest.getSendingHeiId();
     } catch (JAXBException e) {
       errorInvalidUpdateRequestFormat(requestData);

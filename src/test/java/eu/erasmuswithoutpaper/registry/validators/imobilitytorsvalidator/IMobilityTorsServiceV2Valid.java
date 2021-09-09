@@ -17,10 +17,11 @@ import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registry.internet.sec.EwpClientWithRsaKey;
 import eu.erasmuswithoutpaper.registry.validators.ParameterInfo;
-import eu.erasmuswithoutpaper.registry.validators.types.ImobilityTorsGetResponse;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 import org.springframework.core.io.ResourceLoader;
+
+import https.github_com.erasmus_without_paper.ewp_specs_api_imobility_tors.blob.stable_v1.endpoints.get_response.ImobilityTorsGetResponse;
 
 public class IMobilityTorsServiceV2Valid extends AbstractIMobilityTorsService {
   protected List<IMobilityTorEntry> tors = new ArrayList<>();

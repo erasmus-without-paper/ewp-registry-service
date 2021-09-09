@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <FindBugsFilter>
     <Match>
-        <Package name="eu.erasmuswithoutpaper.registry.validators.types" />
+        <Package name="~https.github_com.*" />
+    </Match>
+    <Match>
+        <Package name="~org.w3.*" />
     </Match>
 </FindBugsFilter>

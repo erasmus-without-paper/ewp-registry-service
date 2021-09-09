@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -14,9 +15,10 @@ import eu.erasmuswithoutpaper.registry.validators.AbstractApiTest;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.SemanticVersion;
 import eu.erasmuswithoutpaper.registry.validators.TestValidationReport;
-import eu.erasmuswithoutpaper.registry.validators.types.MtInstitutionsResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
+import https.github_com.erasmus_without_paper.ewp_specs_api_mt_institutions.tree.stable_v1.MtInstitutionsResponse;
 import org.junit.Test;
 
 public class MtInstitutionsValidatorTest extends AbstractApiTest {

@@ -6,8 +6,9 @@ import java.util.List;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registry.validators.AbstractApiService;
-import eu.erasmuswithoutpaper.registry.validators.types.FactsheetResponse;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
+
+import https.github_com.erasmus_without_paper.ewp_specs_api_factsheet.tree.stable_v1.FactsheetResponse;
 
 public abstract class AbstractFactsheetService extends AbstractApiService {
   protected final String myEndpoint;

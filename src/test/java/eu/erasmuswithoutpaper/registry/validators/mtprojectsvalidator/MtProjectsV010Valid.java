@@ -7,14 +7,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 
 import eu.erasmuswithoutpaper.registry.internet.InternetTestHelpers;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
-import eu.erasmuswithoutpaper.registry.validators.types.MtProjectsResponse;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
+
+import https.github_com.erasmus_without_paper.ewp_specs_api_mt_projects.tree.stable_v1.MtProjectsResponse;
 
 public class MtProjectsV010Valid extends AbstractMtProjectsService {
 

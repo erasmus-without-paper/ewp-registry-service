@@ -9,13 +9,13 @@ import java.util.Map;
 import eu.erasmuswithoutpaper.registry.internet.InternetTestHelpers;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
-import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigRequestAuthorizer;
 import eu.erasmuswithoutpaper.registry.validators.ValidatorKeyStore;
-import eu.erasmuswithoutpaper.registry.validators.types.FlexibleAddress;
-import eu.erasmuswithoutpaper.registry.validators.types.HTTPWithOptionalLang;
-import eu.erasmuswithoutpaper.registry.validators.types.InstitutionsResponse;
-import eu.erasmuswithoutpaper.registry.validators.types.StringWithOptionalLang;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
+
+import https.github_com.erasmus_without_paper.ewp_specs_api_institutions.tree.stable_v2.InstitutionsResponse;
+import https.github_com.erasmus_without_paper.ewp_specs_architecture.blob.stable_v1.common_types.HTTPWithOptionalLang;
+import https.github_com.erasmus_without_paper.ewp_specs_architecture.blob.stable_v1.common_types.StringWithOptionalLang;
+import https.github_com.erasmus_without_paper.ewp_specs_types_address.tree.stable_v1.FlexibleAddress;
 
 public class InstitutionServiceV2Valid extends AbstractInstitutionService {
 

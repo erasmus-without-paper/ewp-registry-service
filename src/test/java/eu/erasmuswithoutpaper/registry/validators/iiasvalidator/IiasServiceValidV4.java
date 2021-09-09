@@ -1,7 +1,5 @@
 package eu.erasmuswithoutpaper.registry.validators.iiasvalidator;
 
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.Instant;
@@ -12,18 +10,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+
 import eu.erasmuswithoutpaper.registry.internet.InternetTestHelpers;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registry.validators.ParameterInfo;
-import eu.erasmuswithoutpaper.registry.validators.types.Contact;
-import eu.erasmuswithoutpaper.registry.validators.types.IiasGetResponseV4;
-import eu.erasmuswithoutpaper.registry.validators.types.IiasGetResponseV4.Iia;
-import eu.erasmuswithoutpaper.registry.validators.types.IiasIndexResponseV4;
-import eu.erasmuswithoutpaper.registry.validators.types.MobilitySpecificationV4;
-import eu.erasmuswithoutpaper.registry.validators.types.StringWithOptionalLang;
-import eu.erasmuswithoutpaper.registry.validators.types.StudentTraineeshipMobilitySpecV4;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
+
+import https.github_com.erasmus_without_paper.ewp_specs_api_iias.blob.stable_v4.endpoints.get_response.IiasGetResponse;
+import https.github_com.erasmus_without_paper.ewp_specs_api_iias.blob.stable_v4.endpoints.get_response.IiasGetResponse.Iia;
+import https.github_com.erasmus_without_paper.ewp_specs_api_iias.blob.stable_v4.endpoints.get_response.MobilitySpecification;
+import https.github_com.erasmus_without_paper.ewp_specs_api_iias.blob.stable_v4.endpoints.get_response.StudentTraineeshipMobilitySpec;
+import https.github_com.erasmus_without_paper.ewp_specs_api_iias.blob.stable_v4.endpoints.index_response.IiasIndexResponse;
+import https.github_com.erasmus_without_paper.ewp_specs_architecture.blob.stable_v1.common_types.StringWithOptionalLang;
+import https.github_com.erasmus_without_paper.ewp_specs_types_contact.tree.stable_v1.Contact;
 
 public class IiasServiceValidV4 extends AbstractIiasService {
   protected List<String> coveredHeiIds = new ArrayList<>();
@@ -100,8 +102,8 @@ public class IiasServiceValidV4 extends AbstractIiasService {
     iia1.setInEffect(true);
 
     Iia.CooperationConditions cooperationConditions = new Iia.CooperationConditions();
-    StudentTraineeshipMobilitySpecV4 studentTraineeshipMobilitySpec =
-        new StudentTraineeshipMobilitySpecV4();
+    StudentTraineeshipMobilitySpec studentTraineeshipMobilitySpec =
+        new StudentTraineeshipMobilitySpec();
     studentTraineeshipMobilitySpec.setTotalMonths(new BigDecimal(6));
     studentTraineeshipMobilitySpec.setMobilitiesPerYear(BigInteger.valueOf(10));
     studentTraineeshipMobilitySpec.setSendingHeiId(THIS_SERVICE_HEI_ID);
@@ -163,7 +165,7 @@ public class IiasServiceValidV4 extends AbstractIiasService {
     iia2.setInEffect(true);
 
     cooperationConditions = new Iia.CooperationConditions();
-    studentTraineeshipMobilitySpec = new StudentTraineeshipMobilitySpecV4();
+    studentTraineeshipMobilitySpec = new StudentTraineeshipMobilitySpec();
     studentTraineeshipMobilitySpec.setTotalMonths(new BigDecimal(6));
     studentTraineeshipMobilitySpec.setMobilitiesPerYear(BigInteger.valueOf(10));
     studentTraineeshipMobilitySpec.setSendingHeiId(THIS_SERVICE_HEI_ID);
@@ -368,7 +370,7 @@ public class IiasServiceValidV4 extends AbstractIiasService {
 
     List<Iia> result = new ArrayList<>();
     for (Iia iia : iias) {
-      ArrayList<MobilitySpecificationV4> specs = new ArrayList<>();
+      ArrayList<MobilitySpecification> specs = new ArrayList<>();
       specs.addAll(iia.getCooperationConditions().getStudentStudiesMobilitySpec());
       specs.addAll(iia.getCooperationConditions().getStudentTraineeshipMobilitySpec());
       specs.addAll(iia.getCooperationConditions().getStaffTeacherMobilitySpec());
@@ -599,13 +601,13 @@ public class IiasServiceValidV4 extends AbstractIiasService {
   }
 
   protected Response createIiasGetResponse(List<Iia> data) {
-    IiasGetResponseV4 response = new IiasGetResponseV4();
+    IiasGetResponse response = new IiasGetResponse();
     response.getIia().addAll(data);
     return marshallResponse(200, response);
   }
 
   protected Response createIiasIndexResponse(List<String> data) {
-    IiasIndexResponseV4 response = new IiasIndexResponseV4();
+    IiasIndexResponse response = new IiasIndexResponse();
     response.getIiaId().addAll(data);
     return marshallResponse(200, response);
   }

@@ -1,15 +1,17 @@
 package eu.erasmuswithoutpaper.registry.validators.omobilitylasvalidator;
 
 
+import static eu.erasmuswithoutpaper.registry.validators.TestValidationReportAsset.assertThat;
+
 import java.util.ArrayList;
 
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.TestValidationReport;
 import eu.erasmuswithoutpaper.registry.validators.omobilitylasvalidator.get.OMobilityLAsGetValidator;
-import eu.erasmuswithoutpaper.registry.validators.types.LearningAgreement;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import static eu.erasmuswithoutpaper.registry.validators.TestValidationReportAsset.assertThat;
+
+import https.github_com.erasmus_without_paper.ewp_specs_api_omobility_las.blob.stable_v1.endpoints.get_response.LearningAgreement;
 import org.junit.Test;
 
 public class OMobilityLAsGetValidatorTest extends OMobilityLAsValidatorTestBase {

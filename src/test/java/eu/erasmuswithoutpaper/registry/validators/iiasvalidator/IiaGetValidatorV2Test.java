@@ -10,11 +10,12 @@ import java.util.List;
 
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.TestValidationReport;
-import eu.erasmuswithoutpaper.registry.validators.iiavalidator.IiaSuiteState;
 import eu.erasmuswithoutpaper.registry.validators.iiavalidator.IiaGetValidator;
-import eu.erasmuswithoutpaper.registry.validators.types.IiasGetResponseV2;
+import eu.erasmuswithoutpaper.registry.validators.iiavalidator.IiaSuiteState;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
+import https.github_com.erasmus_without_paper.ewp_specs_api_iias.blob.stable_v2.endpoints.get_response.IiasGetResponse;
 import org.junit.Test;
 
 public class IiaGetValidatorV2Test extends IiaValidatorTestBase {
@@ -237,7 +238,7 @@ public class IiaGetValidatorV2Test extends IiaValidatorTestBase {
     IiasServiceValidV2 service = new IiasServiceValidV2(iiaIndexUrl, iiaGetUrl, this.client) {
       @Override
       protected String handleUnknownIiaId(String iiaId,
-          List<IiasGetResponseV2.Iia> selectedIias) {
+          List<IiasGetResponse.Iia> selectedIias) {
         return selectedIias.get(0).getPartner().get(0).getIiaId();
       }
     };
@@ -253,7 +254,7 @@ public class IiaGetValidatorV2Test extends IiaValidatorTestBase {
     IiasServiceValidV2 service = new IiasServiceValidV2(iiaIndexUrl, iiaGetUrl, this.client) {
       @Override
       protected String handleUnknownIiaCode(String iiaCode,
-          List<IiasGetResponseV2.Iia> selectedIias) {
+          List<IiasGetResponse.Iia> selectedIias) {
         return selectedIias.get(0).getPartner().get(0).getIiaCode();
       }
     };
@@ -266,7 +267,7 @@ public class IiaGetValidatorV2Test extends IiaValidatorTestBase {
   public void testReturningSingleOunitForMultipleEqualOunitIdsIsAccepted() {
     IiasServiceValidV2 service = new IiasServiceValidV2(iiaIndexUrl, iiaGetUrl, this.client) {
       @Override
-      protected List<IiasGetResponseV2.Iia> filterIiasByCode(List<IiasGetResponseV2.Iia> selectedIias,
+      protected List<IiasGetResponse.Iia> filterIiasByCode(List<IiasGetResponse.Iia> selectedIias,
           RequestData requestData) {
         return new ArrayList<>(new HashSet<>(super.filterIiasByCode(selectedIias, requestData)));
       }

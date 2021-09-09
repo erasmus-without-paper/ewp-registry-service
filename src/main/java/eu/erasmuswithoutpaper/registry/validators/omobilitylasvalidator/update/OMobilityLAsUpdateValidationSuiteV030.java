@@ -20,13 +20,13 @@ import eu.erasmuswithoutpaper.registry.validators.Combination;
 import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
 import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus;
 import eu.erasmuswithoutpaper.registry.validators.omobilitylasvalidator.OMobilityLAsSuiteState;
-import eu.erasmuswithoutpaper.registry.validators.types.ApproveComponentsStudiedProposalV1;
-import eu.erasmuswithoutpaper.registry.validators.types.ApprovingParty;
-import eu.erasmuswithoutpaper.registry.validators.types.OmobilityLasUpdateRequest;
-import eu.erasmuswithoutpaper.registry.validators.types.UpdateComponentsStudiedV1;
 import eu.erasmuswithoutpaper.registry.validators.verifiers.VerifierFactory;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import https.github_com.erasmus_without_paper.ewp_specs_api_omobility_las.blob.stable_v1.endpoints.get_response.ApprovingParty;
+import https.github_com.erasmus_without_paper.ewp_specs_api_omobility_las.blob.stable_v1.endpoints.update_request.ApproveComponentsStudiedProposalV1;
+import https.github_com.erasmus_without_paper.ewp_specs_api_omobility_las.blob.stable_v1.endpoints.update_request.OmobilityLasUpdateRequest;
+import https.github_com.erasmus_without_paper.ewp_specs_api_omobility_las.blob.stable_v1.endpoints.update_request.UpdateComponentsStudiedV1;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;

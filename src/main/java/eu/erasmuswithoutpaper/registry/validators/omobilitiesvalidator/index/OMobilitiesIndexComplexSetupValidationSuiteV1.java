@@ -22,10 +22,10 @@ import eu.erasmuswithoutpaper.registry.validators.InlineValidationStep;
 import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
 import eu.erasmuswithoutpaper.registry.validators.ValidationParameter;
 import eu.erasmuswithoutpaper.registry.validators.omobilitiesvalidator.OMobilitiesSuiteState;
-import eu.erasmuswithoutpaper.registry.validators.types.OmobilitiesGetResponseOMobilitiesV1;
-import eu.erasmuswithoutpaper.registry.validators.types.StudentMobilityForStudiesOMobilitiesV1;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import https.github_com.erasmus_without_paper.ewp_specs_api_omobilities.blob.stable_v1.endpoints.get_response.OmobilitiesGetResponse;
+import https.github_com.erasmus_without_paper.ewp_specs_api_omobilities.blob.stable_v1.endpoints.get_response.StudentMobilityForStudies;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
@@ -159,13 +159,13 @@ public class OMobilitiesIndexComplexSetupValidationSuiteV1
         }
         expect200(response);
 
-        OmobilitiesGetResponseOMobilitiesV1 getResponse;
+        OmobilitiesGetResponse getResponse;
         try {
           JAXBContext jaxbContext = JAXBContext.newInstance(
-              OmobilitiesGetResponseOMobilitiesV1.class);
+              OmobilitiesGetResponse.class);
           Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
           Element xml = makeXmlFromBytes(response.getBody(), true);
-          getResponse = (OmobilitiesGetResponseOMobilitiesV1) unmarshaller.unmarshal(xml);
+          getResponse = (OmobilitiesGetResponse) unmarshaller.unmarshal(xml);
         } catch (JAXBException e) {
           throw new Failure(
               "Received 200 OK but the response was empty or didn't contain correct "
@@ -182,7 +182,7 @@ public class OMobilitiesIndexComplexSetupValidationSuiteV1
         }
 
         // receiving-academic-year-id element is required by the schema.
-        StudentMobilityForStudiesOMobilitiesV1 mobility =
+        StudentMobilityForStudies mobility =
             getResponse.getSingleMobilityObject().get(0);
         receivedAcademicYearIds.add(mobility.getReceivingAcademicYearId());
 

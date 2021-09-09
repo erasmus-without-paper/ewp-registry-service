@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
@@ -23,10 +24,10 @@ import eu.erasmuswithoutpaper.registry.validators.InlineValidationStep;
 import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
 import eu.erasmuswithoutpaper.registry.validators.ValidationParameter;
 import eu.erasmuswithoutpaper.registry.validators.iiavalidator.IiaSuiteState;
-import eu.erasmuswithoutpaper.registry.validators.types.IiasGetResponseV2;
-import eu.erasmuswithoutpaper.registry.validators.types.MobilitySpecificationV2;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import https.github_com.erasmus_without_paper.ewp_specs_api_iias.blob.stable_v2.endpoints.get_response.IiasGetResponse;
+import https.github_com.erasmus_without_paper.ewp_specs_api_iias.blob.stable_v2.endpoints.get_response.MobilitySpecification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
@@ -189,12 +190,12 @@ public class IiaIndexComplexSetupValidationSuiteV2
         }
         expect200(response);
 
-        IiasGetResponseV2 getResponse;
+        IiasGetResponse getResponse;
         try {
-          JAXBContext jaxbContext = JAXBContext.newInstance(IiasGetResponseV2.class);
+          JAXBContext jaxbContext = JAXBContext.newInstance(IiasGetResponse.class);
           Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
           Element xml = makeXmlFromBytes(response.getBody(), true);
-          getResponse = (IiasGetResponseV2) unmarshaller.unmarshal(xml);
+          getResponse = (IiasGetResponse) unmarshaller.unmarshal(xml);
         } catch (JAXBException e) {
           throw new Failure(
               "Received 200 OK but the response was empty or didn't contain correct "
@@ -210,7 +211,7 @@ public class IiaIndexComplexSetupValidationSuiteV2
               Status.NOTICE, response);
         }
 
-        IiasGetResponseV2.Iia iia = getResponse.getIia().get(0);
+        IiasGetResponse.Iia iia = getResponse.getIia().get(0);
 
         // Schema ensures that there are at least two partners in every iia element.
         iiaInfo.heiId = iia.getPartner().get(0).getHeiId();
@@ -224,7 +225,7 @@ public class IiaIndexComplexSetupValidationSuiteV2
         }
 
         iiaInfo.partnerHeiId = iia.getPartner().get(1).getHeiId();
-        ArrayList<MobilitySpecificationV2> specs = new ArrayList<>();
+        ArrayList<MobilitySpecification> specs = new ArrayList<>();
         specs.addAll(iia.getCooperationConditions().getStudentStudiesMobilitySpec());
         specs.addAll(iia.getCooperationConditions().getStudentTraineeshipMobilitySpec());
         specs.addAll(iia.getCooperationConditions().getStaffTeacherMobilitySpec());

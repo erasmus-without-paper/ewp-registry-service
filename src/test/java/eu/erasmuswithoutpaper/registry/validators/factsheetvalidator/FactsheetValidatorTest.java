@@ -1,5 +1,7 @@
 package eu.erasmuswithoutpaper.registry.validators.factsheetvalidator;
 
+import static eu.erasmuswithoutpaper.registry.validators.TestValidationReportAsset.assertThat;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -10,10 +12,10 @@ import eu.erasmuswithoutpaper.registry.validators.AbstractApiTest;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.SemanticVersion;
 import eu.erasmuswithoutpaper.registry.validators.TestValidationReport;
-import eu.erasmuswithoutpaper.registry.validators.types.FactsheetResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import static eu.erasmuswithoutpaper.registry.validators.TestValidationReportAsset.assertThat;
+
+import https.github_com.erasmus_without_paper.ewp_specs_api_factsheet.tree.stable_v1.FactsheetResponse;
 import org.junit.Test;
 
 public class FactsheetValidatorTest extends AbstractApiTest {
@@ -146,7 +148,7 @@ public class FactsheetValidatorTest extends AbstractApiTest {
             validatorKeyStoreSet.getMainKeyStore()) {
           @Override
           protected FactsheetResponse.Factsheet processNotCoveredHei(RequestData requestData,
-              String hei) throws ErrorResponseException {
+                                                                     String hei) throws ErrorResponseException {
             return createFactsheet(hei);
           }
         };

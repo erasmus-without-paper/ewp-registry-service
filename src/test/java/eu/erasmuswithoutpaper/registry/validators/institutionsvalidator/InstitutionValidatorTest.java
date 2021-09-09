@@ -1,5 +1,7 @@
 package eu.erasmuswithoutpaper.registry.validators.institutionsvalidator;
 
+import static eu.erasmuswithoutpaper.registry.validators.TestValidationReportAsset.assertThat;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -11,10 +13,10 @@ import eu.erasmuswithoutpaper.registry.validators.AbstractApiTest;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.SemanticVersion;
 import eu.erasmuswithoutpaper.registry.validators.TestValidationReport;
-import eu.erasmuswithoutpaper.registry.validators.types.InstitutionsResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import static eu.erasmuswithoutpaper.registry.validators.TestValidationReportAsset.assertThat;
+
+import https.github_com.erasmus_without_paper.ewp_specs_api_institutions.tree.stable_v2.InstitutionsResponse;
 import org.junit.Test;
 
 public class InstitutionValidatorTest extends AbstractApiTest<InstitutionsSuiteState> {

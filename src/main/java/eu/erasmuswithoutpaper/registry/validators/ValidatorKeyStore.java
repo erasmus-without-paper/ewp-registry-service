@@ -50,6 +50,7 @@ public class ValidatorKeyStore {
   public ValidatorKeyStore() {
     this(null);
   }
+
   /**
    * Generates credentials and certificates to be used by validators and published in the manifest.
    * Provided HEI IDs will be present in covered-institutions list of the manifest.

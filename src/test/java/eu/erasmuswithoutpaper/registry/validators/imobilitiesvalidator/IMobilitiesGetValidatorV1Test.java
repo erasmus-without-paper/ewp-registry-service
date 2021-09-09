@@ -1,6 +1,8 @@
 package eu.erasmuswithoutpaper.registry.validators.imobilitiesvalidator;
 
 
+import static eu.erasmuswithoutpaper.registry.validators.TestValidationReportAsset.assertThat;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
@@ -12,10 +14,10 @@ import eu.erasmuswithoutpaper.registry.validators.TestValidationReport;
 import eu.erasmuswithoutpaper.registry.validators.ValidationParameterValue;
 import eu.erasmuswithoutpaper.registry.validators.ValidationParameters;
 import eu.erasmuswithoutpaper.registry.validators.imobilitiesvalidator.get.IMobilitiesGetValidator;
-import eu.erasmuswithoutpaper.registry.validators.types.StudentMobilityForStudies;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import static eu.erasmuswithoutpaper.registry.validators.TestValidationReportAsset.assertThat;
+
+import https.github_com.erasmus_without_paper.ewp_specs_api_imobilities.blob.stable_v1.endpoints.get_response.StudentMobilityForStudies;
 import org.junit.Test;
 
 public class IMobilitiesGetValidatorV1Test extends AbstractApiTest<IMobilitiesSuiteState> {
@@ -174,7 +176,7 @@ public class IMobilitiesGetValidatorV1Test extends AbstractApiTest<IMobilitiesSu
         new IMobilitiesServiceV1Valid(getUrl, client, serviceKeyStore) {
           @Override
           protected StudentMobilityForStudies processCoveredOMobilityId(RequestData requestData,
-              String receivingHeiId, String omobilityId) {
+                                                                        String receivingHeiId, String omobilityId) {
             Optional<String> anotherOmobilityId = this.mobilitiesCoveredByHeiIds.get(receivingHeiId)
                 .keySet().stream().filter(s -> !s.equals(omobilityId)).findFirst();
             if (anotherOmobilityId.isPresent()) {
