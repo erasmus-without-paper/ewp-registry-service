@@ -1,6 +1,5 @@
 package eu.erasmuswithoutpaper.registry.validators;
 
-
 import static org.joox.JOOX.$;
 
 import java.io.ByteArrayInputStream;

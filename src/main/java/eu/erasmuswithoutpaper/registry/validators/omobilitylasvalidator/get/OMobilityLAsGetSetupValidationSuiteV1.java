@@ -16,12 +16,11 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-class OMobilityLAsGetSetupValidationSuiteV030
+class OMobilityLAsGetSetupValidationSuiteV1
     extends AbstractSetupValidationSuite<OMobilityLAsSuiteState> {
 
   private static final Logger logger =
-      LoggerFactory.getLogger(OMobilityLAsGetSetupValidationSuiteV030.class);
+      LoggerFactory.getLogger(OMobilityLAsGetSetupValidationSuiteV1.class);
 
   private static final ValidatedApiInfo apiInfo = new OMobilityLAsGetValidatedApiInfo();
 
@@ -50,7 +49,7 @@ class OMobilityLAsGetSetupValidationSuiteV030
     return getMaxIds("omobility-ids");
   }
 
-  OMobilityLAsGetSetupValidationSuiteV030(ApiValidator<OMobilityLAsSuiteState> validator,
+  OMobilityLAsGetSetupValidationSuiteV1(ApiValidator<OMobilityLAsSuiteState> validator,
       OMobilityLAsSuiteState state, ValidationSuiteConfig config) {
     super(validator, state, config);
   }

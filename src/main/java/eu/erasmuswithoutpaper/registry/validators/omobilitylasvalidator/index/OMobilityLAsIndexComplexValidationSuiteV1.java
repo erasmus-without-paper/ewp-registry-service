@@ -17,12 +17,12 @@ import org.slf4j.LoggerFactory;
  * Describes the set of test/steps to be run on an OMobilities API index endpoint implementation
  * in order to properly validate it.
  */
-public class OMobilityLAsIndexComplexValidationSuiteV030
+public class OMobilityLAsIndexComplexValidationSuiteV1
     extends AbstractValidationSuite<OMobilityLAsSuiteState> {
 
   private static final Logger logger =
       LoggerFactory.getLogger(
-          OMobilityLAsIndexComplexValidationSuiteV030.class);
+          OMobilityLAsIndexComplexValidationSuiteV1.class);
 
   private static final ValidatedApiInfo apiInfo = new OMobilityLAsIndexValidatedApiInfo();
 
@@ -36,7 +36,7 @@ public class OMobilityLAsIndexComplexValidationSuiteV030
     return apiInfo;
   }
 
-  public OMobilityLAsIndexComplexValidationSuiteV030(ApiValidator<OMobilityLAsSuiteState> validator,
+  public OMobilityLAsIndexComplexValidationSuiteV1(ApiValidator<OMobilityLAsSuiteState> validator,
       OMobilityLAsSuiteState state, ValidationSuiteConfig config) {
     super(validator, state, config);
   }

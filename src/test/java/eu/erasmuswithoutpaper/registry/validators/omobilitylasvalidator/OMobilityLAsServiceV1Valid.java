@@ -23,17 +23,19 @@ import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registry.internet.sec.EwpClientWithRsaKey;
 import eu.erasmuswithoutpaper.registry.validators.ParameterInfo;
+import eu.erasmuswithoutpaper.registry.validators.types.ApproveProposalV1;
+import eu.erasmuswithoutpaper.registry.validators.types.CommentProposalV1;
+import eu.erasmuswithoutpaper.registry.validators.types.OmobilityLasUpdateRequest;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 import https.github_com.erasmus_without_paper.ewp_specs_api_omobility_las.blob.stable_v1.endpoints.get_response.LearningAgreement;
 import https.github_com.erasmus_without_paper.ewp_specs_api_omobility_las.blob.stable_v1.endpoints.get_response.MobilityInstitution;
-import https.github_com.erasmus_without_paper.ewp_specs_api_omobility_las.blob.stable_v1.endpoints.update_request.ApproveComponentsStudiedProposalV1;
-import https.github_com.erasmus_without_paper.ewp_specs_api_omobility_las.blob.stable_v1.endpoints.update_request.OmobilityLasUpdateRequest;
-import https.github_com.erasmus_without_paper.ewp_specs_api_omobility_las.blob.stable_v1.endpoints.update_request.UpdateComponentsStudiedV1;
+import https.github_com.erasmus_without_paper.ewp_specs_api_omobility_las.blob.stable_v1.endpoints.get_response.Signature;
+import https.github_com.erasmus_without_paper.ewp_specs_api_omobility_las.blob.stable_v1.endpoints.get_response.Student;
 import https.github_com.erasmus_without_paper.ewp_specs_architecture.blob.stable_v1.common_types.StringWithOptionalLang;
 
 
-public class OMobilityLAsServiceV030Valid extends AbstractOMobilityLAsService {
+public class OMobilityLAsServiceV1Valid extends AbstractOMobilityLAsService {
   protected List<LearningAgreement> learningAgreements = new ArrayList<>();
 
   /**
@@ -42,8 +44,8 @@ public class OMobilityLAsServiceV030Valid extends AbstractOMobilityLAsService {
    * @param updateUrl      The endpoint at which to listen for requests.
    * @param registryClient Initialized and refreshed {@link RegistryClient} instance.
    */
-  public OMobilityLAsServiceV030Valid(String indexUrl, String getUrl, String updateUrl,
-      RegistryClient registryClient, String heiIdToCover) {
+  public OMobilityLAsServiceV1Valid(String indexUrl, String getUrl, String updateUrl,
+                                    RegistryClient registryClient, String heiIdToCover) {
     super(indexUrl, getUrl, updateUrl, registryClient);
     fillDataBase(heiIdToCover);
   }
@@ -81,7 +83,7 @@ public class OMobilityLAsServiceV030Valid extends AbstractOMobilityLAsService {
     receivingHei1.setContactPerson(contactPerson1);
     la1.setReceivingHei(receivingHei1);
 
-    LearningAgreement.Student student1 = new LearningAgreement.Student();
+    Student student1 = new Student();
     student1.setGivenNames("test1");
     student1.setFamilyName("test2");
     student1.setBirthDate(xmlDate(1990, 12, 1));
@@ -90,10 +92,10 @@ public class OMobilityLAsServiceV030Valid extends AbstractOMobilityLAsService {
     student1.setEmail("test1@example.invalid");
     la1.setStudent(student1);
 
-    la1.setPlannedMobilityStart(xmlDate(2020, 8));
-    la1.setPlannedMobilityEnd(xmlDate(2021, 2));
+    la1.setStartDate(xmlDate(2020, 8));
+    la1.setEndDate(xmlDate(2021, 2));
     la1.setEqfLevelStudiedAtDeparture((byte) 7);
-    la1.setStudentIscedFCode("test1");
+    la1.setIscedFCode("test1");
 
     LearningAgreement.StudentLanguageSkill languageSkill1 =
         new LearningAgreement.StudentLanguageSkill();
@@ -101,14 +103,12 @@ public class OMobilityLAsServiceV030Valid extends AbstractOMobilityLAsService {
     languageSkill1.setCefrLevel("A2");
     la1.setStudentLanguageSkill(languageSkill1);
 
-    LearningAgreement.ComponentsStudied componentsStudied1 =
-        new LearningAgreement.ComponentsStudied();
-
-    LearningAgreement.ComponentsStudied.LatestProposal latestProposal1 =
-        new LearningAgreement.ComponentsStudied.LatestProposal();
-    latestProposal1.setId("test1");
-    componentsStudied1.setLatestProposal(latestProposal1);
-    la1.setComponentsStudied(componentsStudied1);
+    LearningAgreement.ChangesProposal changesProposal1 =
+        new LearningAgreement.ChangesProposal();
+    changesProposal1.setId("test1");
+    changesProposal1.setStudentSignature(getSignature());
+    changesProposal1.setSendingHeiSignature(getSignature());
+    la1.setChangesProposal(changesProposal1);
 
     learningAgreements.add(la1);
 
@@ -130,7 +130,7 @@ public class OMobilityLAsServiceV030Valid extends AbstractOMobilityLAsService {
     receivingHei2.setContactPerson(contactPerson1);
     la2.setReceivingHei(receivingHei2);
 
-    LearningAgreement.Student student2 = new LearningAgreement.Student();
+    Student student2 = new Student();
     student2.setGivenNames("test1");
     student2.setFamilyName("test2");
     student2.setBirthDate(xmlDate(1990, 12, 1));
@@ -139,10 +139,10 @@ public class OMobilityLAsServiceV030Valid extends AbstractOMobilityLAsService {
     student2.setEmail("test1@example.invalid");
     la2.setStudent(student2);
 
-    la2.setPlannedMobilityStart(xmlDate(2020, 8));
-    la2.setPlannedMobilityEnd(xmlDate(2021, 2));
+    la2.setStartDate(xmlDate(2020, 8));
+    la2.setEndDate(xmlDate(2021, 2));
     la2.setEqfLevelStudiedAtDeparture((byte) 7);
-    la2.setStudentIscedFCode("test1");
+    la2.setIscedFCode("test1");
 
     LearningAgreement.StudentLanguageSkill languageSkill2 =
         new LearningAgreement.StudentLanguageSkill();
@@ -150,14 +150,12 @@ public class OMobilityLAsServiceV030Valid extends AbstractOMobilityLAsService {
     languageSkill2.setCefrLevel("A2");
     la2.setStudentLanguageSkill(languageSkill2);
 
-    LearningAgreement.ComponentsStudied componentsStudied2 =
-        new LearningAgreement.ComponentsStudied();
-
-    LearningAgreement.ComponentsStudied.LatestProposal latestProposal2 =
-        new LearningAgreement.ComponentsStudied.LatestProposal();
-    latestProposal2.setId("test1");
-    componentsStudied2.setLatestProposal(latestProposal2);
-    la2.setComponentsStudied(componentsStudied2);
+    LearningAgreement.ChangesProposal changesProposal2 =
+        new LearningAgreement.ChangesProposal();
+    changesProposal2.setId("test1");
+    changesProposal2.setStudentSignature(getSignature());
+    changesProposal2.setSendingHeiSignature(getSignature());
+    la2.setChangesProposal(changesProposal2);
 
     learningAgreements.add(la2);
 
@@ -180,6 +178,23 @@ public class OMobilityLAsServiceV030Valid extends AbstractOMobilityLAsService {
 //    mobility2.setStudent(student2);
 //    mobility2.setStatus(MobilityStatus.LIVE);
 //    learningAgreements.add(new LearningAgreement(mobility2, heiIdToCover, RECEIVING_HEI_ID_2));
+  }
+
+  private Signature getSignature() {
+    Signature signature = new Signature();
+    signature.setSignerName("Paweł Tomasz Kowalski");
+    signature.setSignerPosition("Mobility coordinator");
+    signature.setSignerEmail("pawel.kowalski@example.com");
+    try {
+      signature.setTimestamp(DatatypeFactory.newInstance()
+          .newXMLGregorianCalendar(2000, 1, 1, 0, 0, 0, 0, 0));
+    } catch (DatatypeConfigurationException e) {
+      // Shouldn't happen
+      assert false;
+      return null;
+    }
+    signature.setSignerApp("USOS");
+    return signature;
   }
 
   private XMLGregorianCalendar xmlDate(int year, int month) {
@@ -310,10 +325,10 @@ public class OMobilityLAsServiceV030Valid extends AbstractOMobilityLAsService {
       RequestData requestData = new RequestData(request, connectedClient);
       extractUpdateParams(requestData);
       checkSendingHeiId(requestData);
-      if (requestData.updateRequest.getApproveComponentsStudiedProposalV1() != null) {
-        handleApproveComponentsStudiedProposalV1Request(requestData);
-      } else if (requestData.updateRequest.getUpdateComponentsStudiedV1() != null) {
-        handleUpdateComponentsStudiedV1Request(requestData);
+      if (requestData.updateRequest.getApproveProposalV1() != null) {
+        handleApproveProposalV1Request(requestData);
+      } else if (requestData.updateRequest.getCommentProposalV1() != null) {
+        handleCommentProposalV1Request(requestData);
       } else {
         throw new ErrorResponseException(
             createErrorResponse(requestData.request, 400, "Unknown update type.")
@@ -325,69 +340,69 @@ public class OMobilityLAsServiceV030Valid extends AbstractOMobilityLAsService {
     }
   }
 
-  private void handleApproveComponentsStudiedProposalV1Request(RequestData requestData)
+  private void handleApproveProposalV1Request(RequestData requestData)
       throws ErrorResponseException {
-    ApproveComponentsStudiedProposalV1 approveComponentsStudiedProposalV1 =
-        requestData.updateRequest.getApproveComponentsStudiedProposalV1();
-    String omobilityId = approveComponentsStudiedProposalV1.getOmobilityId();
-    String requestLatestProposalId = approveComponentsStudiedProposalV1.getLatestProposalId();
+    ApproveProposalV1 approveProposalV1 =
+        requestData.updateRequest.getApproveProposalV1();
+    String omobilityId = approveProposalV1.getOmobilityId();
+    String requestChangesProposalId = approveProposalV1.getChangesProposalId();
     verifyLearningAgreementForUpdate(
-        requestData, omobilityId, requestLatestProposalId
+        requestData, omobilityId, requestChangesProposalId
     );
 
-    handleApproveComponentsStudiedProposalV1(requestData);
+    handleApproveProposalV1(requestData);
   }
 
-  protected void handleApproveComponentsStudiedProposalV1(RequestData requestData)
+  protected void handleApproveProposalV1(RequestData requestData)
       throws ErrorResponseException {
-    ApproveComponentsStudiedProposalV1 approveComponentsStudiedProposalV1 =
-        requestData.updateRequest.getApproveComponentsStudiedProposalV1();
+    ApproveProposalV1 approveProposalV1 =
+        requestData.updateRequest.getApproveProposalV1();
 
-    if (approveComponentsStudiedProposalV1.getApprovingParty() == null) {
-      errorApproveComponentsStudiedProposalV1NoApprovingParty(requestData);
+    if (approveProposalV1.getSignature() == null) {
+      errorNoSignature(requestData);
     }
   }
 
-  protected void errorApproveComponentsStudiedProposalV1NoApprovingParty(RequestData requestData)
+  protected void errorNoSignature(RequestData requestData)
       throws ErrorResponseException {
     throw new ErrorResponseException(
-        createErrorResponse(requestData.request, 400, "Missing approving party.")
+        createErrorResponse(requestData.request, 400, "Missing signature.")
     );
   }
 
-  private void handleUpdateComponentsStudiedV1Request(RequestData requestData)
+  private void handleCommentProposalV1Request(RequestData requestData)
       throws ErrorResponseException {
-    UpdateComponentsStudiedV1 updateComponentsStudiedV1 =
-        requestData.updateRequest.getUpdateComponentsStudiedV1();
-    String omobilityId = updateComponentsStudiedV1.getOmobilityId();
-    String requestLatestProposalId = updateComponentsStudiedV1.getLatestProposalId();
-    verifyLearningAgreementForUpdate(requestData, omobilityId, requestLatestProposalId);
+    CommentProposalV1 commentProposalV1 =
+        requestData.updateRequest.getCommentProposalV1();
+    String omobilityId = commentProposalV1.getOmobilityId();
+    String requestChangesProposalId = commentProposalV1.getChangesProposalId();
+    verifyLearningAgreementForUpdate(requestData, omobilityId, requestChangesProposalId);
 
-    handleUpdateComponentsStudiedV1(requestData);
+    handleCommentProposalV1(requestData);
   }
 
-  protected void handleUpdateComponentsStudiedV1(RequestData requestData)
-      throws ErrorResponseException {
-    UpdateComponentsStudiedV1 updateComponentsStudiedV1 =
-        requestData.updateRequest.getUpdateComponentsStudiedV1();
-    if (updateComponentsStudiedV1.getComment() == null && updateComponentsStudiedV1.getSuggestion() == null) {
+  protected void handleCommentProposalV1(RequestData requestData) throws ErrorResponseException {
+    CommentProposalV1 commentProposalV1 = requestData.updateRequest.getCommentProposalV1();
+    if (commentProposalV1.getComment() == null) {
       throw new ErrorResponseException(
-          createErrorResponse(requestData.request, 400,
-              "Both suggestions and comments missing.")
-      );
+          createErrorResponse(requestData.request, 400, "Comment missing."));
+    }
+
+    if (commentProposalV1.getSignature() == null) {
+      errorNoSignature(requestData);
     }
   }
 
   private void verifyLearningAgreementForUpdate(RequestData requestData, String omobilityId,
-      String requestLatestProposalId) throws ErrorResponseException {
+      String requestChangesProposalId) throws ErrorResponseException {
     if (omobilityId == null) {
       errorNoOMobilityIds(requestData);
     } else {
       requestData.omobilityIds = Arrays.asList(omobilityId);
     }
 
-    if (requestLatestProposalId == null) {
-      errorNoLatestProposalId(requestData);
+    if (requestChangesProposalId == null) {
+      errorNoChangesProposalId(requestData);
     }
 
     List<LearningAgreement> updatedAgreement = filter(learningAgreements,
@@ -404,10 +419,10 @@ public class OMobilityLAsServiceV030Valid extends AbstractOMobilityLAsService {
       errorUpdateCallerNotPermitted(requestData);
     }
 
-    String lasLatestProposalId = la.getComponentsStudied().getLatestProposal().getId();
+    String lasChangesProposalId = la.getChangesProposal().getId();
 
-    if (!lasLatestProposalId.equals(requestLatestProposalId)) {
-      errorLatestProposalIdDoNotMatch(requestData);
+    if (!lasChangesProposalId.equals(requestChangesProposalId)) {
+      errorChangesProposalIdDoNotMatch(requestData);
     }
   }
 
@@ -426,14 +441,14 @@ public class OMobilityLAsServiceV030Valid extends AbstractOMobilityLAsService {
     );
   }
 
-  private void errorLatestProposalIdDoNotMatch(RequestData requestData)
+  private void errorChangesProposalIdDoNotMatch(RequestData requestData)
       throws ErrorResponseException {
     throw new ErrorResponseException(
         createErrorResponse(requestData.request, 409, "Latest proposal id do not match.")
     );
   }
 
-  private void errorNoLatestProposalId(RequestData requestData) throws ErrorResponseException {
+  private void errorNoChangesProposalId(RequestData requestData) throws ErrorResponseException {
     throw new ErrorResponseException(
         createErrorResponse(requestData.request, 400, "Missing latest proposal id.")
     );

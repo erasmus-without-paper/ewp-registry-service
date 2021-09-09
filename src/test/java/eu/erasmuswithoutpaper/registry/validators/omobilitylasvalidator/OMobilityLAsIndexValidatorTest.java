@@ -32,7 +32,7 @@ public class OMobilityLAsIndexValidatorTest extends OMobilityLAsValidatorTestBas
 
   @Test
   public void testValidationOnValidServiceIsSuccessful() {
-    OMobilityLAsServiceV030Valid service = new OMobilityLAsServiceV030Valid(
+    OMobilityLAsServiceV1Valid service = new OMobilityLAsServiceV1Valid(
         omobilitylasIndexUrl, omobilitylasGetUrl, omobilitylasUpdateUrl, this.client,
         this.serviceKeyStore.getCoveredHeiIDs().get(0));
     TestValidationReport report = this.getRawReport(service);
@@ -41,7 +41,7 @@ public class OMobilityLAsIndexValidatorTest extends OMobilityLAsValidatorTestBas
 
   @Test
   public void testNotReturningAnErrorWhenNoParamsAreProvidedIsDetected() {
-    OMobilityLAsServiceV030Valid service = new OMobilityLAsServiceV030Valid(
+    OMobilityLAsServiceV1Valid service = new OMobilityLAsServiceV1Valid(
         omobilitylasIndexUrl, omobilitylasGetUrl, omobilitylasUpdateUrl, this.client,
         this.serviceKeyStore.getCoveredHeiIDs().get(0)) {
       @Override
@@ -59,7 +59,7 @@ public class OMobilityLAsIndexValidatorTest extends OMobilityLAsValidatorTestBas
 
   @Test
   public void testNotReturningAnErrorWhenNoReceivingHeiIdIsUsedIsDetected() {
-    OMobilityLAsServiceV030Valid service = new OMobilityLAsServiceV030Valid(
+    OMobilityLAsServiceV1Valid service = new OMobilityLAsServiceV1Valid(
         omobilitylasIndexUrl, omobilitylasGetUrl, omobilitylasUpdateUrl, this.client,
         this.serviceKeyStore.getCoveredHeiIDs().get(0)) {
       @Override
@@ -75,7 +75,7 @@ public class OMobilityLAsIndexValidatorTest extends OMobilityLAsValidatorTestBas
 
   @Test
   public void testReturningAnErrorResponseWhenKnownReceivingHeiIdWithoutSendingHeiIdIsUsedIsDetected() {
-    OMobilityLAsServiceV030Valid service = new OMobilityLAsServiceV030Valid(
+    OMobilityLAsServiceV1Valid service = new OMobilityLAsServiceV1Valid(
         omobilitylasIndexUrl, omobilitylasGetUrl, omobilitylasUpdateUrl, this.client,
         this.serviceKeyStore.getCoveredHeiIDs().get(0)) {
       @Override
@@ -94,7 +94,7 @@ public class OMobilityLAsIndexValidatorTest extends OMobilityLAsValidatorTestBas
 
   @Test
   public void testReturningEmptyResponseWhenKnownReceivingHeiIdWithoutSendingHeiIdIsUsedIsDetected() {
-    OMobilityLAsServiceV030Valid service = new OMobilityLAsServiceV030Valid(
+    OMobilityLAsServiceV1Valid service = new OMobilityLAsServiceV1Valid(
         omobilitylasIndexUrl, omobilitylasGetUrl, omobilitylasUpdateUrl, this.client,
         this.serviceKeyStore.getCoveredHeiIDs().get(0)) {
       @Override
@@ -113,7 +113,7 @@ public class OMobilityLAsIndexValidatorTest extends OMobilityLAsValidatorTestBas
 
   @Test
   public void testIgnoringAdditionalReceivingHeiIdIsDetected() {
-    OMobilityLAsServiceV030Valid service = new OMobilityLAsServiceV030Valid(
+    OMobilityLAsServiceV1Valid service = new OMobilityLAsServiceV1Valid(
         omobilitylasIndexUrl, omobilitylasGetUrl, omobilitylasUpdateUrl, this.client,
         this.serviceKeyStore.getCoveredHeiIDs().get(0)) {
       @Override
@@ -129,7 +129,7 @@ public class OMobilityLAsIndexValidatorTest extends OMobilityLAsValidatorTestBas
 
   @Test
   public void testNotReturningAnErrorWhenUnknownReceivingHeiIdIsUsedIsDetected() {
-    OMobilityLAsServiceV030Valid service = new OMobilityLAsServiceV030Valid(
+    OMobilityLAsServiceV1Valid service = new OMobilityLAsServiceV1Valid(
         omobilitylasIndexUrl, omobilitylasGetUrl, omobilitylasUpdateUrl, this.client,
         this.serviceKeyStore.getCoveredHeiIDs().get(0)) {
       @Override
@@ -145,7 +145,7 @@ public class OMobilityLAsIndexValidatorTest extends OMobilityLAsValidatorTestBas
 
   @Test
   public void testReturningNonEmptyResponseWhenUnknownReceivingHeiIdIsUsedIsDetected() {
-    OMobilityLAsServiceV030Valid service = new OMobilityLAsServiceV030Valid(
+    OMobilityLAsServiceV1Valid service = new OMobilityLAsServiceV1Valid(
         omobilitylasIndexUrl, omobilitylasGetUrl, omobilitylasUpdateUrl, this.client,
         this.serviceKeyStore.getCoveredHeiIDs().get(0)) {
       @Override
@@ -164,7 +164,7 @@ public class OMobilityLAsIndexValidatorTest extends OMobilityLAsValidatorTestBas
 
   @Test
   public void testReturningEmptyResponseWhenKnownAndUnknownSendingHeiIdsAreUsedIsDetected() {
-    OMobilityLAsServiceV030Valid service = new OMobilityLAsServiceV030Valid(
+    OMobilityLAsServiceV1Valid service = new OMobilityLAsServiceV1Valid(
         omobilitylasIndexUrl, omobilitylasGetUrl, omobilitylasUpdateUrl, this.client,
         this.serviceKeyStore.getCoveredHeiIDs().get(0)) {
       @Override
@@ -183,7 +183,7 @@ public class OMobilityLAsIndexValidatorTest extends OMobilityLAsValidatorTestBas
 
   @Test
   public void testReturningAnErrorResponseWhenUnknownSendingHeiIdsAreUsedIsDetected() {
-    OMobilityLAsServiceV030Valid service = new OMobilityLAsServiceV030Valid(
+    OMobilityLAsServiceV1Valid service = new OMobilityLAsServiceV1Valid(
         omobilitylasIndexUrl, omobilitylasGetUrl, omobilitylasUpdateUrl, this.client,
         this.serviceKeyStore.getCoveredHeiIDs().get(0)) {
       @Override
@@ -203,7 +203,7 @@ public class OMobilityLAsIndexValidatorTest extends OMobilityLAsValidatorTestBas
 
   @Test
   public void testIgnoringMultipleModifiedSinceIsDetected() {
-    OMobilityLAsServiceV030Valid service = new OMobilityLAsServiceV030Valid(
+    OMobilityLAsServiceV1Valid service = new OMobilityLAsServiceV1Valid(
         omobilitylasIndexUrl, omobilitylasGetUrl, omobilitylasUpdateUrl, this.client,
         this.serviceKeyStore.getCoveredHeiIDs().get(0)) {
       @Override
@@ -219,7 +219,7 @@ public class OMobilityLAsIndexValidatorTest extends OMobilityLAsValidatorTestBas
 
   @Test
   public void testNotUsingModifiedSinceIsDetected() {
-    OMobilityLAsServiceV030Valid service = new OMobilityLAsServiceV030Valid(
+    OMobilityLAsServiceV1Valid service = new OMobilityLAsServiceV1Valid(
         omobilitylasIndexUrl, omobilitylasGetUrl, omobilitylasUpdateUrl, this.client,
         this.serviceKeyStore.getCoveredHeiIDs().get(0)) {
       @Override
@@ -236,7 +236,7 @@ public class OMobilityLAsIndexValidatorTest extends OMobilityLAsValidatorTestBas
 
   @Test
   public void testReturnsEmptyResponseWhenModifiedSinceIsUsed() {
-    OMobilityLAsServiceV030Valid service = new OMobilityLAsServiceV030Valid(
+    OMobilityLAsServiceV1Valid service = new OMobilityLAsServiceV1Valid(
         omobilitylasIndexUrl, omobilitylasGetUrl, omobilitylasUpdateUrl, this.client,
         this.serviceKeyStore.getCoveredHeiIDs().get(0)) {
       @Override
@@ -256,7 +256,7 @@ public class OMobilityLAsIndexValidatorTest extends OMobilityLAsValidatorTestBas
 
   @Test
   public void testNotAcceptingMultipleSendingHeiIdsIsDetected() {
-    OMobilityLAsServiceV030Valid service = new OMobilityLAsServiceV030Valid(
+    OMobilityLAsServiceV1Valid service = new OMobilityLAsServiceV1Valid(
         omobilitylasIndexUrl, omobilitylasGetUrl, omobilitylasUpdateUrl, this.client,
         this.serviceKeyStore.getCoveredHeiIDs().get(0)) {
       @Override
@@ -276,7 +276,7 @@ public class OMobilityLAsIndexValidatorTest extends OMobilityLAsValidatorTestBas
 
   @Test
   public void testSendingDataThatCallerHasNoAccessToIsDetected() {
-    OMobilityLAsServiceV030Valid service = new OMobilityLAsServiceV030Valid(
+    OMobilityLAsServiceV1Valid service = new OMobilityLAsServiceV1Valid(
         omobilitylasIndexUrl, omobilitylasGetUrl, omobilitylasUpdateUrl, this.client,
         this.serviceKeyStore.getCoveredHeiIDs().get(0)) {
       @Override
@@ -294,7 +294,7 @@ public class OMobilityLAsIndexValidatorTest extends OMobilityLAsValidatorTestBas
 
   @Test
   public void testSendingDataThatCallerHasNoAccessToIsDetected2() {
-    OMobilityLAsServiceV030Valid service = new OMobilityLAsServiceV030Valid(
+    OMobilityLAsServiceV1Valid service = new OMobilityLAsServiceV1Valid(
         omobilitylasIndexUrl, omobilitylasGetUrl, omobilitylasUpdateUrl, this.client,
         this.serviceKeyStore.getCoveredHeiIDs().get(0)) {
       @Override
@@ -312,7 +312,7 @@ public class OMobilityLAsIndexValidatorTest extends OMobilityLAsValidatorTestBas
 
   @Test
   public void testIncorrectFilteringWithReceivingAcademicYearIdIsDetected() {
-    OMobilityLAsServiceV030Valid service = new OMobilityLAsServiceV030Valid(
+    OMobilityLAsServiceV1Valid service = new OMobilityLAsServiceV1Valid(
         omobilitylasIndexUrl, omobilitylasGetUrl, omobilitylasUpdateUrl, this.client,
         this.serviceKeyStore.getCoveredHeiIDs().get(0)) {
       @Override
@@ -333,7 +333,7 @@ public class OMobilityLAsIndexValidatorTest extends OMobilityLAsValidatorTestBas
 
   @Test
   public void testIncorrectFilteringWithModifiedSinceIsDetected() {
-    OMobilityLAsServiceV030Valid service = new OMobilityLAsServiceV030Valid(
+    OMobilityLAsServiceV1Valid service = new OMobilityLAsServiceV1Valid(
         omobilitylasIndexUrl, omobilitylasGetUrl, omobilitylasUpdateUrl, this.client,
         this.serviceKeyStore.getCoveredHeiIDs().get(0)) {
       @Override

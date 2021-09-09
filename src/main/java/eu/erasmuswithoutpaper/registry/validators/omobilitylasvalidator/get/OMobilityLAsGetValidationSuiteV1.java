@@ -18,12 +18,12 @@ import org.slf4j.LoggerFactory;
  * Describes the set of test/steps to be run on an OMobilityLAs API get endpoint implementation
  * in order to properly validate it.
  */
-class OMobilityLAsGetValidationSuiteV030
+class OMobilityLAsGetValidationSuiteV1
     extends AbstractValidationSuite<OMobilityLAsSuiteState> {
 
   private static final Logger logger = LoggerFactory
       .getLogger(
-          OMobilityLAsGetValidationSuiteV030.class);
+          OMobilityLAsGetValidationSuiteV1.class);
 
   private static final ValidatedApiInfo apiInfo = new OMobilityLAsGetValidatedApiInfo();
 
@@ -37,8 +37,8 @@ class OMobilityLAsGetValidationSuiteV030
     return apiInfo;
   }
 
-  OMobilityLAsGetValidationSuiteV030(ApiValidator<OMobilityLAsSuiteState> validator,
-      OMobilityLAsSuiteState state, ValidationSuiteConfig config) {
+  OMobilityLAsGetValidationSuiteV1(ApiValidator<OMobilityLAsSuiteState> validator,
+                                   OMobilityLAsSuiteState state, ValidationSuiteConfig config) {
     super(validator, state, config);
   }
 
@@ -53,10 +53,10 @@ class OMobilityLAsGetValidationSuiteV030
         "Request for one of known omobility_ids, expect 200 OK.",
         new ParameterList(
             new Parameter("sending_hei_id",
-                OMobilityLAsGetValidationSuiteV030.this.currentState.sendingHeiId),
+                OMobilityLAsGetValidationSuiteV1.this.currentState.sendingHeiId),
             new Parameter(
                 "omobility_id",
-                OMobilityLAsGetValidationSuiteV030.this.currentState.omobilityId)
+                OMobilityLAsGetValidationSuiteV1.this.currentState.omobilityId)
         ),
         new CorrectResponseVerifier()
     );

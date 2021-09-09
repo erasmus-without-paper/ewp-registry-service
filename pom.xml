@@ -412,11 +412,11 @@
                         <source>src/main/resources/jaxb-schemas/ewp-specs-api-imobilities-v1.0.0/endpoints/get-response.xsd</source>
                         <source>src/main/resources/jaxb-schemas/ewp-specs-api-omobilities-v1.0.0/endpoints/index-response.xsd</source>
                         <source>src/main/resources/jaxb-schemas/ewp-specs-api-omobilities-v1.0.0/endpoints/get-response.xsd</source>
-                        <source>src/main/resources/jaxb-schemas/ewp-specs-api-omobility-las-v0.3.0/endpoints/index-response.xsd</source>
-                        <!-- <source>src/main/resources/jaxb-schemas/ewp-specs-api-omobility-las-v0.3.0/endpoints/get-response.xsd</source> -->
+                        <source>src/main/resources/jaxb-schemas/ewp-specs-api-omobility-las-v1.0.1/endpoints/index-response.xsd</source>
+                        <!-- <source>src/main/resources/jaxb-schemas/ewp-specs-api-omobility-las-v1.0.1/endpoints/get-response.xsd</source> -->
                         <!-- get-response is included in update-request -->
-                        <source>src/main/resources/jaxb-schemas/ewp-specs-api-omobility-las-v0.3.0/endpoints/update-response.xsd</source>
-                        <source>src/main/resources/jaxb-schemas/ewp-specs-api-omobility-las-v0.3.0/endpoints/update-request.xsd</source>
+                        <source>src/main/resources/jaxb-schemas/ewp-specs-api-omobility-las-v1.0.1/endpoints/update-response.xsd</source>
+                        <source>src/main/resources/jaxb-schemas/ewp-specs-api-omobility-las-v1.0.1/endpoints/update-request.xsd</source>
                     </sources>
                 </configuration>
             </plugin>

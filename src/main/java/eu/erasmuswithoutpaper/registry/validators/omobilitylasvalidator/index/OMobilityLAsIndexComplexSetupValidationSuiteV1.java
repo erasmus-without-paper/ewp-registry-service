@@ -30,12 +30,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 
-public class OMobilityLAsIndexComplexSetupValidationSuiteV030
+public class OMobilityLAsIndexComplexSetupValidationSuiteV1
     extends AbstractSetupValidationSuite<OMobilityLAsSuiteState> {
 
   private static final Logger logger =
       LoggerFactory.getLogger(
-          OMobilityLAsIndexComplexSetupValidationSuiteV030.class);
+          OMobilityLAsIndexComplexSetupValidationSuiteV1.class);
 
   private static final ValidatedApiInfo apiInfo = new OMobilityLAsIndexValidatedApiInfo();
 
@@ -62,7 +62,7 @@ public class OMobilityLAsIndexComplexSetupValidationSuiteV030
     );
   }
 
-  public OMobilityLAsIndexComplexSetupValidationSuiteV030(
+  public OMobilityLAsIndexComplexSetupValidationSuiteV1(
       ApiValidator<OMobilityLAsSuiteState> validator,
       OMobilityLAsSuiteState state,
       ValidationSuiteConfig config) {
@@ -148,8 +148,8 @@ public class OMobilityLAsIndexComplexSetupValidationSuiteV030
 
         Response response;
         try {
-          response = OMobilityLAsIndexComplexSetupValidationSuiteV030.this.internet.makeRequest(
-              request, OMobilityLAsIndexComplexSetupValidationSuiteV030.this.timeoutMillis);
+          response = OMobilityLAsIndexComplexSetupValidationSuiteV1.this.internet.makeRequest(
+              request, OMobilityLAsIndexComplexSetupValidationSuiteV1.this.timeoutMillis);
         } catch (SocketTimeoutException e) {
           throw new Failure("Request to 'get' endpoint timed out.",
               Status.ERROR, true);

@@ -1030,20 +1030,15 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
 
   protected void testParametersErrorAsOtherEwpParticipant(Combination combination, String name,
       Parameters parameters, int error,
-      ValidationStepWithStatus.Status failureStatus,
-      boolean shouldSkip, String skipReason) throws SuiteBroken {
+      ValidationStepWithStatus.Status failureStatus) throws SuiteBroken {
     final ValidatorKeyStore currentValidatorKeyStore = this.validatorKeyStore;
     final ValidatorKeyStore otherValidationKeyStore =
         this.validatorKeyStoreSet.getSecondaryKeyStore();
 
-    String realSkipReason =
+    String skipReason =
         "Keys for another EWP participant not provided. Run the Validator locally and provide "
             + "secondary keys.";
-    boolean realShouldSkip = otherValidationKeyStore == null;
-    if (shouldSkip) {
-      realShouldSkip = shouldSkip;
-      realSkipReason = skipReason;
-    }
+    boolean shouldSkip = otherValidationKeyStore == null;
 
     try {
       this.setValidatorKeyStore(otherValidationKeyStore);
@@ -1053,8 +1048,8 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
           parameters,
           Collections.singletonList(error),
           failureStatus,
-          realShouldSkip,
-          realSkipReason
+          shouldSkip,
+          skipReason
       );
     } finally {
       this.setValidatorKeyStore(currentValidatorKeyStore);

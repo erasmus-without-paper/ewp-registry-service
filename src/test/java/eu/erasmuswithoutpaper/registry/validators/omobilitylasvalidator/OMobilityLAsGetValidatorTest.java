@@ -30,7 +30,7 @@ public class OMobilityLAsGetValidatorTest extends OMobilityLAsValidatorTestBase 
 
   @Test
   public void testValidationOnValidServiceIsSuccessful() {
-    OMobilityLAsServiceV030Valid service = new OMobilityLAsServiceV030Valid(omobilitylasIndexUrl,
+    OMobilityLAsServiceV1Valid service = new OMobilityLAsServiceV1Valid(omobilitylasIndexUrl,
         omobilitylasGetUrl, omobilitylasUpdateUrl, this.client,
         this.serviceKeyStore.getCoveredHeiIDs().get(0));
     TestValidationReport report = this.getRawReport(service);
@@ -39,7 +39,7 @@ public class OMobilityLAsGetValidatorTest extends OMobilityLAsValidatorTestBase 
 
   @Test
   public void testNotValidatingIMobilityTorsIdListIsDetected() {
-    OMobilityLAsServiceV030Valid service = new OMobilityLAsServiceV030Valid(omobilitylasIndexUrl,
+    OMobilityLAsServiceV1Valid service = new OMobilityLAsServiceV1Valid(omobilitylasIndexUrl,
         omobilitylasGetUrl, omobilitylasUpdateUrl, this.client,
         this.serviceKeyStore.getCoveredHeiIDs().get(0)) {
       @Override
@@ -55,7 +55,7 @@ public class OMobilityLAsGetValidatorTest extends OMobilityLAsValidatorTestBase 
 
   @Test
   public void testNotReportingMissingRequiredParametersAsAnErrorIsDetected() {
-    OMobilityLAsServiceV030Valid service = new OMobilityLAsServiceV030Valid(omobilitylasIndexUrl,
+    OMobilityLAsServiceV1Valid service = new OMobilityLAsServiceV1Valid(omobilitylasIndexUrl,
         omobilitylasGetUrl, omobilitylasUpdateUrl, this.client,
         this.serviceKeyStore.getCoveredHeiIDs().get(0)) {
       @Override
@@ -71,7 +71,7 @@ public class OMobilityLAsGetValidatorTest extends OMobilityLAsValidatorTestBase 
 
   @Test
   public void testNotReportingMissingHeiIdParameterAsAnErrorIsDetected() {
-    OMobilityLAsServiceV030Valid service = new OMobilityLAsServiceV030Valid(omobilitylasIndexUrl,
+    OMobilityLAsServiceV1Valid service = new OMobilityLAsServiceV1Valid(omobilitylasIndexUrl,
         omobilitylasGetUrl, omobilitylasUpdateUrl, this.client,
         this.serviceKeyStore.getCoveredHeiIDs().get(0)) {
       @Override
@@ -88,7 +88,7 @@ public class OMobilityLAsGetValidatorTest extends OMobilityLAsValidatorTestBase 
 
   @Test
   public void testIgnoringAdditionalHeiIdsIsDetected() {
-    OMobilityLAsServiceV030Valid service = new OMobilityLAsServiceV030Valid(omobilitylasIndexUrl,
+    OMobilityLAsServiceV1Valid service = new OMobilityLAsServiceV1Valid(omobilitylasIndexUrl,
         omobilitylasGetUrl, omobilitylasUpdateUrl, this.client,
         this.serviceKeyStore.getCoveredHeiIDs().get(0)) {
       @Override
@@ -104,7 +104,7 @@ public class OMobilityLAsGetValidatorTest extends OMobilityLAsValidatorTestBase 
 
   @Test
   public void testReturningCorrectDataWhenNoHeiIdIsPassedIsDetected() {
-    OMobilityLAsServiceV030Valid service = new OMobilityLAsServiceV030Valid(omobilitylasIndexUrl,
+    OMobilityLAsServiceV1Valid service = new OMobilityLAsServiceV1Valid(omobilitylasIndexUrl,
         omobilitylasGetUrl, omobilitylasUpdateUrl, this.client,
         this.serviceKeyStore.getCoveredHeiIDs().get(0)) {
       @Override
@@ -119,7 +119,7 @@ public class OMobilityLAsGetValidatorTest extends OMobilityLAsValidatorTestBase 
 
   @Test
   public void testNotReportingErrorWhenUnknownHeiIdIsPassedIsDetected() {
-    OMobilityLAsServiceV030Valid service = new OMobilityLAsServiceV030Valid(omobilitylasIndexUrl,
+    OMobilityLAsServiceV1Valid service = new OMobilityLAsServiceV1Valid(omobilitylasIndexUrl,
         omobilitylasGetUrl, omobilitylasUpdateUrl, this.client,
         this.serviceKeyStore.getCoveredHeiIDs().get(0)) {
       @Override
@@ -136,7 +136,7 @@ public class OMobilityLAsGetValidatorTest extends OMobilityLAsValidatorTestBase 
 
   @Test
   public void testCorrectResponseWhenUnknownReceivingHeiIdIsPassedIsDetected() {
-    OMobilityLAsServiceV030Valid service = new OMobilityLAsServiceV030Valid(omobilitylasIndexUrl,
+    OMobilityLAsServiceV1Valid service = new OMobilityLAsServiceV1Valid(omobilitylasIndexUrl,
         omobilitylasGetUrl, omobilitylasUpdateUrl, this.client,
         this.serviceKeyStore.getCoveredHeiIDs().get(0)) {
       @Override
@@ -153,7 +153,7 @@ public class OMobilityLAsGetValidatorTest extends OMobilityLAsValidatorTestBase 
 
   @Test
   public void testReturningWrongIMobilityTorIsDetected() {
-    OMobilityLAsServiceV030Valid service = new OMobilityLAsServiceV030Valid(omobilitylasIndexUrl,
+    OMobilityLAsServiceV1Valid service = new OMobilityLAsServiceV1Valid(omobilitylasIndexUrl,
         omobilitylasGetUrl, omobilitylasUpdateUrl, this.client,
         this.serviceKeyStore.getCoveredHeiIDs().get(0)) {
       @Override
@@ -170,7 +170,7 @@ public class OMobilityLAsGetValidatorTest extends OMobilityLAsValidatorTestBase 
 
   @Test
   public void testReturningDataForUnknownOMobilityIdIsDetected() {
-    OMobilityLAsServiceV030Valid service = new OMobilityLAsServiceV030Valid(omobilitylasIndexUrl,
+    OMobilityLAsServiceV1Valid service = new OMobilityLAsServiceV1Valid(omobilitylasIndexUrl,
         omobilitylasGetUrl, omobilitylasUpdateUrl, this.client,
         this.serviceKeyStore.getCoveredHeiIDs().get(0)) {
       @Override
@@ -185,7 +185,7 @@ public class OMobilityLAsGetValidatorTest extends OMobilityLAsValidatorTestBase 
 
   @Test
   public void testTooLargeMaxIMobilityTorsIdsInManifestIsDetected() {
-    OMobilityLAsServiceV030Valid service = new OMobilityLAsServiceV030Valid(omobilitylasIndexUrl,
+    OMobilityLAsServiceV1Valid service = new OMobilityLAsServiceV1Valid(omobilitylasIndexUrl,
         omobilitylasGetUrl, omobilitylasUpdateUrl, this.client,
         this.serviceKeyStore.getCoveredHeiIDs().get(0)) {
       @Override

@@ -6,6 +6,8 @@ import java.util.stream.Collectors;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -20,13 +22,13 @@ import eu.erasmuswithoutpaper.registry.validators.Combination;
 import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
 import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus;
 import eu.erasmuswithoutpaper.registry.validators.omobilitylasvalidator.OMobilityLAsSuiteState;
+import eu.erasmuswithoutpaper.registry.validators.types.ApproveProposalV1;
+import eu.erasmuswithoutpaper.registry.validators.types.CommentProposalV1;
+import eu.erasmuswithoutpaper.registry.validators.types.OmobilityLasUpdateRequest;
 import eu.erasmuswithoutpaper.registry.validators.verifiers.VerifierFactory;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import https.github_com.erasmus_without_paper.ewp_specs_api_omobility_las.blob.stable_v1.endpoints.get_response.ApprovingParty;
-import https.github_com.erasmus_without_paper.ewp_specs_api_omobility_las.blob.stable_v1.endpoints.update_request.ApproveComponentsStudiedProposalV1;
-import https.github_com.erasmus_without_paper.ewp_specs_api_omobility_las.blob.stable_v1.endpoints.update_request.OmobilityLasUpdateRequest;
-import https.github_com.erasmus_without_paper.ewp_specs_api_omobility_las.blob.stable_v1.endpoints.update_request.UpdateComponentsStudiedV1;
+import https.github_com.erasmus_without_paper.ewp_specs_api_omobility_las.blob.stable_v1.endpoints.get_response.Signature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -36,16 +38,16 @@ import org.w3c.dom.Node;
  * Describes the set of test/steps to be run on an OMobilities API index endpoint implementation
  * in order to properly validate it.
  */
-class OMobilityLAsUpdateValidationSuiteV030
+class OMobilityLAsUpdateValidationSuiteV1
     extends AbstractValidationSuite<OMobilityLAsSuiteState> {
   private static final Logger logger =
       LoggerFactory.getLogger(
-          OMobilityLAsUpdateValidationSuiteV030.class);
+          OMobilityLAsUpdateValidationSuiteV1.class);
   private static final ValidatedApiInfo apiInfo = new OMobilityLAsUpdateValidatedApiInfo();
   private VerifierFactory updateResponseVerifierFactory = new VerifierFactory(Arrays.asList());
 
-  OMobilityLAsUpdateValidationSuiteV030(ApiValidator<OMobilityLAsSuiteState> validator,
-      OMobilityLAsSuiteState state, ValidationSuiteConfig config) {
+  OMobilityLAsUpdateValidationSuiteV1(ApiValidator<OMobilityLAsSuiteState> validator,
+                                      OMobilityLAsSuiteState state, ValidationSuiteConfig config) {
     super(validator, state, config);
   }
 
@@ -96,43 +98,61 @@ class OMobilityLAsUpdateValidationSuiteV030
   }
 
   private OmobilityLasUpdateRequest makeRequest(String sendingHeiId,
-      UpdateComponentsStudiedV1 updateComponentsStudiedV1) {
-    return makeRequest(sendingHeiId, null, updateComponentsStudiedV1);
+      CommentProposalV1 commentProposalV1) {
+    return makeRequest(sendingHeiId, null, commentProposalV1);
   }
 
   private OmobilityLasUpdateRequest makeRequest(String sendingHeiId,
-      ApproveComponentsStudiedProposalV1 approveComponentsStudiedProposalV1) {
-    return makeRequest(sendingHeiId, approveComponentsStudiedProposalV1, null);
+      ApproveProposalV1 approveProposalV1) {
+    return makeRequest(sendingHeiId, approveProposalV1, null);
   }
 
   private OmobilityLasUpdateRequest makeRequest(String sendingHeiId,
-      ApproveComponentsStudiedProposalV1 approveComponentsStudiedProposalV1,
-      UpdateComponentsStudiedV1 updateComponentsStudiedV1) {
+      ApproveProposalV1 approveProposalV1,
+      CommentProposalV1 commentProposalV1) {
     OmobilityLasUpdateRequest request = new OmobilityLasUpdateRequest();
     request.setSendingHeiId(sendingHeiId);
-    request.setApproveComponentsStudiedProposalV1(approveComponentsStudiedProposalV1);
-    request.setUpdateComponentsStudiedV1(updateComponentsStudiedV1);
+    request.setApproveProposalV1(approveProposalV1);
+    request.setCommentProposalV1(commentProposalV1);
     return request;
   }
 
-  private ApproveComponentsStudiedProposalV1 makeApproveComponentsStudiedProposalV1(
-      String omobilityId, String latestProposalId) {
-    ApproveComponentsStudiedProposalV1 approveComponentsStudiedProposalV1 =
-        new ApproveComponentsStudiedProposalV1();
-    approveComponentsStudiedProposalV1.setLatestProposalId(latestProposalId);
-    approveComponentsStudiedProposalV1.setOmobilityId(omobilityId);
-    approveComponentsStudiedProposalV1.setApprovingParty(ApprovingParty.RECEIVING_HEI);
-    return approveComponentsStudiedProposalV1;
+  private ApproveProposalV1 makeApproveProposalV1(
+      String omobilityId, String changesProposalId) {
+    ApproveProposalV1 approveProposalV1 =
+        new ApproveProposalV1();
+    approveProposalV1.setChangesProposalId(changesProposalId);
+    approveProposalV1.setOmobilityId(omobilityId);
+    approveProposalV1.setSignature(getSignature());
+    return approveProposalV1;
   }
 
-  private UpdateComponentsStudiedV1 makeUpdateComponentsStudiedV1(String omobilityId,
-      String latestProposalId) {
-    UpdateComponentsStudiedV1 updateComponentsStudiedV1 =
-        new UpdateComponentsStudiedV1();
-    updateComponentsStudiedV1.setLatestProposalId(latestProposalId);
-    updateComponentsStudiedV1.setOmobilityId(omobilityId);
-    updateComponentsStudiedV1.setComment("test");
-    return updateComponentsStudiedV1;
+  private Signature getSignature() {
+    Signature signature = new Signature();
+    signature.setSignerName("Paweł Tomasz Kowalski");
+    signature.setSignerPosition("Mobility coordinator");
+    signature.setSignerEmail("pawel.kowalski@example.com");
+    try {
+      signature.setTimestamp(DatatypeFactory.newInstance()
+          .newXMLGregorianCalendar(2000, 1, 1, 0, 0, 0, 0, 0));
+    } catch (DatatypeConfigurationException e) {
+      // Shouldn't happen
+      assert false;
+      return null;
+    }
+    signature.setSignerApp("USOS");
+    return signature;
+  }
+
+  private CommentProposalV1 makeCommentProposalV1(String omobilityId,
+      String changesProposalId) {
+    CommentProposalV1 commentProposalV1 =
+        new CommentProposalV1();
+    commentProposalV1.setChangesProposalId(changesProposalId);
+    commentProposalV1.setOmobilityId(omobilityId);
+    commentProposalV1.setSignature(getSignature());
+    commentProposalV1.setComment("test");
+    return commentProposalV1;
   }
 
   private Document cloneDocument(Document document) {
@@ -186,13 +206,13 @@ class OMobilityLAsUpdateValidationSuiteV030
   protected void validateCombinationPost(Combination combination)
       throws SuiteBroken {
     testParametersError(combination,
-        "Send request with unknown omobility-id and latest-proposal-id, without type, expect 400.",
+        "Send request with unknown omobility-id and changes-proposal id, without type, expect 400.",
         requestToXmlParameters(makeRequest(this.currentState.sendingHeiId, null, null)),
         400
     );
 
     testParametersError(combination,
-        "Send request with known omobility-id and latest-proposal-id, but without type "
+        "Send request with known omobility-id and changes-proposal id, but without type "
             + "element, expect 400.",
         requestToXmlParameters(makeRequest(
             this.currentState.sendingHeiId,
@@ -202,7 +222,7 @@ class OMobilityLAsUpdateValidationSuiteV030
     );
 
     testParametersError(combination,
-        "Send request with known omobility-id and latest-proposal-id, but with unknown type "
+        "Send request with known omobility-id and changes-proposal id, but with unknown type "
             + "element, expect 400.",
         addEmptyNode(
             requestToXmlParameters(makeRequest(
@@ -215,90 +235,61 @@ class OMobilityLAsUpdateValidationSuiteV030
         400
     );
 
-    approveComponentsStudiedProposalV1Tests(combination);
-    updateComponentsStudiedV1Tests(combination);
+    approveProposalV1Tests(combination);
+    commentProposalV1Tests(combination);
   }
 
   @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
-  private void updateComponentsStudiedV1Tests(Combination combination) throws SuiteBroken {
-    final boolean supported = this.currentState.supportsUpdateComponentsStudiedV1;
-    final String updateTypeName = "update-components-studied-v1";
-    final String elementToRemove = "comment";
-    RequestFactory requestFactory = (sendingHeiId, omobilityId, latestProposalId) -> makeRequest(
+  private void commentProposalV1Tests(Combination combination) throws SuiteBroken {
+    RequestFactory requestFactory = (sendingHeiId, omobilityId, changesProposalId) -> makeRequest(
         sendingHeiId,
-        makeUpdateComponentsStudiedV1(omobilityId, latestProposalId)
+        makeCommentProposalV1(omobilityId, changesProposalId)
     );
-    commonRequestTypeTests(combination, requestFactory, supported, updateTypeName, elementToRemove);
+    commonRequestTypeTests(combination, requestFactory, "comment-proposal-v1");
   }
 
   @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
-  private void approveComponentsStudiedProposalV1Tests(Combination combination) throws SuiteBroken {
-    final boolean supported = this.currentState.supportsApproveComponentsStudiedProposalV1;
-    final String updateTypeName = "approve-components-studied-proposal-v1";
-    final String elementToRemove = "approving-party";
-    RequestFactory requestFactory = (sendingHeiId, omobilityId, latestProposalId) -> makeRequest(
+  private void approveProposalV1Tests(Combination combination) throws SuiteBroken {
+    RequestFactory requestFactory = (sendingHeiId, omobilityId, changesProposalId) -> makeRequest(
         sendingHeiId,
-        makeApproveComponentsStudiedProposalV1(omobilityId, latestProposalId)
+        makeApproveProposalV1(omobilityId, changesProposalId)
     );
-    commonRequestTypeTests(combination, requestFactory, supported, updateTypeName, elementToRemove);
+    commonRequestTypeTests(combination, requestFactory, "approve-proposal-v1");
   }
 
   @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
   private void commonRequestTypeTests(Combination combination, RequestFactory requestFactory,
-      boolean supported, String updateTypeName, String elementToRemove)
-      throws SuiteBroken {
-
-    final String supportedSkipReason = updateTypeName + " is supported.";
-    final String notSupportedSkipReason = updateTypeName + " is not supported.";
-
-    testParametersError(combination,
-        String.format(
-            "Send %s request, which is unsupported, expect 400.",
-            updateTypeName
-        ),
-        requestToXmlParameters(requestFactory.createRequest(
-            this.currentState.sendingHeiId,
-            this.currentState.omobilityId,
-            this.currentState.latestProposalId
-        )),
-        400,
-        supported,
-        supportedSkipReason
-    );
+      String updateTypeName) throws SuiteBroken {
 
     testParameters200(combination,
         String.format(
-            "Send %s request with known omobility-id and latest-proposal-id, expect 200.",
+            "Send %s request with known omobility-id and changes-proposal id, expect 200.",
             updateTypeName
         ),
         requestToXmlParameters(requestFactory.createRequest(
             this.currentState.sendingHeiId,
             this.currentState.omobilityId,
-            this.currentState.latestProposalId
+            this.currentState.changesProposalId
         )),
-        updateResponseVerifierFactory.expectCorrectResponse(),
-        !supported,
-        notSupportedSkipReason
+        updateResponseVerifierFactory.expectCorrectResponse()
     );
 
     testParametersError(combination,
         String.format(
-            "Send %s request with unknown omobility-id and known latest-proposal-id, expect 400.",
+            "Send %s request with unknown omobility-id and known changes-proposal id, expect 400.",
             updateTypeName
         ),
         requestToXmlParameters(requestFactory.createRequest(
             this.currentState.sendingHeiId,
             fakeId,
-            this.currentState.latestProposalId
+            this.currentState.changesProposalId
         )),
-        400,
-        !supported,
-        notSupportedSkipReason
+        400
     );
 
     testParametersError(combination,
         String.format(
-            "Send %s request with known omobility-id and unknown latest-proposal-id, expect 409.",
+            "Send %s request with known omobility-id and unknown changes-proposal id, expect 409.",
             updateTypeName
         ),
         requestToXmlParameters(requestFactory.createRequest(
@@ -306,33 +297,29 @@ class OMobilityLAsUpdateValidationSuiteV030
             this.currentState.omobilityId,
             fakeId
         )),
-        409,
-        !supported,
-        notSupportedSkipReason
+        409
     );
 
     testParametersError(combination,
         String.format(
-            "Send %s request with known omobility-id and latest-proposal-id, but missing request "
-                + "elements, expect 400.",
+            "Send %s request with known omobility-id and changes-proposal id, but missing"
+                    + " signature, expect 400.",
             updateTypeName
         ),
         removeNode(
             requestToXmlParameters(requestFactory.createRequest(
                 this.currentState.sendingHeiId,
                 this.currentState.omobilityId,
-                this.currentState.latestProposalId
+                this.currentState.changesProposalId
             )),
-            "omobility-las-update-request", updateTypeName, elementToRemove
+            "omobility-las-update-request", updateTypeName, "signature"
         ),
-        400,
-        !supported,
-        notSupportedSkipReason
+        400
     );
 
     testParameters200(combination,
         String.format(
-            "Send %s request with known omobility-id and latest-proposal-id and additional "
+            "Send %s request with known omobility-id and changes-proposal id and additional "
                 + "elements in request, expect 200.",
             updateTypeName
         ),
@@ -340,37 +327,33 @@ class OMobilityLAsUpdateValidationSuiteV030
             requestToXmlParameters(requestFactory.createRequest(
                 this.currentState.sendingHeiId,
                 this.currentState.omobilityId,
-                this.currentState.latestProposalId
+                this.currentState.changesProposalId
             )),
             "test",
             "omobility-las-update-request", updateTypeName
         ),
-        updateResponseVerifierFactory.expectCorrectResponse(),
-        !supported,
-        notSupportedSkipReason
+        updateResponseVerifierFactory.expectCorrectResponse()
     );
 
     testParametersErrorAsOtherEwpParticipant(combination,
         String.format(
-            "Send %s request with known omobility-id and latest-proposal-id as other EWP "
+            "Send %s request with known omobility-id and changes-proposal id as other EWP "
                 + "participant, expect 400.",
             updateTypeName
         ),
         requestToXmlParameters(requestFactory.createRequest(
             this.currentState.sendingHeiId,
             this.currentState.omobilityId,
-            this.currentState.latestProposalId
+            this.currentState.changesProposalId
         )),
         400,
-        ValidationStepWithStatus.Status.FAILURE,
-        !supported,
-        notSupportedSkipReason
+        ValidationStepWithStatus.Status.FAILURE
     );
   }
 
   interface RequestFactory {
     OmobilityLasUpdateRequest createRequest(String sendingHeiId, String omobilityId,
-        String latestProposalId);
+        String changesProposalId);
   }
 
 }

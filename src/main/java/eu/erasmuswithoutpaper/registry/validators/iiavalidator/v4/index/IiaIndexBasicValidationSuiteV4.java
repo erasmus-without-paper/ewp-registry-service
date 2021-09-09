@@ -1,6 +1,5 @@
 package eu.erasmuswithoutpaper.registry.validators.iiavalidator.v4.index;
 
-
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
 import eu.erasmuswithoutpaper.registry.validators.iiavalidator.IiaSuiteState;

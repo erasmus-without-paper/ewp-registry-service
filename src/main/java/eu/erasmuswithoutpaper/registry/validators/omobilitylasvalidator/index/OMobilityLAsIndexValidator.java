@@ -27,29 +27,29 @@ public class OMobilityLAsIndexValidator extends ApiValidator<OMobilityLAsSuiteSt
     validationSuites = ApiValidator.createMultimap();
 
     validationSuites.put(
-        new SemanticVersion(0, 3, 0),
+        new SemanticVersion(1, 0, 0),
         new ValidationSuiteInfo<>(
-            OMobilityLAsIndexSetupValidationSuiteV030::new,
-            OMobilityLAsIndexSetupValidationSuiteV030.getParameters()
+            OMobilityLAsIndexSetupValidationSuiteV1::new,
+            OMobilityLAsIndexSetupValidationSuiteV1.getParameters()
         )
     );
     validationSuites.put(
-        new SemanticVersion(0, 3, 0),
+        new SemanticVersion(1, 0, 0),
         new ValidationSuiteInfo<>(
-            OMobilityLAsIndexValidationSuiteV030::new
+            OMobilityLAsIndexValidationSuiteV1::new
         )
     );
     validationSuites.put(
-        new SemanticVersion(0, 3, 0),
+        new SemanticVersion(1, 0, 0),
         new ValidationSuiteInfo<>(
-            OMobilityLAsIndexComplexSetupValidationSuiteV030::new,
-            OMobilityLAsIndexComplexSetupValidationSuiteV030.getParameters()
+            OMobilityLAsIndexComplexSetupValidationSuiteV1::new,
+            OMobilityLAsIndexComplexSetupValidationSuiteV1.getParameters()
         )
     );
     validationSuites.put(
-        new SemanticVersion(0, 3, 0),
+        new SemanticVersion(1, 0, 0),
         new ValidationSuiteInfo<>(
-            OMobilityLAsIndexComplexValidationSuiteV030::new
+            OMobilityLAsIndexComplexValidationSuiteV1::new
         )
     );
   }

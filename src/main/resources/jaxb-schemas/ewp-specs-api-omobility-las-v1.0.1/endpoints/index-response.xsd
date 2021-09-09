@@ -1,6 +1,8 @@
 <xs:schema
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
     xmlns:ewp="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
+    xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+    jaxb:version="2.1"
     elementFormDefault="qualified"
 
     targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-api-omobility-las/blob/stable-v1/endpoints/index-response.xsd"
@@ -18,6 +20,11 @@
 
             http://developers.erasmuswithoutpaper.eu/
         </xs:documentation>
+        <xs:appinfo>
+            <jaxb:schemaBindings>
+                <jaxb:package name="eu.erasmuswithoutpaper.registry.validators.types" />
+            </jaxb:schemaBindings>
+        </xs:appinfo>
     </xs:annotation>
 
     <xs:element name="omobility-las-index-response">

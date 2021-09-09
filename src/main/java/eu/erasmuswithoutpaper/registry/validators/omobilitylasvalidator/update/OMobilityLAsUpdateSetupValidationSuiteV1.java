@@ -16,23 +16,21 @@ import eu.erasmuswithoutpaper.registry.validators.ValidationParameter;
 import eu.erasmuswithoutpaper.registry.validators.omobilitylasvalidator.OMobilityLAsSuiteState;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import org.joox.Match;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-class OMobilityLAsUpdateSetupValidationSuiteV030
+class OMobilityLAsUpdateSetupValidationSuiteV1
     extends AbstractSetupValidationSuite<OMobilityLAsSuiteState> {
 
   private static final Logger logger =
-      LoggerFactory.getLogger(OMobilityLAsUpdateSetupValidationSuiteV030.class);
+      LoggerFactory.getLogger(OMobilityLAsUpdateSetupValidationSuiteV1.class);
 
   private static final ValidatedApiInfo apiInfo = new OMobilityLAsUpdateValidatedApiInfo();
   private static final String SENDING_HEI_ID_PARAMETER = "sending_hei_id";
   private static final String OMOBILITY_ID_PARAMETER = "omobility_id";
   private static final String LATEST_PROPOSAL_ID_PARAMETER = "latest_proposal_id";
 
-  OMobilityLAsUpdateSetupValidationSuiteV030(ApiValidator<OMobilityLAsSuiteState> validator,
+  OMobilityLAsUpdateSetupValidationSuiteV1(ApiValidator<OMobilityLAsSuiteState> validator,
       OMobilityLAsSuiteState state, ValidationSuiteConfig config) {
     super(validator, state, config);
   }
@@ -57,13 +55,6 @@ class OMobilityLAsUpdateSetupValidationSuiteV030
     return apiInfo;
   }
 
-  private boolean supportsUpdateType(String type) {
-    Match supportedUpdateTypes = getManifestParameter("supported-update-types");
-    return supportedUpdateTypes.xpath(
-        String.format("%s:%s", getApiInfo().getApiPrefix(), type)
-    ).isNotEmpty();
-  }
-
   @Override
   protected boolean shouldAnonymousClientBeAllowedToAccessThisApi() {
     return false;
@@ -75,20 +66,16 @@ class OMobilityLAsUpdateSetupValidationSuiteV030
   @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
   protected void runApiSpecificTests(HttpSecurityDescription securityDescription)
       throws SuiteBroken {
-    this.currentState.supportsUpdateComponentsStudiedV1 =
-        supportsUpdateType("update-components-studied-v1");
-    this.currentState.supportsApproveComponentsStudiedProposalV1 =
-        supportsUpdateType("approve-components-studied-proposal-v1");
     this.currentState.sendingHeiId = getParameterValue(SENDING_HEI_ID_PARAMETER,
         this::getReceivingHeiId);
     this.currentState.omobilityId = getParameterValue(OMOBILITY_ID_PARAMETER,
         () -> getOmobilityId(securityDescription));
-    this.currentState.latestProposalId = getParameterValue(LATEST_PROPOSAL_ID_PARAMETER,
-        () -> getLatestProposalId(this.currentState.omobilityId, this.currentState.sendingHeiId,
+    this.currentState.changesProposalId = getParameterValue(LATEST_PROPOSAL_ID_PARAMETER,
+        () -> getChangesProposalId(this.currentState.omobilityId, this.currentState.sendingHeiId,
             securityDescription));
   }
 
-  private String getLatestProposalId(String omobilityId, String sendingHeiId,
+  private String getChangesProposalId(String omobilityId, String sendingHeiId,
       HttpSecurityDescription securityDescription) throws SuiteBroken {
     final String getUrl = getApiUrlForHei(
         sendingHeiId, this.getApiInfo().getApiName(), ApiEndpoint.Get,
@@ -108,7 +95,7 @@ class OMobilityLAsUpdateSetupValidationSuiteV030
       @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
       protected Optional<Response> innerRun() throws Failure {
         try {
-          Response response = OMobilityLAsUpdateSetupValidationSuiteV030.this.makeRequest(
+          Response response = OMobilityLAsUpdateSetupValidationSuiteV1.this.makeRequest(
               this,
               makeApiRequestWithPreferredSecurity(this, getUrl, ApiEndpoint.Get,
                   securityDescription,
@@ -127,7 +114,7 @@ class OMobilityLAsUpdateSetupValidationSuiteV030
           expect200(response);
           List<String> selectedStrings = selectFromDocument(
               makeXmlFromBytes(response.getBody()),
-              "/omobility-las-get-response/la/components-studied/latest-proposal/@id"
+              "/omobility-las-get-response/la/changes-proposal/@id"
           );
 
           if (!selectedStrings.isEmpty()) {
@@ -141,8 +128,8 @@ class OMobilityLAsUpdateSetupValidationSuiteV030
           // else ignore
         }
 
-        String error = "We've tried to get latest-proposal-id for selected omobility-id, but get "
-            + "endpoint didn't return it.";
+        String error = "We've tried to get changes-proposal id attribute for selected omobility-id,"
+                + " but get endpoint didn't return it.";
 
         throw new Failure(error, Status.NOTICE, null);
       }

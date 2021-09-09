@@ -15,12 +15,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-class OMobilityLAsIndexSetupValidationSuiteV030
+class OMobilityLAsIndexSetupValidationSuiteV1
     extends AbstractSetupValidationSuite<OMobilityLAsSuiteState> {
 
   private static final Logger logger =
       LoggerFactory.getLogger(
-          OMobilityLAsIndexSetupValidationSuiteV030.class);
+          OMobilityLAsIndexSetupValidationSuiteV1.class);
 
   private static final ValidatedApiInfo apiInfo = new OMobilityLAsIndexValidatedApiInfo();
 
@@ -53,7 +53,7 @@ class OMobilityLAsIndexSetupValidationSuiteV030
     );
   }
 
-  OMobilityLAsIndexSetupValidationSuiteV030(ApiValidator<OMobilityLAsSuiteState> validator,
+  OMobilityLAsIndexSetupValidationSuiteV1(ApiValidator<OMobilityLAsSuiteState> validator,
       OMobilityLAsSuiteState state, ValidationSuiteConfig config) {
     super(validator, state, config);
   }

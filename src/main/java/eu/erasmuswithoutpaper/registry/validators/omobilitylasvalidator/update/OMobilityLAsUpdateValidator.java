@@ -27,16 +27,16 @@ public class OMobilityLAsUpdateValidator extends ApiValidator<OMobilityLAsSuiteS
     validationSuites = ApiValidator.createMultimap();
 
     validationSuites.put(
-        new SemanticVersion(0, 3, 0),
+        new SemanticVersion(1, 0, 0),
         new ValidationSuiteInfo<>(
-            OMobilityLAsUpdateSetupValidationSuiteV030::new,
-            OMobilityLAsUpdateSetupValidationSuiteV030.getParameters()
+            OMobilityLAsUpdateSetupValidationSuiteV1::new,
+            OMobilityLAsUpdateSetupValidationSuiteV1.getParameters()
         )
     );
     validationSuites.put(
-        new SemanticVersion(0, 3, 0),
+        new SemanticVersion(1, 0, 0),
         new ValidationSuiteInfo<>(
-            OMobilityLAsUpdateValidationSuiteV030::new
+            OMobilityLAsUpdateValidationSuiteV1::new
         )
     );
   }

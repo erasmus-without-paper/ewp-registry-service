@@ -13,7 +13,8 @@
     <rule ref="rulesets/java/clone.xml" />
     <rule ref="rulesets/java/finalizers.xml" />
     <rule ref="rulesets/java/imports.xml" />
-    <rule ref="rulesets/java/logging-java.xml" />
+<!--    TODO: upgrade PMC and turn on logging java ruleset -->
+<!--    <rule ref="rulesets/java/logging-java.xml" />-->
     <rule ref="rulesets/java/naming.xml">
         <exclude name="LongVariable" />
         <exclude name="ShortVariable" />

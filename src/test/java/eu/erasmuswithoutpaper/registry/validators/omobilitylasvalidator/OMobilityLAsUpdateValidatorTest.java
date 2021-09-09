@@ -24,17 +24,10 @@ public class OMobilityLAsUpdateValidatorTest extends OMobilityLAsValidatorTestBa
 
   @Test
   public void testValidationOnValidServiceIsSuccessful() {
-    OMobilityLAsServiceV030Valid service = new OMobilityLAsServiceV030Valid(
+    OMobilityLAsServiceV1Valid service = new OMobilityLAsServiceV1Valid(
         omobilitylasIndexUrl, omobilitylasGetUrl, omobilitylasUpdateUrl, this.client,
         this.serviceKeyStore.getCoveredHeiIDs().get(0));
     TestValidationReport report = this.getRawReport(service);
     assertThat(report).isCorrect();
-    assertThat(report).containsSkipped(
-        "Send update-components-studied-v1 request, which is unsupported, expect 400."
-    );
-    assertThat(report).containsSkipped(
-        "Send approve-components-studied-proposal-v1 request, which is unsupported, expect 400."
-    );
   }
 }
-

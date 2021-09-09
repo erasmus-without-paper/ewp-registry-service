@@ -14,9 +14,7 @@ public class OMobilityLAsSuiteState extends SuiteState {
   public String notPermittedHeiId;
   public String receivingAcademicYearId;
 
-  public String latestProposalId;
-  public boolean supportsApproveComponentsStudiedProposalV1;
-  public boolean supportsUpdateComponentsStudiedV1;
+  public String changesProposalId;
 
   public OMobilityLAsSuiteState(String url, SemanticVersion version) {
     super(url, version);
