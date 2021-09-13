@@ -35,13 +35,13 @@ public class FactsheetValidatorTest extends AbstractApiTest {
 
   @Override
   protected SemanticVersion getVersion() {
-    return new SemanticVersion(0, 3, 0);
+    return new SemanticVersion(1, 0, 0);
   }
 
   @Test
   public void testValidationOnValidServiceIsSuccessful() {
-    FactsheetServiceV030Valid service =
-        new FactsheetServiceV030Valid(factsheetUrl, this.client,
+    FactsheetServiceV1Valid service =
+        new FactsheetServiceV1Valid(factsheetUrl, this.client,
             validatorKeyStoreSet.getMainKeyStore());
     TestValidationReport report = this.getRawReport(service);
     assertThat(report).isCorrect();
@@ -49,8 +49,8 @@ public class FactsheetValidatorTest extends AbstractApiTest {
 
   @Test
   public void testNotValidatingLengthOfHeiIdListIsDetected() {
-    FactsheetServiceV030Valid service =
-        new FactsheetServiceV030Valid(factsheetUrl, this.client,
+    FactsheetServiceV1Valid service =
+        new FactsheetServiceV1Valid(factsheetUrl, this.client,
             validatorKeyStoreSet.getMainKeyStore()) {
           @Override
           protected void checkHeis(RequestData requestData) throws ErrorResponseException {
@@ -65,8 +65,8 @@ public class FactsheetValidatorTest extends AbstractApiTest {
 
   @Test
   public void testCountingUniqueHeiIdParametersIsDetected() {
-    FactsheetServiceV030Valid service =
-        new FactsheetServiceV030Valid(factsheetUrl, this.client,
+    FactsheetServiceV1Valid service =
+        new FactsheetServiceV1Valid(factsheetUrl, this.client,
             validatorKeyStoreSet.getMainKeyStore()) {
           @Override
           protected void checkHeis(RequestData requestData) throws ErrorResponseException {
@@ -83,8 +83,8 @@ public class FactsheetValidatorTest extends AbstractApiTest {
 
   @Test
   public void testWrongMaxHeiIdInManifestIsDetected() {
-    FactsheetServiceV030Valid service =
-        new FactsheetServiceV030Valid(factsheetUrl, this.client,
+    FactsheetServiceV1Valid service =
+        new FactsheetServiceV1Valid(factsheetUrl, this.client,
             validatorKeyStoreSet.getMainKeyStore()) {
           @Override
           protected void checkHeis(RequestData requestData) throws ErrorResponseException {
@@ -100,8 +100,8 @@ public class FactsheetValidatorTest extends AbstractApiTest {
 
   @Test
   public void testNotReportingAnErrorWhenInvalidHttpMethodIsUsedIsDetected() {
-    FactsheetServiceV030Valid service =
-        new FactsheetServiceV030Valid(factsheetUrl, this.client,
+    FactsheetServiceV1Valid service =
+        new FactsheetServiceV1Valid(factsheetUrl, this.client,
             validatorKeyStoreSet.getMainKeyStore()) {
           @Override
           protected void checkRequestMethod(Request request) throws ErrorResponseException {
@@ -115,8 +115,8 @@ public class FactsheetValidatorTest extends AbstractApiTest {
 
   @Test
   public void testNotReportingAnErrorWhenNotPassingAnyParameterIsDetected() {
-    FactsheetServiceV030Valid service =
-        new FactsheetServiceV030Valid(factsheetUrl, this.client,
+    FactsheetServiceV1Valid service =
+        new FactsheetServiceV1Valid(factsheetUrl, this.client,
             validatorKeyStoreSet.getMainKeyStore()) {
           @Override
           protected void handleNoParams(RequestData params)
@@ -129,8 +129,8 @@ public class FactsheetValidatorTest extends AbstractApiTest {
 
   @Test
   public void testReturningEmptyResponseWhenParametersOtherThanHeiIdArePassedIsDetected() {
-    FactsheetServiceV030Valid service =
-        new FactsheetServiceV030Valid(factsheetUrl, this.client,
+    FactsheetServiceV1Valid service =
+        new FactsheetServiceV1Valid(factsheetUrl, this.client,
             validatorKeyStoreSet.getMainKeyStore()) {
           @Override
           protected void handleNoHeiIdParam(RequestData params)
@@ -143,8 +143,8 @@ public class FactsheetValidatorTest extends AbstractApiTest {
 
   @Test
   public void testReturningNonEmptyResponseForUnknownHeiIdIsDetected() {
-    FactsheetServiceV030Valid service =
-        new FactsheetServiceV030Valid(factsheetUrl, this.client,
+    FactsheetServiceV1Valid service =
+        new FactsheetServiceV1Valid(factsheetUrl, this.client,
             validatorKeyStoreSet.getMainKeyStore()) {
           @Override
           protected FactsheetResponse.Factsheet processNotCoveredHei(RequestData requestData,
@@ -159,8 +159,8 @@ public class FactsheetValidatorTest extends AbstractApiTest {
 
   @Test
   public void testReportingAnErrorWhenUnknownHeiIdIsPassedIsDetected() {
-    FactsheetServiceV030Valid service =
-        new FactsheetServiceV030Valid(factsheetUrl, this.client,
+    FactsheetServiceV1Valid service =
+        new FactsheetServiceV1Valid(factsheetUrl, this.client,
             validatorKeyStoreSet.getMainKeyStore()) {
           @Override
           protected FactsheetResponse.Factsheet processNotCoveredHei(RequestData requestData,
@@ -177,8 +177,8 @@ public class FactsheetValidatorTest extends AbstractApiTest {
 
   @Test
   public void testReturningDeduplicatedListIsNotAnError() {
-    FactsheetServiceV030Valid service =
-        new FactsheetServiceV030Valid(factsheetUrl, this.client,
+    FactsheetServiceV1Valid service =
+        new FactsheetServiceV1Valid(factsheetUrl, this.client,
             validatorKeyStoreSet.getMainKeyStore()) {
           @Override
           protected List<FactsheetResponse.Factsheet> processHeis(RequestData requestData)

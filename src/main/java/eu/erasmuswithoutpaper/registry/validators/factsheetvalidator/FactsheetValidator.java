@@ -23,7 +23,7 @@ public class FactsheetValidator extends ApiValidator<FactsheetSuiteState> {
   static {
     validationSuites = ApiValidator.createMultimap();
     validationSuites.put(
-        new SemanticVersion(0, 3, 0),
+        new SemanticVersion(1, 0, 0),
         new ValidationSuiteInfo<>(
             FactsheetSetupValidationSuiteV1::new,
             FactsheetSetupValidationSuiteV1
@@ -32,7 +32,7 @@ public class FactsheetValidator extends ApiValidator<FactsheetSuiteState> {
 
     );
     validationSuites.put(
-        new SemanticVersion(0, 3, 0),
+        new SemanticVersion(1, 0, 0),
         new ValidationSuiteInfo<>(
             FactsheetValidationSuiteV1::new)
     );

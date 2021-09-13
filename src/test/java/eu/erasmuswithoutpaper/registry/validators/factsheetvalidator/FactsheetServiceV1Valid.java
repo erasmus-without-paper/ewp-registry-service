@@ -23,11 +23,11 @@ import https.github_com.erasmus_without_paper.ewp_specs_architecture.blob.stable
 import https.github_com.erasmus_without_paper.ewp_specs_types_phonenumber.tree.stable_v1.PhoneNumber;
 
 
-public class FactsheetServiceV030Valid extends AbstractFactsheetService {
+public class FactsheetServiceV1Valid extends AbstractFactsheetService {
   protected static final int maxHeiIds = 2;
   protected Map<String, FactsheetResponse.Factsheet> coveredHeis = new HashMap<>();
 
-  public FactsheetServiceV030Valid(String url, RegistryClient registryClient,
+  public FactsheetServiceV1Valid(String url, RegistryClient registryClient,
       ValidatorKeyStore validatorKeyStore) {
     super(url, registryClient);
     for (String heiId : validatorKeyStore.getCoveredHeiIDs()) {
