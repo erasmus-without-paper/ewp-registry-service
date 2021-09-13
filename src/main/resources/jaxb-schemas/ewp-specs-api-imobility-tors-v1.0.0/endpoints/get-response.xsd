@@ -66,10 +66,7 @@
                                         particular, there's the fact that some features required by EMREX ELMO are
                                         quite unnecessary in EWP's use case.
 
-                                        For example, there's no longer any reason for the ELMO element to be digitally
-                                        signed (because in EWP we can rely on the transport layer for security, whereas
-                                        in EMREX signing is required because the student acts as an intermediary).
-                                        Similarly, we do not need `learner` and `issuer` elements, because we can
+                                        For example, we do not need `learner` and `issuer` elements, because we can
                                         determine their content by other means.
 
                                         Despite these, we have chosen to require EMREX ELMO XML format here, "as it
@@ -106,20 +103,77 @@
                                           identifiers for LOI elements, but we have requested this change and expect it to be
                                           introduced in future versions: https://github.com/emrex-eu/elmo-schemas/issues/10)
 
-                                        ## Signing the ELMO
-
-                                        This API does not currently specify how the ELMO response needs to be signed.
-                                        In EMREX, ELMO files need to be signed with a very specific certificate, but in
-                                        EWP the certificate used does not (currently) matter, because clients use other ways
-                                        of verifying that the response came from appropriate source. This means that clients
-                                        MAY simply ignore the attached digital signature (it is okay to not verify it in any
-                                        way).
-
-                                        That said, it seems that the best certificate to use for this, would be the same
-                                        certificate which was used to actually serve the ToRs API. (Clients SHOULD NOT rely
-                                        on this recommendation however, because it MAY change in the future.)
+                                        * The PDF version of the transcript, if present, SHOULD be located inside the `report` element
+                                          and have type 'Transcript of Records'.
                                     </xs:documentation>
                                 </xs:annotation>
+                            </xs:element>
+                            <xs:element name="gradeConversionTable" minOccurs="0">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        This element may be used to convert grades from the Transcript of Records for
+                                        this mobility.
+
+                                        The grade conversion table should be created as described in the
+                                        Egracons project:
+
+                                        http://egracons.eu/sites/default/files/Grading_Table_General_Intro_0.pdf
+
+                                        ISCED codes that are present in the Transcript of Records SHOULD be
+                                        specified in the grade conversion table. It is RECOMMENDED not to specify
+                                        other ISCED codes.
+
+                                        Note that conversion will only be possible if ISCED codes are specified in ELMO.
+                                    </xs:documentation>
+                                </xs:annotation>
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="iscedTable" maxOccurs="unbounded">
+                                            <xs:annotation>
+                                                <xs:documentation>
+                                                    This describes a single grade conversion table for a specific ISCED code,
+                                                    as described in the Egracons project.
+                                                </xs:documentation>
+                                            </xs:annotation>
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="gradeFrequency" maxOccurs="unbounded">
+                                                        <xs:annotation>
+                                                            <xs:documentation>
+                                                                This describes a single grade in the grade conversion table.
+                                                            </xs:documentation>
+                                                        </xs:annotation>
+                                                        <xs:complexType>
+                                                            <xs:attribute name="label" type="xs:token" use="required">
+                                                                <xs:annotation>
+                                                                    <xs:documentation>
+                                                                        The label of the grade. Should correspond to the
+                                                                        result label used in ELMO. E.g. "C", or "20-30".
+                                                                    </xs:documentation>
+                                                                </xs:annotation>
+                                                            </xs:attribute>
+                                                            <xs:attribute name="percentage" type="xs:decimal" use="required">
+                                                                <xs:annotation>
+                                                                    <xs:documentation>
+                                                                        The percentage of students with that grade,
+                                                                        as described in the Egracons.
+                                                                    </xs:documentation>
+                                                                </xs:annotation>
+                                                            </xs:attribute>
+                                                        </xs:complexType>
+                                                    </xs:element>
+                                                </xs:sequence>
+                                                <xs:attribute name="iscedCode" type="xs:token" use="required">
+                                                    <xs:annotation>
+                                                        <xs:documentation>
+                                                            The ISCED-F code as used in ELMO.
+                                                        </xs:documentation>
+                                                    </xs:annotation>
+                                                </xs:attribute>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
                             </xs:element>
                         </xs:sequence>
                     </xs:complexType>

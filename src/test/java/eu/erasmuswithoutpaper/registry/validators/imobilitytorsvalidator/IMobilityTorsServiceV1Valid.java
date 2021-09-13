@@ -23,7 +23,7 @@ import org.springframework.core.io.ResourceLoader;
 
 import https.github_com.erasmus_without_paper.ewp_specs_api_imobility_tors.blob.stable_v1.endpoints.get_response.ImobilityTorsGetResponse;
 
-public class IMobilityTorsServiceV2Valid extends AbstractIMobilityTorsService {
+public class IMobilityTorsServiceV1Valid extends AbstractIMobilityTorsService {
   protected List<IMobilityTorEntry> tors = new ArrayList<>();
 
 
@@ -32,8 +32,8 @@ public class IMobilityTorsServiceV2Valid extends AbstractIMobilityTorsService {
    * @param getUrl         The endpoint at which to listen for requests.
    * @param registryClient Initialized and refreshed {@link RegistryClient} instance.
    */
-  public IMobilityTorsServiceV2Valid(String indexUrl, String getUrl,
-      RegistryClient registryClient, ResourceLoader resourceLoader) {
+  public IMobilityTorsServiceV1Valid(String indexUrl, String getUrl, RegistryClient registryClient,
+      ResourceLoader resourceLoader) {
     super(indexUrl, getUrl, registryClient);
     fillDataBase(resourceLoader);
   }

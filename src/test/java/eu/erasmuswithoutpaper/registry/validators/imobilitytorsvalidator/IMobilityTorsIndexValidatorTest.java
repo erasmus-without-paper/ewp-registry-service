@@ -8,7 +8,6 @@ import java.util.List;
 
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.TestValidationReport;
-import eu.erasmuswithoutpaper.registry.validators.ValidatorKeyStore;
 import eu.erasmuswithoutpaper.registry.validators.imobilitytorsvalidator.index.IMobilityTorsIndexValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -30,7 +29,7 @@ public class IMobilityTorsIndexValidatorTest extends IMobilityTorsValidatorTestB
 
   @Test
   public void testValidationOnValidServiceIsSuccessful() {
-    IMobilityTorsServiceV2Valid service = new IMobilityTorsServiceV2Valid(
+    IMobilityTorsServiceV1Valid service = new IMobilityTorsServiceV1Valid(
         omobilityTorsIndexUrl, omobilityTorsGetUrl, this.client, this.resourceLoader);
     TestValidationReport report = this.getRawReport(service);
     assertThat(report).isCorrect();
@@ -38,7 +37,7 @@ public class IMobilityTorsIndexValidatorTest extends IMobilityTorsValidatorTestB
 
   @Test
   public void testNotReturningAnErrorWhenNoParamsAreProvidedIsDetected() {
-    IMobilityTorsServiceV2Valid service = new IMobilityTorsServiceV2Valid(
+    IMobilityTorsServiceV1Valid service = new IMobilityTorsServiceV1Valid(
         omobilityTorsIndexUrl, omobilityTorsGetUrl, this.client, this.resourceLoader) {
       @Override
       protected void errorNoParams(
@@ -55,7 +54,7 @@ public class IMobilityTorsIndexValidatorTest extends IMobilityTorsValidatorTestB
 
   @Test
   public void testNotReturningAnErrorWhenNoReceivingHeiIdIsUsedIsDetected() {
-    IMobilityTorsServiceV2Valid service = new IMobilityTorsServiceV2Valid(
+    IMobilityTorsServiceV1Valid service = new IMobilityTorsServiceV1Valid(
         omobilityTorsIndexUrl, omobilityTorsGetUrl, this.client, this.resourceLoader) {
       @Override
       protected void errorNoReceivingHeiId(
@@ -70,7 +69,7 @@ public class IMobilityTorsIndexValidatorTest extends IMobilityTorsValidatorTestB
 
   @Test
   public void testReturningAnErrorResponseWhenKnownReceivingHeiIdWithoutSendingHeiIdIsUsedIsDetected() {
-    IMobilityTorsServiceV2Valid service = new IMobilityTorsServiceV2Valid(
+    IMobilityTorsServiceV1Valid service = new IMobilityTorsServiceV1Valid(
         omobilityTorsIndexUrl, omobilityTorsGetUrl, this.client, this.resourceLoader) {
       @Override
       protected void handleNoSendingHeiId(
@@ -88,7 +87,7 @@ public class IMobilityTorsIndexValidatorTest extends IMobilityTorsValidatorTestB
 
   @Test
   public void testReturningEmptyResponseWhenKnownReceivingHeiIdWithoutSendingHeiIdIsUsedIsDetected() {
-    IMobilityTorsServiceV2Valid service = new IMobilityTorsServiceV2Valid(
+    IMobilityTorsServiceV1Valid service = new IMobilityTorsServiceV1Valid(
         omobilityTorsIndexUrl, omobilityTorsGetUrl, this.client, this.resourceLoader) {
       @Override
       protected void handleNoSendingHeiId(
@@ -106,7 +105,7 @@ public class IMobilityTorsIndexValidatorTest extends IMobilityTorsValidatorTestB
 
   @Test
   public void testIgnoringAdditionalReceivingHeiIdIsDetected() {
-    IMobilityTorsServiceV2Valid service = new IMobilityTorsServiceV2Valid(
+    IMobilityTorsServiceV1Valid service = new IMobilityTorsServiceV1Valid(
         omobilityTorsIndexUrl, omobilityTorsGetUrl, this.client, this.resourceLoader) {
       @Override
       protected void errorMultipleReceivingHeiIds(
@@ -121,7 +120,7 @@ public class IMobilityTorsIndexValidatorTest extends IMobilityTorsValidatorTestB
 
   @Test
   public void testReturningAnErrorWhenUnknownReceivingHeiIdIsUsedIsDetected() {
-    IMobilityTorsServiceV2Valid service = new IMobilityTorsServiceV2Valid(
+    IMobilityTorsServiceV1Valid service = new IMobilityTorsServiceV1Valid(
         omobilityTorsIndexUrl, omobilityTorsGetUrl, this.client, this.resourceLoader) {
       @Override
       protected void handleUnknownReceivingHeiId(
@@ -138,7 +137,7 @@ public class IMobilityTorsIndexValidatorTest extends IMobilityTorsValidatorTestB
 
   @Test
   public void testReturningNonEmptyResponseWhenUnknownReceivingHeiIdIsUsedIsDetected() {
-    IMobilityTorsServiceV2Valid service = new IMobilityTorsServiceV2Valid(
+    IMobilityTorsServiceV1Valid service = new IMobilityTorsServiceV1Valid(
         omobilityTorsIndexUrl, omobilityTorsGetUrl, this.client, this.resourceLoader) {
       @Override
       protected void handleUnknownReceivingHeiId(
@@ -156,7 +155,7 @@ public class IMobilityTorsIndexValidatorTest extends IMobilityTorsValidatorTestB
 
   @Test
   public void testReturningEmptyResponseWhenKnownAndUnknownSendingHeiIdsAreUsedIsDetected() {
-    IMobilityTorsServiceV2Valid service = new IMobilityTorsServiceV2Valid(
+    IMobilityTorsServiceV1Valid service = new IMobilityTorsServiceV1Valid(
         omobilityTorsIndexUrl, omobilityTorsGetUrl, this.client, this.resourceLoader) {
       @Override
       protected void handleUnknownSendingHeiId(
@@ -174,7 +173,7 @@ public class IMobilityTorsIndexValidatorTest extends IMobilityTorsValidatorTestB
 
   @Test
   public void testReturningAnErrorResponseWhenUnknownSendingHeiIdsAreUsedIsDetected() {
-    IMobilityTorsServiceV2Valid service = new IMobilityTorsServiceV2Valid(
+    IMobilityTorsServiceV1Valid service = new IMobilityTorsServiceV1Valid(
         omobilityTorsIndexUrl, omobilityTorsGetUrl, this.client, this.resourceLoader) {
       @Override
       protected void handleUnknownSendingHeiId(
@@ -193,7 +192,7 @@ public class IMobilityTorsIndexValidatorTest extends IMobilityTorsValidatorTestB
 
   @Test
   public void testIgnoringMultipleModifiedSinceIsDetected() {
-    IMobilityTorsServiceV2Valid service = new IMobilityTorsServiceV2Valid(
+    IMobilityTorsServiceV1Valid service = new IMobilityTorsServiceV1Valid(
         omobilityTorsIndexUrl, omobilityTorsGetUrl, this.client, this.resourceLoader) {
       @Override
       protected void errorMultipleModifiedSince(
@@ -208,7 +207,7 @@ public class IMobilityTorsIndexValidatorTest extends IMobilityTorsValidatorTestB
 
   @Test
   public void testNotUsingModifiedSinceIsDetected() {
-    IMobilityTorsServiceV2Valid service = new IMobilityTorsServiceV2Valid(
+    IMobilityTorsServiceV1Valid service = new IMobilityTorsServiceV1Valid(
         omobilityTorsIndexUrl, omobilityTorsGetUrl, this.client, this.resourceLoader) {
       @Override
       protected List<IMobilityTorEntry> filterIMobilityTorsByModifiedSince(
@@ -224,7 +223,7 @@ public class IMobilityTorsIndexValidatorTest extends IMobilityTorsValidatorTestB
 
   @Test
   public void testReturnsEmptyResponseWhenModifiedSinceIsUsed() {
-    IMobilityTorsServiceV2Valid service = new IMobilityTorsServiceV2Valid(
+    IMobilityTorsServiceV1Valid service = new IMobilityTorsServiceV1Valid(
         omobilityTorsIndexUrl, omobilityTorsGetUrl, this.client, this.resourceLoader) {
       @Override
       protected List<IMobilityTorEntry> filterIMobilityTorsByModifiedSince(
@@ -243,7 +242,7 @@ public class IMobilityTorsIndexValidatorTest extends IMobilityTorsValidatorTestB
 
   @Test
   public void testNotAcceptingMultipleSendingHeiIdsIsDetected() {
-    IMobilityTorsServiceV2Valid service = new IMobilityTorsServiceV2Valid(
+    IMobilityTorsServiceV1Valid service = new IMobilityTorsServiceV1Valid(
         omobilityTorsIndexUrl, omobilityTorsGetUrl, this.client, this.resourceLoader) {
       @Override
       protected void handleMultipleSendingHeiId(
@@ -261,7 +260,7 @@ public class IMobilityTorsIndexValidatorTest extends IMobilityTorsValidatorTestB
 
   @Test
   public void testSendingDataThatCallerHasNoAccessToIsDetected() {
-    IMobilityTorsServiceV2Valid service = new IMobilityTorsServiceV2Valid(
+    IMobilityTorsServiceV1Valid service = new IMobilityTorsServiceV1Valid(
         omobilityTorsIndexUrl, omobilityTorsGetUrl, this.client, this.resourceLoader) {
       @Override
       protected boolean isCallerPermittedToSeeSendingHeiId(
@@ -278,7 +277,7 @@ public class IMobilityTorsIndexValidatorTest extends IMobilityTorsValidatorTestB
 
   @Test
   public void testSendingDataThatCallerHasNoAccessToIsDetected2() {
-    IMobilityTorsServiceV2Valid service = new IMobilityTorsServiceV2Valid(
+    IMobilityTorsServiceV1Valid service = new IMobilityTorsServiceV1Valid(
         omobilityTorsIndexUrl, omobilityTorsGetUrl, this.client, this.resourceLoader) {
       @Override
       protected boolean isCallerPermittedToSeeSendingHeiId(
