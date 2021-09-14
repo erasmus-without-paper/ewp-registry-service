@@ -1,17 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema
-    xmlns:xs="http://www.w3.org/2001/XMLSchema"
-    xmlns:xml="http://www.w3.org/XML/1998/namespace"
-    xmlns:a="https://github.com/erasmus-without-paper/ewp-specs-types-address/tree/stable-v1"
-    xmlns:c="https://github.com/erasmus-without-paper/ewp-specs-types-contact/tree/stable-v1"
-    xmlns:p="https://github.com/erasmus-without-paper/ewp-specs-types-phonenumber/tree/stable-v1"
-    xmlns:ewp="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
-    xmlns:r="https://github.com/erasmus-without-paper/ewp-specs-api-registry/tree/stable-v1"
-    xmlns:trm="https://github.com/erasmus-without-paper/ewp-specs-types-academic-term/tree/stable-v1"
-    elementFormDefault="qualified"
+        xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        xmlns:xml="http://www.w3.org/XML/1998/namespace"
+        xmlns:a="https://github.com/erasmus-without-paper/ewp-specs-types-address/tree/stable-v1"
+        xmlns:c="https://github.com/erasmus-without-paper/ewp-specs-types-contact/tree/stable-v1"
+        xmlns:ewp="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
+        xmlns:r="https://github.com/erasmus-without-paper/ewp-specs-api-registry/tree/stable-v1"
+        elementFormDefault="qualified"
 
-    targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-api-institutions/tree/stable-v2"
-    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-institutions/tree/stable-v2"
+        targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-api-institutions/tree/stable-v2"
+        xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-institutions/tree/stable-v2"
 >
     <xs:import
         schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-architecture/stable-v1/common-types.xsd"
@@ -208,6 +206,18 @@
 
                                         Elements SHOULD have an xml:lang attribute, and at least one URL should refer
                                         to a factsheet written in English.
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                            <xs:element name="course-catalogue-url" minOccurs="0" maxOccurs="unbounded" type="ewp:HTTPWithOptionalLang">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        Course catalogue of the institution.
+
+                                        The xml:lang attribute, if given, SHOULD represent the language of this page.
+                                        Multiple URLs can be provided (with different xml:lang values). It is also
+                                        perfectly okay to provide a single URL which dynamically detects the viewer's
+                                        language preferences (in this case, no xml:lang attribute should be given).
                                     </xs:documentation>
                                 </xs:annotation>
                             </xs:element>
