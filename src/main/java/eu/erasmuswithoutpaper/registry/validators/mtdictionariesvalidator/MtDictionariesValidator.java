@@ -22,14 +22,14 @@ public class MtDictionariesValidator extends ApiValidator<MtDictionariesSuiteSta
   static {
     validationSuites = ApiValidator.createMultimap();
     validationSuites.put(
-        new SemanticVersion(0, 1, 0),
+        new SemanticVersion(1, 0, 0),
         new ValidationSuiteInfo<>(
             MtDictionariesSetupValidationSuiteV1::new,
             MtDictionariesSetupValidationSuiteV1.getParameters()
         )
     );
     validationSuites.put(
-        new SemanticVersion(0, 1, 0),
+        new SemanticVersion(1, 0, 0),
         new ValidationSuiteInfo<>(MtDictionariesValidationSuiteV1::new)
     );
     validationSuites.put(

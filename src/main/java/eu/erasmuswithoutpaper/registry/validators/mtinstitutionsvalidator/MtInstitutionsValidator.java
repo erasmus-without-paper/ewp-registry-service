@@ -22,14 +22,14 @@ public class MtInstitutionsValidator extends ApiValidator<MtInstitutionsSuiteSta
   static {
     validationSuites = ApiValidator.createMultimap();
     validationSuites.put(
-        new SemanticVersion(0, 1, 0),
+        new SemanticVersion(1, 0, 0),
         new ValidationSuiteInfo<>(
             MtInstitutionsSetupValidationSuiteV1::new,
             MtInstitutionsSetupValidationSuiteV1.getParameters()
         )
     );
     validationSuites.put(
-        new SemanticVersion(0, 1, 0),
+        new SemanticVersion(1, 0, 0),
         new ValidationSuiteInfo<>(MtInstitutionsValidationSuiteV1::new)
     );
     validationSuites.put(
