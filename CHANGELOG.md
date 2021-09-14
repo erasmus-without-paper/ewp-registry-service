@@ -8,6 +8,44 @@ the *unofficial* services - such as the document validator, or Echo API
 validator - but these changes are currently not mentioned in this changelog, to
 avoid clutter.
 
+1.7.1
+-----
+
+*Released on 2020-01-12*
+
+ * Added Echo and Discovery to Coverage Matrix.
+ * Moved schemas used by JAXB to separate directory.
+ * Removed validator host from production manifest.
+ * Send emails when duplicates are detected.
+ * Added configuration to run the Registry locally.
+ * Added README for console validator.
+ * Added EWP Validator HOWTO.
+ * Disabled validation in production environment.
+ * Provided more statistics about APIs and manifests.
+ * Retry after uptimerobot.com request failure.
+ * Created command line interface.
+ * Added erasmus code to Coverage Matrix.
+ * List problems with security methods.
+ * Institutions Validator fixes.
+ * IMobility ToRs fixes.
+ * Fail when a request times out.
+ * Reformatting and improvements.
+ * Added IMobility ToRs validator.
+
+1.7.0
+-----
+
+*Released on 2019-08-27*
+
+ * Added MT+ Dictionaries Validator.
+ * Added MT+ Institutions Validator.
+ * Added MT+ Projects Validator.
+ * Ignore invalid API Entries.
+ * Added IIAs validator.
+ * Added Courses Validator.
+ * Added OUnits Validator.
+ * Added validation for MT+ schemas.
+
 1.6.1
 -----
 
