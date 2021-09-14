@@ -8,6 +8,31 @@ the *unofficial* services - such as the document validator, or Echo API
 validator - but these changes are currently not mentioned in this changelog, to
 avoid clutter.
 
+1.8.0
+-----
+
+*Released on 2021-09-14*
+
+ * Added missing releases to change log.
+ * Updated MT+ APIs to version 1.0.0.
+ * Updated Institutions JAXB schema to version 2.2.0.
+ * Updated Imobility ToRs validator to version 1.0.0.
+ * Updated Factsheet validator to version 1.0.0.
+ * Added Omobility LA v6 support to API validator.
+ * Added IIAs v6 support to API validator.
+ * Added IIAs v4 support to API validator.
+ * Added IIAs v4 to Coverage Matrix.
+ * Added OMobility LAs validator.
+ * Added OMobilities API validator.
+ * Added IMobilities API calidator.
+ * Added missing CNR sends value for IIAs v3 to Coverage Matrix.
+ * Added IIAs v3 to Coverage Matrix.
+ * Detect duplicates inside a single host.
+ * Excluded echo and discovery APIs from duplicates.
+ * Added Factsheet API Validator.
+ * Enabled validator for new stable APIs.
+ * Updated schema versions.
+
 1.7.1
 -----
 
