@@ -56,20 +56,20 @@ class CoverageMatrixRow {
 
     /* Row index */
 
-    row1.append(genRow("#", NAME_COLOR_CLASS, 3, 1));
+    row1.append(genRow("#", NAME_COLOR_CLASS, 2, 1));
 
     /* Institution */
 
-    row1.append(genRow("Institution", NAME_COLOR_CLASS, 3, 1, "ewpst__cell--institution"));
+    row1.append(genRow("Institution", NAME_COLOR_CLASS, 2, 1, "ewpst__cell--institution"));
 
     /* SCHAC */
 
-    row1.append(genRow("SCHAC", NAME_COLOR_CLASS, 3, 1,
+    row1.append(genRow("SCHAC", NAME_COLOR_CLASS, 2, 1,
             "ewpst__cell-schac ewpst__cell--institution"));
 
     /* Erasmus code */
 
-    row1.append(genRow("Erasmus code", NAME_COLOR_CLASS, 3, 1,
+    row1.append(genRow("Erasmus code", NAME_COLOR_CLASS, 2, 1,
             "ewpst__cell-schac ewpst__cell--institution"));
 
     /* Primary Network APIs */
@@ -77,81 +77,68 @@ class CoverageMatrixRow {
     int colorClass = getNextColorClass(NAME_COLOR_CLASS);
 
     row1.append(genRow("Primary Network APIs", colorClass, 1, 2));
-    row2.append(genRow("discov.", colorClass, 2, 1));
-    row2.append(genRow("echo", colorClass, 2, 1));
+    row2.append(genRow("discov.", colorClass));
+    row2.append(genRow("echo", colorClass));
 
     /* General Purpose APIs */
 
     colorClass = getNextColorClass(colorClass);
 
     row1.append(genRow("General Purpose APIs", colorClass, 1, 4));
-    row2.append(genRow("inst.", colorClass, 2, 1));
-    row2.append(genRow("ounits", colorClass, 2, 1));
-    row2.append(genRow("courses", colorClass, 2, 1));
-    row2.append(genRow("course replic.", colorClass, 2, 1));
+    row2.append(genRow("inst.", colorClass));
+    row2.append(genRow("ounits", colorClass));
+    row2.append(genRow("courses", colorClass));
+    row2.append(genRow("course replic.", colorClass));
 
     /* IIAs */
     colorClass = getNextColorClass(colorClass);
 
-    row1.append(genRow("IIAs", colorClass, 1, 4));
-    row2.append(genRow("ver.", colorClass, 2, 1));
-    row2.append(genRow("CNR", colorClass, 1, 2));
-    row3.append(genRow("sends", colorClass));
-    row3.append(genRow("recv.", colorClass));
-    row2.append(genRow("fact.", colorClass, 2, 1));
+    row1.append(genRow("IIAs", colorClass, 1, 3));
+    row2.append(genRow("ver.", colorClass));
+    row2.append(genRow("CNR", colorClass));
+    row2.append(genRow("fact.", colorClass));
 
     /* IIAs Approval */
     colorClass = getNextColorClass(colorClass);
 
-    row1.append(genRow("IIAs Approval", colorClass, 1, 3));
-    row2.append(genRow("ver.", colorClass, 2, 1));
-    row2.append(genRow("CNR", colorClass, 1, 2));
-    row3.append(genRow("sends", colorClass));
-    row3.append(genRow("recv.", colorClass));
+    row1.append(genRow("IIAs Approval", colorClass, 1, 2));
+    row2.append(genRow("ver.", colorClass));
+    row2.append(genRow("CNR", colorClass));
 
     /* OMobilities */
     colorClass = getNextColorClass(colorClass);
 
-    row1.append(genRow("OMobilities", colorClass, 1, 3));
-    row2.append(genRow("ver.", colorClass, 2, 1));
-    row2.append(genRow("CNR", colorClass, 1, 2));
-    row3.append(genRow("sends", colorClass));
-    row3.append(genRow("recv.", colorClass));
+    row1.append(genRow("OMobilities", colorClass, 1, 2));
+    row2.append(genRow("ver.", colorClass));
+    row2.append(genRow("CNR", colorClass));
 
     /* OMobility LAs */
 
     colorClass = getNextColorClass(colorClass);
 
-    row1.append(genRow("OMobility LAs", colorClass, 1, 4));
-    row2.append(genRow("ver.", colorClass, 2, 1));
-    row2.append(genRow("update types", colorClass, 2, 1));
-    row2.append(genRow("CNR", colorClass, 1, 2));
-    row3.append(genRow("sends", colorClass));
-    row3.append(genRow("recv.", colorClass));
+    row1.append(genRow("OMobility LAs", colorClass, 1, 2));
+    row2.append(genRow("ver.", colorClass));
+    row2.append(genRow("CNR", colorClass));
 
     /* IMobilities */
 
     colorClass = getNextColorClass(colorClass);
 
-    row1.append(genRow("IMobilities", colorClass, 1, 3));
-    row2.append(genRow("ver.", colorClass, 2, 1));
-    row2.append(genRow("CNR", colorClass, 1, 2));
-    row3.append(genRow("sends", colorClass));
-    row3.append(genRow("recv.", colorClass));
+    row1.append(genRow("IMobilities", colorClass, 1, 2));
+    row2.append(genRow("ver.", colorClass));
+    row2.append(genRow("CNR", colorClass));
 
     /* IMobility ToRs */
 
     colorClass = getNextColorClass(colorClass);
 
-    row1.append(genRow("IMobility ToRs", colorClass, 1, 3));
-    row2.append(genRow("ver.", colorClass, 2, 1));
-    row2.append(genRow("CNR", colorClass, 1, 2));
-    row3.append(genRow("sends", colorClass));
-    row3.append(genRow("recv.", colorClass));
+    row1.append(genRow("IMobility ToRs", colorClass, 1, 2));
+    row2.append(genRow("ver.", colorClass));
+    row2.append(genRow("CNR", colorClass));
 
     /* Other APIs */
 
-    row1.append(genRow("Other APIs", OTHER_APIS_COLOR_CLASS, 3, 1));
+    row1.append(genRow("Other APIs", OTHER_APIS_COLOR_CLASS, 2, 1));
 
     /* Finalize */
 
@@ -251,12 +238,6 @@ class CoverageMatrixRow {
         KnownElement.APIENTRY_IIAS_V6);
     this.cells.add(cell);
 
-    // CNR sends
-    cell = new ApiCnrSendsCell(colorClass, client, hei, KnownElement.APIENTRY_IIAS_V1,
-        KnownElement.APIENTRY_IIAS_V2, KnownElement.APIENTRY_IIAS_V3,
-        KnownElement.APIENTRY_IIAS_V4);
-    this.cells.add(cell);
-
     // CNR recv.
     cell = new ApiVersionsCell(colorClass, client, hei, KnownElement.APIENTRY_IIA_CNR_V1,
         KnownElement.APIENTRY_IIA_CNR_V2);
@@ -274,10 +255,6 @@ class CoverageMatrixRow {
     cell = new ApiVersionsCell(colorClass, client, hei, KnownElement.APIENTRY_IIAS_APPROVAL_V1);
     this.cells.add(cell);
 
-    // CNR sends
-    cell = new ApiCnrSendsCell(colorClass, client, hei, KnownElement.APIENTRY_IIAS_APPROVAL_V1);
-    this.cells.add(cell);
-
     // CNR recv.
     cell = new ApiVersionsCell(colorClass, client, hei, KnownElement.APIENTRY_IIA_APPROVAL_CNR_V1);
     this.cells.add(cell);
@@ -288,10 +265,6 @@ class CoverageMatrixRow {
 
     // ver.
     cell = new ApiVersionsCell(colorClass, client, hei, KnownElement.APIENTRY_OMOBILITIES_V1);
-    this.cells.add(cell);
-
-    // CNR sends
-    cell = new ApiCnrSendsCell(colorClass, client, hei, KnownElement.APIENTRY_OMOBILITIES_V1);
     this.cells.add(cell);
 
     // CNR recv.
@@ -306,15 +279,6 @@ class CoverageMatrixRow {
     cell = new ApiVersionsCell(colorClass, client, hei, KnownElement.APIENTRY_OMOBILITY_LAS_V1);
     this.cells.add(cell);
 
-    // update types
-    cell = new OMobilityUpdateTypesCell(colorClass, client, hei,
-        KnownElement.APIENTRY_OMOBILITY_LAS_V1);
-    this.cells.add(cell);
-
-    // CNR sends
-    cell = new ApiCnrSendsCell(colorClass, client, hei, KnownElement.APIENTRY_OMOBILITY_LAS_V1);
-    this.cells.add(cell);
-
     // CNR recv.
     cell = new ApiVersionsCell(colorClass, client, hei, KnownElement.APIENTRY_OMOBILITY_LA_CNR_V1);
     this.cells.add(cell);
@@ -327,10 +291,6 @@ class CoverageMatrixRow {
     cell = new ApiVersionsCell(colorClass, client, hei, KnownElement.APIENTRY_IMOBILITIES_V1);
     this.cells.add(cell);
 
-    // CNR sends
-    cell = new ApiCnrSendsCell(colorClass, client, hei, KnownElement.APIENTRY_IMOBILITIES_V1);
-    this.cells.add(cell);
-
     // CNR recv.
     cell = new ApiVersionsCell(colorClass, client, hei, KnownElement.APIENTRY_IMOBILITY_CNR_V1);
     this.cells.add(cell);
@@ -341,10 +301,6 @@ class CoverageMatrixRow {
 
     // ver.
     cell = new ApiVersionsCell(colorClass, client, hei, KnownElement.APIENTRY_IMOBILITY_TORS_V1);
-    this.cells.add(cell);
-
-    // CNR sends
-    cell = new ApiCnrSendsCell(colorClass, client, hei, KnownElement.APIENTRY_IMOBILITY_TORS_V1);
     this.cells.add(cell);
 
     // CNR recv.
