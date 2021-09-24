@@ -60,10 +60,11 @@ public class CoverageMatrixGenerator {
     StringBuilder sb = new StringBuilder();
     sb.append("<div class='ewpst'>");
     sb.append("<table class='ewpst__table'>");
-    CoverageMatrixRow.generateHtmlTableHeader(sb);
     for (CoverageMatrixRow row : rows) {
       row.generateHtmlRow(sb);
     }
+    // Header moved after table body to work around sticky-opacity bug in browsers
+    CoverageMatrixRow.generateHtmlTableHeader(sb);
     sb.append("</table>");
     sb.append("<div class='ewpst__footnotes'>");
     for (CoverageMatrixRow row : rows) {

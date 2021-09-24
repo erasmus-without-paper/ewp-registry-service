@@ -145,9 +145,11 @@ class CoverageMatrixRow {
     row1.append("</tr>");
     row2.append("</tr>");
     row3.append("</tr>");
-    sb.append(row1.toString());
-    sb.append(row2.toString());
-    sb.append(row3.toString());
+    sb.append("<thead>");
+    sb.append(row1);
+    sb.append(row2);
+    sb.append(row3);
+    sb.append("</thead>");
   }
 
   private static final int NAME_COLOR_CLASS = 1;

@@ -305,6 +305,10 @@ a:hover {
     border-left: 1px solid #b0b0b0;
     border-top: 1px solid #b0b0b0;
 }
+.ewpst__table thead {
+    position: sticky;
+    top: 0;
+}
 .ewpst__footnotes {
     margin-top: 3em;
 }
