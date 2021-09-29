@@ -286,35 +286,28 @@ public class ManifestRepositoryImpl implements ManifestRepository {
 
   @Override
   public String getCatalogue() throws CatalogueNotFound {
-    this.lock.readLock().lock();
-    try {
+    // Do we have a cached copy?
+    if (this.cachedCatalogueContent == null) {
 
-      // Do we have a cached copy?
-      if (this.cachedCatalogueContent == null) {
-
-        // Does it exist in our repo?
-        Path path = this.getPathForCatalogue();
-        if (!Files.exists(path)) {
-          throw new CatalogueNotFound();
-        }
-
-        // Read it.
-        byte[] encoded;
-        try {
-          encoded = Files.readAllBytes(path);
-        } catch (IOException e) {
-          throw new RuntimeException(e);
-        }
-
-        // Convert it to String.
-        this.cachedCatalogueContent = new String(encoded, StandardCharsets.UTF_8);
+      // Does it exist in our repo?
+      Path path = this.getPathForCatalogue();
+      if (!Files.exists(path)) {
+        throw new CatalogueNotFound();
       }
 
-      return this.cachedCatalogueContent;
+      // Read it.
+      byte[] encoded;
+      try {
+        encoded = Files.readAllBytes(path);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
 
-    } finally {
-      this.lock.readLock().unlock();
+      // Convert it to String.
+      this.cachedCatalogueContent = new String(encoded, StandardCharsets.UTF_8);
     }
+
+    return this.cachedCatalogueContent;
   }
 
   @Override
