@@ -336,17 +336,17 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
           // And update manifest overview info in manifest overview manager.
 
           this.manifestOverviewManager.updateManifest(source.getUrl());
-        }
 
-        // Commit repository changes.
+          // Commit repository changes.
 
-        StringBuilder sb = new StringBuilder();
-        sb.append("Update manifest");
-        if (notices.size() > 0) {
-          sb.append(" (").append(notices.size()).append(" notices)");
+          StringBuilder sb = new StringBuilder();
+          sb.append("Update manifest");
+          if (notices.size() > 0) {
+            sb.append(" (").append(notices.size()).append(" notices)");
+          }
+          sb.append(": ").append(source.getUrl());
+          this.repo.commit(sb.toString());
         }
-        sb.append(": ").append(source.getUrl());
-        this.repo.commit(sb.toString());
 
         // Update the manifest status.
 
@@ -355,7 +355,6 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
         return;
 
       } finally {
-        this.repo.commit("Commit otherwise uncommitted changes"); // just in case
         this.repo.releaseWriteLock();
       }
     } finally {
