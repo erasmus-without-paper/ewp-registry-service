@@ -3,16 +3,21 @@ package eu.erasmuswithoutpaper.registry.web;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
 import javax.servlet.http.HttpServletResponse;
 
 import eu.erasmuswithoutpaper.registry.Application;
 import eu.erasmuswithoutpaper.registry.cmatrix.CoverageMatrixGenerator;
+import eu.erasmuswithoutpaper.registry.cmatrix.CoverageMatrixGenerator.HeiComparator;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildError;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildParams;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildResult;
@@ -45,7 +50,9 @@ import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus;
 import eu.erasmuswithoutpaper.registry.validators.ValidatorKeyStore;
 import eu.erasmuswithoutpaper.registry.validators.ValidatorKeyStoreSet;
 import eu.erasmuswithoutpaper.registry.validators.web.ManifestApiEntry;
+import eu.erasmuswithoutpaper.registryclient.HeiEntry;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -80,6 +87,9 @@ import org.apache.commons.io.IOUtils;
 @SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
 @ConditionalOnWebApplication
 public class UiController {
+
+  private static final String OTHER_ID_PIC = "pic";
+  private static final String OTHER_ID_ERASMUS = "erasmus";
 
   private final TaskExecutor taskExecutor;
   private final ManifestUpdateStatusRepository manifestStatusRepo;
@@ -256,6 +266,7 @@ public class UiController {
     mav.addObject("coverageUrl", Application.getRootUrl() + "/coverage");
     mav.addObject("schemaValidatorUrl", Application.getRootUrl() + "/schemaValidator");
     mav.addObject("manifestOverviewUrl", Application.getRootUrl() + "/manifestsOverview");
+    mav.addObject("heiSearchUrl", Application.getRootUrl() + "/heiSearch?pattern=");
     mav.addObject("uptime24", this.uptimeChecker.getLast24HoursUptimeRatio());
     mav.addObject("uptime7", this.uptimeChecker.getLast7DaysUptimeRatio());
     mav.addObject("uptime30", this.uptimeChecker.getLast30DaysUptimeRatio());
@@ -654,5 +665,51 @@ public class UiController {
     mav.addObject("heiDuplicates", heiDuplicates);
 
     return mav;
+  }
+
+  /**
+   * HEI Search Page view.
+   *
+   * @return A page for searching HEIs.
+   */
+  @RequestMapping(value = "/heiSearch", method = RequestMethod.GET)
+  public ModelAndView heiSearch(@RequestParam String pattern) {
+    ModelAndView mav = new ModelAndView();
+    this.initializeMavCommons(mav);
+    mav.setViewName("heiSearch");
+
+    mav.addObject("pattern", pattern);
+    mav.addObject("heis", getHeisMatching(pattern));
+
+    return mav;
+  }
+
+  private List<HeiEntry> getHeisMatching(String pattern) {
+    if (pattern.isEmpty()) {
+      return Collections.emptyList();
+    }
+    Collection<HeiEntry> allHeis = regClient.getAllHeis();
+
+    Predicate<HeiEntry> heiEntryPredicate = heiEntry -> isSchacMatching(pattern, heiEntry)
+        || isNameMatching(pattern, heiEntry) || isOtherIdMatching(pattern, heiEntry, OTHER_ID_PIC)
+        || isOtherIdMatching(pattern, heiEntry, OTHER_ID_ERASMUS);
+
+    return allHeis.stream().filter(heiEntryPredicate).sorted(new HeiComparator())
+        .collect(Collectors.toList());
+  }
+
+  private boolean isOtherIdMatching(String pattern, HeiEntry heiEntry, String otherIdType) {
+    return heiEntry.getOtherIds(otherIdType).stream()
+        .anyMatch(otherId -> otherId.toLowerCase().startsWith(pattern.toLowerCase()));
+  }
+
+  private boolean isNameMatching(String pattern, HeiEntry heiEntry) {
+    return heiEntry.getName().toLowerCase(Locale.ENGLISH)
+        .contains(pattern.toLowerCase(Locale.ENGLISH));
+  }
+
+  private boolean isSchacMatching(String pattern, HeiEntry heiEntry) {
+    return heiEntry.getId().toLowerCase(Locale.ENGLISH)
+        .startsWith(pattern.toLowerCase(Locale.ENGLISH));
   }
 }

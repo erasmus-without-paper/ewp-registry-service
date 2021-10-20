@@ -1,0 +1,41 @@
+{% extends "generic-with-toolbar" %}
+
+{% block pageTitle %}HEI Search Page{% endblock %}
+
+{% block main %}
+<section class='ewp-section ewp-section-centered'>
+    <h2 class='ewp-section-title'>HEI Search Page</h2>
+
+    <form>
+        <label>Search</label>: <input name="pattern" value="{{ pattern }}"/>
+        <input type="submit" value="Search">
+    </form>
+
+    <div class="ewpsrc ewpsrc__section_with_top_margin">
+        {% if heis is not empty %}
+        <table class="ewpst__table">
+            <thead>
+                <tr class="ewpst__row ewpst__row--header">
+                    <th class="ewpst__cell ewpst__cell--cc1">Name</th>
+                    <th class="ewpst__cell ewpst__cell--cc1">SCHAC</th>
+                    <th class="ewpst__cell ewpst__cell--cc1">Erasmus code</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for hei in heis %}
+                <tr class="ewpst_row">
+                    <td class="ewpst__cell ewpst__cell--cc1">{{ hei.name }}</td>
+                    <td class="ewpst__cell ewpst__cell--cc1 ewpst__cell-schac">{{ hei.id }}</td>
+                    <td class="ewpst__cell ewpst__cell--cc1 ewpst__cell-schac">
+                        {% if hei.otherIds('erasmus') is not empty %}
+                        {{ hei.otherIds('erasmus') | first }}
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

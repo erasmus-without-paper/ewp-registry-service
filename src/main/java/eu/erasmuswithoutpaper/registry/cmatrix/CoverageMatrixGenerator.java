@@ -21,7 +21,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 public class CoverageMatrixGenerator {
 
   @SuppressFBWarnings("SE_COMPARATOR_SHOULD_BE_SERIALIZABLE")
-  private static class HeiComparator implements Comparator<HeiEntry> {
+  public static class HeiComparator implements Comparator<HeiEntry> {
 
     @Override
     public int compare(HeiEntry e1, HeiEntry e2) {
