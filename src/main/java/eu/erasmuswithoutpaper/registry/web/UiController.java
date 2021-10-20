@@ -107,50 +107,31 @@ public class UiController {
   private byte[] cachedLogo;
 
   /**
-   * @param taskExecutor
-   *     needed for running background tasks.
-   * @param manifestUpdateStatuses
-   *     needed to display statuses of manifests.
-   * @param manifestRepository
-   *     needed to display list of apis implemented by hosts in manifest.
-   * @param sourceProvider
-   *     needed to present the list of all sources.
-   * @param updater
-   *     needed to perform on-demand manifest updates.
-   * @param notifier
-   *     needed to retrieve issues watched by particular recipients.
-   * @param uptimeChecker
-   *     needed to display current uptime stats.
-   * @param docBuilder
-   *     needed to support online document validation service.
-   * @param resLoader
-   *     needed to load CSS, logos etc.
-   * @param matrixGenerator
-   *     needed to render "API support table".
-   * @param regClient
-   *     needed to feed the {@link CoverageMatrixGenerator}.
-   * @param catcache
-   *     needed for caching the result of {@link CoverageMatrixGenerator}.
-   * @param apiValidatorsManager
-   *     needed to check if there are some tests for given api and version.
-   * @param validatorKeyStoreSet
-   *     set of KeyStores providing credentials.
-   * @param errorController
-   *     used to generate 404 pages when the validator is not available.
-   * @param manifestOverviewManager
-   *     used to retrieve current data about duplicates in the network.
+   * @param taskExecutor needed for running background tasks.
+   * @param manifestUpdateStatuses needed to display statuses of manifests.
+   * @param manifestRepository needed to display list of apis implemented by hosts in manifest.
+   * @param sourceProvider needed to present the list of all sources.
+   * @param updater needed to perform on-demand manifest updates.
+   * @param notifier needed to retrieve issues watched by particular recipients.
+   * @param uptimeChecker needed to display current uptime stats.
+   * @param docBuilder needed to support online document validation service.
+   * @param resLoader needed to load CSS, logos etc.
+   * @param matrixGenerator needed to render "API support table".
+   * @param regClient needed to feed the {@link CoverageMatrixGenerator}.
+   * @param catcache needed for caching the result of {@link CoverageMatrixGenerator}.
+   * @param apiValidatorsManager needed to check if there are some tests for given api and version.
+   * @param validatorKeyStoreSet set of KeyStores providing credentials.
+   * @param errorController used to generate 404 pages when the validator is not available.
+   * @param manifestOverviewManager used to retrieve current data about duplicates in the network.
    */
   @Autowired
   public UiController(TaskExecutor taskExecutor,
       ManifestUpdateStatusRepository manifestUpdateStatuses, ManifestRepository manifestRepository,
       ManifestSourceProvider sourceProvider, RegistryUpdater updater, NotifierService notifier,
-      UptimeChecker uptimeChecker, EwpDocBuilder docBuilder,
-      ResourceLoader resLoader,
+      UptimeChecker uptimeChecker, EwpDocBuilder docBuilder, ResourceLoader resLoader,
       CoverageMatrixGenerator matrixGenerator, RegistryClient regClient,
-      CatalogueDependantCache catcache,
-      ApiValidatorsManager apiValidatorsManager,
-      ValidatorKeyStoreSet validatorKeyStoreSet,
-      MyErrorController errorController,
+      CatalogueDependantCache catcache, ApiValidatorsManager apiValidatorsManager,
+      ValidatorKeyStoreSet validatorKeyStoreSet, MyErrorController errorController,
       ManifestOverviewManager manifestOverviewManager) {
     this.taskExecutor = taskExecutor;
     this.manifestStatusRepo = manifestUpdateStatuses;
@@ -171,8 +152,7 @@ public class UiController {
   }
 
   /**
-   * @param response
-   *     Needed to add some custom headers.
+   * @param response Needed to add some custom headers.
    * @return The HEI/API coverage matrix page.
    */
   @RequestMapping(value = "/coverage", method = RequestMethod.GET)
@@ -187,8 +167,7 @@ public class UiController {
   }
 
   /**
-   * @param response
-   *     Needed to add some custom headers.
+   * @param response Needed to add some custom headers.
    * @return Our CSS file.
    */
   @ResponseBody
@@ -203,8 +182,7 @@ public class UiController {
   }
 
   /**
-   * @param response
-   *     Needed to add some custom headers.
+   * @param response Needed to add some custom headers.
    * @return Our scripts file.
    */
   @ResponseBody
@@ -220,8 +198,7 @@ public class UiController {
   }
 
   /**
-   * @param response
-   *     Needed to add some custom headers.
+   * @param response Needed to add some custom headers.
    * @return Our scripts file.
    */
   @ResponseBody
@@ -237,8 +214,7 @@ public class UiController {
   }
 
   /**
-   * @param response
-   *     Needed to add some custom headers.
+   * @param response Needed to add some custom headers.
    * @return EWP logo image. Depends on the result of {@link #isServingDevelopmentVersion()}.
    */
   @ResponseBody
@@ -263,10 +239,8 @@ public class UiController {
   }
 
   /**
-   * @param response
-   *     Needed to add some custom headers.
-   * @param adminEmails
-   *     Admin emails to display on page.
+   * @param response Needed to add some custom headers.
+   * @param adminEmails Admin emails to display on page.
    * @return A welcome page.
    */
   @RequestMapping(value = "/", method = RequestMethod.GET)
@@ -293,10 +267,8 @@ public class UiController {
   }
 
   /**
-   * @param response
-   *     Needed to add some custom headers.
-   * @param url
-   *     URL of the manifest source.
+   * @param response Needed to add some custom headers.
+   * @param url URL of the manifest source.
    * @return A page describing the status of the manifest.
    */
   @RequestMapping(value = "/status", params = "url", method = RequestMethod.GET)
@@ -319,10 +291,8 @@ public class UiController {
   }
 
   /**
-   * @param response
-   *     Needed to add some custom headers.
-   * @param url
-   *     URL of the manifest source.
+   * @param response Needed to add some custom headers.
+   * @param url URL of the manifest source.
    * @return A page describing the status of the manifest.
    */
   @RequestMapping(value = "/manifestValidation", params = "url", method = RequestMethod.GET)
@@ -340,8 +310,8 @@ public class UiController {
 
     List<ManifestApiEntry> apis;
     try {
-      apis = ManifestApiEntry
-          .parseManifest(manifestRepository.getManifestFiltered(url), apiValidatorsManager);
+      apis = ManifestApiEntry.parseManifest(manifestRepository.getManifestFiltered(url),
+          apiValidatorsManager);
       apis = apis.stream().filter(api -> api.available).collect(Collectors.toList());
     } catch (ManifestNotFound manifestNotFound) {
       return this.errorController.get404();
@@ -375,12 +345,10 @@ public class UiController {
   /**
    * Perform an on-demand reload of a single specific manifest.
    *
-   * @param response
-   *     Needed to add some custom headers.
-   * @param url
-   *     URL of the manifest source to be reloaded.
+   * @param response Needed to add some custom headers.
+   * @param url URL of the manifest source to be reloaded.
    * @return Empty response with HTTP 200 on success (queued). Empty HTTP 400 response on error
-   *     (unknown URL).
+   *         (unknown URL).
    */
   @RequestMapping(value = "/reload", params = "url", method = RequestMethod.POST)
   public ResponseEntity<String> reloadManifest(HttpServletResponse response,
@@ -402,8 +370,7 @@ public class UiController {
 
 
   /**
-   * @param response
-   *     Needed to add some custom headers.
+   * @param response Needed to add some custom headers.
    * @return A page with all manifest sources and their statuses.
    */
   @RequestMapping(value = "/status", method = RequestMethod.GET)
@@ -431,8 +398,7 @@ public class UiController {
   /**
    * XML Schema Validator view.
    *
-   * @param response
-   *     Needed to add some custom headers.
+   * @param response Needed to add some custom headers.
    * @return A page with the list of issue statuses related to this recipient.
    */
   @RequestMapping(value = "/schemaValidator", method = RequestMethod.GET)
@@ -447,10 +413,8 @@ public class UiController {
   /**
    * Display a status page tailored for a given notification recipient.
    *
-   * @param response
-   *     Needed to add some custom headers.
-   * @param email
-   *     Email address of the recipient.
+   * @param response Needed to add some custom headers.
+   * @param email Email address of the recipient.
    * @return A page with the list of issue statuses related to this recipient.
    */
   @RequestMapping(value = "/status", params = "email", method = RequestMethod.GET)
@@ -473,10 +437,9 @@ public class UiController {
    * This is not part of the API and MAY be removed later on.
    * </p>
    *
-   * @param xml
-   *     The XML to be validated.
+   * @param xml The XML to be validated.
    * @return An undocumented JSON object with the results of the validation (not guaranteed to stay
-   *     backward compatible).
+   *         backward compatible).
    */
   @RequestMapping(path = "/validate", params = "xml", method = RequestMethod.POST)
   public ResponseEntity<String> validateXml(@RequestParam String xml) {
@@ -547,8 +510,8 @@ public class UiController {
 
   private void cacheUiJs() {
     try {
-      this.cachedUiJs = IOUtils.toByteArray(
-          this.resLoader.getResource("classpath:vue-app/ui.js").getInputStream());
+      this.cachedUiJs = IOUtils
+          .toByteArray(this.resLoader.getResource("classpath:vue-app/ui.js").getInputStream());
       this.cachedUiJsFingerprint = DigestUtils.sha1Hex(this.cachedUiJs);
     } catch (IOException e) {
       throw new RuntimeException(e);
@@ -603,8 +566,7 @@ public class UiController {
    * This is not part of the API and MAY be removed later on.
    * </p>
    *
-   * @param requestBody
-   *     request body.
+   * @param requestBody request body.
    * @return HTML with validation results.
    */
   @RequestMapping(path = "/validateApi", method = RequestMethod.POST)
@@ -633,8 +595,8 @@ public class UiController {
     }
 
     ValidationParameters requestParameters = new ValidationParameters(requestBody.getParameters());
-    List<ValidationParameter> availableParameters = this.apiValidatorsManager.getParameters(
-        requestBody.getName(), endpoint, ver);
+    List<ValidationParameter> availableParameters =
+        this.apiValidatorsManager.getParameters(requestBody.getName(), endpoint, ver);
 
     if (!requestParameters.checkDependencies(availableParameters)) {
       return this.errorController.get404();
@@ -642,27 +604,20 @@ public class UiController {
 
     Date validationStartedDate = new Date();
 
-    List<ValidationStepWithStatus> testResults = this.apiValidatorsManager
-        .getApiValidator(requestBody.getName(), endpoint)
-        .runTests(requestBody.getUrl(), ver, httpSecurityDescription, requestParameters);
+    List<ValidationStepWithStatus> testResults =
+        this.apiValidatorsManager.getApiValidator(requestBody.getName(), endpoint)
+            .runTests(requestBody.getUrl(), ver, httpSecurityDescription, requestParameters);
 
     HtmlValidationReportFormatter htmlValidationReportFormatter =
         new HtmlValidationReportFormatter(docBuilder);
 
     HtmlValidationReportFormatter.ValidationInfoParameters validationInfoParameters =
-        new HtmlValidationReportFormatter.ValidationInfoParameters(
-            requestBody.getName(),
-            requestBody.getUrl(),
-            requestBody.getVersion(),
-            httpSecurityDescription,
-            validationStartedDate,
-            this.validatorKeyStore.getCredentialsGenerationDate()
-        );
+        new HtmlValidationReportFormatter.ValidationInfoParameters(requestBody.getName(),
+            requestBody.getUrl(), requestBody.getVersion(), httpSecurityDescription,
+            validationStartedDate, this.validatorKeyStore.getCredentialsGenerationDate());
 
-    Map<String, Object> pebbleContext = htmlValidationReportFormatter.getPebbleContext(
-        testResults,
-        validationInfoParameters
-    );
+    Map<String, Object> pebbleContext =
+        htmlValidationReportFormatter.getPebbleContext(testResults, validationInfoParameters);
 
     mav.addAllObjects(pebbleContext);
 
@@ -671,8 +626,8 @@ public class UiController {
 
   /**
    * Presents some information from manifests.
-   * @param response
-   *     Needed to add some custom headers.
+   * 
+   * @param response Needed to add some custom headers.
    * @return Manifests Overview page.
    */
   @RequestMapping(path = "/manifestsOverview", method = RequestMethod.GET)
