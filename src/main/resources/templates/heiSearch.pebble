@@ -7,7 +7,7 @@
     <h2 class='ewp-section-title'>HEI Search Page</h2>
 
     <form>
-        <label>Search</label>: <input name="pattern" value="{{ pattern }}"/>
+        <label>Search</label>: <input name="pattern" value="{{ pattern }}" autofocus/>
         <input type="submit" value="Search">
     </form>
 
