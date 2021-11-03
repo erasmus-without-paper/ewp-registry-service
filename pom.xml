@@ -434,18 +434,19 @@
                         <id>npm-install</id>
                         <goals><goal>npm</goal></goals>
                         <configuration>
-                            <arguments>-prefix src/main/webapp/ install</arguments>
+                            <arguments>install</arguments>
                         </configuration>
                     </execution>
                     <execution>
                         <id>webpack-build</id>
                         <goals><goal>npm</goal></goals>
                         <configuration>
-                            <arguments>-prefix src/main/webapp/ run build-${vueBuildProfile}</arguments>
+                            <arguments>run build-${vueBuildProfile}</arguments>
                         </configuration>
                     </execution>
                 </executions>
                 <configuration>
+                    <workingDirectory>src/main/webapp</workingDirectory>
                     <nodeVersion>v8.11.1</nodeVersion>
                     <npmVersion>5.6.0</npmVersion>
                 </configuration>
