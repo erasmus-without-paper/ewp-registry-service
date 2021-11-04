@@ -710,6 +710,6 @@ public class UiController {
 
   private boolean isSchacMatching(String pattern, HeiEntry heiEntry) {
     return heiEntry.getId().toLowerCase(Locale.ENGLISH)
-        .startsWith(pattern.toLowerCase(Locale.ENGLISH));
+        .contains(pattern.toLowerCase(Locale.ENGLISH));
   }
 }
