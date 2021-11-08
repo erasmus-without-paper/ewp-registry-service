@@ -7,10 +7,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
@@ -18,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import eu.erasmuswithoutpaper.registry.Application;
 import eu.erasmuswithoutpaper.registry.cmatrix.CoverageMatrixGenerator;
 import eu.erasmuswithoutpaper.registry.cmatrix.CoverageMatrixGenerator.HeiComparator;
+import eu.erasmuswithoutpaper.registry.common.Utils;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildError;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildParams;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildResult;
@@ -88,9 +87,6 @@ import org.apache.commons.io.IOUtils;
 @ConditionalOnWebApplication
 public class UiController {
 
-  private static final String OTHER_ID_PIC = "pic";
-  private static final String OTHER_ID_ERASMUS = "erasmus";
-
   private final TaskExecutor taskExecutor;
   private final ManifestUpdateStatusRepository manifestStatusRepo;
   private final ManifestRepository manifestRepository;
@@ -117,21 +113,21 @@ public class UiController {
   private byte[] cachedLogo;
 
   /**
-   * @param taskExecutor needed for running background tasks.
-   * @param manifestUpdateStatuses needed to display statuses of manifests.
-   * @param manifestRepository needed to display list of apis implemented by hosts in manifest.
-   * @param sourceProvider needed to present the list of all sources.
-   * @param updater needed to perform on-demand manifest updates.
-   * @param notifier needed to retrieve issues watched by particular recipients.
-   * @param uptimeChecker needed to display current uptime stats.
-   * @param docBuilder needed to support online document validation service.
-   * @param resLoader needed to load CSS, logos etc.
-   * @param matrixGenerator needed to render "API support table".
-   * @param regClient needed to feed the {@link CoverageMatrixGenerator}.
-   * @param catcache needed for caching the result of {@link CoverageMatrixGenerator}.
-   * @param apiValidatorsManager needed to check if there are some tests for given api and version.
-   * @param validatorKeyStoreSet set of KeyStores providing credentials.
-   * @param errorController used to generate 404 pages when the validator is not available.
+   * @param taskExecutor            needed for running background tasks.
+   * @param manifestUpdateStatuses  needed to display statuses of manifests.
+   * @param manifestRepository      needed to display list of apis implemented by hosts in manifest.
+   * @param sourceProvider          needed to present the list of all sources.
+   * @param updater                 needed to perform on-demand manifest updates.
+   * @param notifier                needed to retrieve issues watched by particular recipients.
+   * @param uptimeChecker           needed to display current uptime stats.
+   * @param docBuilder              needed to support online document validation service.
+   * @param resLoader               needed to load CSS, logos etc.
+   * @param matrixGenerator         needed to render "API support table".
+   * @param regClient               needed to feed the {@link CoverageMatrixGenerator}.
+   * @param catcache                needed to cache the result of {@link CoverageMatrixGenerator}.
+   * @param apiValidatorsManager    needed to check if there are tests for given api and version.
+   * @param validatorKeyStoreSet    set of KeyStores providing credentials.
+   * @param errorController         used to generate 404 pages when the validator is not available.
    * @param manifestOverviewManager used to retrieve current data about duplicates in the network.
    */
   @Autowired
@@ -166,13 +162,14 @@ public class UiController {
    * @return The HEI/API coverage matrix page.
    */
   @RequestMapping(value = "/coverage", method = RequestMethod.GET)
-  public ModelAndView coverage(HttpServletResponse response) {
+  public ModelAndView coverage(HttpServletResponse response,
+      @RequestParam(required = false) String pattern) {
     ModelAndView mav = new ModelAndView();
     this.initializeMavCommons(mav);
     mav.setViewName("coverage");
     response.addHeader("Cache-Control", "public, max-age=300");
 
-    mav.addObject("coverageMatrixHtml", this.getCoverageMatrixHtml());
+    mav.addObject("coverageMatrixHtml", this.getCoverageMatrixHtml(pattern));
     return mav;
   }
 
@@ -249,7 +246,7 @@ public class UiController {
   }
 
   /**
-   * @param response Needed to add some custom headers.
+   * @param response    Needed to add some custom headers.
    * @param adminEmails Admin emails to display on page.
    * @return A welcome page.
    */
@@ -279,7 +276,7 @@ public class UiController {
 
   /**
    * @param response Needed to add some custom headers.
-   * @param url URL of the manifest source.
+   * @param url      URL of the manifest source.
    * @return A page describing the status of the manifest.
    */
   @RequestMapping(value = "/status", params = "url", method = RequestMethod.GET)
@@ -303,7 +300,7 @@ public class UiController {
 
   /**
    * @param response Needed to add some custom headers.
-   * @param url URL of the manifest source.
+   * @param url      URL of the manifest source.
    * @return A page describing the status of the manifest.
    */
   @RequestMapping(value = "/manifestValidation", params = "url", method = RequestMethod.GET)
@@ -357,9 +354,9 @@ public class UiController {
    * Perform an on-demand reload of a single specific manifest.
    *
    * @param response Needed to add some custom headers.
-   * @param url URL of the manifest source to be reloaded.
+   * @param url      URL of the manifest source to be reloaded.
    * @return Empty response with HTTP 200 on success (queued). Empty HTTP 400 response on error
-   *         (unknown URL).
+   *     (unknown URL).
    */
   @RequestMapping(value = "/reload", params = "url", method = RequestMethod.POST)
   public ResponseEntity<String> reloadManifest(HttpServletResponse response,
@@ -425,7 +422,7 @@ public class UiController {
    * Display a status page tailored for a given notification recipient.
    *
    * @param response Needed to add some custom headers.
-   * @param email Email address of the recipient.
+   * @param email    Email address of the recipient.
    * @return A page with the list of issue statuses related to this recipient.
    */
   @RequestMapping(value = "/status", params = "email", method = RequestMethod.GET)
@@ -450,7 +447,7 @@ public class UiController {
    *
    * @param xml The XML to be validated.
    * @return An undocumented JSON object with the results of the validation (not guaranteed to stay
-   *         backward compatible).
+   *     backward compatible).
    */
   @RequestMapping(path = "/validate", params = "xml", method = RequestMethod.POST)
   public ResponseEntity<String> validateXml(@RequestParam String xml) {
@@ -521,18 +518,22 @@ public class UiController {
 
   private void cacheUiJs() {
     try {
-      this.cachedUiJs = IOUtils
-          .toByteArray(this.resLoader.getResource("classpath:vue-app/ui.js").getInputStream());
+      this.cachedUiJs = IOUtils.toByteArray(
+          this.resLoader.getResource("classpath:vue-app/ui.js").getInputStream());
       this.cachedUiJsFingerprint = DigestUtils.sha1Hex(this.cachedUiJs);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
   }
 
-  private String getCoverageMatrixHtml() {
+  private String getCoverageMatrixHtml(String heiFilter) {
+    if (heiFilter != null) {
+      return this.matrixGenerator.generateToHtmlTable(this.regClient, heiFilter);
+    }
+
     String result = this.catcache.getCoverageMatrixHtml();
     if (result == null) {
-      result = this.matrixGenerator.generateToHtmlTable(this.regClient);
+      result = this.matrixGenerator.generateToHtmlTable(this.regClient, null);
       this.catcache.putCoverageMatrixHtml(result);
     }
     return result;
@@ -637,7 +638,7 @@ public class UiController {
 
   /**
    * Presents some information from manifests.
-   * 
+   *
    * @param response Needed to add some custom headers.
    * @return Manifests Overview page.
    */
@@ -690,26 +691,7 @@ public class UiController {
     }
     Collection<HeiEntry> allHeis = regClient.getAllHeis();
 
-    Predicate<HeiEntry> heiEntryPredicate = heiEntry -> isSchacMatching(pattern, heiEntry)
-        || isNameMatching(pattern, heiEntry) || isOtherIdMatching(pattern, heiEntry, OTHER_ID_PIC)
-        || isOtherIdMatching(pattern, heiEntry, OTHER_ID_ERASMUS);
-
-    return allHeis.stream().filter(heiEntryPredicate).sorted(new HeiComparator())
+    return allHeis.stream().filter(Utils.getHeiFilterPredicate(pattern)).sorted(new HeiComparator())
         .collect(Collectors.toList());
-  }
-
-  private boolean isOtherIdMatching(String pattern, HeiEntry heiEntry, String otherIdType) {
-    return heiEntry.getOtherIds(otherIdType).stream()
-        .anyMatch(otherId -> otherId.toLowerCase().startsWith(pattern.toLowerCase()));
-  }
-
-  private boolean isNameMatching(String pattern, HeiEntry heiEntry) {
-    return heiEntry.getName().toLowerCase(Locale.ENGLISH)
-        .contains(pattern.toLowerCase(Locale.ENGLISH));
-  }
-
-  private boolean isSchacMatching(String pattern, HeiEntry heiEntry) {
-    return heiEntry.getId().toLowerCase(Locale.ENGLISH)
-        .contains(pattern.toLowerCase(Locale.ENGLISH));
   }
 }

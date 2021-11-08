@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import eu.erasmuswithoutpaper.registry.common.Utils;
 import eu.erasmuswithoutpaper.registryclient.ApiSearchConditions;
 import eu.erasmuswithoutpaper.registryclient.HeiEntry;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
@@ -47,11 +49,17 @@ public class CoverageMatrixGenerator {
    * Given an initialized {@link RegistryClient}, generate HTML report describing the HEI/API
    * coverage.
    *
-   * @param client The client to fetch HEI/API data from.
+   * @param client    The client to fetch HEI/API data from.
+   * @param heiFilter An optional pattern that should be used to filter HEIs
    * @return HTML string with the report.
    */
-  public String generateToHtmlTable(RegistryClient client) {
+  public String generateToHtmlTable(RegistryClient client, String heiFilter) {
     List<HeiEntry> heis = this.extractInterestingHeis(client);
+    if (heiFilter != null) {
+      heis =
+          heis.stream().filter(Utils.getHeiFilterPredicate(heiFilter)).collect(Collectors.toList());
+    }
+
     List<CoverageMatrixRow> rows = new ArrayList<>();
     for (int i = 0; i < heis.size(); i++) {
       HeiEntry hei = heis.get(i);

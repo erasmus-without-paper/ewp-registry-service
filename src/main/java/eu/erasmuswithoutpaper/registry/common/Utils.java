@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import javax.xml.XMLConstants;
@@ -20,6 +21,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
 
+import eu.erasmuswithoutpaper.registryclient.HeiEntry;
 import org.springframework.web.util.HtmlUtils;
 
 import org.apache.commons.codec.digest.DigestUtils;
@@ -44,6 +46,8 @@ public class Utils {
 
   private static final String[] ORDINAL_SUFFIXES =
       { "th", "st", "nd", "rd", "th", "th", "th", "th", "th", "th" };
+  private static final String OTHER_ID_PIC = "pic";
+  private static final String OTHER_ID_ERASMUS = "erasmus";
 
   /**
    * Convert a comma-separated string to a list of tokens. Tokens are trimmed, and empty ones are
@@ -297,5 +301,30 @@ public class Utils {
     } else {
       return Character.toUpperCase(word.charAt(0)) + word.substring(1).toLowerCase(Locale.US);
     }
+  }
+
+  /**
+   * @param pattern String to be used as HEI list filter.
+   * @return the predicate to filter HEIs using the pattern.
+   */
+  public static Predicate<HeiEntry> getHeiFilterPredicate(String pattern) {
+    return heiEntry -> isSchacMatching(pattern, heiEntry) || isNameMatching(pattern, heiEntry)
+        || isOtherIdMatching(pattern, heiEntry, OTHER_ID_PIC) || isOtherIdMatching(pattern,
+        heiEntry, OTHER_ID_ERASMUS);
+  }
+
+  private static boolean isOtherIdMatching(String pattern, HeiEntry heiEntry, String otherIdType) {
+    return heiEntry.getOtherIds(otherIdType).stream()
+        .anyMatch(otherId -> otherId.toLowerCase().startsWith(pattern.toLowerCase()));
+  }
+
+  private static boolean isNameMatching(String pattern, HeiEntry heiEntry) {
+    return heiEntry.getName().toLowerCase(Locale.ENGLISH)
+        .contains(pattern.toLowerCase(Locale.ENGLISH));
+  }
+
+  private static boolean isSchacMatching(String pattern, HeiEntry heiEntry) {
+    return heiEntry.getId().toLowerCase(Locale.ENGLISH)
+        .contains(pattern.toLowerCase(Locale.ENGLISH));
   }
 }

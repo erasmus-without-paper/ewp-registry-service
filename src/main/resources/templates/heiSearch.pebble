@@ -6,20 +6,7 @@
 <section class='ewp-section ewp-section-centered'>
     <h2 class='ewp-section-title'>HEI Search Page</h2>
 
-    <p>
-        You can search by HEI name, SCHAC, Erasmus code, PIC.
-        Please type a pattern and hit "Enter".
-        Example search patterns:
-    </p>
-    <ul>
-        <li>PL&lt;space&gt; - search for Polish HEIs (by Erasmus code)</li>
-        <li>Wien - search for HEIs that have "Wien" in their name</li>
-    </ul>
-
-    <form>
-        <label>Search for HEI: <input name="pattern" type="search" value="{{ pattern }}"
-                                      size="30" autofocus/></label>
-    </form>
+    {% include "heiFilter" %}
 
     <p>
         Found {{ heis|length }} HEI(s):
