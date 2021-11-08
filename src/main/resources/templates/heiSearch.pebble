@@ -39,7 +39,11 @@
                 {% for hei in heis %}
                 <tr class="ewpst_row">
                     <td class="ewpst__cell ewpst__cell--cc1">{{ hei.name }}</td>
-                    <td class="ewpst__cell ewpst__cell--cc1 ewpst__cell-schac">{{ hei.id }}</td>
+                    <td class="ewpst__cell ewpst__cell--cc1 ewpst__cell-schac">
+                        <a href="https://hei.api.uni-foundation.eu/schac/{{ hei.id }}">
+                            {{ hei.id }}
+                        </a>
+                    </td>
                     <td class="ewpst__cell ewpst__cell--cc1 ewpst__cell-schac">
                         {% if hei.otherIds('erasmus') is not empty %}
                         {{ hei.otherIds('erasmus') | first }}
