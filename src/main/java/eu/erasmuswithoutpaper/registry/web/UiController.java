@@ -169,6 +169,7 @@ public class UiController {
     mav.setViewName("coverage");
     response.addHeader("Cache-Control", "public, max-age=300");
 
+    mav.addObject("pattern", pattern);
     mav.addObject("coverageMatrixHtml", this.getCoverageMatrixHtml(pattern));
     return mav;
   }
