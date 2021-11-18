@@ -81,18 +81,22 @@ public class IiaGetValidationSuiteV2
                 + IiaGetValidationSuiteV2.this.currentState.selectedIiaId
                 + "\"]/../iia-code"
         );
-        iiaCodes.add(codes.get(0));
+        if (!codes.isEmpty()) {
+          iiaCodes.add(codes.get(0));
+        }
         return Optional.of(response);
       }
     });
 
-    generalTestsIdsAndCodes(combination,
-        this.currentState.selectedHeiId,
-        "iia",
-        this.currentState.selectedIiaId, this.currentState.maxIiaIds,
-        iiaCodes.get(0), this.currentState.maxIiaCodes,
-        partnerIiaIdVerifierFactory
-    );
+    if (!iiaCodes.isEmpty()) {
+      generalTestsIdsAndCodes(combination, this.currentState.selectedHeiId, "iia",
+          this.currentState.selectedIiaId, this.currentState.maxIiaIds, iiaCodes.get(0),
+          this.currentState.maxIiaCodes, partnerIiaIdVerifierFactory);
+    } else {
+      generalTestsIds(combination, "hei_id", this.currentState.selectedHeiId, "iia",
+          this.currentState.selectedIiaId, this.currentState.maxIiaIds, false,
+          partnerIiaIdVerifierFactory);
+    }
   }
 
   private VerifierFactory partnerIiaIdVerifierFactory
