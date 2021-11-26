@@ -21,6 +21,7 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -1291,20 +1292,22 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
         400
     );
 
-    testParametersError(
-        combination,
-        "Request more than <max-" + secondParameterNamePrefix + "-codes> unknown "
-            + secondParameterNamePrefix + "_codes, expect 400.",
-        new ParameterList(
-            concatArrays(
-                Arrays.asList(new Parameter(heiParameterName, heiId)),
-                Collections.nCopies(
-                    maxCodes + 1, new Parameter(secondParameterNamePrefix + "_code", fakeId)
-                )
-            )
-        ),
-        400
-    );
+    if (!skipCodeTests) {
+      testParametersError(
+          combination,
+          "Request more than <max-" + secondParameterNamePrefix + "-codes> unknown "
+              + secondParameterNamePrefix + "_codes, expect 400.",
+          new ParameterList(
+              concatArrays(
+                  Arrays.asList(new Parameter(heiParameterName, heiId)),
+                  Collections.nCopies(
+                      maxCodes + 1, new Parameter(secondParameterNamePrefix + "_code", fakeId)
+                  )
+              )
+          ),
+          400
+      );
+    }
 
     testParameters200(
         combination,
