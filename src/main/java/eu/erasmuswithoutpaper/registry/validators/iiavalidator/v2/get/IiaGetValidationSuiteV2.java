@@ -94,7 +94,7 @@ public class IiaGetValidationSuiteV2
           this.currentState.maxIiaCodes, partnerIiaIdVerifierFactory);
     } else {
       generalTestsIds(combination, "hei_id", this.currentState.selectedHeiId, "iia",
-          this.currentState.selectedIiaId, this.currentState.maxIiaIds, false,
+          this.currentState.selectedIiaId, this.currentState.maxIiaIds, true,
           partnerIiaIdVerifierFactory);
     }
   }
