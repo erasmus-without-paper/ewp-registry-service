@@ -24,7 +24,7 @@ You need to create an [GitHub][github] account, [generate access token][generate
 
 ```sh
 docker login docker.pkg.github.com --username <your username>
-<enter your GitLab access token when prompted for password>
+<enter your GitHub access token when prompted for password>
 docker pull docker.pkg.github.com/erasmus-without-paper/ewp-registry-service/ewp-registry-service:latest
 ```
 
