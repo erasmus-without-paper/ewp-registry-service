@@ -1,10 +1,10 @@
 ## How to run the Registry locally?
 We've created bash scripts to help you. You will need docker and git.
 
-You need to create an [GitHub][github] account, [generate access token][generate-github-access-token] with `repo` and `read:packages` scopes, and then login to docker.pkg.github.com in docker.
+You need to create an [GitHub][github] account, [generate access token][generate-github-access-token] with `read:packages` scopes, and then login to docker.pkg.github.com in docker.
 ```bash
 docker login docker.pkg.github.com --username <your username>
-<enter your GitLab access token when prompted for password>
+<enter your GitHub access token when prompted for password>
 ```
 
 Then, to pull image use:
