@@ -20,7 +20,7 @@ Running from a Docker Image
 
 Currently, we are pushing out latest builds to a public Docker registry on GitHub.
 
-You need to create an [GitHub][github] account, [generate access token][generate-github-access-token] with `repo` and `read:packages` scopes, and then login to docker.pkg.github.com in docker.
+You need to create an [GitHub][github] account, [generate access token][generate-github-access-token] with `read:packages` scopes, and then login to docker.pkg.github.com in docker.
 
 ```sh
 docker login docker.pkg.github.com --username <your username>
