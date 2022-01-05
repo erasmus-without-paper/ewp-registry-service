@@ -1,6 +1,6 @@
 {% extends "generic-with-toolbar" %}
 
-{% block pageTitle %}Status of the EWP Manifest Importer{% endblock %}
+{% block pageTitle %}XML Schema Validator{% endblock %}
 
 {% block main %}
     <section class='ewp-section ewp-section-centered'>
