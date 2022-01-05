@@ -73,6 +73,9 @@
                     <span class='ewp-header__links-item ewp-header__link-item-center'>|</span>
                     <a class='ewp-header__links-item ewp-header__link-item-right' href='{{ heiSearchUrl }}'>HEI Search Page</a>
                 </p>
+                <p class='ewp-header__links'>
+                    <a class='ewp-header__links-item' href='{{ iiaHashValidatorUrl }}'>IIA Hash Validator</a>
+                </p>
             </div>
             <div class='ewp-header__vertical-divider'></div>
             <div class='ewp-header__uptime-and-version'>

@@ -1,6 +1,7 @@
 package eu.erasmuswithoutpaper.registry.web;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -12,6 +13,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPathExpressionException;
 
 import eu.erasmuswithoutpaper.registry.Application;
 import eu.erasmuswithoutpaper.registry.cmatrix.CoverageMatrixGenerator;
@@ -21,6 +24,9 @@ import eu.erasmuswithoutpaper.registry.documentbuilder.BuildError;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildParams;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildResult;
 import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
+import eu.erasmuswithoutpaper.registry.iia.CooperationService;
+import eu.erasmuswithoutpaper.registry.iia.ElementHashException;
+import eu.erasmuswithoutpaper.registry.iia.HashComparisonResult;
 import eu.erasmuswithoutpaper.registry.manifestoverview.ApiForHeiImplementationMapping;
 import eu.erasmuswithoutpaper.registry.manifestoverview.CoveredInstitutionsCounters;
 import eu.erasmuswithoutpaper.registry.manifestoverview.ImplementedApisCount;
@@ -78,6 +84,8 @@ import com.google.gson.JsonPrimitive;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 /**
  * Handles UI requests.
@@ -103,6 +111,7 @@ public class UiController {
   private final ValidatorKeyStore validatorKeyStore;
   private final MyErrorController errorController;
   private final ManifestOverviewManager manifestOverviewManager;
+  private final CooperationService cooperationService;
 
   private byte[] cachedCss;
   private String cachedCssFingerprint;
@@ -129,6 +138,7 @@ public class UiController {
    * @param validatorKeyStoreSet set of KeyStores providing credentials.
    * @param errorController used to generate 404 pages when the validator is not available.
    * @param manifestOverviewManager used to retrieve current data about duplicates in the network.
+   * @param cooperationService used to validate IIA cooperation conditions hash
    */
   @Autowired
   public UiController(TaskExecutor taskExecutor,
@@ -138,7 +148,7 @@ public class UiController {
       CoverageMatrixGenerator matrixGenerator, RegistryClient regClient,
       CatalogueDependantCache catcache, ApiValidatorsManager apiValidatorsManager,
       ValidatorKeyStoreSet validatorKeyStoreSet, MyErrorController errorController,
-      ManifestOverviewManager manifestOverviewManager) {
+      ManifestOverviewManager manifestOverviewManager, CooperationService cooperationService) {
     this.taskExecutor = taskExecutor;
     this.manifestStatusRepo = manifestUpdateStatuses;
     this.manifestRepository = manifestRepository;
@@ -155,6 +165,7 @@ public class UiController {
     this.validatorKeyStore = validatorKeyStoreSet.getMainKeyStore();
     this.errorController = errorController;
     this.manifestOverviewManager = manifestOverviewManager;
+    this.cooperationService = cooperationService;
   }
 
   /**
@@ -265,6 +276,7 @@ public class UiController {
     mav.addObject("schemaValidatorUrl", Application.getRootUrl() + "/schemaValidator");
     mav.addObject("manifestOverviewUrl", Application.getRootUrl() + "/manifestsOverview");
     mav.addObject("heiSearchUrl", Application.getRootUrl() + "/heiSearch?pattern=");
+    mav.addObject("iiaHashValidatorUrl", Application.getRootUrl() + "/iiaHashValidator");
     mav.addObject("uptime24", this.uptimeChecker.getLast24HoursUptimeRatio());
     mav.addObject("uptime7", this.uptimeChecker.getLast7DaysUptimeRatio());
     mav.addObject("uptime30", this.uptimeChecker.getLast30DaysUptimeRatio());
@@ -519,8 +531,8 @@ public class UiController {
 
   private void cacheUiJs() {
     try {
-      this.cachedUiJs = IOUtils.toByteArray(
-          this.resLoader.getResource("classpath:vue-app/ui.js").getInputStream());
+      this.cachedUiJs = IOUtils
+          .toByteArray(this.resLoader.getResource("classpath:vue-app/ui.js").getInputStream());
       this.cachedUiJsFingerprint = DigestUtils.sha1Hex(this.cachedUiJs);
     } catch (IOException e) {
       throw new RuntimeException(e);
@@ -694,5 +706,48 @@ public class UiController {
 
     return allHeis.stream().filter(Utils.getHeiFilterPredicate(pattern)).sorted(new HeiComparator())
         .collect(Collectors.toList());
+  }
+
+  /**
+   * IIA Hash Validator form view.
+   *
+   * @return A page with a form to validate hash in a given IIA.
+   */
+  @RequestMapping(value = "/iiaHashValidator", method = RequestMethod.GET)
+  public ModelAndView iiaHashValidatorForm() {
+    ModelAndView mav = new ModelAndView();
+    this.initializeMavCommons(mav);
+    mav.setViewName("iiaHashValidator");
+    mav.addObject("xml", "");
+    mav.addObject("hashComparisonResult", null);
+    mav.addObject("errorMessage", null);
+
+    return mav;
+  }
+
+  /**
+   * IIA Hash Validator result view.
+   *
+   * @return A page with the result of IIA hash validation.
+   */
+  @RequestMapping(value = "/iiaHashValidator", method = RequestMethod.POST)
+  public ModelAndView iiaHashValidatorResult(@RequestParam String xml) {
+    ModelAndView mav = new ModelAndView();
+    this.initializeMavCommons(mav);
+    mav.setViewName("iiaHashValidator");
+    mav.addObject("xml", xml);
+
+    try {
+      HashComparisonResult hashComparisonResult =
+          cooperationService.checkCooperationConditionsHash(new InputSource(new StringReader(xml)));
+      mav.addObject("hashComparisonResult", hashComparisonResult);
+      mav.addObject("errorMessage", null);
+    } catch (ElementHashException | ParserConfigurationException | IOException | SAXException
+        | XPathExpressionException exception) {
+      mav.addObject("hashComparisonResult", null);
+      mav.addObject("errorMessage", exception.getMessage());
+    }
+
+    return mav;
   }
 }

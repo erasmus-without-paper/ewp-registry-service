@@ -1,0 +1,38 @@
+{% extends "generic-with-toolbar" %}
+
+{% block pageTitle %}IIA Hash Validator{% endblock %}
+
+{% block main %}
+<section class='ewp-section ewp-section-centered'>
+    <h2 class='ewp-section-title'>IIA Hash Validator</h2>
+
+    <form id="xml_form" method="post">
+        <p class="ewp-para">Paste your IIA XML document below and press
+            <button>Validate</button>
+        </p>
+        <label>
+            <textarea id="xml_text" name="xml">{{ xml }}</textarea>
+        </label>
+    </form>
+
+    {% if hashComparisonResult != null %}
+    <section id="result_section">
+        <h3 class='ewp-section-title'>Result
+            {% if hashComparisonResult.isCorrect %}
+            <span class="ewp-manifest-validator-result" id="result_ok" hidden>OK</span>
+            {% else %}
+            <span class="ewp-manifest-validator-result" id="result_error" hidden>Failed</span>
+            {% endif %}
+        </h3>
+
+        {% if not hashComparisonResult.isCorrect %}
+        <h4>Expected hash: {{hashComparisonResult.hashExpected }}</h4>
+        {% endif %}
+    </section>
+    {% endif %}
+
+    {% if errorMessage != null %}
+    <h4>{{ errorMessage }}</h4>
+    {% endif %}
+</section>
+{% endblock %}
