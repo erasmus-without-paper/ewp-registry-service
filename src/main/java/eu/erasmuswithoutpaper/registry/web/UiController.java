@@ -408,7 +408,7 @@ public class UiController {
    * XML Schema Validator view.
    *
    * @param response Needed to add some custom headers.
-   * @return A page with the list of issue statuses related to this recipient.
+   * @return A page with a form to validate given schema.
    */
   @RequestMapping(value = "/schemaValidator", method = RequestMethod.GET)
   public ModelAndView schemaValidator(HttpServletResponse response) {
