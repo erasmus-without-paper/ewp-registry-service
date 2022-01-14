@@ -113,21 +113,21 @@ public class UiController {
   private byte[] cachedLogo;
 
   /**
-   * @param taskExecutor            needed for running background tasks.
-   * @param manifestUpdateStatuses  needed to display statuses of manifests.
-   * @param manifestRepository      needed to display list of apis implemented by hosts in manifest.
-   * @param sourceProvider          needed to present the list of all sources.
-   * @param updater                 needed to perform on-demand manifest updates.
-   * @param notifier                needed to retrieve issues watched by particular recipients.
-   * @param uptimeChecker           needed to display current uptime stats.
-   * @param docBuilder              needed to support online document validation service.
-   * @param resLoader               needed to load CSS, logos etc.
-   * @param matrixGenerator         needed to render "API support table".
-   * @param regClient               needed to feed the {@link CoverageMatrixGenerator}.
-   * @param catcache                needed to cache the result of {@link CoverageMatrixGenerator}.
-   * @param apiValidatorsManager    needed to check if there are tests for given api and version.
-   * @param validatorKeyStoreSet    set of KeyStores providing credentials.
-   * @param errorController         used to generate 404 pages when the validator is not available.
+   * @param taskExecutor needed for running background tasks.
+   * @param manifestUpdateStatuses needed to display statuses of manifests.
+   * @param manifestRepository needed to display list of apis implemented by hosts in manifest.
+   * @param sourceProvider needed to present the list of all sources.
+   * @param updater needed to perform on-demand manifest updates.
+   * @param notifier needed to retrieve issues watched by particular recipients.
+   * @param uptimeChecker needed to display current uptime stats.
+   * @param docBuilder needed to support online document validation service.
+   * @param resLoader needed to load CSS, logos etc.
+   * @param matrixGenerator needed to render "API support table".
+   * @param regClient needed to feed the {@link CoverageMatrixGenerator}.
+   * @param catcache needed to cache the result of {@link CoverageMatrixGenerator}.
+   * @param apiValidatorsManager needed to check if there are tests for given api and version.
+   * @param validatorKeyStoreSet set of KeyStores providing credentials.
+   * @param errorController used to generate 404 pages when the validator is not available.
    * @param manifestOverviewManager used to retrieve current data about duplicates in the network.
    */
   @Autowired
@@ -247,7 +247,7 @@ public class UiController {
   }
 
   /**
-   * @param response    Needed to add some custom headers.
+   * @param response Needed to add some custom headers.
    * @param adminEmails Admin emails to display on page.
    * @return A welcome page.
    */
@@ -277,7 +277,7 @@ public class UiController {
 
   /**
    * @param response Needed to add some custom headers.
-   * @param url      URL of the manifest source.
+   * @param url URL of the manifest source.
    * @return A page describing the status of the manifest.
    */
   @RequestMapping(value = "/status", params = "url", method = RequestMethod.GET)
@@ -301,7 +301,7 @@ public class UiController {
 
   /**
    * @param response Needed to add some custom headers.
-   * @param url      URL of the manifest source.
+   * @param url URL of the manifest source.
    * @return A page describing the status of the manifest.
    */
   @RequestMapping(value = "/manifestValidation", params = "url", method = RequestMethod.GET)
@@ -355,9 +355,9 @@ public class UiController {
    * Perform an on-demand reload of a single specific manifest.
    *
    * @param response Needed to add some custom headers.
-   * @param url      URL of the manifest source to be reloaded.
+   * @param url URL of the manifest source to be reloaded.
    * @return Empty response with HTTP 200 on success (queued). Empty HTTP 400 response on error
-   *     (unknown URL).
+   *         (unknown URL).
    */
   @RequestMapping(value = "/reload", params = "url", method = RequestMethod.POST)
   public ResponseEntity<String> reloadManifest(HttpServletResponse response,
@@ -423,7 +423,7 @@ public class UiController {
    * Display a status page tailored for a given notification recipient.
    *
    * @param response Needed to add some custom headers.
-   * @param email    Email address of the recipient.
+   * @param email Email address of the recipient.
    * @return A page with the list of issue statuses related to this recipient.
    */
   @RequestMapping(value = "/status", params = "email", method = RequestMethod.GET)
@@ -448,7 +448,7 @@ public class UiController {
    *
    * @param xml The XML to be validated.
    * @return An undocumented JSON object with the results of the validation (not guaranteed to stay
-   *     backward compatible).
+   *         backward compatible).
    */
   @RequestMapping(path = "/validate", params = "xml", method = RequestMethod.POST)
   public ResponseEntity<String> validateXml(@RequestParam String xml) {
