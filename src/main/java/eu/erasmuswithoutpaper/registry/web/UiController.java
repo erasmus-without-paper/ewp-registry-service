@@ -719,7 +719,7 @@ public class UiController {
     this.initializeMavCommons(mav);
     mav.setViewName("iiaHashValidator");
     mav.addObject("xml", "");
-    mav.addObject("hashComparisonResult", null);
+    mav.addObject("hashComparisonResults", null);
     mav.addObject("errorMessage", null);
 
     return mav;
@@ -738,13 +738,15 @@ public class UiController {
     mav.addObject("xml", xml);
 
     try {
-      HashComparisonResult hashComparisonResult =
+      List<HashComparisonResult> hashComparisonResults =
           cooperationService.checkCooperationConditionsHash(new InputSource(new StringReader(xml)));
-      mav.addObject("hashComparisonResult", hashComparisonResult);
+      mav.addObject("hashComparisonResults", hashComparisonResults);
       mav.addObject("errorMessage", null);
+      mav.addObject("allResultsCorrect",
+          hashComparisonResults.stream().allMatch(HashComparisonResult::isCorrect));
     } catch (ElementHashException | ParserConfigurationException | IOException | SAXException
         | XPathExpressionException exception) {
-      mav.addObject("hashComparisonResult", null);
+      mav.addObject("hashComparisonResults", null);
       mav.addObject("errorMessage", exception.getMessage());
     }
 

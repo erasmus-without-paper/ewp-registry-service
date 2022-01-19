@@ -1,7 +1,9 @@
 package eu.erasmuswithoutpaper.registry.iia;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
@@ -27,18 +29,18 @@ public class CooperationService {
 
   static final String IIAS_NS =
       "https://github.com/erasmus-without-paper/ewp-specs-api-iias/blob/stable-v6/endpoints/get-response.xsd";
-  private final XPathExpression xpathCooperationConditionsHashExpr;
+  private final XPathExpression xpathIiasExpr;
   private final XPathExpression xpathCooperationConditionsExpr;
+  private final XPathExpression xpathCooperationConditionsHashExpr;
 
   CooperationService() throws XPathExpressionException {
     XPathFactory xpathFactory = XPathFactory.newInstance();
     XPath xpath = xpathFactory.newXPath();
     xpath.setNamespaceContext(new IiaNamespaceContext());
 
-    xpathCooperationConditionsHashExpr =
-        xpath.compile("/iia:iias-get-response/iia:iia/iia:conditions-hash/text()");
-    xpathCooperationConditionsExpr =
-        xpath.compile("/iia:iias-get-response/iia:iia/iia:cooperation-conditions");
+    xpathIiasExpr = xpath.compile("/iia:iias-get-response/iia:iia");
+    xpathCooperationConditionsExpr = xpath.compile("iia:cooperation-conditions");
+    xpathCooperationConditionsHashExpr = xpath.compile("iia:conditions-hash/text()");
   }
 
   private Document getDocument(InputSource xml)
@@ -75,17 +77,28 @@ public class CooperationService {
    * Checks cooperation conditions hash present in IIA get response.
    *
    * @param iiaXml XML containing IIA get response
-   * @return cooperation conditions hash comparison result
+   * @return list of cooperation conditions hash comparison results (one for every IIA)
    * @throws ElementHashException when hash cannot be calculated
    */
-  public HashComparisonResult checkCooperationConditionsHash(InputSource iiaXml)
+  public List<HashComparisonResult> checkCooperationConditionsHash(InputSource iiaXml)
       throws ElementHashException, ParserConfigurationException, IOException, SAXException,
       XPathExpressionException {
     Document document = getDocument(iiaXml);
 
-    String hashExtracted = xpathCooperationConditionsHashExpr.evaluate(document);
+    NodeList iias = (NodeList) xpathIiasExpr.evaluate(document, XPathConstants.NODESET);
+    ArrayList<HashComparisonResult> hashComparisonResults = new ArrayList<>(iias.getLength());
+    for (int i = 0; i < iias.getLength(); i++) {
+      hashComparisonResults.add(getHashComparisonResult(iias.item(i)));
+    }
+
+    return hashComparisonResults;
+  }
+
+  private HashComparisonResult getHashComparisonResult(Node iia)
+      throws XPathExpressionException, ElementHashException {
+    String hashExtracted = xpathCooperationConditionsHashExpr.evaluate(iia);
     Node cooperationConditions =
-        (Node) xpathCooperationConditionsExpr.evaluate(document, XPathConstants.NODE);
+        (Node) xpathCooperationConditionsExpr.evaluate(iia, XPathConstants.NODE);
     removeContacts(cooperationConditions);
     String hashExpected = ElementHashHelper.getXmlHash(cooperationConditions);
 

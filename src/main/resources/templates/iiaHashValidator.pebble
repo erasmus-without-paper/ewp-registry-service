@@ -15,19 +15,21 @@
         </label>
     </form>
 
-    {% if hashComparisonResult != null %}
+    {% if hashComparisonResults != null %}
     <section id="result_section">
         <h3 class='ewp-section-title'>Result
-            {% if hashComparisonResult.isCorrect %}
-            <span class="ewp-manifest-validator-result" id="result_ok" hidden>OK</span>
+            {% if allResultsCorrect %}
+            <span class="ewp-manifest-validator-result" id="result_ok">OK</span>
             {% else %}
-            <span class="ewp-manifest-validator-result" id="result_error" hidden>Failed</span>
+            <span class="ewp-manifest-validator-result" id="result_error">Failed</span>
             {% endif %}
         </h3>
 
-        {% if not hashComparisonResult.isCorrect %}
-        <h4>Expected hash: {{hashComparisonResult.hashExpected }}</h4>
-        {% endif %}
+        {% for hashComparisonResult in hashComparisonResults %}
+            {% if not hashComparisonResult.isCorrect %}
+            <h4>Expected hash: {{hashComparisonResult.hashExpected }}</h4>
+            {% endif %}
+        {% endfor %}
     </section>
     {% endif %}
 
