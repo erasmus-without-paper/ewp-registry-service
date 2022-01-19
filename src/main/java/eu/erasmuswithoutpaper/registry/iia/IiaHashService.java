@@ -1,6 +1,8 @@
 package eu.erasmuswithoutpaper.registry.iia;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -17,6 +19,10 @@ import javax.xml.xpath.XPathFactory;
 
 import org.springframework.stereotype.Service;
 
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.xml.security.Init;
+import org.apache.xml.security.c14n.Canonicalizer;
+import org.apache.xml.security.exceptions.XMLSecurityException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -25,7 +31,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 @Service
-public class CooperationService {
+public class IiaHashService {
 
   static final String IIAS_NS =
       "https://github.com/erasmus-without-paper/ewp-specs-api-iias/blob/stable-v6/endpoints/get-response.xsd";
@@ -33,7 +39,7 @@ public class CooperationService {
   private final XPathExpression xpathCooperationConditionsExpr;
   private final XPathExpression xpathCooperationConditionsHashExpr;
 
-  CooperationService() throws XPathExpressionException {
+  IiaHashService() throws XPathExpressionException {
     XPathFactory xpathFactory = XPathFactory.newInstance();
     XPath xpath = xpathFactory.newXPath();
     xpath.setNamespaceContext(new IiaNamespaceContext());
@@ -41,6 +47,20 @@ public class CooperationService {
     xpathIiasExpr = xpath.compile("/iia:iias-get-response/iia:iia");
     xpathCooperationConditionsExpr = xpath.compile("iia:cooperation-conditions");
     xpathCooperationConditionsHashExpr = xpath.compile("iia:conditions-hash/text()");
+  }
+
+  private static byte[] getDataToHash(Node element) throws ElementHashException {
+    try {
+      Init.init();
+      Canonicalizer canon =
+          Canonicalizer.getInstance(Canonicalizer.ALGO_ID_C14N_EXCL_OMIT_COMMENTS);
+      ByteArrayOutputStream canonicalWriter = new ByteArrayOutputStream();
+      canon.canonicalizeSubtree(element, canonicalWriter);
+
+      return canonicalWriter.toByteArray();
+    } catch (XMLSecurityException cause) {
+      throw new ElementHashException(cause);
+    }
   }
 
   private Document getDocument(InputSource xml)
@@ -100,9 +120,11 @@ public class CooperationService {
     Node cooperationConditions =
         (Node) xpathCooperationConditionsExpr.evaluate(iia, XPathConstants.NODE);
     removeContacts(cooperationConditions);
-    String hashExpected = ElementHashHelper.getXmlHash(cooperationConditions);
+    byte[] dataToHash = getDataToHash(cooperationConditions);
+    String hashExpected = DigestUtils.sha256Hex(dataToHash);
 
-    return new HashComparisonResult(hashExtracted, hashExpected);
+    return new HashComparisonResult(hashExtracted, hashExpected,
+        new String(dataToHash, StandardCharsets.UTF_8));
   }
 
   static class IiaNamespaceContext implements NamespaceContext {

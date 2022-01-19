@@ -22,7 +22,7 @@
 
         <form id="xml_form">
             <p class="ewp-para">Paste your XML document below and press <button id="validate_button">Validate</button></p>
-            <textarea id="xml_text" name="xml"></textarea>
+            <textarea class="xml-text" name="xml"></textarea>
         </form>
 
         <section id="result_section" hidden>

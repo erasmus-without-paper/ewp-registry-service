@@ -24,9 +24,9 @@ import eu.erasmuswithoutpaper.registry.documentbuilder.BuildError;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildParams;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildResult;
 import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
-import eu.erasmuswithoutpaper.registry.iia.CooperationService;
 import eu.erasmuswithoutpaper.registry.iia.ElementHashException;
 import eu.erasmuswithoutpaper.registry.iia.HashComparisonResult;
+import eu.erasmuswithoutpaper.registry.iia.IiaHashService;
 import eu.erasmuswithoutpaper.registry.manifestoverview.ApiForHeiImplementationMapping;
 import eu.erasmuswithoutpaper.registry.manifestoverview.CoveredInstitutionsCounters;
 import eu.erasmuswithoutpaper.registry.manifestoverview.ImplementedApisCount;
@@ -111,7 +111,7 @@ public class UiController {
   private final ValidatorKeyStore validatorKeyStore;
   private final MyErrorController errorController;
   private final ManifestOverviewManager manifestOverviewManager;
-  private final CooperationService cooperationService;
+  private final IiaHashService iiaHashService;
 
   private byte[] cachedCss;
   private String cachedCssFingerprint;
@@ -138,7 +138,7 @@ public class UiController {
    * @param validatorKeyStoreSet set of KeyStores providing credentials.
    * @param errorController used to generate 404 pages when the validator is not available.
    * @param manifestOverviewManager used to retrieve current data about duplicates in the network.
-   * @param cooperationService used to validate IIA cooperation conditions hash
+   * @param iiaHashService used to validate IIA cooperation conditions hash
    */
   @Autowired
   public UiController(TaskExecutor taskExecutor,
@@ -148,7 +148,7 @@ public class UiController {
       CoverageMatrixGenerator matrixGenerator, RegistryClient regClient,
       CatalogueDependantCache catcache, ApiValidatorsManager apiValidatorsManager,
       ValidatorKeyStoreSet validatorKeyStoreSet, MyErrorController errorController,
-      ManifestOverviewManager manifestOverviewManager, CooperationService cooperationService) {
+      ManifestOverviewManager manifestOverviewManager, IiaHashService iiaHashService) {
     this.taskExecutor = taskExecutor;
     this.manifestStatusRepo = manifestUpdateStatuses;
     this.manifestRepository = manifestRepository;
@@ -165,7 +165,7 @@ public class UiController {
     this.validatorKeyStore = validatorKeyStoreSet.getMainKeyStore();
     this.errorController = errorController;
     this.manifestOverviewManager = manifestOverviewManager;
-    this.cooperationService = cooperationService;
+    this.iiaHashService = iiaHashService;
   }
 
   /**
@@ -739,7 +739,7 @@ public class UiController {
 
     try {
       List<HashComparisonResult> hashComparisonResults =
-          cooperationService.checkCooperationConditionsHash(new InputSource(new StringReader(xml)));
+          iiaHashService.checkCooperationConditionsHash(new InputSource(new StringReader(xml)));
       mav.addObject("hashComparisonResults", hashComparisonResults);
       mav.addObject("errorMessage", null);
       mav.addObject("allResultsCorrect",

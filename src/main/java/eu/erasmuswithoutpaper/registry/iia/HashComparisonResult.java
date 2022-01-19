@@ -2,12 +2,14 @@ package eu.erasmuswithoutpaper.registry.iia;
 
 public class HashComparisonResult {
 
-  String hashExtracted;
-  String hashExpected;
+  private final String hashExtracted;
+  private final String hashExpected;
+  private final String hashedString;
 
-  public HashComparisonResult(String hashExtracted, String hashExpected) {
+  HashComparisonResult(String hashExtracted, String hashExpected, String hashedString) {
     this.hashExtracted = hashExtracted;
     this.hashExpected = hashExpected;
+    this.hashedString = hashedString;
   }
 
   public String getHashExtracted() {
@@ -16,6 +18,10 @@ public class HashComparisonResult {
 
   public String getHashExpected() {
     return hashExpected;
+  }
+
+  public String getHashedString() {
+    return hashedString;
   }
 
   public boolean isCorrect() {

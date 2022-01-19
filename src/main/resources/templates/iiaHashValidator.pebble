@@ -7,11 +7,11 @@
     <h2 class='ewp-section-title'>IIA Hash Validator</h2>
 
     <form id="xml_form" method="post">
-        <p class="ewp-para">Paste your IIA XML document below and press
-            <button>Validate</button>
+        <p class="ewp-para">
+            Paste your IIA XML document below and press <button>Validate</button>
         </p>
         <label>
-            <textarea id="xml_text" name="xml">{{ xml }}</textarea>
+            <textarea class="xml-text" name="xml">{{ xml }}</textarea>
         </label>
     </form>
 
@@ -27,8 +27,14 @@
 
         {% for hashComparisonResult in hashComparisonResults %}
             {% if not hashComparisonResult.isCorrect %}
-            <h4>Expected hash: {{hashComparisonResult.hashExpected }}</h4>
-            {% endif %}
+            <h4>Expected hash: {{ hashComparisonResult.hashExpected }}</h4>
+            <label>
+                <p class="ewp-para">
+                    String used to calculate hash:
+                </p>
+                <textarea class="xml-text">{{ hashComparisonResult.hashedString }}</textarea>
+            </label>
+        {% endif %}
         {% endfor %}
     </section>
     {% endif %}

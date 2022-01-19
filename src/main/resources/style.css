@@ -589,7 +589,7 @@ td.ewpsrc__test_index {
 .ewp-status-obsolete { background: #bbb; }
 .ewp-status-deprecated { background: #999; }
 
-#xml_text {
+.xml-text {
     width: 100%;
     height: 300px;
 }
