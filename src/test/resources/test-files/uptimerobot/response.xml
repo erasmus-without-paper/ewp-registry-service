@@ -1,1 +1,9 @@
-<monitors offset="0" limit="50" total="1"><monitor id="777870944" friendlyname="EWP Registry" url="https://registry.erasmuswithoutpaper.eu/"  type="2"  subtype=""  keywordtype="2"  keywordvalue="Registry Service"  httpusername=""  httppassword=""  port=""  interval="300"  status="2"  alltimeuptimeratio="99.9" customuptimeratio="100-100-99.99-99.91"></monitor></monitors>
+<?xml version="1.0"?>
+<monitors stat="ok">
+    <pagination>
+        <offset>0</offset>
+        <limit>50</limit>
+        <total>1</total>
+    </pagination>
+    <monitor id="778108536" friendly_name="EWP Dev Registry" url="https://dev-registry.erasmuswithoutpaper.eu/" type="2" sub_type="" keyword_type="2" keyword_case_type="0" keyword_value="Registry Service" http_username="" http_password="" port="" interval="300" timeout="30" status="2" create_datetime="1472401264" custom_uptime_ratio="100.000-100.000-99.990-99.910" custom_down_durations="0-300-1200-4937"/>
+</monitors>

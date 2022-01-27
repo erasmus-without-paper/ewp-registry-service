@@ -4,6 +4,7 @@ import static org.joox.JOOX.$;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
@@ -11,6 +12,9 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import eu.erasmuswithoutpaper.registry.internet.Internet;
+import eu.erasmuswithoutpaper.registry.internet.Request;
+import eu.erasmuswithoutpaper.registry.internet.Response;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -104,30 +108,30 @@ public class UptimeChecker {
     if (this.monitorApiKey.length() == 0) {
       return;
     }
-    StringBuilder sb = new StringBuilder();
-    sb.append("https://api.uptimerobot.com/getMonitors?apiKey=");
-    sb.append(this.monitorApiKey);
-    sb.append("&customUptimeRatio=1-7-30-365");
-    String url = sb.toString();
-    byte[] xml = loadPageWithRetries(url);
+    String params =
+        String.format("api_key=%s&format=xml&custom_uptime_ratios=1-7-30-365", this.monitorApiKey);
+    byte[] xml = loadPageWithRetries(params);
     Match doc;
     try {
       doc = $(new ByteArrayInputStream(xml));
     } catch (SAXException | IOException e) {
       throw new CouldNotRefresh(e);
     }
-    String[] customRatios = doc.find("monitor").attr("customuptimeratio").split("-");
+    String[] customRatios = doc.find("monitor").attr("custom_uptime_ratio").split("-");
     this.last24HoursUptimeRatio = customRatios[0];
     this.last7DaysUptimeRatio = customRatios[1];
     this.last30DaysUptimeRatio = customRatios[2];
     this.last365DaysUptimeRatio = customRatios[3];
   }
 
-  private byte[] loadPageWithRetries(String url) throws CouldNotRefresh {
+  private byte[] loadPageWithRetries(String body) throws CouldNotRefresh {
     int retry = 0;
     while (true) {
       try {
-        return this.internet.getUrl(url);
+        Request request = new Request("POST", "https://api.uptimerobot.com/v2/getMonitors");
+        request.setBody(body.getBytes(StandardCharsets.UTF_8));
+        Response response = this.internet.makeRequest(request);
+        return response.getBody();
       } catch (IOException e) {
         logger.error("An error has occurred when fetching uptimerobot.com API.", e);
         if (retry >= this.maxRetries) {
