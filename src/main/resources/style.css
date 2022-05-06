@@ -334,6 +334,12 @@ a:hover {
     word-break: break-all;
 }
 
+.ewpst__cell-erasmus {
+    min-width: 10em;
+    width: 200px;
+    word-break: break-all;
+}
+
 /* Column appearance (cc stands for "column color") */
 
 .ewpst__cell.ewpst__cell--cc1 {
