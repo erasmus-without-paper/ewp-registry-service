@@ -64,13 +64,11 @@ class CoverageMatrixRow {
 
     /* SCHAC */
 
-    row1.append(genRow("SCHAC", NAME_COLOR_CLASS, 2, 1,
-            "ewpst__cell-schac ewpst__cell--institution"));
+    row1.append(genRow("SCHAC", NAME_COLOR_CLASS, 2, 1, "ewpst__cell-schac"));
 
     /* Erasmus code */
 
-    row1.append(genRow("Erasmus code", NAME_COLOR_CLASS, 2, 1,
-            "ewpst__cell-schac ewpst__cell--institution"));
+    row1.append(genRow("Erasmus code", NAME_COLOR_CLASS, 2, 1, "ewpst__cell-schac"));
 
     /* Primary Network APIs */
 

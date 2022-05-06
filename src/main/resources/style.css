@@ -329,6 +329,7 @@ a:hover {
 }
 
 .ewpst__cell-schac {
+	min-width: 200px;
     width: 200px;
     word-break: break-all;
 }
