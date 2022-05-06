@@ -60,7 +60,7 @@ class CoverageMatrixRow {
 
     /* Institution */
 
-    row1.append(genRow("Institution", NAME_COLOR_CLASS, 2, 1, "ewpst__cell--institution"));
+    row1.append(genRow("Institution", NAME_COLOR_CLASS, 2, 1, "ewpst__cell-institution"));
 
     /* SCHAC */
 
