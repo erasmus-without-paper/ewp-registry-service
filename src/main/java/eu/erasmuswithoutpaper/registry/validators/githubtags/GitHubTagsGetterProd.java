@@ -11,9 +11,12 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Charsets;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
+
 import org.slf4j.Logger;
 
 @Service
@@ -34,16 +37,17 @@ public class GitHubTagsGetterProd implements GitHubTagsGetter {
     List<SemanticVersion> result = new ArrayList<>();
     try {
       byte[] data = internet.getUrl(url);
-      JSONArray jsonArray = new JSONArray(new String(data, Charsets.UTF_8));
-      for (int i = 0; i < jsonArray.length(); i++) {
-        JSONObject jsonObject = jsonArray.getJSONObject(i);
-        SemanticVersion version = new SemanticVersion(jsonObject.getString("name"));
+      Gson gson = new Gson();
+      JsonArray jsonArray = gson.fromJson(new String(data, Charsets.UTF_8), JsonArray.class);
+      for (JsonElement jsonElement : jsonArray) {
+        JsonObject jsonObject = jsonElement.getAsJsonObject();
+        SemanticVersion version = new SemanticVersion(jsonObject.get("name").getAsString());
         result.add(version);
       }
       return result;
     } catch (IOException e) {
       logger.warn("Cannot fetch github tags from url " + url);
-    } catch (JSONException e) {
+    } catch (JsonSyntaxException e) {
       logger.warn("GitHub api returned invalid JSON from url " + url);
     } catch (SemanticVersion.InvalidVersionString e) {
       logger.warn("GitHub tags response contained invalid name field.");
