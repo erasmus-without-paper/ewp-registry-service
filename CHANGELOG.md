@@ -8,6 +8,50 @@ the *unofficial* services - such as the document validator, or Echo API
 validator - but these changes are currently not mentioned in this changelog, to
 avoid clutter.
 
+1.9.0
+-----
+
+* AbstractValidationSuite: added serialVersionUID to InvalidNumberOfApiEntries.
+* Updated Jgit dependency (4.4.0 -> 4.11.9).
+* Updated BouncyCastle dependency (1.57 -> 1.70).
+* Small update of prettytime dependency (4.0.1 -> 4.0.6).
+* Updated ewp-registry-client dependecy (1.7.0 -> 1.8.0).
+* Removed javatuples test dependency.
+* Updated AssertJ dependency (3.5.1 -> 3.22).
+* Removed org.json usage.
+* Bumped xercesImpl from 2.12.0 to 2.12.2.
+* Updated uptimerobot API.
+* Changed pages order on index page.
+* Show string that was hashed in IIA validator.
+* Validated all IIAs in hash validator.
+* Added IIA hash validator.
+* Fixed schema validator page title.
+* Formatted JavaDoc.
+* Fixed comment to schema validator view.
+* Renamed README-local-registry.md to README.md.
+* Fixed #21 minor issues in README-local-registry.md.
+* Repo permission unnecessary for Docker access token.
+* Fixed typo in the GitHub Docker access token.
+* IIA validator should properly handle absent IIA codes.
+* IIA validator should expect HTTP 400 for unknown HEI.
+* Prevented validator exception when no IIA code.
+* Keep HEI filter on coverage matrix.
+* Added filtering to coverage matrix page.
+* Added link to EUF HEI information page.
+* Added HEI search results count.
+* Search HEI by SCHAC fragment.
+* Added search pattern explanation + minor changes.
+* Fixed label for search input.
+* Added autofocus to search input.
+* Changed workspace for Maven npm plugin.
+* Added HEI search page.
+* Reformatted UiController according to code style.
+* Do not call commit for unchanged manifests.
+* Removed locking when retrieving catalogue from repo.
+* Use newly released EWP registry client version.
+* Made coverage matrix header sticky.
+* Removed CNR sends and LA update types from coverage.
+
 1.8.0
 -----
 
