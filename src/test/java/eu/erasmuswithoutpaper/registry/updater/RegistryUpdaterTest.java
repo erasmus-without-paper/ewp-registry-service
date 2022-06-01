@@ -4,9 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.joox.JOOX.$;
 
 import java.io.IOException;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import eu.erasmuswithoutpaper.registry.WRTest;
 import eu.erasmuswithoutpaper.registry.common.Severity;
@@ -27,7 +29,6 @@ import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import org.javatuples.Pair;
 import org.joox.Match;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -425,15 +426,15 @@ public class RegistryUpdaterTest extends WRTest {
    * equal to the ones passed.
    */
   private void assertManifestStatuses(String forUrl1, String forUrl2, String forUrl3) {
-    List<Pair<String, String>> pairs = new ArrayList<>();
-    pairs.add(new Pair<>(url1, forUrl1));
-    pairs.add(new Pair<>(url2, forUrl2));
-    pairs.add(new Pair<>(url3, forUrl3));
+    List<Map.Entry<String, String>> pairs = new ArrayList<>();
+    pairs.add(new SimpleEntry<>(url1, forUrl1));
+    pairs.add(new SimpleEntry<>(url2, forUrl2));
+    pairs.add(new SimpleEntry<>(url3, forUrl3));
 
-    for (Pair<String, String> pair : pairs) {
-      String url = pair.getValue0();
+    for (Map.Entry<String, String> pair : pairs) {
+      String url = pair.getKey();
       ManifestUpdateStatus status = this.updateStatuses.findOne(url);
-      String expectedSeverityString = pair.getValue1();
+      String expectedSeverityString = pair.getValue();
       if (expectedSeverityString == null) {
         assertThat(status).as("status of %s", url).isNull();
       } else {
