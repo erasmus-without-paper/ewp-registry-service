@@ -328,7 +328,18 @@ a:hover {
     color: #000;
 }
 
+.ewpst__cell-institution {
+    min-width: 200px;
+}
+
 .ewpst__cell-schac {
+	min-width: 200px;
+    width: 200px;
+    word-break: break-all;
+}
+
+.ewpst__cell-erasmus {
+    min-width: 10em;
     width: 200px;
     word-break: break-all;
 }
@@ -354,9 +365,6 @@ a:hover {
     min-width: 100px;
     padding-left: 5px;
     padding-right: 5px;
-}
-.ewpst__cell.ewpst__cell--institution {
-    min-width: 200px;
 }
 .ewpst__row--header .ewpst__cell.ewpst__cell--cc1 {
     background: #b6d7a8;

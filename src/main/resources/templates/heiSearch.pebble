@@ -31,7 +31,7 @@
                             {{ hei.id }}
                         </a>
                     </td>
-                    <td class="ewpst__cell ewpst__cell--cc1 ewpst__cell-schac">
+                    <td class="ewpst__cell ewpst__cell--cc1 ewpst__cell-erasmus">
                         {% if hei.otherIds('erasmus') is not empty %}
                         {{ hei.otherIds('erasmus') | first }}
                         {% endif %}

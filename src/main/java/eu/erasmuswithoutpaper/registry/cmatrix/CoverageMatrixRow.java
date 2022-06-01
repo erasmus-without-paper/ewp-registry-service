@@ -60,17 +60,15 @@ class CoverageMatrixRow {
 
     /* Institution */
 
-    row1.append(genRow("Institution", NAME_COLOR_CLASS, 2, 1, "ewpst__cell--institution"));
+    row1.append(genRow("Institution", NAME_COLOR_CLASS, 2, 1, "ewpst__cell-institution"));
 
     /* SCHAC */
 
-    row1.append(genRow("SCHAC", NAME_COLOR_CLASS, 2, 1,
-            "ewpst__cell-schac ewpst__cell--institution"));
+    row1.append(genRow("SCHAC", NAME_COLOR_CLASS, 2, 1, "ewpst__cell-schac"));
 
     /* Erasmus code */
 
-    row1.append(genRow("Erasmus code", NAME_COLOR_CLASS, 2, 1,
-            "ewpst__cell-schac ewpst__cell--institution"));
+    row1.append(genRow("Erasmus code", NAME_COLOR_CLASS, 2, 1, "ewpst__cell-erasmus"));
 
     /* Primary Network APIs */
 
@@ -187,7 +185,7 @@ class CoverageMatrixRow {
     /* Erasmus code */
 
     cell = new CoverageMatrixCell(NAME_COLOR_CLASS);
-    cell.addClass("ewpst__cell-schac");
+    cell.addClass("ewpst__cell-erasmus");
     this.cells.add(cell);
     Collection<String> erasmusCodes = hei.getOtherIds("erasmus");
     Optional<String> erasmusCode = erasmusCodes.stream().findFirst();
