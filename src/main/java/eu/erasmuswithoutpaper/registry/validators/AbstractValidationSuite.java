@@ -111,6 +111,8 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
   }
 
   public static class InvalidNumberOfApiEntries extends RuntimeException {
+    private static final long serialVersionUID = 2731645904303791562L;
+
     private final int matchedApiEntries;
 
     public InvalidNumberOfApiEntries(int matchedApiEntries) {
