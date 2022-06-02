@@ -1,15 +1,10 @@
 Release notes
 =============
 
-Note, that this changelog describes only the changes relevant from the
-perspective of the Registry API client implementers, and users which view the
-public Registry Service site. Most changes made to the Registry Service touch
-the *unofficial* services - such as the document validator, or Echo API
-validator - but these changes are currently not mentioned in this changelog, to
-avoid clutter.
-
 1.9.0
 -----
+
+*Released on 2022-06-01*
 
 * AbstractValidationSuite: added serialVersionUID to InvalidNumberOfApiEntries.
 * Updated Jgit dependency (4.4.0 -> 4.11.9).
