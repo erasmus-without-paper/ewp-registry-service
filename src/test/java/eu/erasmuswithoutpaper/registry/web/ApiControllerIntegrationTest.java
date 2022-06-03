@@ -269,13 +269,13 @@ public class ApiControllerIntegrationTest extends WRIntegrationTest {
         .isEqualTo(this.getFileAsString("demo1/J-out.xml"));
 
     /*
-     * [Test K] Replace with manifest file with multiple hosts. Expect this to work properly.
+     * [Test K] Replace with manifest file with multiple hosts. Expect this raise warning.
      */
 
     this.internet.putURL(urlPL2, this.getFile("demo1/K-inPL2.xml"));
     this.forceReload(urlPL2);
-    assertThat(this.status(urlPL2))
-        .containsPattern("Last access status:[ \n]+<code class='ewpst__bordered-code'>OK</code>");
+    assertThat(this.status(urlPL2)).containsPattern(
+        "Last access status:[ \n]+<code class='ewpst__bordered-code'>Warning</code>");
     assertThat(this.getCatalogueBodyWithoutBinaries())
         .isEqualTo(this.getFileAsString("demo1/K-out.xml"));
   }
