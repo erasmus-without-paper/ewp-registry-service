@@ -13,6 +13,7 @@ import eu.erasmuswithoutpaper.registry.constraints.ServerKeySecurityConstraint;
 import eu.erasmuswithoutpaper.registry.constraints.TlsClientCertificateSecurityConstraint;
 import eu.erasmuswithoutpaper.registry.constraints.VerifyApiVersions;
 import eu.erasmuswithoutpaper.registry.constraints.VerifyDiscoveryApiEntry;
+import eu.erasmuswithoutpaper.registry.constraints.VerifySingleHei;
 import eu.erasmuswithoutpaper.registry.constraints.VerifySingleHost;
 
 import com.google.common.collect.Lists;
@@ -45,6 +46,7 @@ public class ManifestSource {
     all.add(new VerifyApiVersions());
     all.add(new RemoveEmbeddedCatalogues());
     all.add(new VerifySingleHost());
+    all.add(new VerifySingleHei());
     all.addAll(extraConstraints);
     return new ManifestSource(url, all);
   }
