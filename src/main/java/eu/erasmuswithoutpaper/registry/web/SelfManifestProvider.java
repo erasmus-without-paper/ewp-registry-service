@@ -239,7 +239,7 @@ public class SelfManifestProvider {
     // Prepend <ewp:admin-email> elements.
 
     List<Match> hosts =
-        $(doc.getDocumentElement()).namespaces(KnownNamespace.prefixMap()).xpath("mf5:host").each();
+        $(doc.getDocumentElement()).namespaces(KnownNamespace.prefixMap()).xpath("mf6:host").each();
     for (String email : Lists.reverse(this.adminEmails)) {
       for (Match host : hosts) {
         Element elem = doc.createElementNS(KnownNamespace.COMMON_TYPES_V1.getNamespaceUri(),
@@ -251,7 +251,7 @@ public class SelfManifestProvider {
 
     // Fix URLs.
 
-    hosts.get(0).xpath("r:apis-implemented/d5:discovery/d5:url")
+    hosts.get(0).xpath("r:apis-implemented/d6:discovery/d6:url")
         .text(Application.getRootUrl() + "/manifest.xml");
     hosts.get(0).xpath("r:apis-implemented/r1:registry/r1:catalogue-url")
         .text(Application.getRootUrl() + "/catalogue-v1.xml");
@@ -285,7 +285,7 @@ public class SelfManifestProvider {
       List<String> validatorHostCoveredHeiIds,
       List<EncodedCertificateAndKeys> validatorHostCertificatesAndKeys) {
 
-    Element heisCoveredElem = validatorHostEntry.xpath("mf5:institutions-covered").get(0);
+    Element heisCoveredElem = validatorHostEntry.xpath("mf6:institutions-covered").get(0);
     for (String heiId : validatorHostCoveredHeiIds) {
       Element heiElem =
           doc.createElementNS(KnownNamespace.RESPONSE_REGISTRY_V1.getNamespaceUri(), "hei");
@@ -318,16 +318,16 @@ public class SelfManifestProvider {
   }
 
   private void addClientCertificate(Match host, Document doc, String certEncoded) {
-    Element cliCredentialsElem = host.xpath("mf5:client-credentials-in-use").get(0);
+    Element cliCredentialsElem = host.xpath("mf6:client-credentials-in-use").get(0);
     Element certElem =
-        doc.createElementNS(KnownNamespace.RESPONSE_MANIFEST_V5.getNamespaceUri(), "certificate");
+        doc.createElementNS(KnownNamespace.RESPONSE_MANIFEST_V6.getNamespaceUri(), "certificate");
     certElem.setTextContent(certEncoded);
     cliCredentialsElem.appendChild(certElem);
   }
 
   private void addClientRsaPublicKey(Match host, Document doc, String rsaPublicKeyEncoded) {
-    Element cliCredentialsElem = host.xpath("mf5:client-credentials-in-use").get(0);
-    Element rsaKeyElem = doc.createElementNS(KnownNamespace.RESPONSE_MANIFEST_V5.getNamespaceUri(),
+    Element cliCredentialsElem = host.xpath("mf6:client-credentials-in-use").get(0);
+    Element rsaKeyElem = doc.createElementNS(KnownNamespace.RESPONSE_MANIFEST_V6.getNamespaceUri(),
         "rsa-public-key");
     rsaKeyElem.setTextContent(rsaPublicKeyEncoded);
     cliCredentialsElem.appendChild(rsaKeyElem);
@@ -335,8 +335,8 @@ public class SelfManifestProvider {
 
   private void addServerCredentials(Match host, Document doc,
       String rsaPublicKeyEncoded) {
-    Element srvCredentialsElem = host.xpath("mf5:server-credentials-in-use").get(0);
-    Element srvKeyElem = doc.createElementNS(KnownNamespace.RESPONSE_MANIFEST_V5.getNamespaceUri(),
+    Element srvCredentialsElem = host.xpath("mf6:server-credentials-in-use").get(0);
+    Element srvKeyElem = doc.createElementNS(KnownNamespace.RESPONSE_MANIFEST_V6.getNamespaceUri(),
         "rsa-public-key");
     srvKeyElem.setTextContent(rsaPublicKeyEncoded);
     srvCredentialsElem.appendChild(srvKeyElem);

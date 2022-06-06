@@ -394,6 +394,7 @@
                         <source>src/main/resources/jaxb-schemas/ewp-specs-api-course-replication-v1.0.0-rc9/response.xsd</source>
                         <source>src/main/resources/jaxb-schemas/ewp-specs-api-discovery-v4.1.1/manifest.xsd</source>
                         <source>src/main/resources/jaxb-schemas/ewp-specs-api-discovery-v5.0.0/manifest.xsd</source>
+                        <source>src/main/resources/jaxb-schemas/ewp-specs-api-discovery-v6.0.0/manifest.xsd</source>
                         <source>src/main/resources/jaxb-schemas/ewp-specs-api-mt-projects-v1.0.0/response.xsd</source>
                         <source>src/main/resources/jaxb-schemas/ewp-specs-api-mt-institutions-v1.0.0/response.xsd</source>
                         <source>src/main/resources/jaxb-schemas/ewp-specs-api-mt-dictionaries-v1.0.0/response.xsd</source>
