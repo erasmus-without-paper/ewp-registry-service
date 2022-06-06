@@ -141,7 +141,7 @@
             </xs:documentation>
         </xs:annotation>
         <xs:restriction base="xs:string">
-            <xs:pattern value="[^@]+@[^\.]+\..+"></xs:pattern>
+            <xs:pattern value="[^@]+@[^.]+\..+"/>
         </xs:restriction>
     </xs:simpleType>
 
@@ -294,7 +294,7 @@
         <xs:annotation>
             <xs:documentation>
                 EQF Level. In EWP it is typically used to represent study levels (also known as
-                study cycles), i.e. Bachelor is 6, Master is 7, and Doctorate is 8.
+                study cycles), i.e. Short is 5, Bachelor is 6, Master is 7, and Doctorate is 8.
                 Descriptions of all the levels can be found here:
                 https://en.wikipedia.org/wiki/European_Qualifications_Framework
             </xs:documentation>
@@ -310,10 +310,12 @@
             <xs:documentation>
                 CEFR level code. CEFR levels are used to represent a skill of a language.
                 https://en.wikipedia.org/wiki/Common_European_Framework_of_Reference_for_Languages
+
+                We also allow unofficial "NS" code for "native speaker" language level.
             </xs:documentation>
         </xs:annotation>
         <xs:restriction base="xs:string">
-            <xs:pattern value="[ABC][12]"/>
+            <xs:pattern value="[ABC][12]|NS"/>
         </xs:restriction>
     </xs:simpleType>
 
@@ -354,6 +356,18 @@
             <xs:documentation>
                 Address of a developer (or server administrator) who may be contacted in case of
                 problems.
+
+                This element was placed in the common-types namespace because it is being used
+                in multiple schemas throughout the EWP project (most notably, various sections
+                of the manifest file).
+            </xs:documentation>
+        </xs:annotation>
+    </xs:element>
+
+    <xs:element name="admin-provider" type="xs:string">
+        <xs:annotation>
+            <xs:documentation>
+                Name of the EWP host provider and optionally name of the system software in parentheses.
 
                 This element was placed in the common-types namespace because it is being used
                 in multiple schemas throughout the EWP project (most notably, various sections

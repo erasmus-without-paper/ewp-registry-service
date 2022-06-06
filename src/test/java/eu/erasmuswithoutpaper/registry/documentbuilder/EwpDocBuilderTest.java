@@ -64,7 +64,7 @@ public class EwpDocBuilderTest extends WRTest {
     BuildError error = result.getErrors().get(0);
     assertThat(error.getMessage())
         .isEqualTo("cvc-pattern-valid: Value 'invalid' is not facet-valid with "
-            + "respect to pattern '[^@]+@[^\\.]+\\..+' for type 'Email'.");
+            + "respect to pattern '[^@]+@[^.]+\\..+' for type 'Email'.");
     assertThat(error.getLineNumber()).isEqualTo(1);
     error = result.getErrors().get(1);
     assertThat(error.getMessage())
