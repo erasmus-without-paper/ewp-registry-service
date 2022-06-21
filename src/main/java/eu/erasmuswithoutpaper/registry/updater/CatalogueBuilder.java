@@ -87,14 +87,16 @@ class CatalogueBuilder {
 
     for (Document manifestDoc : manifestsV5) {
 
-      if (!KnownElement.RESPONSE_MANIFEST_V5.matches(manifestDoc.getDocumentElement())) {
+      if (!KnownElement.RESPONSE_MANIFEST_V5.matches(manifestDoc.getDocumentElement())
+          && !KnownElement.RESPONSE_MANIFEST_V6.matches(manifestDoc.getDocumentElement())) {
         logger.error("Ignoring unsupported manifest version while building the catalogue. "
             + "This should not happen.");
         continue;
       }
 
       // Extract all the hosts
-      Match srcHosts = $(manifestDoc).namespaces(KnownNamespace.prefixMap()).xpath("mf5:host");
+      Match srcHosts =
+          $(manifestDoc).namespaces(KnownNamespace.prefixMap()).xpath("mf5:host | mf6:host");
 
       for (Element srcHostElem : srcHosts) {
         Match srcHost = $(srcHostElem).namespaces(KnownNamespace.prefixMap());
@@ -131,7 +133,8 @@ class CatalogueBuilder {
 
         // It there are any HEIs covered in the manifest...
 
-        Match srcHeis = srcHost.xpath("mf5:institutions-covered/r:hei");
+        Match srcHeis =
+            srcHost.xpath("mf5:institutions-covered/r:hei | mf6:institutions-covered/r:hei");
         if (srcHeis.size() > 0) {
 
           // Create a <institutions-covered> element in the <host>.
@@ -200,8 +203,8 @@ class CatalogueBuilder {
 
         // If there are any client certificates...
 
-        List<String> srcCertStrs =
-            srcHost.xpath("mf5:client-credentials-in-use/mf5:certificate").texts();
+        List<String> srcCertStrs = srcHost.xpath("mf5:client-credentials-in-use/mf5:certificate | "
+            + "mf6:client-credentials-in-use/mf6:certificate").texts();
         if (srcCertStrs.size() > 0) {
 
           // For each certificate, calculate its sha-256 fingerprint, create element, and append it.
@@ -223,7 +226,8 @@ class CatalogueBuilder {
         // If there are any client public keys...
 
         List<String> srcKeyStrs =
-            srcHost.xpath("mf5:client-credentials-in-use/mf5:rsa-public-key").texts();
+            srcHost.xpath("mf5:client-credentials-in-use/mf5:rsa-public-key | "
+                + "mf6:client-credentials-in-use/mf6:rsa-public-key").texts();
         if (srcKeyStrs.size() > 0) {
 
           // For each key, calculate its sha-256 fingerprint, create element, and append it.
@@ -251,7 +255,8 @@ class CatalogueBuilder {
 
         // If there are any server public keys...
 
-        srcKeyStrs = srcHost.xpath("mf5:server-credentials-in-use/mf5:rsa-public-key").texts();
+        srcKeyStrs = srcHost.xpath("mf5:server-credentials-in-use/mf5:rsa-public-key | "
+            + "mf6:server-credentials-in-use/mf6:rsa-public-key").texts();
         if (srcKeyStrs.size() > 0) {
 
           // For each key, calculate its sha-256 fingerprint, create element, and append it.

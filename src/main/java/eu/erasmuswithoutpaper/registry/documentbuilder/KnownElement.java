@@ -19,12 +19,6 @@ import org.w3c.dom.Element;
 public class KnownElement {
 
   /**
-   * API entry for Discovery API v4.
-   */
-  public static final KnownElement APIENTRY_DISCOVERY_V4 = new KnownElement(
-      KnownNamespace.APIENTRY_DISCOVERY_V4, "discovery", "API entry: Discovery Manifest v4");
-
-  /**
    * API entry for Discovery API v5.
    */
   public static final KnownElement APIENTRY_DISCOVERY_V5 = new KnownElement(
@@ -219,12 +213,6 @@ public class KnownElement {
   public static final KnownElement APIENTRY_FACTSHEET_V1 =
       new KnownElement(KnownNamespace.APIENTRY_FACTSHEET_V1, "factsheet",
           "API entry: IIAs Factsheet API");
-
-  /**
-   * The root of the Discovery API v4 response.
-   */
-  public static final KnownElement RESPONSE_MANIFEST_V4 = new KnownElement(
-      KnownNamespace.RESPONSE_MANIFEST_V4, "manifest", "Discovery Manifest v4 file");
 
   /**
    * The root of the Discovery API v5 response.

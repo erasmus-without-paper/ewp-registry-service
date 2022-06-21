@@ -1,19 +1,21 @@
 <mf:manifest
-    xmlns:mf="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/tree/stable-v4"
+    xmlns:mf="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/tree/stable-v5"
     xmlns:r="https://github.com/erasmus-without-paper/ewp-specs-api-registry/tree/stable-v1"
 >
-    <r:apis-implemented>
-        <discovery version="4.0.0" xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/blob/stable-v4/manifest-entry.xsd">
-            <url>https://schowek.usos.edu.pl/w.rygielski/ewp/ladok.se/manifest.xml</url>
-        </discovery>
-    </r:apis-implemented>
-    <mf:institutions-covered xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-registry/tree/stable-v1">
-        <hei id="lu.se">
-            <name xml:lang="en">Lund University</name>
-        </hei>
-        <hei id="hv.se">
-            <other-id type="national-swedish-hei-number">123</other-id>
-            <name xml:lang="en">University West</name>
-        </hei>
-    </mf:institutions-covered>
+    <mf:host>
+        <r:apis-implemented>
+            <discovery version="5.0.0" xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/blob/stable-v5/manifest-entry.xsd">
+                <url>https://schowek.usos.edu.pl/w.rygielski/ewp/ladok.se/manifest.xml</url>
+            </discovery>
+        </r:apis-implemented>
+        <mf:institutions-covered xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-registry/tree/stable-v1">
+            <hei id="lu.se">
+                <name xml:lang="en">Lund University</name>
+            </hei>
+            <hei id="hv.se">
+                <other-id type="national-swedish-hei-number">123</other-id>
+                <name xml:lang="en">University West</name>
+            </hei>
+        </mf:institutions-covered>
+    </mf:host>
 </mf:manifest>

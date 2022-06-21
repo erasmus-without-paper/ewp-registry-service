@@ -1,7 +1,7 @@
 <catalogue
     xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-registry/tree/stable-v1"
     xmlns:ewp="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
-    xmlns:d4="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/blob/stable-v4/manifest-entry.xsd"
+    xmlns:d4="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/blob/stable-v6/manifest-entry.xsd"
     xmlns:r1="https://github.com/erasmus-without-paper/ewp-specs-api-registry/blob/stable-v1/manifest-entry.xsd"
     xmlns:e1="https://github.com/erasmus-without-paper/ewp-specs-api-echo/blob/stable-v1/manifest-entry.xsd"
     xmlns:xml="http://www.w3.org/XML/1998/namespace"
@@ -9,7 +9,7 @@
 >
     <host>
         <apis-implemented>
-            <d4:discovery version="4.0.0">
+            <d4:discovery version="6.0.0">
                 <d4:url>https://example.com/manifest.xml</d4:url>
             </d4:discovery>
             <e1:echo version="1.0.0">

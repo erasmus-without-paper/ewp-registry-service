@@ -72,16 +72,6 @@ public class EwpDocBuilderTest extends WRTest {
   }
 
   @Test
-  public void checkForXxeV4() {
-    BuildParams params = new BuildParams(this.getFile("manifests-v4/xxe.xml"));
-    params.setExpectedKnownElement(KnownElement.RESPONSE_MANIFEST_V4);
-    BuildResult result = this.builder.buildManifest(params);
-    assertThat(result.isValid()).isFalse();
-    assertThat(result.getErrors()).hasSize(1);
-    assertThat(result.getErrors().get(0).getMessage()).contains("DOCTYPE is disallowed");
-  }
-
-  @Test
   public void checkForXxeV5() {
     BuildParams params = new BuildParams(this.getFile("manifests-v5/xxe.xml"));
     params.setExpectedKnownElement(KnownElement.RESPONSE_MANIFEST_V5);
@@ -91,19 +81,6 @@ public class EwpDocBuilderTest extends WRTest {
     assertThat(result.getErrors().get(0).getMessage()).contains("DOCTYPE is disallowed");
   }
 
-  /**
-   * This is similar to {@link #checkIfRejectsUnknownElements()}, but from other perspective. If the
-   * element is invalid (according to its schema), but this schema is unknown to the validator, then
-   * the validator SHOULD accept the invalid content.
-   */
-  @Test
-  public void checkIfAcceptsInvalidAPIentriesV4() {
-    BuildParams params = new BuildParams(
-        this.getFile("manifests-v4/which-fails-external-api-schema-validation.xml"));
-    params.setExpectedKnownElement(KnownElement.RESPONSE_MANIFEST_V4);
-    BuildResult result = this.builder.buildManifest(params);
-    assertThat(result.isValid()).isTrue();
-  }
 
   @Test
   public void checkIfAcceptsInvalidAPIentriesV5() {
@@ -314,17 +291,6 @@ public class EwpDocBuilderTest extends WRTest {
     assertThat(result.isValid()).isTrue();
   }
 
-  /**
-   * Make sure it allows external (unknown) APIs entries.
-   */
-  @Test
-  public void testExternalAPIsV4() {
-    BuildParams params = new BuildParams(this.getFile("manifests-v4/a-bit-weird-but-valid.xml"));
-    params.setExpectedKnownElement(KnownElement.RESPONSE_MANIFEST_V4);
-    BuildResult result = this.builder.buildManifest(params);
-    assertThat(result.isValid()).isTrue();
-  }
-
   @Test
   public void testExternalAPIsV5() {
     BuildParams params = new BuildParams(this.getFile("manifests-v5/a-bit-weird-but-valid.xml"));
@@ -338,14 +304,6 @@ public class EwpDocBuilderTest extends WRTest {
     BuildParams params = new BuildParams(
         this.getFile("latest-examples/ewp-specs-api-discovery-manifest-example.xml"));
     params.setExpectedKnownElement(KnownElement.RESPONSE_MANIFEST_V5);
-    BuildResult result = this.builder.buildManifest(params);
-    assertThat(result.isValid()).isTrue();
-  }
-
-  @Test
-  public void testManifestMinimalV4() {
-    BuildParams params = new BuildParams(this.getFile("manifests-v4/tiny-but-valid.xml"));
-    params.setExpectedKnownElement(KnownElement.RESPONSE_MANIFEST_V4);
     BuildResult result = this.builder.buildManifest(params);
     assertThat(result.isValid()).isTrue();
   }
@@ -370,7 +328,7 @@ public class EwpDocBuilderTest extends WRTest {
     BuildError error = result.getErrors().get(0);
     assertThat(error.getMessage())
         .isEqualTo("cvc-complex-type.4: Attribute 'id' must appear on element 'rrrr:hei'.");
-    assertThat(error.getLineNumber()).isEqualTo(18);
+    assertThat(error.getLineNumber()).isEqualTo(19);
     assertThat(result.getDocument().get()).isInstanceOf(Document.class);
     assertThat(result.getPrettyLines()).isNotPresent();
   }
@@ -390,23 +348,13 @@ public class EwpDocBuilderTest extends WRTest {
     BuildError error = result.getErrors().get(0);
     assertThat(error.getMessage())
         .isEqualTo("cvc-complex-type.4: Attribute 'id' must appear on element 'rrrr:hei'.");
-    assertThat(error.getLineNumber()).isEqualTo(12);
+    assertThat(error.getLineNumber()).isEqualTo(14);
     assertThat(result.getDocument().get()).isInstanceOf(Document.class);
     assertThat(result.getPrettyXml()).isPresent();
     assertThat(result.getPrettyXml().get())
         .isEqualTo(this.getFileAsString("docbuilder/invalid-manifest-pretty.xml"));
     assertThat(result.getPrettyLines()).isPresent();
-    assertThat(result.getPrettyLines().get().get(12 - 1)).contains("<rrrr:hei>");
-  }
-
-  @Test
-  public void testInvalidApiEntryIsIgnoredV4() {
-    BuildParams params = new BuildParams(
-        this.getFile("docbuilder/invalid-api-entry-manifest-v4.xml"));
-    params.setExpectedKnownElement(KnownElement.RESPONSE_MANIFEST_V4);
-    BuildResult result = this.builder.buildManifest(params);
-    assertThat(result.isValid()).isTrue();
-    assertThat(result.getErrors()).isNotEmpty();
+    assertThat(result.getPrettyLines().get().get(14 - 1)).contains("<rrrr:hei>");
   }
 
   @Test

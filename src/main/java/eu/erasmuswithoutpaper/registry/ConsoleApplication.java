@@ -9,7 +9,7 @@ import eu.erasmuswithoutpaper.registry.consoleapplication.ConsoleValidator;
 import eu.erasmuswithoutpaper.registry.consoleapplication.RegistryDomainProvider;
 import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
 import eu.erasmuswithoutpaper.registry.internet.RealInternet;
-import eu.erasmuswithoutpaper.registry.updater.ManifestConverter;
+import eu.erasmuswithoutpaper.registry.updater.ManifestParser;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidatorsManager;
 import eu.erasmuswithoutpaper.registry.validators.ValidatorKeyStoreSet;
@@ -35,7 +35,7 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
     ProductionConfiguration.class,
     EwpDocBuilder.class,
     XmlFormatter.class,
-    ManifestConverter.class,
+    ManifestParser.class,
     RealInternet.class,
     RegistryDomainProvider.class})
 @ConditionalOnNotWebApplication
@@ -47,7 +47,7 @@ public class ConsoleApplication implements ApplicationRunner {
   @Autowired
   private EwpDocBuilder docBuilder;
   @Autowired
-  private ManifestConverter converter;
+  private ManifestParser parser;
   @Autowired
   private XmlFormatter xmlFormatter;
   @Autowired
@@ -91,7 +91,7 @@ public class ConsoleApplication implements ApplicationRunner {
     ConsoleValidator consoleValidator = new ConsoleValidator();
 
     consoleValidator.performValidation(args, this.apiValidatorsManager, this.docBuilder,
-        this.validatorKeyStoreSet, this.converter, this.xmlFormatter, this.registryClient,
+        this.validatorKeyStoreSet, this.parser, this.xmlFormatter, this.registryClient,
         this.registryDomainProvider.getRegistryDomain());
   }
 

@@ -31,7 +31,7 @@ import eu.erasmuswithoutpaper.registry.repository.ManifestNotFound;
 import eu.erasmuswithoutpaper.registry.repository.ManifestRepository;
 import eu.erasmuswithoutpaper.registry.sourceprovider.ManifestSource;
 import eu.erasmuswithoutpaper.registry.sourceprovider.ManifestSourceProvider;
-import eu.erasmuswithoutpaper.registry.updater.ManifestConverter.NotValidManifest;
+import eu.erasmuswithoutpaper.registry.updater.ManifestParser.NotValidManifest;
 import eu.erasmuswithoutpaper.registry.xmlformatter.XmlFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -65,7 +65,7 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
   private final XmlFormatter xmlFormatter;
   private final Map<ManifestSource, ManifestUpdateStatusNotifierFlag> notifierFlags;
   private final NotifierService notifier;
-  private final ManifestConverter converter;
+  private final ManifestParser parser;
   private final ManifestOverviewManager manifestOverviewManager;
 
   /**
@@ -84,8 +84,8 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
    *     to format the filtered versions of the manifests.
    * @param notifier
    *     to register our custom {@link NotifierFlag}s.
-   * @param converter
-   *     to be able to convert older manifests into the latest versions.
+   * @param parser
+   *     to be able to parse manifests in supported versions.
    * @param manifestOverviewManager
    *     stores {@link eu.erasmuswithoutpaper.registry.manifestoverview.ManifestOverviewInfo} for
    *     each of covered manifests.
@@ -94,7 +94,7 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
   public RegistryUpdaterImpl(ManifestSourceProvider manifestSourceProvider,
       ManifestUpdateStatusRepository manifestUpdateStatusRepository, Internet internet,
       ManifestRepository repo, EwpDocBuilder docBuilder, XmlFormatter xmlFormatter,
-      NotifierService notifier, ManifestConverter converter,
+      NotifierService notifier, ManifestParser parser,
       ManifestOverviewManager manifestOverviewManager) {
     this.manifestSourceProvider = manifestSourceProvider;
     this.manifestUpdateStatusRepository = manifestUpdateStatusRepository;
@@ -105,7 +105,7 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
     this.notifier = notifier;
     this.manifestOverviewManager = manifestOverviewManager;
     this.notifierFlags = new HashMap<>();
-    this.converter = converter;
+    this.parser = parser;
     this.onSourcesUpdated();
   }
 
@@ -148,10 +148,10 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
               .namespaces(KnownNamespace.prefixMap());
       for (Match host : catalogue.xpath("r:host").each()) {
         List<String> adminEmails =
-            host.xpath("ewp:admin-email | " + "r:apis-implemented/d4:discovery/ewp:admin-email | "
-                + "r:apis-implemented/d5:discovery/ewp:admin-email").texts();
+            host.xpath("ewp:admin-email | " + "r:apis-implemented/d5:discovery/ewp:admin-email | "
+                + "r:apis-implemented/d6:discovery/ewp:admin-email").texts();
         for (String url : host.xpath(
-            "r:apis-implemented/d4:discovery/d4:url | " + "r:apis-implemented/d5:discovery/d5:url")
+            "r:apis-implemented/d5:discovery/d5:url | " + "r:apis-implemented/d6:discovery/d6:url")
             .texts()) {
           recipients.put(url, adminEmails);
           this.onManifestAdminEmailsChanged(url, adminEmails);
@@ -256,7 +256,7 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
         Document doc;
         List<BuildError> nonLethalErrors = new ArrayList<>();
         try {
-          doc = this.converter.buildToV5(originalContents, nonLethalErrors);
+          doc = this.parser.parseManifest(originalContents, nonLethalErrors);
         } catch (NotValidManifest e) {
           // The manifest failed basic validation. We cannot continue.
 
@@ -325,7 +325,8 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
           // Update the list of our notifierFlag's recipients.
 
           Match manifest = $(doc).namespaces(KnownNamespace.prefixMap());
-          List<String> emails = manifest.xpath("mf5:host/ewp:admin-email").texts();
+          List<String> emails =
+              manifest.xpath("mf5:host/ewp:admin-email | mf6:host/ewp:admin-email").texts();
           notifierFlag.setRecipientEmails(emails);
           this.onManifestAdminEmailsChanged(source.getUrl(), emails);
 
@@ -399,7 +400,7 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
          */
 
         try {
-          manifests.add(this.converter.buildToV5(xml, null));
+          manifests.add(this.parser.parseManifest(xml, null));
         } catch (NotValidManifest e) {
           logger.error("Ignoring {}, because couldn't load it (should not happen)", src);
           for (String err : e.getErrorList()) {

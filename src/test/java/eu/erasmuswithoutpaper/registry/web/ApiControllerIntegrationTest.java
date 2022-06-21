@@ -186,7 +186,7 @@ public class ApiControllerIntegrationTest extends WRIntegrationTest {
         .containsPattern("Last access status:[ \n]+<code class='ewpst__bordered-code'>OK</code>");
     assertThat(this.status(urlPL)).doesNotContain("unable to fetch");
 
-    /* [Test C] Define one HEI. Use manifest v4. */
+    /* [Test C] Define one HEI. Use manifest v5. */
 
     this.internet.putURL(urlPL, this.getFile("demo1/C-inPL.xml"));
     this.forceReload(urlPL);

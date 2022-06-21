@@ -31,14 +31,6 @@ public class KnownNamespace {
 
   /**
    * As described <a href=
-   * 'https://github.com/erasmus-without-paper/ewp-specs-api-discovery/blob/stable-v4/manifest.xsd'>
-   * here</a>.
-   */
-  public static final KnownNamespace RESPONSE_MANIFEST_V4 = new KnownNamespace("mf4",
-      "api-discovery/tree/stable-v4", "api-discovery/stable-v4/manifest.xsd", false);
-
-  /**
-   * As described <a href=
    * 'https://github.com/erasmus-without-paper/ewp-specs-api-discovery/blob/stable-v5/manifest.xsd'>
    * here</a>.
    */
@@ -305,15 +297,6 @@ public class KnownNamespace {
       "api-omobility-las/blob/master/update-response.xsd", false);
   // TODO: 1. false->true 2. master->stable
 
-
-  /**
-   * As described <a href=
-   * 'https://github.com/erasmus-without-paper/ewp-specs-api-discovery/blob/stable-v4/manifest-entry.xsd'>
-   * here</a>.
-   */
-  public static final KnownNamespace APIENTRY_DISCOVERY_V4 =
-      new KnownNamespace("d4", "api-discovery/blob/stable-v4/manifest-entry.xsd",
-          "api-discovery/stable-v4/manifest-entry.xsd", true);
 
   /**
    * As described <a href=

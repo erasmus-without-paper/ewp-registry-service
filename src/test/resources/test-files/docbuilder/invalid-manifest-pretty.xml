@@ -1,16 +1,19 @@
 <manifest
-    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/tree/stable-v4"
-    xmlns:api-d="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/blob/stable-v4/manifest-entry.xsd"
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/tree/stable-v6"
+    xmlns:api-d="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/blob/stable-v6/manifest-entry.xsd"
     xmlns:api-r="https://github.com/erasmus-without-paper/ewp-specs-api-registry/blob/stable-v1/manifest-entry.xsd"
     xmlns:rrrr="https://github.com/erasmus-without-paper/ewp-specs-api-registry/tree/stable-v1"
     xmlns:unused="urn:unused"
     xmlns:x="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
 >
-    <x:admin-email>admin1@example.com</x:admin-email>
-    <x:admin-email>admin2@example.com</x:admin-email>
-    <institutions-covered>
-        <rrrr:hei>
-            <rrrr:name>asdasd</rrrr:name>
-        </rrrr:hei>
-    </institutions-covered>
+    <host>
+        <x:admin-email>admin1@example.com</x:admin-email>
+        <x:admin-email>admin2@example.com</x:admin-email>
+        <x:admin-provider>Provider</x:admin-provider>
+        <institutions-covered>
+            <rrrr:hei>
+                <rrrr:name>asdasd</rrrr:name>
+            </rrrr:hei>
+        </institutions-covered>
+    </host>
 </manifest>

@@ -195,8 +195,8 @@ class CoverageMatrixRow {
     int colorClass = getNextColorClass(NAME_COLOR_CLASS);
 
     // discov.
-    cell = new ApiVersionsCell(colorClass, client, hei, KnownElement.APIENTRY_DISCOVERY_V4,
-            KnownElement.APIENTRY_DISCOVERY_V5, KnownElement.APIENTRY_DISCOVERY_V6);
+    cell = new ApiVersionsCell(colorClass, client, hei, KnownElement.APIENTRY_DISCOVERY_V5,
+            KnownElement.APIENTRY_DISCOVERY_V6);
     this.cells.add(cell);
 
     // echo

@@ -17,7 +17,7 @@ import java.util.TimeZone;
 import eu.erasmuswithoutpaper.registry.common.KeyPairAndCertificate;
 import eu.erasmuswithoutpaper.registry.common.KeyStoreUtilsException;
 import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
-import eu.erasmuswithoutpaper.registry.updater.ManifestConverter;
+import eu.erasmuswithoutpaper.registry.updater.ManifestParser;
 import eu.erasmuswithoutpaper.registry.validators.AbstractValidationSuite;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidatorsManager;
 import eu.erasmuswithoutpaper.registry.validators.ExternalValidatorKeyStore;
@@ -47,7 +47,7 @@ public class ConsoleValidator {
   private ApiValidatorsManager apiValidatorsManager;
   private ExternalValidatorKeyStore externalValidatorKeyStore;
   private EwpDocBuilder docBuilder;
-  private ManifestConverter converter;
+  private ManifestParser parser;
   private XmlFormatter xmlFormatter;
   private ValidatorKeyStoreSet keyStoreSet;
   private RegistryClient registryClient;
@@ -172,8 +172,8 @@ public class ConsoleValidator {
 
     Document doc;
     try {
-      doc = this.converter.buildToV5(manifest.getBytes(StandardCharsets.UTF_8), null);
-    } catch (ManifestConverter.NotValidManifest e) {
+      doc = this.parser.parseManifest(manifest.getBytes(StandardCharsets.UTF_8), null);
+    } catch (ManifestParser.NotValidManifest e) {
       textTerminal.println("This manifest file is not valid, terminating.");
       return;
     }
@@ -286,8 +286,8 @@ public class ConsoleValidator {
    *      ApiValidatorsManager that has information about all implemented validators.
    * @param docBuilder
    *      needed to validate responses.
-   * @param converter
-   *      needed to convert V4 manifests to V5.
+   * @param parser
+   *      needed parse manifests.
    * @param xmlFormatter
    *      used to format manifest which contents should be validated.
    * @param keyStoreSet
@@ -302,7 +302,7 @@ public class ConsoleValidator {
       ApiValidatorsManager apiValidatorsManager,
       EwpDocBuilder docBuilder,
       ValidatorKeyStoreSet keyStoreSet,
-      ManifestConverter converter,
+      ManifestParser parser,
       XmlFormatter xmlFormatter,
       RegistryClient registryClient,
       String registryDomain) {
@@ -311,7 +311,7 @@ public class ConsoleValidator {
     this.apiValidatorsManager = apiValidatorsManager;
     this.docBuilder = docBuilder;
     this.registryClient = registryClient;
-    this.converter = converter;
+    this.parser = parser;
     this.xmlFormatter = xmlFormatter;
 
     this.externalValidatorKeyStore = new ExternalValidatorKeyStore(this.registryClient);

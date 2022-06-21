@@ -6,8 +6,8 @@
     <host>
         <r:apis-implemented>
             <discovery
-                xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/blob/stable-v4/manifest-entry.xsd"
-                version="4.1.0"
+                xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/blob/stable-v5/manifest-entry.xsd"
+                version="5.1.0"
             >
                 <url>https://university.example.com/manifest.xml</url>
             </discovery>
