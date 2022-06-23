@@ -50,6 +50,7 @@
                     <xs:complexType>
                         <xs:sequence>
                             <xs:element ref="ewp:admin-email" minOccurs="0" maxOccurs="unbounded"/>
+                            <xs:element ref="ewp:admin-provider" minOccurs="0" maxOccurs="1"/>
                             <xs:element ref="ewp:admin-notes" minOccurs="0" maxOccurs="1"/>
                             <xs:element ref="apis-implemented" minOccurs="0" maxOccurs="1"/>
                             <xs:element name="institutions-covered" minOccurs="0" maxOccurs="1">

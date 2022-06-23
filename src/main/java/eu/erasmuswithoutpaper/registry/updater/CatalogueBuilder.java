@@ -111,6 +111,11 @@ class CatalogueBuilder {
         for (String email : srcHost.xpath("ewp:admin-email").texts()) {
           destHostElem.appendChild(this.newEwpElem("admin-email", email));
         }
+        if (srcHost.xpath("ewp:admin-provider").isNotEmpty()
+            && (srcHost.xpath("ewp:admin-provider").text().length() > 0)) {
+          destHostElem.appendChild(
+              this.newEwpElem("admin-provider", srcHost.xpath("ewp:admin-provider").text()));
+        }
         if (srcHost.xpath("ewp:admin-notes").isNotEmpty()
             && (srcHost.xpath("ewp:admin-notes").text().length() > 0)) {
           destHostElem

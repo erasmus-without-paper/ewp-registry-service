@@ -250,10 +250,10 @@
     uri="ewp-specs-api-ounits-v2.1.1/manifest-entry.xsd" />
 <uri
     name="https://github.com/erasmus-without-paper/ewp-specs-api-registry/tree/stable-v1"
-    uri="ewp-specs-api-registry-v1.4.1/catalogue.xsd" />
+    uri="ewp-specs-api-registry-v1.5.0/catalogue.xsd" />
 <uri
     name="https://github.com/erasmus-without-paper/ewp-specs-api-registry/blob/stable-v1/manifest-entry.xsd"
-    uri="ewp-specs-api-registry-v1.4.1/manifest-entry.xsd" />
+    uri="ewp-specs-api-registry-v1.5.0/manifest-entry.xsd" />
 <uri
     name="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
     uri="ewp-specs-architecture-v1.12.0/common-types.xsd" />
