@@ -1,6 +1,17 @@
 Release notes
 =============
 
+1.10.0
+-----
+
+*Released on 2022-06-23*
+
+* Updated catalogue to version 1.5.0.
+* Dropped support for Discovery 4.
+* Added support for Discovery 6.0.0.
+* Updated frontend-maven-plugin (1.6 -> 1.12.1).
+* Updated Spring Boot Starter parent (1.5.6 -> 1.5.22).
+
 1.9.0
 -----
 
