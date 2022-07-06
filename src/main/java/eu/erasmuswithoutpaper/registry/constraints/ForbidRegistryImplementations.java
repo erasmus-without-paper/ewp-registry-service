@@ -20,7 +20,8 @@ public class ForbidRegistryImplementations implements ManifestConstraint {
   public List<FailedConstraintNotice> filter(Document doc) {
     List<FailedConstraintNotice> notices = new ArrayList<>(1);
     Match root = $(doc).namespaces(KnownNamespace.prefixMap());
-    Match registryApiEntries = root.xpath("mf5:host/r:apis-implemented/r1:registry");
+    Match registryApiEntries = root.xpath(
+        "mf5:host/r:apis-implemented/r1:registry | mf6:host/r:apis-implemented/r1:registry");
     if (registryApiEntries.isNotEmpty()) {
       registryApiEntries.remove();
       StringBuilder sb = new StringBuilder();
