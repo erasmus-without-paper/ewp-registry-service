@@ -82,11 +82,12 @@ class CoverageMatrixRow {
 
     colorClass = getNextColorClass(colorClass);
 
-    row1.append(genRow("General Purpose APIs", colorClass, 1, 4));
+    row1.append(genRow("General Purpose APIs", colorClass, 1, 5));
     row2.append(genRow("inst.", colorClass));
     row2.append(genRow("ounits", colorClass));
     row2.append(genRow("courses", colorClass));
     row2.append(genRow("course replic.", colorClass));
+    row2.append(genRow("file", colorClass));
 
     /* IIAs */
     colorClass = getNextColorClass(colorClass);
@@ -227,6 +228,10 @@ class CoverageMatrixRow {
         KnownElement.APIENTRY_COURSE_REPLICATION_V1);
     this.cells.add(cell);
 
+    // file
+    cell = new ApiVersionsCell(colorClass, client, hei, KnownElement.APIENTRY_FILE_V1);
+    this.cells.add(cell);
+
     /* IIAs */
 
     colorClass = getNextColorClass(colorClass);
@@ -264,7 +269,8 @@ class CoverageMatrixRow {
     colorClass = getNextColorClass(colorClass);
 
     // ver.
-    cell = new ApiVersionsCell(colorClass, client, hei, KnownElement.APIENTRY_OMOBILITIES_V1);
+    cell = new ApiVersionsCell(colorClass, client, hei, KnownElement.APIENTRY_OMOBILITIES_V1,
+        KnownElement.APIENTRY_OMOBILITIES_V2);
     this.cells.add(cell);
 
     // CNR recv.
@@ -300,7 +306,8 @@ class CoverageMatrixRow {
     colorClass = getNextColorClass(colorClass);
 
     // ver.
-    cell = new ApiVersionsCell(colorClass, client, hei, KnownElement.APIENTRY_IMOBILITY_TORS_V1);
+    cell = new ApiVersionsCell(colorClass, client, hei, KnownElement.APIENTRY_IMOBILITY_TORS_V1,
+        KnownElement.APIENTRY_IMOBILITY_TORS_V2);
     this.cells.add(cell);
 
     // CNR recv.

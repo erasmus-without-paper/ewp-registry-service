@@ -159,6 +159,13 @@ public class KnownElement {
           "API entry: Outgoing Mobilities API v1");
 
   /**
+   * API entry for Outgoing Mobilities API v2.
+   */
+  public static final KnownElement APIENTRY_OMOBILITIES_V2 =
+      new KnownElement(KnownNamespace.APIENTRY_OMOBILITIES_V2, "omobilities",
+          "API entry: Outgoing Mobilities API v2");
+
+  /**
    * API entry for Outgoing Mobility LAs API v1.
    */
   public static final KnownElement APIENTRY_OMOBILITY_LAS_V1 =
@@ -201,6 +208,13 @@ public class KnownElement {
           "API entry: Incoming Mobility ToRs API v1");
 
   /**
+   * API entry for Incoming Mobility ToRs API v2.
+   */
+  public static final KnownElement APIENTRY_IMOBILITY_TORS_V2 =
+      new KnownElement(KnownNamespace.APIENTRY_IMOBILITY_TORS_V2, "imobility-tors",
+          "API entry: Incoming Mobility ToRs API v2");
+
+  /**
    * API entry for Incoming Mobility ToR CNR API v1.
    */
   public static final KnownElement APIENTRY_IMOBILITY_TOR_CNR_V1 =
@@ -213,6 +227,13 @@ public class KnownElement {
   public static final KnownElement APIENTRY_FACTSHEET_V1 =
       new KnownElement(KnownNamespace.APIENTRY_FACTSHEET_V1, "factsheet",
           "API entry: IIAs Factsheet API");
+
+  /**
+   * API entry for File API v1.
+   */
+  public static final KnownElement APIENTRY_FILE_V1 =
+      new KnownElement(KnownNamespace.APIENTRY_FILE_V1, "file",
+          "API entry: File API");
 
   /**
    * The root of the Discovery API v5 response.

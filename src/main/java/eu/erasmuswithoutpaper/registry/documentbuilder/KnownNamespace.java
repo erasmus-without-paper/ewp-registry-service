@@ -496,6 +496,15 @@ public class KnownNamespace {
 
   /**
    * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/blob/stable-v2/manifest-entry.xsd'>
+   * here</a>.
+   */
+  public static final KnownNamespace APIENTRY_OMOBILITIES_V2 =
+      new KnownNamespace("om2", "api-omobilities/blob/stable-v2/manifest-entry.xsd",
+          "api-omobilities/stable-v2/manifest-entry.xsd", false);
+
+  /**
+   * As described <a href=
    * 'https://github.com/erasmus-without-paper/ewp-specs-api-omobility-las/blob/master/manifest-entry.xsd'>
    * here</a>.
    */ // TODO: master->stable!
@@ -552,7 +561,16 @@ public class KnownNamespace {
   public static final KnownNamespace APIENTRY_IMOBILITY_TORS_V1 =
       new KnownNamespace("imt1", "api-imobility-tors/blob/stable-v1/manifest-entry.xsd",
           "api-imobility-tors/master/manifest-entry.xsd", false);
-  // TODO: 1. false->true 2. master->stable
+  // TODO: 1. false->true
+
+  /**
+   * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-imobility-tors/blob/stable-v2/manifest-entry.xsd'>
+   * here</a>.
+   */
+  public static final KnownNamespace APIENTRY_IMOBILITY_TORS_V2 =
+      new KnownNamespace("imt2", "api-imobility-tors/blob/stable-v2/manifest-entry.xsd",
+          "api-imobility-tors/master/manifest-entry.xsd", false);
 
   /**
    * As described <a href=
@@ -601,7 +619,16 @@ public class KnownNamespace {
   public static final KnownNamespace APIENTRY_FACTSHEET_V1 =
       new KnownNamespace("f1", "api-factsheet/blob/stable-v1/manifest-entry.xsd",
           "api-factsheet/master/manifest-entry.xsd", false);
-  // TODO: 1. false->true 2. master->stable
+  // TODO: 1. false->true
+
+  /**
+   * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-factsheet/blob/stable-v1/manifest-entry.xsd'>
+   * here</a>.
+   */
+  public static final KnownNamespace APIENTRY_FILE_V1 =
+      new KnownNamespace("file1", "api-file/blob/stable-v1/manifest-entry.xsd",
+          "api-file/master/manifest-entry.xsd", false);
 
   /**
    * As described <a href=
