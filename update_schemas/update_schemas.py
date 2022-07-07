@@ -69,7 +69,7 @@ def get_repositories_list():
             print("Omitting", repo_name)
             continue
 
-        repo_url = repo['git_url']
+        repo_url = repo['ssh_url']
         result.append((repo_name, repo_url))
     return list(sorted(result))
 
@@ -350,7 +350,7 @@ def remove_dir(name):
 
 repos = get_repositories_list()
 repos.append(
-    ('elmo-schemas', 'git://github.com/emrex-eu/elmo-schemas.git')
+    ('elmo-schemas', 'git@github.com:emrex-eu/elmo-schemas.git')
 )
 
 # Clone all repos
