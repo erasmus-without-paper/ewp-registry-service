@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:emrex="https://github.com/emrex-eu/elmo-schemas/tree/v1"
+    xmlns:ewp="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
+    elementFormDefault="qualified"
+
+    targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-api-imobility-tors/blob/stable-v2/endpoints/get-response.xsd"
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-imobility-tors/blob/stable-v2/endpoints/get-response.xsd"
+>
+    <xs:import
+        schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-architecture/stable-v1/common-types.xsd"
+        namespace="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
+    />
+
+    <xs:import
+        schemaLocation="https://raw.githubusercontent.com/emrex-eu/elmo-schemas/v1/schema.xsd"
+        namespace="https://github.com/emrex-eu/elmo-schemas/tree/v1"
+    />
+
+    <xs:annotation>
+        <xs:documentation>
+            This schema is a part of the Erasmus Without Paper project. Before you start
+            using it, make sure you have read the general rules described here:
+
+            http://developers.erasmuswithoutpaper.eu/
+        </xs:documentation>
+    </xs:annotation>
+
+    <xs:element name="imobility-tors-get-response">
+        <xs:annotation>
+            <xs:documentation>
+                This describes the format of the response returned by the EWP Incoming
+                Mobility Transcripts of Records API.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="tor" minOccurs="0" maxOccurs="unbounded">
+                    <xs:annotation>
+                        <xs:documentation>
+                            Response consists of a list of matching ToR wrappers. Clients should use the
+                            `omobility_id` attribute to match objects with their `omobility_id` request
+                            parameters.
+                        </xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="omobility-id" type="ewp:AsciiPrintableIdentifier" minOccurs="1" maxOccurs="1">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        The value of the `omobility_id` parameter for which this Transcript of Records
+                                        has been matched.
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                            <xs:element ref="emrex:elmo" minOccurs="1" maxOccurs="1">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        The Transcript of Records for this mobility, in the EMREX ELMO format.
+
+                                        ## Why we reuse EMREX ELMO format?
+
+                                        It's worth taking note of some slight disadvantages of this approach - in
+                                        particular, there's the fact that some features required by EMREX ELMO are
+                                        quite unnecessary in EWP's use case.
+
+                                        For example, we do not need `learner` and `issuer` elements, because we can
+                                        determine their content by other means.
+
+                                        Despite these, we have chosen to require EMREX ELMO XML format here, "as it
+                                        is", without any changes. Why?
+
+                                         1. Because some partners have already implemented EMREX, and it will simply be
+                                            easier for them to reuse its output.
+                                         2. Because we want to encourage EWP partners to implement EMREX too.
+                                         3. Because we don't want to introduce a competing ToR format unless we have
+                                            to. It seems better to promote existing formats.
+                                         4. Because *some* clients might still make some use of the features which we
+                                            might otherwise deem unnecessary (e.g. PDF attachments).
+
+                                        ## Cross-referencing IDs
+
+                                        EMREX ELMO allows implementers to attach an unlimited number of identifiers
+                                        to many of its elements. In order to facilitate cross-referencing, we need to
+                                        assign some explicit values for the `type` attribute used in the `identifier`
+                                        elements:
+
+                                        * In the `issuer` element, you SHOULD use the "schac" identifier type to refer
+                                          to EWP's HEI IDs. E.g. &lt;identifier type="schac"&gt;uw.edu.pl&lt;/identifier&gt;
+                                          https://github.com/erasmus-without-paper/ewp-specs-api-registry/#schac-identifiers
+
+                                        * In the `learner` element, you MUST use the "esi" identifier type to refer
+                                          to the learner. E.g. &lt;identifier type="esi"&gt;urn:schac:personalUniqueCode:int:esi:uio.no:1234567890&lt;/identifier&gt;
+                                          More about European Student Identifier: https://wiki.geant.org/display/SM/European+Student+Identifier
+                                        
+                                        * In the `learningOpportunitySpecification` elements, you SHOULD use the
+                                          "ewp-los-id" identifier type to refer to LOS IDs introduced in EWP's Courses
+                                          API: https://github.com/erasmus-without-paper/ewp-specs-api-courses#unique-identifiers
+
+                                        * In the `learningOpportunityInstance` elements, you SHOULD use the
+                                          "ewp-loi-id" identifier type to refer to LOI IDs introduced in EWP's Courses
+                                          API: https://github.com/erasmus-without-paper/ewp-specs-api-courses#unique-identifiers
+
+                                          (At the time of writing this, EMREX ELMO schema v1.1.0 does not allow specifying
+                                          identifiers for LOI elements, but we have requested this change and expect it to be
+                                          introduced in future versions: https://github.com/emrex-eu/elmo-schemas/issues/10)
+
+                                        * The PDF version of the transcript, if present, SHOULD be located inside the `report` element
+                                          and have type 'Transcript of Records'.
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                            <xs:element name="gradeConversionTable" minOccurs="0">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        This element may be used to convert grades from the Transcript of Records for
+                                        this mobility.
+
+                                        The grade conversion table should be created as described in the
+                                        Egracons project (except for ignoring failing grades - see note below):
+
+                                        http://egracons.eu/sites/default/files/Grading_Table_General_Intro_0.pdf
+
+                                        Note: We strongly RECOMMEND adding failing grades, so they can be used in
+                                        other scenarios than those mentioned in Egracons project.
+
+                                        ISCED codes that are present in the Transcript of Records SHOULD be
+                                        specified in the grade conversion table. It is RECOMMENDED not to specify
+                                        other ISCED codes.
+
+                                        Note that conversion will only be possible if ISCED codes are specified in ELMO.
+                                    </xs:documentation>
+                                </xs:annotation>
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="iscedTable" maxOccurs="unbounded">
+                                            <xs:annotation>
+                                                <xs:documentation>
+                                                    This describes a single grade conversion table for a specific ISCED code,
+                                                    as described in the Egracons project.
+                                                </xs:documentation>
+                                            </xs:annotation>
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="gradeFrequency" maxOccurs="unbounded">
+                                                        <xs:annotation>
+                                                            <xs:documentation>
+                                                                This describes a single grade in the grade conversion table.
+                                                            </xs:documentation>
+                                                        </xs:annotation>
+                                                        <xs:complexType>
+                                                            <xs:attribute name="label" type="xs:token" use="required">
+                                                                <xs:annotation>
+                                                                    <xs:documentation>
+                                                                        The label of the grade. Should correspond to the
+                                                                        result label used in ELMO. E.g. "C", or "20-30".
+                                                                    </xs:documentation>
+                                                                </xs:annotation>
+                                                            </xs:attribute>
+                                                            <xs:attribute name="percentage" type="xs:decimal" use="required">
+                                                                <xs:annotation>
+                                                                    <xs:documentation>
+                                                                        The percentage of students with that grade,
+                                                                        as described in the Egracons.
+                                                                    </xs:documentation>
+                                                                </xs:annotation>
+                                                            </xs:attribute>
+                                                        </xs:complexType>
+                                                    </xs:element>
+                                                </xs:sequence>
+                                                <xs:attribute name="iscedCode" type="xs:token" use="required">
+                                                    <xs:annotation>
+                                                        <xs:documentation>
+                                                            The ISCED-F code as used in ELMO.
+                                                        </xs:documentation>
+                                                    </xs:annotation>
+                                                </xs:attribute>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>

@@ -125,7 +125,7 @@
                     </term-id>
                     <credit>
                         <scheme>ects</scheme>
-                        <value>9</value>
+                        <value>6</value>
                     </credit>
                 </component>
             </components-studied>
@@ -162,7 +162,7 @@
                     </term-id>
                     <credit>
                         <scheme>ects</scheme>
-                        <value>5</value>
+                        <value>6</value>
                     </credit>
                 </component>
                 <component status="deleted" reason-code="language-mismatch">

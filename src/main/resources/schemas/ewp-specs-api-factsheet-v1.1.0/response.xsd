@@ -84,6 +84,29 @@
                                 </xs:annotation>
                             </xs:element>
                             <xs:element name="additional-requirement" minOccurs="0" maxOccurs="unbounded">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        Requirements that should be met by the incoming students.
+
+                                        There are requirements that SHOULD be satisfied by the incoming students
+                                        by sending a file (only PDF document currently) or a URL.
+                                        Such files and URLs are sent by Outgoing Mobilities API.
+                                        Names of such requirements are already defined and must match exactly.
+                                        Input types for those requirements are defined separately for each of them.
+                                        Current list of requirement names and types:
+                                        - Motivation letter (PDF),
+                                        - Transcript of Records (PDF),
+                                        - Language certificate (PDF),
+                                        - Reference letter (PDF),
+                                        - Portfolio (PDF or URL),
+                                        - CV (PDF or URL - for Europass CV),
+                                        - Other document (PDF).
+
+                                        There are also requirements that should only be communicated
+                                        to the incoming students, without taking any feedback from them.
+                                        Names of such requirements are not defined but MUST NOT match the list above.
+                                    </xs:documentation>
+                                </xs:annotation>
                                 <xs:complexType>
                                     <xs:sequence>
                                         <xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1" />

@@ -25,17 +25,47 @@
             <p:phone-number>
                 <p:e164>+4723456789</p:e164>
             </p:phone-number>
-            <website-url>http://example-hei.edu/application</website-url>
+            <website-url>https://example-hei.edu/application</website-url>
         </application-info>
         <additional-requirement>
-            <name>Academic requirements</name>
-            <details>Number of ECTS completed. Subject area code - ISCED. EQF level.</details>
-            <information-website>http://example-hei.edu/application/requirements</information-website>
+            <name>Motivation letter</name>
+            <details>In English or Spanish</details>
+            <information-website>https://example-hei.edu/application/documents/motivation-letter</information-website>
+        </additional-requirement>
+        <additional-requirement>
+            <name>Transcript of Records</name>
+            <details>All grades included</details>
+            <information-website>https://example-hei.edu/application/documents/tor</information-website>
+        </additional-requirement>
+        <additional-requirement>
+            <name>Language certificate</name>
+            <details>English B2 or higher; French A1</details>
+            <information-website>https://example-hei.edu/application/documents/language-certificate</information-website>
+        </additional-requirement>
+        <additional-requirement>
+            <name>Reference letter</name>
+            <details>From two professors</details>
+            <information-website>https://example-hei.edu/application/documents/reference-letter</information-website>
+        </additional-requirement>
+        <additional-requirement>
+            <name>Portfolio</name>
+            <details>Recording, 20 minutes, YouTube (link) or PPTX presentation (PDF)</details>
+            <information-website>https://example-hei.edu/application/documents/portfolio</information-website>
         </additional-requirement>
         <additional-requirement>
             <name>CV</name>
-            <details>Curriculum Vitae</details>
-            <information-website>http://example-hei.edu/application/documents/cv</information-website>
+            <details>CV (PDF) or Europass CV (link)</details>
+            <information-website>https://example-hei.edu/application/documents/cv</information-website>
+        </additional-requirement>
+        <additional-requirement>
+            <name>Other document</name>
+            <details>Some document in PDF format</details>
+            <information-website>https://example-hei.edu/application/documents</information-website>
+        </additional-requirement>
+        <additional-requirement>
+            <name>Privacy statement</name>
+            <details>Please, read, as you will have to agree to it</details>
+            <information-website>https://example-hei.edu/privacy-statement</information-website>
         </additional-requirement>
         <decision-weeks-limit>4</decision-weeks-limit>
         <tor-weeks-limit>3</tor-weeks-limit>

@@ -6,9 +6,10 @@
     xmlns:sec="https://github.com/erasmus-without-paper/ewp-specs-sec-intro/tree/stable-v2"
     elementFormDefault="qualified"
 
-    targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-api-iias-approval/blob/stable-v1/manifest-entry.xsd"
-    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-iias-approval/blob/stable-v1/manifest-entry.xsd"
+    targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-api-imobility-tors/blob/stable-v2/manifest-entry.xsd"
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-imobility-tors/blob/stable-v2/manifest-entry.xsd"
 >
+
     <xs:import
         schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-architecture/stable-v1/common-types.xsd"
         namespace="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
@@ -28,20 +29,20 @@
         </xs:documentation>
     </xs:annotation>
 
-    <xs:element name="iias-approval">
+    <xs:element name="imobility-tors">
         <xs:annotation>
             <xs:documentation>
                 If this element is present in EWP Host's manifest file, then the host states
-                that it implements the Interinstitutional Agreements Approval API described here:
+                that it implements the Transcripts of Records API described here:
 
-                https://github.com/erasmus-without-paper/ewp-specs-api-iias-approval
+                https://github.com/erasmus-without-paper/ewp-specs-api-imobility-tors
             </xs:documentation>
         </xs:annotation>
         <xs:complexType>
             <xs:complexContent>
                 <xs:extension base="ewp:ManifestApiEntryBase">
                     <xs:sequence>
-                        <xs:element name="http-security" type="sec:HttpSecurityOptions" minOccurs="0">
+                        <xs:element name="http-security" type="sec:HttpSecurityOptions" minOccurs="0" maxOccurs="1">
                             <xs:annotation>
                                 <xs:documentation>
                                     Describes which security policies the server supports for this API. If not
@@ -53,28 +54,40 @@
                                 </xs:documentation>
                             </xs:annotation>
                         </xs:element>
-                        <xs:element name="url" type="ewp:HTTPS">
+                        <xs:element name="get-url" type="ewp:HTTPS" minOccurs="1" maxOccurs="1">
                             <xs:annotation>
                                 <xs:documentation>
-                                    An URL at which the IIAs Approval API is being served.
+                                    An URL at which the `get` endpoint is being served.
                                 </xs:documentation>
                             </xs:annotation>
                         </xs:element>
-                        <xs:element name="max-iia-ids" type="xs:positiveInteger">
+                        <xs:element name="index-url" type="ewp:HTTPS" minOccurs="1" maxOccurs="1">
                             <xs:annotation>
                                 <xs:documentation>
-                                    The maximum number of `iia_id` parameters the server is willing to accept
+                                    An URL at which the `index` endpoint is being served.
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="max-omobility-ids" type="xs:positiveInteger" minOccurs="1" maxOccurs="1">
+                            <xs:annotation>
+                                <xs:documentation>
+                                    The maximum number of `omobility_id` parameters the server is willing to accept
                                     in one request.
                                 </xs:documentation>
                             </xs:annotation>
                         </xs:element>
-                        <xs:element name="sends-notifications" type="ewp:Empty" minOccurs="0">
+                        <xs:element name="sends-notifications" type="ewp:Empty" minOccurs="0" maxOccurs="1">
                             <xs:annotation>
                                 <xs:documentation>
-                                    If this element is present, then the EWP Host states, that it has implemented
-                                    a Notification Sender for IIA Approvals - it will *try* to deliver notifications to all
-                                    Interinstitutional Agreement Approval CNR APIs implemented throughout the EWP Network
-                                    whenever related IIAs are approved.
+                                    If this element is present, then the EWP Host states, that it has implemented a
+                                    Notification Sender for Incoming Mobility ToR objects - it will *try* to deliver
+                                    notifications to all Incoming Mobility ToR CNR APIs implemented throughout the EWP
+                                    Network whenever related ToRs are updated.
+
+                                    It is HIGHLY RECOMMENDED for all EWP Hosts to implement this feature. If it is
+                                    not implemented, then sending institutions will need to resolve to pulling
+                                    fresh data from your Incoming Mobility ToRs API quite often - this method
+                                    will increase both latency and the load on both servers.
                                 </xs:documentation>
                             </xs:annotation>
                         </xs:element>
