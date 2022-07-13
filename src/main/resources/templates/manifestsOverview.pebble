@@ -115,6 +115,14 @@
                         </tr>
                     {% endfor %}
 
+                    {% if hostOverviewInfo.adminProvider is not null %}
+                        <tr class="ewpsrc__item">
+                            <td colspan="5">
+                                Admin provider: {{ hostOverviewInfo.adminProvider }}
+                            </td>
+                        </tr>
+                    {% endif %}
+
                     <tr class="ewpsrc__item">
                         <td colspan="5">
                             Admin notes: ({{ hostOverviewInfo.adminNotes.size }})

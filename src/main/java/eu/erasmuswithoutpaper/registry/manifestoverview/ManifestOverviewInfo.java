@@ -58,6 +58,7 @@ public class ManifestOverviewInfo {
       for (Element elem : hostMatch.xpath("ewp:admin-email")) {
         hostOverviewInfo.adminEmails.add(elem.getTextContent());
       }
+      hostOverviewInfo.adminProvider = hostMatch.xpath("ewp:admin-provider").text();
       for (Element elem : hostMatch.xpath("ewp:admin-notes")) {
         hostOverviewInfo.adminNotes.add(elem.getTextContent());
       }
