@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 import eu.erasmuswithoutpaper.registry.common.Severity;
 import eu.erasmuswithoutpaper.registry.common.Utils;
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
+import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 import org.joox.Match;
 import org.w3c.dom.Document;
@@ -30,7 +31,7 @@ public class RestrictInstitutionsCovered implements ManifestConstraint {
   }
 
   @Override
-  public List<FailedConstraintNotice> filter(Document doc) {
+  public List<FailedConstraintNotice> filter(Document doc, RegistryClient registryClient) {
     List<FailedConstraintNotice> notices = new ArrayList<>();
     Match root = $(doc).namespaces(KnownNamespace.prefixMap());
     for (Match hei : root.xpath(

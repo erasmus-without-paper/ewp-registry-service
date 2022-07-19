@@ -14,6 +14,7 @@ import java.util.List;
 import eu.erasmuswithoutpaper.registry.common.Severity;
 import eu.erasmuswithoutpaper.registry.common.Utils;
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
+import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 import org.joox.Match;
 import org.w3c.dom.Document;
@@ -34,7 +35,7 @@ public abstract class AbstractRsaKeySecurityConstraint implements ManifestConstr
   }
 
   @Override
-  public List<FailedConstraintNotice> filter(Document doc) {
+  public List<FailedConstraintNotice> filter(Document doc, RegistryClient registryClient) {
     List<FailedConstraintNotice> notices = new ArrayList<>();
 
     KeyFactory rsaFactory;
@@ -63,19 +64,28 @@ public abstract class AbstractRsaKeySecurityConstraint implements ManifestConstr
         continue;
       }
 
-      if (publicKey.getModulus().bitLength() < this.minKeyLength) {
+      Match heis = root.xpath(
+          "mf5:host/mf5:institutions-covered/r:hei | " + "mf6:host/mf6:institutions-covered/r:hei");
+      // heis contains at most one element (see VerifySingleHost/Hei constraints)
+      String heiCovered = heis.size() == 0 ? null : heis.get(0).getAttribute("id");
+      FailedConstraintNotice notice = verifyKey(publicKey, name, heiCovered, registryClient);
+      if (notice != null) {
         keyElem.remove();
-        StringBuilder sb = new StringBuilder();
-        sb.append("The minimum required length of " + this.getKeyName() + " is ");
-        sb.append(this.minKeyLength).append(" bits. One of your keys (");
-        sb.append(name).append(") ").append("uses ");
-        sb.append(publicKey.getModulus().bitLength()).append(" bits only. It will not ");
-        sb.append("be imported.");
-        notices.add(new FailedConstraintNotice(Severity.ERROR, sb.toString()));
-        continue;
+        notices.add(notice);
       }
     }
     return notices;
+  }
+
+  protected FailedConstraintNotice verifyKey(RSAPublicKey publicKey, String keyNumber,
+      String heiCovered, RegistryClient registryClient) {
+    if (publicKey.getModulus().bitLength() < this.minKeyLength) {
+      return new FailedConstraintNotice(Severity.ERROR,
+          "The minimum required length of " + this.getKeyName() + " is " + this.minKeyLength
+              + " bits. One of your keys (" + keyNumber + ") " + "uses " + publicKey.getModulus()
+              .bitLength() + " bits only. It will not " + "be imported.");
+    }
+    return null;
   }
 
   /**

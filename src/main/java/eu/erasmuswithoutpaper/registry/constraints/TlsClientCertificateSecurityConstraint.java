@@ -14,6 +14,7 @@ import java.util.List;
 import eu.erasmuswithoutpaper.registry.common.Severity;
 import eu.erasmuswithoutpaper.registry.common.Utils;
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
+import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 import org.joox.Match;
 import org.w3c.dom.Document;
@@ -34,7 +35,7 @@ public class TlsClientCertificateSecurityConstraint implements ManifestConstrain
   }
 
   @Override
-  public List<FailedConstraintNotice> filter(Document doc) {
+  public List<FailedConstraintNotice> filter(Document doc, RegistryClient registryClient) {
     List<FailedConstraintNotice> notices = new ArrayList<>();
 
     CertificateFactory x509factory;

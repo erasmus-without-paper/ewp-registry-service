@@ -3,6 +3,7 @@ package eu.erasmuswithoutpaper.registry.constraints;
 import java.util.List;
 
 import eu.erasmuswithoutpaper.registry.sourceprovider.ManifestSource;
+import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 import org.w3c.dom.Document;
 
@@ -30,9 +31,10 @@ public interface ManifestConstraint {
    *
    * @param document A document with a valid (in the XML Schema sense) manifest document (all
    *        callers must make sure the document is valid before calling this method).
+   * @param registryClient A registry client to be able to check the current catalogue state.
    * @return A list of {@link FailedConstraintNotice}s which describe the transformations applied
    *         (or, in case of not so serious violations, describe how the user should fix them
    *         himself).
    */
-  List<FailedConstraintNotice> filter(Document document);
+  List<FailedConstraintNotice> filter(Document document, RegistryClient registryClient);
 }

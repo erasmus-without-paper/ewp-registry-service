@@ -5,7 +5,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-import eu.erasmuswithoutpaper.registry.constraints.ClientKeySecurityConstraint;
+import eu.erasmuswithoutpaper.registry.constraints.ClientKeyConstraint;
 import eu.erasmuswithoutpaper.registry.constraints.ForbidRegistryImplementations;
 import eu.erasmuswithoutpaper.registry.constraints.ManifestConstraint;
 import eu.erasmuswithoutpaper.registry.constraints.RemoveEmbeddedCatalogues;
@@ -31,7 +31,7 @@ public class ManifestSource {
   /**
    * Returns a new instance of {@link ManifestSource} with basic security constraints applied.
    *
-   * @param url See {@link #getUrl()}
+   * @param url              See {@link #getUrl()}
    * @param extraConstraints A list of additional constraints for this particular source.
    * @return New {@link ManifestSource}.
    */
@@ -39,14 +39,14 @@ public class ManifestSource {
       List<ManifestConstraint> extraConstraints) {
     List<ManifestConstraint> all = new ArrayList<>(extraConstraints.size() + 4);
     all.add(new TlsClientCertificateSecurityConstraint(1024));
-    all.add(new ClientKeySecurityConstraint(2048));
+    all.add(new VerifySingleHost());
+    all.add(new VerifySingleHei());
+    all.add(new ClientKeyConstraint(2048));
     all.add(new ServerKeySecurityConstraint(2048));
     all.add(new VerifyDiscoveryApiEntry(url));
     all.add(new ForbidRegistryImplementations());
     all.add(new VerifyApiVersions());
     all.add(new RemoveEmbeddedCatalogues());
-    all.add(new VerifySingleHost());
-    all.add(new VerifySingleHei());
     all.addAll(extraConstraints);
     return new ManifestSource(url, all);
   }

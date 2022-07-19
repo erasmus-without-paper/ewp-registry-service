@@ -192,6 +192,20 @@ public class RegistryUpdaterTest extends WRTest {
         .xpath("/r:catalogue/r:host/r:client-credentials-in-use/r:rsa-public-key").get(0));
     assertThat(keyElem.attr("sha-256"))
         .isEqualTo("5531f9a02c44a894d0b706961259fec740ad4ae8a3555871f1a5cd9801285bd4");
+
+    /* Make sure that keys that duplicated keys are not accepted */
+
+    this.internet.putURL(url1, this.getFile("rsa-public-key-tests/manifest1.xml"));
+    this.internet.putURL(url2, this.getFile("rsa-public-key-tests/manifest-same-key.xml"));
+    ManifestSource msSameKey = ManifestSource.newRegularSource(url2, Arrays.asList());
+    this.sourceProvider.addSource(msSameKey);
+    this.timePasses();
+    this.assertManifestStatuses("OK", "Warning", null);
+    this.assertNoticesMatch(url2,
+        "(?s).*is already registered in the network.*");
+    assertThat(this.lastCatalogue
+        .xpath("/r:catalogue/r:host/r:client-credentials-in-use/r:rsa-public-key").size())
+        .isEqualTo(1);
   }
 
   /**
@@ -363,7 +377,7 @@ public class RegistryUpdaterTest extends WRTest {
         .isEqualTo("University of Warsaw");
 
     /*
-     * Let's tweak his manifest a bit an try to host a Registry API. (Only the Registry host is
+     * Let's tweak his manifest a bit and try to host a Registry API. (Only the Registry host is
      * allowed to host this API.)
      */
 

@@ -33,6 +33,8 @@ import eu.erasmuswithoutpaper.registry.sourceprovider.ManifestSource;
 import eu.erasmuswithoutpaper.registry.sourceprovider.ManifestSourceProvider;
 import eu.erasmuswithoutpaper.registry.updater.ManifestParser.NotValidManifest;
 import eu.erasmuswithoutpaper.registry.xmlformatter.XmlFormatter;
+import eu.erasmuswithoutpaper.registryclient.RegistryClient;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Service;
@@ -67,35 +69,28 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
   private final NotifierService notifier;
   private final ManifestParser parser;
   private final ManifestOverviewManager manifestOverviewManager;
+  private final RegistryClient registryClient;
 
   /**
-   * @param manifestSourceProvider
-   *     to get the list of Manifest sources.
-   * @param manifestUpdateStatusRepository
-   *     to manage the {@link ManifestUpdateStatus}es, for each of
-   *     the manifests.
-   * @param internet
-   *     to fetch the manifest contents.
-   * @param repo
-   *     to store the new content of the fetched manifests.
-   * @param docBuilder
-   *     to parse the manifests.
-   * @param xmlFormatter
-   *     to format the filtered versions of the manifests.
-   * @param notifier
-   *     to register our custom {@link NotifierFlag}s.
-   * @param parser
-   *     to be able to parse manifests in supported versions.
-   * @param manifestOverviewManager
-   *     stores {@link eu.erasmuswithoutpaper.registry.manifestoverview.ManifestOverviewInfo} for
-   *     each of covered manifests.
+   * @param manifestSourceProvider         to get the list of Manifest sources.
+   * @param manifestUpdateStatusRepository to manage the {@link ManifestUpdateStatus}es, for each of
+   *                                       the manifests.
+   * @param internet                       to fetch the manifest contents.
+   * @param repo                           to store the new content of the fetched manifests.
+   * @param docBuilder                     to parse the manifests.
+   * @param xmlFormatter                   to format the filtered versions of the manifests.
+   * @param notifier                       to register our custom {@link NotifierFlag}s.
+   * @param parser                         to be able to parse manifests in supported versions.
+   * @param manifestOverviewManager        stores
+   * {@link eu.erasmuswithoutpaper.registry.manifestoverview.ManifestOverviewInfo} for
+   * @param registryClient                 to be able to check current catalogue state.
    */
   @Autowired
   public RegistryUpdaterImpl(ManifestSourceProvider manifestSourceProvider,
       ManifestUpdateStatusRepository manifestUpdateStatusRepository, Internet internet,
       ManifestRepository repo, EwpDocBuilder docBuilder, XmlFormatter xmlFormatter,
       NotifierService notifier, ManifestParser parser,
-      ManifestOverviewManager manifestOverviewManager) {
+      ManifestOverviewManager manifestOverviewManager, RegistryClient registryClient) {
     this.manifestSourceProvider = manifestSourceProvider;
     this.manifestUpdateStatusRepository = manifestUpdateStatusRepository;
     this.internet = internet;
@@ -104,6 +99,7 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
     this.xmlFormatter = xmlFormatter;
     this.notifier = notifier;
     this.manifestOverviewManager = manifestOverviewManager;
+    this.registryClient = registryClient;
     this.notifierFlags = new HashMap<>();
     this.parser = parser;
     this.onSourcesUpdated();
@@ -127,8 +123,7 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
 
     Set<ManifestSource> sources = Sets.newLinkedHashSet(this.manifestSourceProvider.getAll());
     for (Iterator<Map.Entry<ManifestSource, ManifestUpdateStatusNotifierFlag>> iter =
-         this.notifierFlags.entrySet().iterator();
-         iter.hasNext(); ) {
+         this.notifierFlags.entrySet().iterator(); iter.hasNext(); ) {
       Map.Entry<ManifestSource, ManifestUpdateStatusNotifierFlag> entry = iter.next();
       ManifestSource source = entry.getKey();
       if (!sources.contains(source)) {
@@ -138,7 +133,7 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
     }
 
     /*
-     * Second, create new flags for all ManifestSources for which no flags has been yet created. In
+     * Second, create new flags for all ManifestSources for which no flags have been yet created. In
      * order to properly set the recipients for those flags, we need to fetch the catalogue.
      */
     Map<String, List<String>> recipients = new HashMap<>();
@@ -297,7 +292,7 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
          */
 
         for (ManifestConstraint constraint : source.getConstraints()) {
-          for (FailedConstraintNotice notice : constraint.filter(doc)) {
+          for (FailedConstraintNotice notice : constraint.filter(doc, registryClient)) {
             // We are converting one type of notice to another.
             notices.add(new UpdateNotice(notice.getSeverity(), notice.getMessageHtml()));
             try {

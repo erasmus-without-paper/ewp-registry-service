@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import eu.erasmuswithoutpaper.registry.WRTest;
-import eu.erasmuswithoutpaper.registry.constraints.ClientKeySecurityConstraint;
+import eu.erasmuswithoutpaper.registry.constraints.ClientKeyConstraint;
 import eu.erasmuswithoutpaper.registry.constraints.FailedConstraintNotice;
 import eu.erasmuswithoutpaper.registry.constraints.ManifestConstraint;
 import eu.erasmuswithoutpaper.registry.constraints.RestrictInstitutionsCovered;
@@ -17,6 +17,7 @@ import eu.erasmuswithoutpaper.registry.documentbuilder.BuildParams;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildResult;
 import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownElement;
+import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,6 +35,9 @@ public class SelfManifestProviderTest extends WRTest {
 
   @Autowired
   private EwpDocBuilder docBuilder;
+
+  @Autowired
+  private RegistryClient registryClient;
 
   @Value("${app.root-url}")
   private String rootUrl;
@@ -53,13 +57,13 @@ public class SelfManifestProviderTest extends WRTest {
 
     List<ManifestConstraint> constraints = new ArrayList<>();
     constraints.add(new TlsClientCertificateSecurityConstraint(2048));
-    constraints.add(new ClientKeySecurityConstraint(2048));
+    constraints.add(new ClientKeyConstraint(2048));
     constraints.add(new ServerKeySecurityConstraint(2048));
     constraints
         .add(new RestrictInstitutionsCovered("^.*\\.developers\\.erasmuswithoutpaper\\.eu$"));
     constraints.add(new VerifyApiVersions());
     for (ManifestConstraint c : constraints) {
-      List<FailedConstraintNotice> notices = c.filter(doc);
+      List<FailedConstraintNotice> notices = c.filter(doc, registryClient);
       assertThat(notices).isEmpty();
     }
   }
