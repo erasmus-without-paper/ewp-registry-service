@@ -36,7 +36,7 @@ public class ClientKeyConstraint extends AbstractRsaKeySecurityConstraint {
       if (!heisCoveredByClientKey.isEmpty() && !heisCoveredByClientKey.contains(heiCovered)) {
         return new FailedConstraintNotice(Severity.WARNING,
             "The " + this.getKeyName() + " is not unique. One of your keys (" + keyNumber
-                + ") is already registered in the network and covers " + heiCovered
+                + ") is already registered in the network and covers " + heisCoveredByClientKey
                 + ". It will not be imported.");
       }
     }
