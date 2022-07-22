@@ -70,7 +70,9 @@ public abstract class AbstractRsaKeySecurityConstraint implements ManifestConstr
       String heiCovered = heis.size() == 0 ? null : heis.get(0).getAttribute("id");
       FailedConstraintNotice notice = verifyKey(publicKey, name, heiCovered, registryClient);
       if (notice != null) {
-        keyElem.remove();
+        if (notice.getSeverity().equals(Severity.ERROR)) {
+          keyElem.remove();
+        }
         notices.add(notice);
       }
     }
