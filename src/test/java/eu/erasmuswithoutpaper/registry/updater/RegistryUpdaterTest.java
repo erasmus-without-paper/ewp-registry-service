@@ -193,7 +193,7 @@ public class RegistryUpdaterTest extends WRTest {
     assertThat(keyElem.attr("sha-256"))
         .isEqualTo("5531f9a02c44a894d0b706961259fec740ad4ae8a3555871f1a5cd9801285bd4");
 
-    /* Make sure that duplicated keys are not accepted */
+    /* Make sure that keys that duplicated keys are not accepted */
 
     this.internet.putURL(url1, this.getFile("rsa-public-key-tests/manifest1.xml"));
     this.internet.putURL(url2, this.getFile("rsa-public-key-tests/manifest-same-key.xml"));
@@ -260,33 +260,6 @@ public class RegistryUpdaterTest extends WRTest {
         .xpath("/r:catalogue/r:host/r:server-credentials-in-use/r:rsa-public-key").get(0));
     assertThat(keyElem.attr("sha-256"))
         .isEqualTo("5531f9a02c44a894d0b706961259fec740ad4ae8a3555871f1a5cd9801285bd4");
-  }
-
-  @Test
-  public void testApiUniqueConstraint() {
-    this.assertManifestStatuses(null, null, null);
-    this.internet.putURL(url1, this.getFile("api-unique/manifest1.xml"));
-    ManifestSource ms1 = ManifestSource.newRegularSource(url1, Arrays.asList());
-    this.sourceProvider.addSource(ms1);
-    this.timePasses();
-    this.assertManifestStatuses("OK", null, null);
-
-    this.internet.putURL(url2, this.getFile("api-unique/manifest2.xml"));
-    ManifestSource ms2 = ManifestSource.newRegularSource(url2, Arrays.asList());
-    this.sourceProvider.addSource(ms2);
-    this.timePasses();
-    this.assertManifestStatuses("OK", "OK", null);
-
-    /*
-     * Make sure duplicate APIs are not imported.
-     */
-
-    this.internet.putURL(url2, this.getFile("api-unique/manifest-duplicate.xml"));
-    this.timePasses();
-    this.assertManifestStatuses("OK", "Error", null);
-    this.assertNoticesMatch(url2, "(?s).*API institutions is already in the registry under URL: "
-        + "https://example.com/institutions.*");
-    assertThat(this.lastCatalogue.xpath("r:host/r:apis-implemented/in2:institutions")).hasSize(1);
   }
 
   /**
