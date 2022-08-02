@@ -46,9 +46,13 @@ public abstract class AbstractRsaKeySecurityConstraint implements ManifestConstr
     }
 
     Match root = $(doc).namespaces(KnownNamespace.prefixMap());
+    Match heis = root.xpath(
+        "mf5:host/mf5:institutions-covered/r:hei | " + "mf6:host/mf6:institutions-covered/r:hei");
+    // heis contains at most one element (see VerifySingleHost/Hei constraints)
+    String heiCovered = heis.size() == 0 ? null : heis.get(0).getAttribute("id");
     Match keyElems = root.xpath(this.getXPath());
-    for (int i = 0; i < keyElems.size(); i++) {
 
+    for (int i = 0; i < keyElems.size(); i++) {
       Match keyElem = keyElems.eq(i);
       String name = Utils.ordinal(i + 1) + " of " + keyElems.size();
       String keyStr = keyElems.get(i).getTextContent().replaceAll("\\s+", "");
@@ -64,10 +68,6 @@ public abstract class AbstractRsaKeySecurityConstraint implements ManifestConstr
         continue;
       }
 
-      Match heis = root.xpath(
-          "mf5:host/mf5:institutions-covered/r:hei | " + "mf6:host/mf6:institutions-covered/r:hei");
-      // heis contains at most one element (see VerifySingleHost/Hei constraints)
-      String heiCovered = heis.size() == 0 ? null : heis.get(0).getAttribute("id");
       FailedConstraintNotice notice = verifyKey(publicKey, name, heiCovered, registryClient);
       if (notice != null) {
         if (notice.getSeverity().equals(Severity.ERROR)) {
