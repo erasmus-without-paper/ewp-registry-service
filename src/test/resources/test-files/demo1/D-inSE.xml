@@ -12,10 +12,6 @@
             <hei id="lu.se">
                 <name xml:lang="en">Lund University</name>
             </hei>
-            <hei id="hv.se">
-                <other-id type="national-swedish-hei-number">123</other-id>
-                <name xml:lang="en">University West</name>
-            </hei>
         </mf:institutions-covered>
     </mf:host>
 </mf:manifest>

@@ -193,7 +193,7 @@ public class ApiControllerIntegrationTest extends WRIntegrationTest {
     assertThat(this.getCatalogueBodyWithoutBinaries())
         .isEqualTo(this.getFileAsString("demo1/C-out.xml"));
 
-    /* [Test D] Put a similar manifest into the Swedish URL. We'll use two HEIs this time. */
+    /* [Test D] Put a similar manifest into the Swedish URL. */
 
     this.internet.putURL(urlSE, this.getFile("demo1/D-inSE.xml"));
     this.forceReload(urlSE);
@@ -235,8 +235,6 @@ public class ApiControllerIntegrationTest extends WRIntegrationTest {
 
     this.internet.putURL(urlSE, this.getFile("demo1/H-inSE.xml"));
     this.forceReload(urlSE);
-    assertThat(this.getCatalogueBodyWithoutBinaries())
-        .isEqualTo(this.getFileAsString("demo1/G-out.xml"));
     assertThat(this.status(urlSE)).contains(
         "Institution <code>uw.edu.pl</code> didn't match the <code>^.+\\.se$</code> filter pattern");
 
@@ -246,6 +244,8 @@ public class ApiControllerIntegrationTest extends WRIntegrationTest {
      * value should be present exactly once.
      */
 
+    this.internet.putURL(urlSE, this.getFile("demo1/G-inSE.xml"));
+    this.forceReload(urlSE);
     String urlPL2 = "https://schowek.usos.edu.pl/w.rygielski/ewp/uw.edu.pl/manifest2.xml";
     this.manifestSourceProvider.addSource(ManifestSource.newRegularSource(urlPL2, Lists
         .newArrayList(new RestrictInstitutionsCovered("^(uw\\.edu\\.pl)|(university-a\\.edu)$"))));
@@ -269,13 +269,13 @@ public class ApiControllerIntegrationTest extends WRIntegrationTest {
         .isEqualTo(this.getFileAsString("demo1/J-out.xml"));
 
     /*
-     * [Test K] Replace with manifest file with multiple hosts. Expect this raise warning.
+     * [Test K] Replace with manifest file with multiple hosts. Expect this raise error.
      */
 
     this.internet.putURL(urlPL2, this.getFile("demo1/K-inPL2.xml"));
     this.forceReload(urlPL2);
     assertThat(this.status(urlPL2)).containsPattern(
-        "Last access status:[ \n]+<code class='ewpst__bordered-code'>Warning</code>");
+        "Last access status:[ \n]+<code class='ewpst__bordered-code'>Error</code>");
     assertThat(this.getCatalogueBodyWithoutBinaries())
         .isEqualTo(this.getFileAsString("demo1/K-out.xml"));
   }

@@ -98,7 +98,6 @@
         </apis-implemented>
         <institutions-covered>
             <hei-id>lu.se</hei-id>
-            <hei-id>hv.se</hei-id>
         </institutions-covered>
         <client-credentials-in-use>
             <certificate sha-256="(SHA-256 fingerprint here)"/>
@@ -111,62 +110,14 @@
             </d5:discovery>
         </apis-implemented>
     </host>
-    <host>
-        <apis-implemented>
-            <api-A
-                xmlns="urn:api-A"
-                version="1.2.3"
-            />
-            <api-B
-                xmlns="urn:api-B"
-                version="1.2.3"
-            />
-        </apis-implemented>
-        <institutions-covered>
-            <hei-id>university-a.edu</hei-id>
-        </institutions-covered>
-    </host>
-    <host>
-        <apis-implemented>
-            <api-B
-                xmlns="urn:api-B"
-                version="1.3.8"
-            />
-            <api-C
-                xmlns="urn:api-C"
-                version="1.3.8"
-            />
-        </apis-implemented>
-        <institutions-covered>
-            <hei-id>university-a.edu</hei-id>
-            <hei-id>uw.edu.pl</hei-id>
-        </institutions-covered>
-    </host>
     <institutions>
-        <hei id="hv.se">
-            <other-id type="national-swedish-hei-number">123</other-id>
-            <name xml:lang="en">University West</name>
-        </hei>
         <hei id="lu.se">
             <name xml:lang="en">Lund University</name>
         </hei>
-        <hei id="university-a.edu">
-            <other-id type="pic">123456</other-id>
-            <other-id type="pic">123457</other-id>
-            <other-id type="pic">123458</other-id>
-            <name xml:lang="en">University A</name>
-            <name xml:lang="pl">Uczelnia A</name>
-        </hei>
         <hei id="uw.edu.pl">
             <other-id type="erasmus">PL WARSZAW01</other-id>
-            <other-id type="erasmus">PL WARSZAW01 (conflict)</other-id>
-            <other-id type="other">some other ID</other-id>
             <other-id type="pic">999572294</other-id>
-            <other-id type="pic">999572295</other-id>
-            <name>Uniwersytet Warszawski</name>
             <name xml:lang="en">University of Warsaw</name>
-            <name xml:lang="en">University of Warsaw 2</name>
-            <name xml:lang="pl">Uniwersytet Warszawski</name>
         </hei>
     </institutions>
 </catalogue>

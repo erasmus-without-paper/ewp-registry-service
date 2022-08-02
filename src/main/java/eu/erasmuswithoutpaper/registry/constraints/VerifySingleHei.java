@@ -22,8 +22,10 @@ public class VerifySingleHei implements ManifestConstraint {
     List<FailedConstraintNotice> notices = new ArrayList<>();
     Match root = $(doc).namespaces(KnownNamespace.prefixMap());
     if (root.xpath("mf5:host/mf5:institutions-covered/r:hei").size() > 1) {
-      notices.add(new FailedConstraintNotice(Severity.WARNING,
-          "Manifest file must not contain more than one hei element."));
+      notices.add(new FailedConstraintNotice(Severity.ERROR,
+          "Manifest file must not contain more than one hei element. "
+              + "Additional elements will be removed."));
+      root.xpath("mf5:host/mf5:institutions-covered/r:hei[position()>1]").remove();
     }
     return notices;
   }

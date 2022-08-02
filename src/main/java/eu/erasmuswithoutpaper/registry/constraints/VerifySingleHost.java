@@ -22,8 +22,10 @@ public class VerifySingleHost implements ManifestConstraint {
     List<FailedConstraintNotice> notices = new ArrayList<>();
     Match root = $(doc).namespaces(KnownNamespace.prefixMap());
     if (root.xpath("mf5:host").size() > 1) {
-      notices.add(new FailedConstraintNotice(Severity.WARNING,
-          "Manifest file must not contain more than one host element."));
+      notices.add(new FailedConstraintNotice(Severity.ERROR,
+          "Manifest file must not contain more than one host element. "
+              + "Additional elements will be removed."));
+      root.xpath("mf5:host[position()>1]").remove();
     }
     return notices;
   }
