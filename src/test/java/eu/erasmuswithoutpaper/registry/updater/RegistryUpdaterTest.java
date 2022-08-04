@@ -205,7 +205,7 @@ public class RegistryUpdaterTest extends WRTest {
         "(?s).*is already registered in the network.*");
     assertThat(this.lastCatalogue
         .xpath("/r:catalogue/r:host/r:client-credentials-in-use/r:rsa-public-key").size())
-        .isEqualTo(2);
+        .isEqualTo(1);
   }
 
   /**
