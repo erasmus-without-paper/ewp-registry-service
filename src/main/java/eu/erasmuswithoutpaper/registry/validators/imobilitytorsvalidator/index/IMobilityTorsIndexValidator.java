@@ -40,14 +40,14 @@ public class IMobilityTorsIndexValidator extends ApiValidator<IMobilityTorsSuite
     );
 
     validationSuites.put(
-        new SemanticVersion(1, 0, 0),
+        new SemanticVersion(2, 0, 0),
         new ValidationSuiteInfo<>(
             IMobilityTorsIndexSetupValidationSuiteV1::new,
             IMobilityTorsIndexSetupValidationSuiteV1.getParameters()
         )
     );
     validationSuites.put(
-        new SemanticVersion(1, 0, 0),
+        new SemanticVersion(2, 0, 0),
         new ValidationSuiteInfo<>(
             IMobilityTorsIndexValidationSuiteV1::new
         )
