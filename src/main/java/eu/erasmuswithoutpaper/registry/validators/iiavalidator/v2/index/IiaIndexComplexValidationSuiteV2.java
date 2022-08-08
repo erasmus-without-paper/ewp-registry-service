@@ -2,6 +2,8 @@ package eu.erasmuswithoutpaper.registry.validators.iiavalidator.v2.index;
 
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.List;
 
 import eu.erasmuswithoutpaper.registry.validators.AbstractValidationSuite;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
@@ -46,6 +48,11 @@ public class IiaIndexComplexValidationSuiteV2 extends AbstractValidationSuite<Ii
   @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
   protected void validateCombinationAny(Combination combination)
       throws SuiteBroken {
+    List<String> selectedIiaIdList = Collections.emptyList();
+    if (this.currentState.selectedIiaId != null) {
+      selectedIiaIdList = Arrays.asList(this.currentState.selectedIiaId);
+    }
+
     testParameters200(
         combination,
         "Request known hei_id and known partner_hei_id, expect 200 OK and "
@@ -54,7 +61,7 @@ public class IiaIndexComplexValidationSuiteV2 extends AbstractValidationSuite<Ii
             new Parameter("hei_id", this.currentState.selectedHeiId),
             new Parameter("partner_hei_id", this.currentState.selectedIiaInfo.partnerHeiId)
         ),
-        iiaIdVerifierFactory.expectResponseToContain(Arrays.asList(this.currentState.selectedIiaId))
+        iiaIdVerifierFactory.expectResponseToContain(selectedIiaIdList)
     );
 
     if (!this.currentState.selectedIiaInfo.receivingAcademicYears.isEmpty()) {
@@ -68,7 +75,7 @@ public class IiaIndexComplexValidationSuiteV2 extends AbstractValidationSuite<Ii
               new Parameter("receiving_academic_year_id", knownAcademicYear)
           ),
           iiaIdVerifierFactory
-              .expectResponseToContain(Arrays.asList(this.currentState.selectedIiaId))
+              .expectResponseToContain(selectedIiaIdList)
       );
     }
 
@@ -110,7 +117,7 @@ public class IiaIndexComplexValidationSuiteV2 extends AbstractValidationSuite<Ii
             new Parameter("hei_id", this.currentState.selectedHeiId),
             new Parameter("modified_since", "2000-02-12T15:19:21+01:00")
         ),
-        iiaIdVerifierFactory.expectResponseToContain(Arrays.asList(this.currentState.selectedIiaId))
+        iiaIdVerifierFactory.expectResponseToContain(selectedIiaIdList)
     );
   }
 
