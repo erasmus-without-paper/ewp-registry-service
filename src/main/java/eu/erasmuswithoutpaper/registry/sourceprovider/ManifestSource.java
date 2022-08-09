@@ -7,6 +7,7 @@ import java.util.List;
 
 import eu.erasmuswithoutpaper.registry.constraints.ApiUniqueConstraint;
 import eu.erasmuswithoutpaper.registry.constraints.ClientKeyConstraint;
+import eu.erasmuswithoutpaper.registry.constraints.EndpointUniqueConstraint;
 import eu.erasmuswithoutpaper.registry.constraints.ForbidRegistryImplementations;
 import eu.erasmuswithoutpaper.registry.constraints.ManifestConstraint;
 import eu.erasmuswithoutpaper.registry.constraints.RemoveEmbeddedCatalogues;
@@ -45,6 +46,7 @@ public class ManifestSource {
     all.add(new ClientKeyConstraint(2048));
     all.add(new ServerKeySecurityConstraint(2048));
     all.add(new ApiUniqueConstraint());
+    all.add(new EndpointUniqueConstraint());
     all.add(new VerifyDiscoveryApiEntry(url));
     all.add(new ForbidRegistryImplementations());
     all.add(new VerifyApiVersions());

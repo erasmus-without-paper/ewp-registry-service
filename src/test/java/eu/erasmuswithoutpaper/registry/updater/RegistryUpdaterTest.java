@@ -289,6 +289,30 @@ public class RegistryUpdaterTest extends WRTest {
     assertThat(this.lastCatalogue.xpath("r:host/r:apis-implemented/in2:institutions")).hasSize(1);
   }
 
+  @Test
+  public void testEndpointUniqueConstraint() {
+    this.assertManifestStatuses(null, null, null);
+    this.internet.putURL(url1, this.getFile("endpoint-unique/manifest1.xml"));
+    ManifestSource ms1 = ManifestSource.newRegularSource(url1, Arrays.asList());
+    this.sourceProvider.addSource(ms1);
+    this.timePasses();
+    this.assertManifestStatuses("OK", null, null);
+
+    /*
+     * Make sure duplicate endpoints are not imported.
+     */
+
+    this.internet.putURL(url2, this.getFile("endpoint-unique/manifest-duplicate.xml"));
+    ManifestSource ms2 = ManifestSource.newRegularSource(url2, Arrays.asList());
+    this.sourceProvider.addSource(ms2);
+    this.timePasses();
+    this.assertManifestStatuses("OK", "Error", null);
+    this.assertNoticesMatch(url2,
+        "(?s).*API institutions is already in the registry under the same URL: "
+            + "https://example.com/institutions.*");
+    assertThat(this.lastCatalogue.xpath("r:host/r:apis-implemented/in2:institutions")).hasSize(1);
+  }
+
   /**
    * Run a complex scenario, involving multiple source and manifest changes. Verify if our
    * {@link RegistryUpdater} and {@link NotifierService} handle everything as expected.

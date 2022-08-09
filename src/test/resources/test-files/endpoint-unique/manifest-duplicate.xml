@@ -1,0 +1,37 @@
+<manifest
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/tree/stable-v6"
+    xmlns:r="https://github.com/erasmus-without-paper/ewp-specs-api-registry/tree/stable-v1"
+    xmlns:ewp="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd">
+    <host>
+        <ewp:admin-email>admin@example.com</ewp:admin-email>
+        <ewp:admin-provider>Provider</ewp:admin-provider>
+        <r:apis-implemented>
+            <discovery version="6.0.0"
+                       xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/blob/stable-v6/manifest-entry.xsd">
+                <url>https://example.com/manifest2.xml</url>
+            </discovery>
+            <institutions
+                xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-institutions/blob/stable-v2/manifest-entry.xsd"
+                version="2.0.0">
+                <url>https://example.com/institutions</url>
+                <max-hei-ids>1</max-hei-ids>
+            </institutions>
+        </r:apis-implemented>
+        <institutions-covered>
+            <r:hei id="hei2.com">
+                <r:name>HEI 2</r:name>
+            </r:hei>
+        </institutions-covered>
+        <server-credentials-in-use>
+            <rsa-public-key>
+                MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAkgqUSYpTewxyrpw37G6/
+                gWUUg/Whg0euSneCo/byH5d+FExR3DdmX4HQdgrTBcQHx0tRxxIz0LMK7pBbphct
+                0bSqPY4+CZNw2PtB4QXSpkKJI3EXF+miGE41ujKnIxJOFUc3eB3HM0Pb5B9rWDS+
+                AH/A2L8xbfCvEQNPcQnrE+0eCFyCBZoNGLpolClLZi4orR3rYqCH30lR6z99IE9g
+                qbhDaTwgQnajZqoBawX0ddifW10CTnJFEO7NpOzry9Ese7gnoZyIylNIDyJx/wbH
+                XHHvrt63YoKRwBq+cDNvZCO8ZqRDUFiRS2KUxHVQuBpXmWgBn//5wYNcIM6Dxj/M
+                zQIDAQAB
+            </rsa-public-key>
+        </server-credentials-in-use>
+    </host>
+</manifest>
