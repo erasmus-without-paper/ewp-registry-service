@@ -47,14 +47,15 @@ public class ProductionManifestSourceProvider extends ManifestSourceProvider {
   /**
    * @param rootUrl
    *     needed to construct a proper URL to Registry's own self-manifest.
-   * @param manifestSourcesUrl
-   *     location of the manifest-sources.xml file.
+   * @param manifestSourcesUrls
+   *     location of the manifest-sources.xml files.
    * @param resLoader
    *     needed to load the manifest-sources.xml file.
    */
   @Autowired
   public ProductionManifestSourceProvider(@Value("${app.root-url}") String rootUrl,
-      @Value("${app.manifest-sources.url}") String manifestSourcesUrl, ResourceLoader resLoader) {
+      @Value("${app.manifest-sources.urls}") List<String> manifestSourcesUrls,
+      ResourceLoader resLoader) {
 
     // The first manifest source is our own.
 
@@ -66,33 +67,35 @@ public class ProductionManifestSourceProvider extends ManifestSourceProvider {
     }
 
     /*
-     * The rest of the manifest sources will be loaded from the manifest-sources.xml file, which
-     * should be placed somewhere on classpath.
+     * The rest of the manifest sources will be loaded from the manifest-sources.xml files.
      */
 
-    Resource resource = resLoader.getResource(manifestSourcesUrl);
-    if (!resource.exists()) {
-      throw new RuntimeException("Resource does not exist: " + resource);
-    }
-    logger.info("Loading manifest sources from " + resource);
-    Match sources;
-    try {
-      DocumentBuilder docBuilder = Utils.newSecureDocumentBuilder();
-      Document doc = docBuilder.parse(resource.getInputStream());
-      sources = $(doc).find("source");
-    } catch (SAXException | IOException e) {
-      throw new RuntimeException(e);
-    }
-    for (Element source : sources) {
-      String location = $(source).find("location").text();
-      List<ManifestConstraint> constraints = Lists.newArrayList();
-      for (String regex : $(source).find("hei-regex").texts()) {
-        constraints.add(new RestrictInstitutionsCovered(regex));
+    for (String manifestSourcesUrl : manifestSourcesUrls) {
+      Resource resource = resLoader.getResource(manifestSourcesUrl);
+      if (!resource.exists()) {
+        throw new RuntimeException("Resource does not exist: " + resource);
       }
-      ManifestSource manifestSource = ManifestSource.newRegularSource(location, constraints);
-      logger.info("Adding new manifest source: " + manifestSource);
-      lst.add(manifestSource);
+      logger.info("Loading manifest sources from " + resource);
+      Match sources;
+      try {
+        DocumentBuilder docBuilder = Utils.newSecureDocumentBuilder();
+        Document doc = docBuilder.parse(resource.getInputStream());
+        sources = $(doc).find("source");
+      } catch (SAXException | IOException e) {
+        throw new RuntimeException(e);
+      }
+      for (Element source : sources) {
+        String location = $(source).find("location").text();
+        List<ManifestConstraint> constraints = Lists.newArrayList();
+        for (String regex : $(source).find("hei-regex").texts()) {
+          constraints.add(new RestrictInstitutionsCovered(regex));
+        }
+        ManifestSource manifestSource = ManifestSource.newRegularSource(location, constraints);
+        logger.info("Adding new manifest source: " + manifestSource);
+        lst.add(manifestSource);
+      }
     }
+
     this.sources = Collections.unmodifiableList(lst);
   }
 
