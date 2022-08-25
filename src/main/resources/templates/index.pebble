@@ -74,7 +74,11 @@
                     <a class='ewp-header__links-item ewp-header__link-item-right' href='{{ coverageUrl }}'>HEI/API Coverage Matrix</a>
                 </p>
                 <p class='ewp-header__links'>
-                    <a class='ewp-header__links-item' href='{{ heiSearchUrl }}'>HEI Search Page</a>
+                    {% if isUsingDevDesign %}
+                        <a class='ewp-header__links-item' href='{{ heiSearchUrl }}'>HEI Search Page</a>
+                    {% else %}
+                        <a class='ewp-header__links-item' href='https://stats.erasmuswithoutpaper.eu'>EWP Stats Portal (work in progress)</a>
+                    {% endif %}
                 </p>
             </div>
             <div class='ewp-header__vertical-divider'></div>
