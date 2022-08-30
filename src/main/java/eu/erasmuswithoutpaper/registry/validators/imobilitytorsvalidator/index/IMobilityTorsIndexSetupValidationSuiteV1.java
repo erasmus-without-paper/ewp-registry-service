@@ -21,7 +21,7 @@ class IMobilityTorsIndexSetupValidationSuiteV1
   private static final Logger logger =
       LoggerFactory.getLogger(IMobilityTorsIndexSetupValidationSuiteV1.class);
 
-  private static final ValidatedApiInfo apiInfo = new IMobilityTorsIndexValidatedApiInfo();
+  private static final ValidatedApiInfo apiInfo = new IMobilityTorsIndexValidatedApiInfo(1);
 
   @Override
   protected Logger getLogger() {

@@ -23,7 +23,7 @@ class IMobilityTorsGetValidationSuiteV1
   private static final Logger logger = LoggerFactory
       .getLogger(IMobilityTorsGetValidationSuiteV1.class);
 
-  private static final ValidatedApiInfo apiInfo = new IMobilityTorsGetValidatedApiInfo();
+  private static final ValidatedApiInfo apiInfo = new IMobilityTorsGetValidatedApiInfo(1);
 
   @Override
   protected Logger getLogger() {

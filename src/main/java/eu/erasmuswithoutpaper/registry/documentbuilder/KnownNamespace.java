@@ -229,12 +229,32 @@ public class KnownNamespace {
 
   /**
    * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-imobility-tors/tree/stable-v2/manifest-entry.xsd'>
+   * here</a>.
+   */
+  public static final KnownNamespace RESPONSE_IMOBILITY_TORS_INDEX_V2 = new KnownNamespace("imtri2",
+      "api-imobility-tors/blob/stable-v2/endpoints/index-response.xsd",
+      "api-imobility-tors/stable-v2/endpoints/index-response.xsd", false);
+  // TODO false -> true
+
+  /**
+   * As described <a href=
    * 'https://github.com/erasmus-without-paper/ewp-specs-api-imobility-tors/tree/stable-v1/manifest-entry.xsd'>
    * here</a>.
    */
   public static final KnownNamespace RESPONSE_IMOBILITY_TORS_GET_V1 = new KnownNamespace("imtrg1",
       "api-imobility-tors/blob/stable-v1/endpoints/get-response.xsd",
       "api-imobility-tors/stable-v1/endpoints/get-response.xsd", false);
+  // TODO false -> true
+
+  /**
+   * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-imobility-tors/tree/stable-v2/manifest-entry.xsd'>
+   * here</a>.
+   */
+  public static final KnownNamespace RESPONSE_IMOBILITY_TORS_GET_V2 = new KnownNamespace("imtrg2",
+      "api-imobility-tors/blob/stable-v2/endpoints/get-response.xsd",
+      "api-imobility-tors/stable-v2/endpoints/get-response.xsd", false);
   // TODO false -> true
 
   /**

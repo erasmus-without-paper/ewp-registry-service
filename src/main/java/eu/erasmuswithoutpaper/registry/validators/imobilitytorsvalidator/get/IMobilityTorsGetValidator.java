@@ -42,14 +42,14 @@ public class IMobilityTorsGetValidator extends ApiValidator<IMobilityTorsSuiteSt
     validationSuites.put(
         new SemanticVersion(2, 0, 0),
         new ValidationSuiteInfo<>(
-            IMobilityTorsGetSetupValidationSuiteV1::new,
-            IMobilityTorsGetSetupValidationSuiteV1.getParameters()
+            IMobilityTorsGetSetupValidationSuiteV2::new,
+            IMobilityTorsGetSetupValidationSuiteV2.getParameters()
         )
     );
     validationSuites.put(
         new SemanticVersion(2, 0, 0),
         new ValidationSuiteInfo<>(
-            IMobilityTorsGetValidationSuiteV1::new
+            IMobilityTorsGetValidationSuiteV2::new
         )
     );
   }
