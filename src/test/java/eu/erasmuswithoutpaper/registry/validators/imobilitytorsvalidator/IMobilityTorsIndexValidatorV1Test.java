@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.junit.Test;
 
-public class IMobilityTorsIndexValidatorTest extends IMobilityTorsValidatorTestBase {
+public class IMobilityTorsIndexValidatorV1Test extends IMobilityTorsValidatorTestBaseV1 {
   @Autowired
   protected IMobilityTorsIndexValidator validator;
 

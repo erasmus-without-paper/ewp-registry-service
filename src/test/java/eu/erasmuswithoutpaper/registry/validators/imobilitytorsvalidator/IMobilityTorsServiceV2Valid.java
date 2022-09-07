@@ -18,10 +18,10 @@ import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 import org.springframework.core.io.ResourceLoader;
 
-import https.github_com.erasmus_without_paper.ewp_specs_api_imobility_tors.blob.stable_v1.endpoints.get_response.ImobilityTorsGetResponse;
-import https.github_com.erasmus_without_paper.ewp_specs_api_imobility_tors.blob.stable_v1.endpoints.index_response.ImobilityTorsIndexResponse;
+import https.github_com.erasmus_without_paper.ewp_specs_api_imobility_tors.blob.stable_v2.endpoints.get_response.ImobilityTorsGetResponse;
+import https.github_com.erasmus_without_paper.ewp_specs_api_imobility_tors.blob.stable_v2.endpoints.index_response.ImobilityTorsIndexResponse;
 
-public class IMobilityTorsServiceV1Valid extends IMobilityTorsServiceValidCommon {
+public class IMobilityTorsServiceV2Valid extends IMobilityTorsServiceValidCommon {
   protected List<IMobilityTorEntry> tors = new ArrayList<>();
 
 
@@ -30,14 +30,14 @@ public class IMobilityTorsServiceV1Valid extends IMobilityTorsServiceValidCommon
    * @param getUrl         The endpoint at which to listen for requests.
    * @param registryClient Initialized and refreshed {@link RegistryClient} instance.
    */
-  public IMobilityTorsServiceV1Valid(String indexUrl, String getUrl, RegistryClient registryClient,
+  public IMobilityTorsServiceV2Valid(String indexUrl, String getUrl, RegistryClient registryClient,
       ResourceLoader resourceLoader) {
     super(indexUrl, getUrl, registryClient, resourceLoader);
     fillDataBase(resourceLoader);
   }
 
   private List<ImobilityTorsGetResponse.Tor> readTorFromFile(ResourceLoader resourceLoader) {
-    String filename = "imobilitytorsvalidator/tor-v1.xml";
+    String filename = "imobilitytorsvalidator/tor-v2.xml";
     try {
       JAXBContext jc = JAXBContext.newInstance(ImobilityTorsGetResponse.class);
       ImobilityTorsGetResponse parsedRespone = (ImobilityTorsGetResponse) jc.createUnmarshaller()

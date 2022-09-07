@@ -399,6 +399,8 @@
                         <source>src/main/resources/jaxb-schemas/ewp-specs-api-mt-dictionaries-v1.0.0/response.xsd</source>
                         <source>src/main/resources/jaxb-schemas/ewp-specs-api-imobility-tors-v1.0.0/endpoints/index-response.xsd</source>
                         <source>src/main/resources/jaxb-schemas/ewp-specs-api-imobility-tors-v1.0.0/endpoints/get-response.xsd</source>
+                        <source>src/main/resources/jaxb-schemas/ewp-specs-api-imobility-tors-v2.0.0/endpoints/index-response.xsd</source>
+                        <source>src/main/resources/jaxb-schemas/ewp-specs-api-imobility-tors-v2.0.0/endpoints/get-response.xsd</source>
                         <source>src/main/resources/jaxb-schemas/ewp-specs-api-iias-v2.1.0/endpoints/index-response.xsd</source>
                         <source>src/main/resources/jaxb-schemas/ewp-specs-api-iias-v2.1.0/endpoints/get-response.xsd</source>
                         <source>src/main/resources/jaxb-schemas/ewp-specs-api-iias-v3.0.0/endpoints/index-response.xsd</source>
