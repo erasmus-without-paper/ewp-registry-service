@@ -3,10 +3,12 @@ package eu.erasmuswithoutpaper.registry.manifestoverview;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import eu.erasmuswithoutpaper.registry.WRTest;
 import eu.erasmuswithoutpaper.registry.internet.FakeInternet;
+import eu.erasmuswithoutpaper.registry.repository.ManifestRepository;
 import eu.erasmuswithoutpaper.registry.sourceprovider.ManifestSource;
 import eu.erasmuswithoutpaper.registry.sourceprovider.TestManifestSourceProvider;
 import eu.erasmuswithoutpaper.registry.updater.RegistryUpdater;
@@ -37,6 +39,12 @@ public class ManifestOverviewManagerTest extends WRTest {
 
   @Autowired
   private RegistryUpdaterImpl updater;
+
+  @Autowired
+  private ManifestOverviewManager manifestOverviewManager;
+
+  @Autowired
+  private ManifestRepository manifestRepository;
 
   @Value("${app.admin-emails}")
   private List<String> adminEmails;
@@ -176,6 +184,35 @@ public class ManifestOverviewManagerTest extends WRTest {
     this.checkEmail(emailsSent, manifestEmails2.get(1), duplicateRemovedSubject, manifestUrl2);
     this.checkEmail(emailsSent, adminEmails, adminEmailSubject,
         Arrays.asList(manifestUrl1, manifestUrl2));
+
+    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findOne(manifestUrl1)).isNull();
+    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findOne(manifestUrl2)).isNull();
+  }
+
+  @Test
+  public void testDuplicateInfoIsRemovedAfterDuplicateManifestRemoval() {
+    this.internet.putURL(manifestUrl1, getManifest1WithExternalDuplicate());
+    this.internet.putURL(manifestUrl2, getManifest2WithExternalDuplicate());
+
+    this.reloadManifest(manifestUrl1);
+    this.reloadManifest(manifestUrl2);
+
+    assertThat(this.internet.popEmailsSent()).hasSize(adminEmailsCount1 + adminEmailsCount2 + 1);
+
+    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findOne(manifestUrl1)).isNotNull();
+    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findOne(manifestUrl2)).isNotNull();
+
+    // Manifest 2 is removed - duplicates will be gone.
+    this.sourceProvider.removeSource(manifestSource2);
+    this.manifestRepository.deleteManifest(manifestUrl2);
+    this.manifestOverviewManager.updateManifest(manifestUrl2);
+
+    List<String> emailsSent = this.internet.popEmailsSent();
+    assertThat(emailsSent).hasSize(adminEmailsCount1 + 1);
+    this.checkEmail(emailsSent, manifestEmails1.get(0), duplicateRemovedSubject, manifestUrl1);
+    this.checkEmail(emailsSent, manifestEmails1.get(1), duplicateRemovedSubject, manifestUrl1);
+    this.checkEmail(emailsSent, adminEmails, adminEmailSubject,
+        Collections.singletonList(manifestUrl1));
 
     assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findOne(manifestUrl1)).isNull();
     assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findOne(manifestUrl2)).isNull();

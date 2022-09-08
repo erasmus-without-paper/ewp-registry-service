@@ -139,7 +139,7 @@ public class ManifestOverviewManager {
         this.overviews.put(manifestUrl, manifestOverviewInfo);
       }
     } catch (ManifestNotFound manifestNotFound) {
-      // ignore not loaded manifests
+      this.overviews.remove(manifestUrl);
     }
   }
 
@@ -243,10 +243,9 @@ public class ManifestOverviewManager {
         "You can consult %s at any time to find if there are any duplicates in the EWP Network."
     );
 
-    if (this.sendNotificationEmail(manifestWithoutDuplicateUrl, subject, contentTemplate)) {
-      this.manifestsNotifiedAboutDuplicatesRepository.delete(manifestWithoutDuplicateUrl);
-      this.manifestAlreadyNotified.remove(manifestWithoutDuplicateUrl);
-    }
+    this.sendNotificationEmail(manifestWithoutDuplicateUrl, subject, contentTemplate);
+    this.manifestsNotifiedAboutDuplicatesRepository.delete(manifestWithoutDuplicateUrl);
+    this.manifestAlreadyNotified.remove(manifestWithoutDuplicateUrl);
   }
 
   private void notifyAboutNewDuplicate(String manifestWithDuplicateUrl) {
