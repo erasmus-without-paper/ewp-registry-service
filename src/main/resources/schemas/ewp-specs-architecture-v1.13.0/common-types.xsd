@@ -456,7 +456,7 @@
                 In case of most APIs no such extra message is necessary, because HTTP 200 means
                 "success" in itself. However, in cases of some other APIs, the server is
                 allowed some more flexibility in how the request is being processed. This
-                element allows to developers to inform end users about irregularieties in this
+                element allows developers to inform end users about irregularities in this
                 process.
 
                 In places where we expect this element to appear, it will be referred to in a

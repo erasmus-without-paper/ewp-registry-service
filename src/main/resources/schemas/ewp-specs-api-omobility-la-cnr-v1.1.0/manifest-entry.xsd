@@ -5,8 +5,8 @@
     xmlns:sec="https://github.com/erasmus-without-paper/ewp-specs-sec-intro/tree/stable-v2"
     elementFormDefault="qualified"
 
-    targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-api-omobility-las/blob/stable-v1/manifest-entry.xsd"
-    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-omobility-las/blob/stable-v1/manifest-entry.xsd"
+    targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-api-omobility-la-cnr/blob/stable-v1/manifest-entry.xsd"
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-omobility-la-cnr/blob/stable-v1/manifest-entry.xsd"
 >
 
     <xs:import
@@ -28,13 +28,13 @@
         </xs:documentation>
     </xs:annotation>
 
-    <xs:element name="omobility-las">
+    <xs:element name="omobility-la-cnr">
         <xs:annotation>
             <xs:documentation>
                 If this element is present in EWP Host's manifest file, then the host states
-                that it implements the Outgoing Mobility Learning Agreements API described here:
+                that it implements the Outgoing Mobility Learning Agreement CNR API described here:
 
-                https://github.com/erasmus-without-paper/ewp-specs-api-omobility-las
+                https://github.com/erasmus-without-paper/ewp-specs-api-omobility-la-cnr
             </xs:documentation>
         </xs:annotation>
         <xs:complexType>
@@ -48,31 +48,22 @@
                                     given, then the server states that it supports the default set of security
                                     policies (as described in the annotations in sec:HttpSecurityOptions).
 
-                                    The policies described in this element apply to all endpoints of this API (the
-                                    `*-url` elements below). Clients SHOULD consult this element before accessing
-                                    any of these endpoints (otherwise, their request might be rejected by the
-                                    server).
+                                    Clients SHOULD consult this element before accessing the endpoint given in the
+                                    `url` element (otherwise, their request might be rejected by the server).
                                 </xs:documentation>
                             </xs:annotation>
                         </xs:element>
-                        <xs:element name="get-url" type="ewp:HTTPS" minOccurs="1" maxOccurs="1">
+                        <xs:element name="url" type="ewp:HTTPS" minOccurs="1" maxOccurs="1">
                             <xs:annotation>
                                 <xs:documentation>
-                                    An URL at which the `get` endpoint is being served.
+                                    An URL at which the the host will be listening.
                                 </xs:documentation>
                             </xs:annotation>
                         </xs:element>
-                        <xs:element name="index-url" type="ewp:HTTPS" minOccurs="1" maxOccurs="1">
+                        <xs:element name="stats-url" type="ewp:HTTPS" minOccurs="0" maxOccurs="1">
                             <xs:annotation>
                                 <xs:documentation>
-                                    An URL at which the `index` endpoint is being served.
-                                </xs:documentation>
-                            </xs:annotation>
-                        </xs:element>
-                        <xs:element name="update-url" type="ewp:HTTPS" minOccurs="0" maxOccurs="1">
-                            <xs:annotation>
-                                <xs:documentation>
-                                    An URL at which the `update` endpoint is being served.
+                                    The URL of stats endpoint.
                                 </xs:documentation>
                             </xs:annotation>
                         </xs:element>

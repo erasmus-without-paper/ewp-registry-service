@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema
+        xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        elementFormDefault="qualified"
+        xmlns:trm="https://github.com/erasmus-without-paper/ewp-specs-types-academic-term/tree/stable-v2"
+
+        targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-api-omobility-las/blob/stable-v1/endpoints/stats-response.xsd"
+        xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-omobility-las/blob/stable-v1/endpoints/stats-response.xsd"
+>
+
+    <xs:import
+            schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-types-academic-term/stable-v2/schema.xsd"
+            namespace="https://github.com/erasmus-without-paper/ewp-specs-types-academic-term/tree/stable-v2"
+    />
+
+    <xs:annotation>
+        <xs:documentation>
+            This schema is a part of the Erasmus Without Paper project. Before you start
+            using it, make sure you have read the general rules described here:
+
+            http://developers.erasmuswithoutpaper.eu/
+        </xs:documentation>
+    </xs:annotation>
+
+    <xs:element name="las-outgoing-stats-response">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="academic-year-la-stats" minOccurs="0" maxOccurs="unbounded">
+                    <xs:annotation>
+                        <xs:documentation>
+                            This element represents a single academic year by which Learning Agreements are grouped.
+                            It contains a list of statistics for the specified year.
+                        </xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="receiving-academic-year-id" type="trm:AcademicYearId">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        The year for which statistics are specified.
+
+                                        Note, that sending and receiving HEIs MAY use different academic year
+                                        identifiers (e.g. "2010/2011" vs. "2010/2010" or "2011/2011"). This
+                                        particular identifier is the year identifier at the *receiving* HEI, not the
+                                        sending HEI.
+
+                                        This means that the sending HEI MUST know how the receiving HEI identifies its
+                                        academic years (i.e. whether it lies on the northern or southern hemisphere),
+                                        and be able to match its mobilities with these identifiers.
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                            <xs:element name="la-outgoing-total" type="xs:integer">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        Number of outgoing LAs.
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                            <xs:element name="la-outgoing-not-modified-after-approval" type="xs:integer">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        (only before the mobility) Number of outgoing LAs with (only!) one version approved by the
+                                        receiving HEI which has not been followed by any other version.
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                            <xs:element name="la-outgoing-modified-after-approval" type="xs:integer">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        (before and during the mobility) Number of outgoing LAs with at least one version
+                                        approved by the receiving HEI and with some versions after the approved one.
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                            <xs:element name="la-outgoing-latest-version-approved" type="xs:integer">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        Number of outgoing LAs with the latest version approved by the receiving HEI.
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                            <xs:element name="la-outgoing-latest-version-rejected" type="xs:integer">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        Number of outgoing LAs with the latest version rejected by the receiving HEI.
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                            <xs:element name="la-outgoing-latest-version-awaiting" type="xs:integer">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        Number of outgoing LAs with the latest version awaiting receiving HEI’s
+                                        approval.
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+
+    </xs:element>
+</xs:schema>

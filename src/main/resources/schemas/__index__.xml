@@ -121,13 +121,16 @@
     uri="ewp-specs-api-iias-v5.0.0/manifest-entry.xsd" />
 <uri
     name="https://github.com/erasmus-without-paper/ewp-specs-api-iias/blob/stable-v6/endpoints/get-response.xsd"
-    uri="ewp-specs-api-iias-v6.1.0/endpoints/get-response.xsd" />
+    uri="ewp-specs-api-iias-v6.2.0/endpoints/get-response.xsd" />
 <uri
     name="https://github.com/erasmus-without-paper/ewp-specs-api-iias/blob/stable-v6/endpoints/index-response.xsd"
-    uri="ewp-specs-api-iias-v6.1.0/endpoints/index-response.xsd" />
+    uri="ewp-specs-api-iias-v6.2.0/endpoints/index-response.xsd" />
+<uri
+    name="https://github.com/erasmus-without-paper/ewp-specs-api-iias/blob/stable-v6/endpoints/index-response.xsd"
+    uri="ewp-specs-api-iias-v6.2.0/endpoints/stats-response.xsd" />
 <uri
     name="https://github.com/erasmus-without-paper/ewp-specs-api-iias/blob/stable-v6/manifest-entry.xsd"
-    uri="ewp-specs-api-iias-v6.1.0/manifest-entry.xsd" />
+    uri="ewp-specs-api-iias-v6.2.0/manifest-entry.xsd" />
 <uri
     name="https://github.com/erasmus-without-paper/ewp-specs-api-iias-approval/tree/stable-v1"
     uri="ewp-specs-api-iias-approval-v1.1.0/response.xsd" />
@@ -238,25 +241,31 @@
     uri="ewp-specs-api-omobility-cnr-v1.0.0/manifest-entry.xsd" />
 <uri
     name="https://github.com/erasmus-without-paper/ewp-specs-api-omobility-la-cnr/tree/stable-v1"
-    uri="ewp-specs-api-omobility-la-cnr-v1.0.0/response.xsd" />
+    uri="ewp-specs-api-omobility-la-cnr-v1.1.0/response.xsd" />
+<uri
+    name="https://github.com/erasmus-without-paper/ewp-specs-api-omobility-la-cnr/tree/stable-v1"
+    uri="ewp-specs-api-omobility-la-cnr-v1.1.0/endpoints/stats-response.xsd" />
 <uri
     name="https://github.com/erasmus-without-paper/ewp-specs-api-omobility-la-cnr/blob/stable-v1/manifest-entry.xsd"
-    uri="ewp-specs-api-omobility-la-cnr-v1.0.0/manifest-entry.xsd" />
+    uri="ewp-specs-api-omobility-la-cnr-v1.1.0/manifest-entry.xsd" />
 <uri
     name="https://github.com/erasmus-without-paper/ewp-specs-api-omobility-las/blob/stable-v1/endpoints/get-response.xsd"
-    uri="ewp-specs-api-omobility-las-v1.1.0/endpoints/get-response.xsd" />
+    uri="ewp-specs-api-omobility-las-v1.2.0/endpoints/get-response.xsd" />
 <uri
     name="https://github.com/erasmus-without-paper/ewp-specs-api-omobility-las/blob/stable-v1/endpoints/index-response.xsd"
-    uri="ewp-specs-api-omobility-las-v1.1.0/endpoints/index-response.xsd" />
+    uri="ewp-specs-api-omobility-las-v1.2.0/endpoints/index-response.xsd" />
 <uri
     name="https://github.com/erasmus-without-paper/ewp-specs-api-omobility-las/blob/stable-v1/endpoints/update-request.xsd"
-    uri="ewp-specs-api-omobility-las-v1.1.0/endpoints/update-request.xsd" />
+    uri="ewp-specs-api-omobility-las-v1.2.0/endpoints/update-request.xsd" />
 <uri
     name="https://github.com/erasmus-without-paper/ewp-specs-api-omobility-las/blob/stable-v1/endpoints/update-response.xsd"
-    uri="ewp-specs-api-omobility-las-v1.1.0/endpoints/update-response.xsd" />
+    uri="ewp-specs-api-omobility-las-v1.2.0/endpoints/update-response.xsd" />
+<uri
+    name="https://github.com/erasmus-without-paper/ewp-specs-api-omobility-las/blob/stable-v1/endpoints/update-response.xsd"
+    uri="ewp-specs-api-omobility-las-v1.2.0/endpoints/stats-response.xsd" />
 <uri
     name="https://github.com/erasmus-without-paper/ewp-specs-api-omobility-las/blob/stable-v1/manifest-entry.xsd"
-    uri="ewp-specs-api-omobility-las-v1.1.0/manifest-entry.xsd" />
+    uri="ewp-specs-api-omobility-las-v1.2.0/manifest-entry.xsd" />
 <uri
     name="https://github.com/erasmus-without-paper/ewp-specs-api-ounits/tree/stable-v1"
     uri="ewp-specs-api-ounits-v1.1.1/response.xsd" />
@@ -277,7 +286,7 @@
     uri="ewp-specs-api-registry-v1.5.0/manifest-entry.xsd" />
 <uri
     name="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
-    uri="ewp-specs-architecture-v1.12.0/common-types.xsd" />
+    uri="ewp-specs-architecture-v1.13.0/common-types.xsd" />
 <uri
     name="https://github.com/erasmus-without-paper/ewp-specs-fileext-ewpmobility/tree/stable-v1"
     uri="ewp-specs-fileext-ewpmobility-v0.4.3/schema.xsd" />
