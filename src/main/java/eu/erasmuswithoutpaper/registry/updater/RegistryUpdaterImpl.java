@@ -184,6 +184,8 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
 
   @Override
   public void reloadAllManifestSources() {
+    this.manifestSourceProvider.update();
+    this.onSourcesUpdated();
     for (ManifestSource source : this.manifestSourceProvider.getAll()) {
       this.reloadManifestSource(source);
     }

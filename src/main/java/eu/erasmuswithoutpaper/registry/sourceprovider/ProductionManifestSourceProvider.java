@@ -11,6 +11,7 @@ import javax.xml.parsers.DocumentBuilder;
 import eu.erasmuswithoutpaper.registry.common.Utils;
 import eu.erasmuswithoutpaper.registry.constraints.ManifestConstraint;
 import eu.erasmuswithoutpaper.registry.constraints.RestrictInstitutionsCovered;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -42,21 +43,37 @@ public class ProductionManifestSourceProvider extends ManifestSourceProvider {
   private static final Logger logger =
       LoggerFactory.getLogger(ProductionManifestSourceProvider.class);
 
-  private final List<ManifestSource> sources;
+  private final String rootUrl;
+  private final List<String> manifestSourcesUrls;
+  private final ResourceLoader resourceLoader;
+
+  private List<ManifestSource> sources;
 
   /**
    * @param rootUrl
    *     needed to construct a proper URL to Registry's own self-manifest.
    * @param manifestSourcesUrls
    *     location of the manifest-sources.xml files.
-   * @param resLoader
+   * @param resourceLoader
    *     needed to load the manifest-sources.xml file.
    */
   @Autowired
   public ProductionManifestSourceProvider(@Value("${app.root-url}") String rootUrl,
       @Value("${app.manifest-sources.urls}") List<String> manifestSourcesUrls,
-      ResourceLoader resLoader) {
+      ResourceLoader resourceLoader) {
+    this.rootUrl = rootUrl;
+    this.manifestSourcesUrls = manifestSourcesUrls;
+    this.resourceLoader = resourceLoader;
+    this.update();
+  }
 
+  @Override
+  public List<ManifestSource> getAll() {
+    return this.sources;
+  }
+
+  @Override
+  public void update() {
     // The first manifest source is our own.
 
     ArrayList<ManifestSource> lst = new ArrayList<>();
@@ -71,7 +88,7 @@ public class ProductionManifestSourceProvider extends ManifestSourceProvider {
      */
 
     for (String manifestSourcesUrl : manifestSourcesUrls) {
-      Resource resource = resLoader.getResource(manifestSourcesUrl);
+      Resource resource = resourceLoader.getResource(manifestSourcesUrl);
       if (!resource.exists()) {
         throw new RuntimeException("Resource does not exist: " + resource);
       }
@@ -97,10 +114,5 @@ public class ProductionManifestSourceProvider extends ManifestSourceProvider {
     }
 
     this.sources = Collections.unmodifiableList(lst);
-  }
-
-  @Override
-  public List<ManifestSource> getAll() {
-    return this.sources;
   }
 }

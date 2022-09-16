@@ -32,4 +32,9 @@ public abstract class ManifestSourceProvider {
     }
     return Optional.empty();
   }
+
+  /**
+   * Update the list of {@link ManifestSource}s.
+   */
+  public abstract void update();
 }

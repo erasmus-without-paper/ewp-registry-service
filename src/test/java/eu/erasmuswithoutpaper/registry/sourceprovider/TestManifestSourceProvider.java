@@ -46,14 +46,21 @@ public class TestManifestSourceProvider extends ManifestSourceProvider {
     return this.sources;
   }
 
+  @Override
+  public void update() {
+    // Updating manifest sources list is not possible in tests.
+  }
+
   /**
    * @param source {@link ManifestSource} to be removed from the list.
    * @return <b>true</b> if it existed on the list.
    */
   public boolean removeSource(ManifestSource source) {
-    boolean result = this.sources.remove(source);
-    this.updater.onSourcesUpdated();
-    return result;
+    boolean sourceExisted = this.sources.remove(source);
+    if (sourceExisted) {
+      this.updater.onSourcesUpdated();
+    }
+    return sourceExisted;
   }
 
   @Autowired
