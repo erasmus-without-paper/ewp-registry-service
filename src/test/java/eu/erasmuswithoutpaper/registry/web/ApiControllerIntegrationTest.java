@@ -2,6 +2,8 @@ package eu.erasmuswithoutpaper.registry.web;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Map;
+
 import eu.erasmuswithoutpaper.registry.WRIntegrationTest;
 import eu.erasmuswithoutpaper.registry.constraints.RestrictInstitutionsCovered;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildParams;
@@ -107,15 +109,19 @@ public class ApiControllerIntegrationTest extends WRIntegrationTest {
   }
 
   /**
-   * Check if the manifest is being served. Same, as above - just testing if it is properly
+   * Check if the manifests are being served. Same, as above - just testing if it is properly
    * connected with {@link SelfManifestProvider}.
    */
   @Test
   public void servesTheManifest() {
-    ResponseEntity<String> response =
-        this.template.getForEntity(this.baseURL + "/manifest.xml", String.class);
-    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(response.getBody()).isEqualTo(this.selfManifestProvider.getManifest());
+    Map<String, String> manifests = this.selfManifestProvider.getManifests();
+
+    for (String manifestName : manifests.keySet()) {
+        ResponseEntity<String> response =
+            this.template.getForEntity(this.baseURL + "/manifest-" + manifestName + ".xml", String.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isEqualTo(manifests.get(manifestName));
+    }
   }
 
   /**

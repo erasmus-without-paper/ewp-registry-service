@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.security.KeyPair;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import eu.erasmuswithoutpaper.registry.WRTest;
 import eu.erasmuswithoutpaper.registry.internet.FakeInternet;
@@ -52,7 +53,7 @@ public abstract class AbstractApiTest<StateType extends SuiteState> extends WRTe
       Arrays.asList("test.hei01.uw.edu.pl", "test.hei02.uw.edu.pl")
   );
 
-  private static final String selfManifestUrl = "https://registry.example.com/manifest.xml";
+  private static final String selfManifestUrl = "https://registry.example.com/manifest-%s.xml";
   private static final String apiManifestUrl = "https://university.example.com/manifest.xml";
 
   private static boolean needsReinit;
@@ -141,9 +142,14 @@ public abstract class AbstractApiTest<StateType extends SuiteState> extends WRTe
       this.repo.deleteAll();
       this.internet.clearAll();
 
-      String myManifest = this.selfManifestProvider.getManifest();
-      this.internet.putURL(selfManifestUrl, myManifest);
-      this.sourceProvider.addSource(ManifestSource.newTrustedSource(selfManifestUrl));
+      Map<String,String> registryManifests = this.selfManifestProvider.getManifests();
+
+      for (String myManifestName : registryManifests.keySet()) {
+        String myManifest = registryManifests.get(myManifestName);
+        String myUrl = String.format(selfManifestUrl, myManifestName);
+        this.internet.putURL(myUrl, myManifest);
+        this.sourceProvider.addSource(ManifestSource.newTrustedSource(myUrl));
+      }
 
       String apiManifest = this.getFileAsString(getManifestFilename());
       myKeyPair = this.getValidator().getValidatorKeyStoreSet().getMainKeyStore().generateKeyPair();

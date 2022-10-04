@@ -8,6 +8,8 @@ import javax.servlet.http.HttpServletRequest;
 import eu.erasmuswithoutpaper.registry.common.Severity;
 import eu.erasmuswithoutpaper.registry.notifier.NotifierFlag;
 import eu.erasmuswithoutpaper.registry.notifier.NotifierService;
+import eu.erasmuswithoutpaper.registry.web.ApiController.ManifestNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -18,6 +20,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -27,8 +31,9 @@ import org.apache.commons.io.IOUtils;
  * Handles how errors are displayed.
  */
 @Controller
+@ControllerAdvice
 @ConditionalOnWebApplication
-public class MyErrorController implements ErrorController {
+public class RegistryErrorController implements ErrorController {
 
   private final ResourceLoader resLoader;
   private final NotifierFlag http500errorFlag;
@@ -46,7 +51,7 @@ public class MyErrorController implements ErrorController {
    */
   @Autowired
   @SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
-  public MyErrorController(ResourceLoader resLoader, NotifierService notifier,
+  public RegistryErrorController(ResourceLoader resLoader, NotifierService notifier,
       @Value("${app.admin-emails}") List<String> adminEmails,
       @Value("${app.use-flag-to-notify-about-exceptions}") boolean useFlagToNotifyAboutExceptions) {
     this.resLoader = resLoader;
@@ -113,5 +118,10 @@ public class MyErrorController implements ErrorController {
   @Override
   public String getErrorPath() {
     return "/error";
+  }
+
+  @ExceptionHandler({ ManifestNotFoundException.class })
+  public ResponseEntity<String> handleManifestNotFoundException() {
+    return get404();
   }
 }

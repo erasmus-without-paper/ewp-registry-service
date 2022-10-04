@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import eu.erasmuswithoutpaper.registry.WRTest;
 import eu.erasmuswithoutpaper.registry.constraints.ClientKeyConstraint;
@@ -47,24 +48,28 @@ public class SelfManifestProviderTest extends WRTest {
    */
   @Test
   public void producesAValidManifest() {
-    BuildParams params = new BuildParams(this.provider.getManifest());
-    params.setExpectedKnownElement(KnownElement.RESPONSE_MANIFEST_V5);
-    BuildResult result = this.docBuilder.build(params);
-    assertThat(result.getErrors()).isEmpty();
-    assertThat(result.isValid()).isTrue();
+    Map<String, String> manifests = this.provider.getManifests();
 
-    Document doc = result.getDocument().get();
+    for (String manifestName : manifests.keySet()) {
+      BuildParams params = new BuildParams(manifests.get(manifestName));
+      params.setExpectedKnownElement(KnownElement.RESPONSE_MANIFEST_V6);
+      BuildResult result = this.docBuilder.build(params);
+      assertThat(result.getErrors()).isEmpty();
+      assertThat(result.isValid()).isTrue();
 
-    List<ManifestConstraint> constraints = new ArrayList<>();
-    constraints.add(new TlsClientCertificateSecurityConstraint(2048));
-    constraints.add(new ClientKeyConstraint(2048));
-    constraints.add(new ServerKeySecurityConstraint(2048));
-    constraints
-        .add(new RestrictInstitutionsCovered("^.*\\.developers\\.erasmuswithoutpaper\\.eu$"));
-    constraints.add(new VerifyApiVersions());
-    for (ManifestConstraint c : constraints) {
-      List<FailedConstraintNotice> notices = c.filter(doc, registryClient);
-      assertThat(notices).isEmpty();
+      Document doc = result.getDocument().get();
+
+      List<ManifestConstraint> constraints = new ArrayList<>();
+      constraints.add(new TlsClientCertificateSecurityConstraint(2048));
+      constraints.add(new ClientKeyConstraint(2048));
+      constraints.add(new ServerKeySecurityConstraint(2048));
+      constraints
+          .add(new RestrictInstitutionsCovered("^.*\\.developers\\.erasmuswithoutpaper\\.eu$"));
+      constraints.add(new VerifyApiVersions());
+      for (ManifestConstraint c : constraints) {
+        List<FailedConstraintNotice> notices = c.filter(doc, registryClient);
+        assertThat(notices).isEmpty();
+      }
     }
   }
 }

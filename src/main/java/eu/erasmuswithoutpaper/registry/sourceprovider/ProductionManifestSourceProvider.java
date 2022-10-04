@@ -6,11 +6,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+
 import javax.xml.parsers.DocumentBuilder;
 
 import eu.erasmuswithoutpaper.registry.common.Utils;
 import eu.erasmuswithoutpaper.registry.constraints.ManifestConstraint;
 import eu.erasmuswithoutpaper.registry.constraints.RestrictInstitutionsCovered;
+import eu.erasmuswithoutpaper.registry.web.SelfManifestProvider;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,6 +49,7 @@ public class ProductionManifestSourceProvider extends ManifestSourceProvider {
   private final String rootUrl;
   private final List<String> manifestSourcesUrls;
   private final ResourceLoader resourceLoader;
+  private final SelfManifestProvider selfManifestProvider;
 
   private List<ManifestSource> sources;
 
@@ -56,14 +60,17 @@ public class ProductionManifestSourceProvider extends ManifestSourceProvider {
    *     location of the manifest-sources.xml files.
    * @param resourceLoader
    *     needed to load the manifest-sources.xml file.
+   * @param selfManifestProvider
+   *     needed to get self manifests.
    */
   @Autowired
   public ProductionManifestSourceProvider(@Value("${app.root-url}") String rootUrl,
       @Value("${app.manifest-sources.urls}") List<String> manifestSourcesUrls,
-      ResourceLoader resourceLoader) {
+      ResourceLoader resourceLoader, SelfManifestProvider selfManifestProvider) {
     this.rootUrl = rootUrl;
     this.manifestSourcesUrls = manifestSourcesUrls;
     this.resourceLoader = resourceLoader;
+    this.selfManifestProvider = selfManifestProvider;
     this.update();
   }
 
@@ -78,9 +85,14 @@ public class ProductionManifestSourceProvider extends ManifestSourceProvider {
 
     ArrayList<ManifestSource> lst = new ArrayList<>();
     if (rootUrl.startsWith("https://")) {
-      ManifestSource manifestSource = ManifestSource.newTrustedSource(rootUrl + "/manifest.xml");
-      logger.info("Adding self-manifest source: " + manifestSource);
-      lst.add(manifestSource);
+      Set<String> manifests = this.selfManifestProvider.getManifests().keySet();
+
+      for (String manifest : manifests) {
+        String url = rootUrl + "/manifest-" + manifest + ".xml";
+        ManifestSource manifestSource = ManifestSource.newTrustedSource(url);
+        logger.info("Adding self-manifest source: " + manifestSource);
+        lst.add(manifestSource);
+      }
     }
 
     /*

@@ -109,7 +109,7 @@ public class UiController {
   private final CatalogueDependantCache catcache;
   private final ApiValidatorsManager apiValidatorsManager;
   private final ValidatorKeyStore validatorKeyStore;
-  private final MyErrorController errorController;
+  private final RegistryErrorController errorController;
   private final ManifestOverviewManager manifestOverviewManager;
   private final IiaHashService iiaHashService;
 
@@ -147,7 +147,7 @@ public class UiController {
       UptimeChecker uptimeChecker, EwpDocBuilder docBuilder, ResourceLoader resLoader,
       CoverageMatrixGenerator matrixGenerator, RegistryClient regClient,
       CatalogueDependantCache catcache, ApiValidatorsManager apiValidatorsManager,
-      ValidatorKeyStoreSet validatorKeyStoreSet, MyErrorController errorController,
+      ValidatorKeyStoreSet validatorKeyStoreSet, RegistryErrorController errorController,
       ManifestOverviewManager manifestOverviewManager, IiaHashService iiaHashService) {
     this.taskExecutor = taskExecutor;
     this.manifestStatusRepo = manifestUpdateStatuses;

@@ -12,6 +12,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -29,6 +30,12 @@ public class ApiController {
   private final ManifestRepository repo;
   private final SelfManifestProvider selfManifestProvider;
   private final ResourceLoader resLoader;
+
+  public static class ManifestNotFoundException extends RuntimeException {
+    ManifestNotFoundException(String manifestName) {
+      super("Manifest " + manifestName + " does not exist.");
+    }
+  }
 
   /**
    * @param repo
@@ -75,13 +82,20 @@ public class ApiController {
   /**
    * @return a HTTP response with Registry's own self-manifest.
    */
-  @RequestMapping("/manifest.xml")
-  public ResponseEntity<String> getSelfManifest() {
+  @RequestMapping("/manifest-{manifestName}.xml")
+  public ResponseEntity<String> getSelfManifest(@PathVariable String manifestName) {
+    String manifest = this.selfManifestProvider.getManifests().get(manifestName);
+
+    // Return 404 if manifest name is not known.
+
+    if (manifest == null) {
+      throw new ManifestNotFoundException(manifestName);
+    }
+
     HttpHeaders headers = new HttpHeaders();
     headers.setCacheControl("max-age=0, must-revalidate");
     headers.setContentType(MediaType.APPLICATION_XML);
     headers.setExpires(0);
-    return new ResponseEntity<String>(this.selfManifestProvider.getManifest(), headers,
-        HttpStatus.OK);
+    return new ResponseEntity<String>(manifest, headers, HttpStatus.OK);
   }
 }
