@@ -3,6 +3,7 @@ package eu.erasmuswithoutpaper.registry.web;
 import java.security.KeyStore;
 import java.security.cert.CertificateEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +44,12 @@ public class SelfManifestProvider {
 
   private final List<String> adminEmails;
   private final List<String> validatorHostCoveredHeiIds;
-  private final List<EncodedCertificateAndKeys> validatorHostCertificatesAndKeys
+
+  /*
+   * i-th element is a list of certificates and keys that should be included in
+   * the manifest of i-th validator.
+   */
+  private final List<List<EncodedCertificateAndKeys>> validatorHostCertificatesAndKeys
       = new ArrayList<>();
 
   private final List<String> secondaryValidatorHostCoveredHeiIds;
@@ -80,15 +86,24 @@ public class SelfManifestProvider {
       throws KeyStoreUtilsException, CertificateEncodingException {
     this.adminEmails = adminEmails;
 
-    ValidatorKeyStore validatorHostKeyStore = validatorKeyStoreSet.getMainKeyStore();
-
-    this.validatorHostCertificatesAndKeys.add(new EncodedCertificateAndKeys(validatorHostKeyStore));
-    this.validatorHostCoveredHeiIds = validatorHostKeyStore.getCoveredHeiIDs();
-
+    List<EncodedCertificateAndKeys> additionalCertificateAndKeys = null;
     if (additionalKeysKeystorePath != null && aliases != null && password != null) {
-      this.validatorHostCertificatesAndKeys.addAll(
-          readCertificatesAndKeysFromKeyStore(additionalKeysKeystorePath, aliases, password)
-      );
+      additionalCertificateAndKeys =
+          readCertificatesAndKeysFromKeyStore(additionalKeysKeystorePath, aliases, password);
+    }
+
+    this.validatorHostCoveredHeiIds = new ArrayList<>();
+    for (ValidatorKeyStore keyStore : validatorKeyStoreSet.getPrimaryKeyStores()) {
+      String heiId = keyStore.getCoveredHeiIDs().get(0);
+      List<EncodedCertificateAndKeys> certificateAndKeys = new ArrayList<>();
+      certificateAndKeys.add(new EncodedCertificateAndKeys(keyStore));
+
+      if (additionalCertificateAndKeys != null) {
+        certificateAndKeys.addAll(additionalCertificateAndKeys);
+      }
+
+      this.validatorHostCoveredHeiIds.add(heiId);
+      this.validatorHostCertificatesAndKeys.add(certificateAndKeys);
     }
 
     ValidatorKeyStore secondaryValidatorHostKeyStore = validatorKeyStoreSet.getSecondaryKeyStore();
@@ -181,7 +196,7 @@ public class SelfManifestProvider {
 
         manifests.putAll(createValidatorManifests("secondaryValidator",
             this.secondaryValidatorHostCoveredHeiIds,
-            this.secondaryValidatorHostCertificatesAndKeys));
+            Arrays.asList(this.secondaryValidatorHostCertificatesAndKeys)));
       }
     }
 
@@ -190,7 +205,7 @@ public class SelfManifestProvider {
 
   private Map<String, String> createValidatorManifests(String baseName,
       List<String> validatorHostCoveredHeiIds,
-      List<EncodedCertificateAndKeys> validatorHostCertificatesAndKeys) {
+      List<List<EncodedCertificateAndKeys>> validatorHostCertificatesAndKeys) {
 
     Map<String, String> manifests = new HashMap<>();
     String fakeApiXmlns = "https://github.com/erasmus-without-paper/ewp-registry-service/issues/8";
@@ -202,7 +217,7 @@ public class SelfManifestProvider {
       validatorBuilder.addAdminEmails(this.adminEmails)
           .setAdminNotes("This host is needed for the API Validator.")
           .addApi("fake-api-without-a-version", null, fakeApiXmlns, new HashMap<>())
-          .addClientCertificates(validatorHostCertificatesAndKeys);
+          .addClientCertificates(validatorHostCertificatesAndKeys.get(0));
 
       manifests.put(baseName, validatorBuilder.buildXml());
     } else {
@@ -217,7 +232,7 @@ public class SelfManifestProvider {
             .setAdminNotes("This host is needed for the API Validator.")
             .addApi("fake-api-without-a-version", null, fakeApiXmlns, new HashMap<>())
             .setHei(hei, "Artificial HEI for testing APIs")
-            .addClientCertificates(validatorHostCertificatesAndKeys);
+            .addClientCertificates(validatorHostCertificatesAndKeys.get(i));
 
         manifests.put(name, validatorBuilder.buildXml());
       }

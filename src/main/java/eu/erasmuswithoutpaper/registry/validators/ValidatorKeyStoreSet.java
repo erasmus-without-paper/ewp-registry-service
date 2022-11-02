@@ -2,6 +2,7 @@ package eu.erasmuswithoutpaper.registry.validators;
 
 import java.security.Security;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import eu.erasmuswithoutpaper.registry.Application;
@@ -23,6 +24,12 @@ public class ValidatorKeyStoreSet {
   private static final Logger logger = LoggerFactory.getLogger(ValidatorKeyStoreSet.class);
 
   private ValidatorKeyStore mainKeyStore;
+
+  /**
+   * List of Keystores for primary validators. i-th element corresponds to
+   * validator-hei0{i}.developers.erasmuswithoutpaper.eu HEI.
+   */
+  private List<ValidatorKeyStore> primaryKeyStores;
   private ValidatorKeyStore secondaryKeyStore;
 
   /**
@@ -48,26 +55,37 @@ public class ValidatorKeyStoreSet {
       additionalHeiIdsArray = new ArrayList<>();
     }
 
-    ArrayList<String> additionalHeiIds = new ArrayList<>(additionalHeiIdsArray);
+    this.primaryKeyStores = new ArrayList<>();
 
     // We are providing URL ourselves because Application.getRootUrl() will return null,
     // because initialization is not finished yet.
     if (Application.isProductionSite(rootUrl)) {
       // No hei ids should be added in production environment, even if explicitly specified.
-      additionalHeiIds.clear();
+      this.mainKeyStore = new ValidatorKeyStore();
+      this.primaryKeyStores.add(this.mainKeyStore);
     } else if (!consoleEnvInfo.isConsole()) {
       // In development environment we add artificial hei ids for validator.
       for (int i = 1; i <= 2; i++) {
-        additionalHeiIds.add("validator-hei0" + i + ".developers.erasmuswithoutpaper.eu");
+        String heiId = "validator-hei0" + i + ".developers.erasmuswithoutpaper.eu";
+        this.primaryKeyStores.add(new ValidatorKeyStore(Arrays.asList(heiId)));
       }
+
+      for (String heiId : additionalHeiIdsArray) {
+        this.primaryKeyStores.add(new ValidatorKeyStore(Arrays.asList(heiId)));
+      }
+
+      this.mainKeyStore = this.primaryKeyStores.get(0);
     }
 
-    this.mainKeyStore = new ValidatorKeyStore(additionalHeiIds);
     this.secondaryKeyStore = new ValidatorKeyStore();
   }
 
   public ValidatorKeyStore getMainKeyStore() {
     return mainKeyStore;
+  }
+
+  public List<ValidatorKeyStore> getPrimaryKeyStores() {
+    return this.primaryKeyStores;
   }
 
   public ValidatorKeyStore getSecondaryKeyStore() {
@@ -76,6 +94,7 @@ public class ValidatorKeyStoreSet {
 
   public void setMainKeyStore(ValidatorKeyStore keyStore) {
     this.mainKeyStore = keyStore;
+    this.primaryKeyStores = Arrays.asList(keyStore);
   }
 
   public void setSecondaryKeyStore(ValidatorKeyStore keyStore) {

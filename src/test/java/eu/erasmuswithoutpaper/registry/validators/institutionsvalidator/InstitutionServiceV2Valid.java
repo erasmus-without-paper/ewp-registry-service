@@ -93,9 +93,11 @@ public class InstitutionServiceV2Valid extends AbstractInstitutionService {
   }
 
   public InstitutionServiceV2Valid(String url, RegistryClient registryClient,
-    ValidatorKeyStore validatorKeyStore) {
+    ValidatorKeyStore validatorKeyStore1, ValidatorKeyStore validatorKeyStore2) {
     super(url, registryClient);
-    coveredHeiIds = validatorKeyStore.getCoveredHeiIDs();
+    coveredHeiIds = new ArrayList<>();
+    coveredHeiIds.addAll(validatorKeyStore1.getCoveredHeiIDs());
+    coveredHeiIds.addAll(validatorKeyStore2.getCoveredHeiIDs());
 
     //Create fake HEIs
     InstitutionsResponse.Hei d1 = createFakeHeiData(coveredHeiIds.get(0));

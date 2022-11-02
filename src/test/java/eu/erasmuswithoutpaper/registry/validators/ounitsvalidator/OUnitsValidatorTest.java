@@ -38,7 +38,8 @@ public class OUnitsValidatorTest extends AbstractApiTest<OUnitsSuiteState> {
 
   private InstitutionServiceV2Valid GetInstitutions() {
     return new InstitutionServiceV2Valid(
-        institutionsUrlHTTT, client, validatorKeyStoreSet.getMainKeyStore()) {
+        institutionsUrlHTTT, client, validatorKeyStoreSet.getPrimaryKeyStores().get(0),
+        validatorKeyStoreSet.getPrimaryKeyStores().get(1)) {
       @Override
       protected List<String> getCoveredOUnits() {
         return Arrays.asList("ounit-1", "ounit-2", "ounit-3");
