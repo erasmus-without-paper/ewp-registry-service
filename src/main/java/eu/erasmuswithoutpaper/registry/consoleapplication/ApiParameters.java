@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidatorsManager;
-import eu.erasmuswithoutpaper.registry.validators.SemanticVersion;
 import eu.erasmuswithoutpaper.registry.validators.ValidationParameter;
 import eu.erasmuswithoutpaper.registry.validators.ValidationParameters;
 import eu.erasmuswithoutpaper.registry.validators.web.ManifestApiEntry;
@@ -70,7 +69,6 @@ public class ApiParameters {
 
       List<ApiValidator.ParameterWithVersion> parameterWithVersions = apiValidator.getParameters();
       for (ApiValidator.ParameterWithVersion parameterWithVersion : parameterWithVersions) {
-        SemanticVersion version = parameterWithVersion.version;
         ValidationParameter parameter = parameterWithVersion.parameter;
 
         String description = "";
@@ -78,14 +76,26 @@ public class ApiParameters {
           description = ", " + parameter.getDescription();
         }
 
-        apiParameter.add(
-            String.format(
-                "                    - %s - from version %s%s",
-                parameter.getName(),
-                version,
-                description
-            )
-        );
+        if (parameterWithVersion.maxMajorVersion.equals("inf")) {
+          apiParameter.add(
+              String.format(
+                  "                    - %s - from version %s%s",
+                  parameter.getName(),
+                  parameterWithVersion.minMajorVersion,
+                  description
+              )
+          );
+        } else {
+          apiParameter.add(
+              String.format(
+                  "                    - %s - from version %s - %s%s",
+                  parameter.getName(),
+                  parameterWithVersion.minMajorVersion,
+                  parameterWithVersion.maxMajorVersion,
+                  description
+              )
+          );
+        }
 
         if (!parameter.getDependencies().isEmpty()) {
           String dependencies = String.join(", ", parameter.getDependencies());

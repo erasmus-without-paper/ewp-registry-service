@@ -815,7 +815,7 @@ public class KnownNamespace {
    *     An extra string to be appended to {@link #COMMON_SCHEMA_LOCATION_PREFIX}
    *     , when building schema location URL.
    */
-  private KnownNamespace(String preferredPrefix, String uriEnding, String schemaLocEnding,
+  public KnownNamespace(String preferredPrefix, String uriEnding, String schemaLocEnding,
       boolean includeInCatalogueXmlns) {
     this.preferredPrefix = preferredPrefix;
     this.uriEnding = uriEnding;

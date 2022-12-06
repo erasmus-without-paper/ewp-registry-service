@@ -88,8 +88,8 @@ public class ApiValidatorsManager {
       return false;
     }
 
-    for (SemanticVersion ver : validator.getCoveredApiVersions()) {
-      if (version.isCompatible(ver)) {
+    for (ApiValidator.ValidationSuiteInfoWithVersions<?> suite : validator.getValidationSuites()) {
+      if (ApiValidator.isVersionInRange(version, suite.minMajorVersion, suite.maxMajorVersion)) {
         return true;
       }
     }

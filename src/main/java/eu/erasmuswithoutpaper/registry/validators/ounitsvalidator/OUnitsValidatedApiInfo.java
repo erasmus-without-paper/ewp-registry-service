@@ -1,19 +1,35 @@
 package eu.erasmuswithoutpaper.registry.validators.ounitsvalidator;
 
-import eu.erasmuswithoutpaper.registry.documentbuilder.KnownElement;
-import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
 import eu.erasmuswithoutpaper.registry.validators.ApiEndpoint;
 import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
 
-class OUnitsValidatedApiInfo implements ValidatedApiInfo {
-  @Override
-  public KnownElement getResponseKnownElement() {
-    return KnownElement.RESPONSE_OUNITS_V2;
+class OUnitsValidatedApiInfo extends ValidatedApiInfo {
+  private final int version;
+  private final ApiEndpoint endpoint;
+
+  public OUnitsValidatedApiInfo(int version, ApiEndpoint endpoint) {
+    this.version = version;
+    this.endpoint = endpoint;
   }
 
   @Override
-  public KnownNamespace getApiEntryKnownNamespace() {
-    return KnownNamespace.APIENTRY_OUNITS_V2;
+  public int getVersion() {
+    return this.version;
+  }
+
+  @Override
+  public String preferredPrefix() {
+    return "ou";
+  }
+
+  @Override
+  public boolean responseIncludeInCatalogueXmlns() {
+    return false;
+  }
+
+  @Override
+  public boolean apiEntryIncludeInCatalogueXmlns() {
+    return this.version == 2;
   }
 
   @Override
@@ -23,7 +39,17 @@ class OUnitsValidatedApiInfo implements ValidatedApiInfo {
 
   @Override
   public ApiEndpoint getEndpoint() {
-    return ApiEndpoint.NoEndpoint;
+    return this.endpoint;
+  }
+
+  @Override
+  public String getElementName() {
+    return "ounits-response";
+  }
+
+  @Override
+  public String getNamespaceApiName() {
+    return "api-ounits";
   }
 
   @Override

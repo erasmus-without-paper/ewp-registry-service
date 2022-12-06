@@ -1,9 +1,9 @@
 package eu.erasmuswithoutpaper.registry.validators;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import javax.annotation.PostConstruct;
 
 import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
@@ -87,14 +87,37 @@ public abstract class ApiValidator<S extends SuiteState> {
 
   private Collection<ValidationSuiteInfo<S>> getCompatibleSuites(
       SemanticVersion version,
-      ListMultimap<SemanticVersion, ValidationSuiteInfo<S>> map) {
+      List<ValidationSuiteInfoWithVersions<S>> allSuites) {
     List<ValidationSuiteInfo<S>> result = new ArrayList<>();
-    for (Map.Entry<SemanticVersion, ValidationSuiteInfo<S>> entry : map.entries()) {
-      if (version.isCompatible(entry.getKey())) {
-        result.add(entry.getValue());
+    for (ValidationSuiteInfoWithVersions<S> suite : allSuites) {
+      if (isVersionInRange(version, suite.minMajorVersion, suite.maxMajorVersion)) {
+        result.add(suite.validationSuiteInfo);
       }
     }
     return result;
+  }
+
+  /**
+   * Checks if version is in specified range.
+   *
+   * @param version
+   *     version to check.
+   * @param minMajorVersion
+   *     the lowest acceptable major version.
+   * @param maxMajorVersion
+   *     the greatest acceptable major version.
+   * @return
+   *     Boolean result of checking if version is in range.
+   */
+  public static Boolean isVersionInRange(SemanticVersion version, String minMajorVersion,
+      String maxMajorVersion) {
+    try {
+      return
+          (version.major >= Integer.parseInt(minMajorVersion))
+          && (maxMajorVersion.equals("inf") || version.major <= Integer.parseInt(maxMajorVersion));
+    } catch (NumberFormatException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   /**
@@ -115,13 +138,38 @@ public abstract class ApiValidator<S extends SuiteState> {
 
   public static class ParameterWithVersion {
     public ValidationParameter parameter;
-    public SemanticVersion version;
+    public String minMajorVersion;
+    public String maxMajorVersion;
 
+    /**
+     * @param parameter
+     *     validation parameter.
+     * @param minMajorVersion
+     *     the lowest acceptable version.
+     * @param maxMajorVersion
+     *     the greatest acceptable version.
+     */
     public ParameterWithVersion(
         ValidationParameter parameter,
-        SemanticVersion version) {
+        String minMajorVersion,
+        String maxMajorVersion) {
       this.parameter = parameter;
-      this.version = version;
+      this.minMajorVersion = minMajorVersion;
+      this.maxMajorVersion = maxMajorVersion;
+    }
+  }
+
+  public static class ValidationSuiteInfoWithVersions<K extends SuiteState> {
+    public String minMajorVersion;
+    public String maxMajorVersion;
+    public ValidationSuiteInfo<K> validationSuiteInfo;
+
+    ValidationSuiteInfoWithVersions(String minMajorVersion,
+        String maxMajorVersion,
+        ValidationSuiteInfo<K> validationSuiteInfo) {
+      this.maxMajorVersion = maxMajorVersion;
+      this.minMajorVersion = minMajorVersion;
+      this.validationSuiteInfo = validationSuiteInfo;
     }
   }
 
@@ -132,14 +180,13 @@ public abstract class ApiValidator<S extends SuiteState> {
   public List<ParameterWithVersion> getParameters() {
     List<ParameterWithVersion> parameters = new ArrayList<>();
 
-    for (Map.Entry<SemanticVersion, ValidationSuiteInfo<S>> entry :
-        getValidationSuites().entries()) {
-      SemanticVersion version = entry.getKey();
-      ValidationSuiteInfo<S> info = entry.getValue();
+    for (ValidationSuiteInfoWithVersions<S> suite : getValidationSuites()) {
+      ValidationSuiteInfo<S> info = suite.validationSuiteInfo;
       for (ValidationParameter parameter : info.parameters) {
         parameters.add(new ParameterWithVersion(
             parameter,
-            version
+            suite.minMajorVersion,
+            suite.maxMajorVersion
         ));
       }
     }
@@ -153,10 +200,31 @@ public abstract class ApiValidator<S extends SuiteState> {
 
   public abstract Logger getLogger();
 
-  protected abstract ListMultimap<SemanticVersion, ValidationSuiteInfo<S>> getValidationSuites();
+  protected abstract List<ValidationSuiteInfoWithVersions<S>> getValidationSuites();
 
-  public Collection<SemanticVersion> getCoveredApiVersions() {
-    return getValidationSuites().keySet();
+  @SuppressWarnings("unchecked")
+  protected List<ValidationSuiteInfoWithVersions<S>> getValidationSuitesFromValidator(
+      ApiValidator<S> validator) {
+
+    Class<?> validatorClass = validator.getClass();
+    List<ValidationSuiteInfoWithVersions<S>> validationSuites = new ArrayList<>();
+
+    for (Field field : validatorClass.getDeclaredFields()) {
+      if (field.isAnnotationPresent(ValidatorTestStep.class)) {
+
+        try {
+          ValidatorTestStep annotation = field.getAnnotation(ValidatorTestStep.class);
+          ValidationSuiteInfo<S> validationSuite = (ValidationSuiteInfo<S>) field.get(validator);
+
+          validationSuites.add(new ValidationSuiteInfoWithVersions<S>(annotation.minMajorVersion(),
+              annotation.maxMajorVersion(), validationSuite));
+        } catch (IllegalAccessException e) {
+          throw new RuntimeException(e);
+        }
+      }
+    }
+
+    return validationSuites;
   }
 
   protected abstract S createState(String url, SemanticVersion version);
@@ -185,35 +253,55 @@ public abstract class ApiValidator<S extends SuiteState> {
     S state = createState(urlStr, version);
     state.parameters = parameters;
     for (ValidationSuiteInfo<S> info : getCompatibleSuites(version, getValidationSuites())) {
-      AbstractValidationSuite<S> suite =
-          info.factory.create(this, state, config);
-      suite.run(security);
-      result.addAll(suite.getResults());
+      runTestsFromSuiteFactory(version, security, state, config, info.setupFactory, result);
+      if (state.broken) {
+        break;
+      }
+
+      runTestsFromSuiteFactory(version, security, state, config, info.testFactory, result);
       if (state.broken) {
         break;
       }
     }
+
     return result;
+  }
+
+  private void runTestsFromSuiteFactory(SemanticVersion version, HttpSecurityDescription security,
+      S state, AbstractValidationSuite.ValidationSuiteConfig config,
+      ValidationSuiteFactory<S> factory, List<ValidationStepWithStatus> result) {
+
+    AbstractValidationSuite<S> setupSuite =
+        factory.create(this, state, config, version.major);
+    setupSuite.run(security);
+    result.addAll(setupSuite.getResults());
   }
 
   protected interface ValidationSuiteFactory<T extends SuiteState> {
     AbstractValidationSuite<T> create(ApiValidator<T> validator, T state,
-        AbstractValidationSuite.ValidationSuiteConfig config);
+        AbstractValidationSuite.ValidationSuiteConfig config, int version);
   }
 
   public static class ValidationSuiteInfo<T extends SuiteState> {
-    ValidationSuiteFactory<T> factory;
+    ValidationSuiteFactory<T> setupFactory;
+    ValidationSuiteFactory<T> testFactory;
     List<ValidationParameter> parameters;
 
-    public ValidationSuiteInfo(ValidationSuiteFactory<T> factory,
-        List<ValidationParameter> parameters) {
-      this.factory = factory;
+    /**
+     * Stores classes necessary to create a validator test step.
+     * @param setupFactory
+     *     a factory that creates a setup validation suite.
+     * @param parameters
+     *     parameters for the suite creation.
+     * @param testFactory
+     *     a factory that creates a validation suite.
+     */
+    public ValidationSuiteInfo(ValidationSuiteFactory<T> setupFactory,
+        List<ValidationParameter> parameters,
+        ValidationSuiteFactory<T> testFactory) {
+      this.setupFactory = setupFactory;
+      this.testFactory = testFactory;
       this.parameters = parameters;
-    }
-
-    public ValidationSuiteInfo(ValidationSuiteFactory<T> factory) {
-      this.factory = factory;
-      this.parameters = new ArrayList<>();
     }
   }
 }

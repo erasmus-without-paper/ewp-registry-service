@@ -30,11 +30,13 @@ import eu.erasmuswithoutpaper.registry.internet.sec.EwpCertificateRequestSigner;
 import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigRequestSigner;
 import eu.erasmuswithoutpaper.registry.internet.sec.RequestSigner;
 import eu.erasmuswithoutpaper.registry.validators.AbstractValidationSuite;
+import eu.erasmuswithoutpaper.registry.validators.ApiEndpoint;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.CombEntry;
 import eu.erasmuswithoutpaper.registry.validators.Combination;
 import eu.erasmuswithoutpaper.registry.validators.InlineValidationStep;
 import eu.erasmuswithoutpaper.registry.validators.InlineValidationStep.Failure;
+import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
 import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus.Status;
 import eu.erasmuswithoutpaper.rsaaes.BadEwpRsaAesBody;
 import eu.erasmuswithoutpaper.rsaaes.EwpRsaAes128GcmDecoder;
@@ -44,17 +46,32 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import net.adamcin.httpsig.api.Authorization;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.joox.Match;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Describes the set of test/steps to be run on an Echo API implementation in order to properly
  * validate it.
  */
-abstract class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSuiteState> {
+public class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSuiteState> {
   private Set<CombEntry> allCombEntriesCache = null;
+  private static final Logger logger = LoggerFactory.getLogger(EchoValidationSuiteCommon.class);
+  private final ValidatedApiInfo apiInfo;
+
 
   EchoValidationSuiteCommon(ApiValidator<EchoSuiteState> echoValidator,
-      EchoSuiteState state, ValidationSuiteConfig config) {
+      EchoSuiteState state, ValidationSuiteConfig config, int version) {
     super(echoValidator, state, config);
+
+    this.apiInfo = new EchoValidatedApiInfo(version, ApiEndpoint.NoEndpoint);
+  }
+
+  protected Logger getLogger() {
+    return logger;
+  }
+
+  public ValidatedApiInfo getApiInfo() {
+    return apiInfo;
   }
 
   private void checkEdgeCasesForAxxx(Combination combination)

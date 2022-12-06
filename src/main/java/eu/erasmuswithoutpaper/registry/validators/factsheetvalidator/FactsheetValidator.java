@@ -1,15 +1,17 @@
 package eu.erasmuswithoutpaper.registry.validators.factsheetvalidator;
 
+import java.util.List;
+
 import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
 import eu.erasmuswithoutpaper.registry.internet.Internet;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.SemanticVersion;
 import eu.erasmuswithoutpaper.registry.validators.ValidatorKeyStoreSet;
+import eu.erasmuswithoutpaper.registry.validators.ValidatorTestStep;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 import org.springframework.stereotype.Service;
 
-import com.google.common.collect.ListMultimap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,26 +19,6 @@ import org.slf4j.LoggerFactory;
 public class FactsheetValidator extends ApiValidator<FactsheetSuiteState> {
   private static final Logger logger = LoggerFactory.getLogger(
       FactsheetValidator.class);
-  private static ListMultimap<SemanticVersion, ValidationSuiteInfo<FactsheetSuiteState>>
-      validationSuites;
-
-  static {
-    validationSuites = ApiValidator.createMultimap();
-    validationSuites.put(
-        new SemanticVersion(1, 0, 0),
-        new ValidationSuiteInfo<>(
-            FactsheetSetupValidationSuiteV1::new,
-            FactsheetSetupValidationSuiteV1
-                .getParameters()
-        )
-
-    );
-    validationSuites.put(
-        new SemanticVersion(1, 0, 0),
-        new ValidationSuiteInfo<>(
-            FactsheetValidationSuiteV1::new)
-    );
-  }
 
   public FactsheetValidator(EwpDocBuilder docBuilder, Internet internet,
       RegistryClient client,
@@ -44,15 +26,21 @@ public class FactsheetValidator extends ApiValidator<FactsheetSuiteState> {
     super(docBuilder, internet, client, validatorKeyStoreSet, "factsheet");
   }
 
+  @ValidatorTestStep
+  public ValidationSuiteInfo<FactsheetSuiteState> apiTests = new ValidationSuiteInfo<>(
+      FactsheetSetupValidationSuite::new,
+      FactsheetSetupValidationSuite.getParameters(),
+      FactsheetValidationSuite::new);
+
   @Override
   public Logger getLogger() {
     return logger;
   }
 
   @Override
-  protected ListMultimap<SemanticVersion, ValidationSuiteInfo<FactsheetSuiteState>>
+  protected List<ValidationSuiteInfoWithVersions<FactsheetSuiteState>>
       getValidationSuites() {
-    return validationSuites;
+    return getValidationSuitesFromValidator(this);
   }
 
   @Override

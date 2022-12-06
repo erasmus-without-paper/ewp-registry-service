@@ -1,16 +1,19 @@
 package eu.erasmuswithoutpaper.registry.validators.imobilitytorsvalidator.get;
 
+import java.util.List;
+
 import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
 import eu.erasmuswithoutpaper.registry.internet.Internet;
 import eu.erasmuswithoutpaper.registry.validators.ApiEndpoint;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.SemanticVersion;
 import eu.erasmuswithoutpaper.registry.validators.ValidatorKeyStoreSet;
+import eu.erasmuswithoutpaper.registry.validators.ValidatorTestStep;
 import eu.erasmuswithoutpaper.registry.validators.imobilitytorsvalidator.IMobilityTorsSuiteState;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
+
 import org.springframework.stereotype.Service;
 
-import com.google.common.collect.ListMultimap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,40 +22,6 @@ import org.slf4j.LoggerFactory;
 public class IMobilityTorsGetValidator extends ApiValidator<IMobilityTorsSuiteState> {
   private static final Logger logger = LoggerFactory.getLogger(
       IMobilityTorsGetValidator.class);
-  private static ListMultimap<SemanticVersion, ValidationSuiteInfo<IMobilityTorsSuiteState>>
-      validationSuites;
-
-  static {
-    validationSuites = ApiValidator.createMultimap();
-
-    validationSuites.put(
-        new SemanticVersion(1, 0, 0),
-        new ValidationSuiteInfo<>(
-            IMobilityTorsGetSetupValidationSuiteV1::new,
-            IMobilityTorsGetSetupValidationSuiteV1.getParameters()
-        )
-    );
-    validationSuites.put(
-        new SemanticVersion(1, 0, 0),
-        new ValidationSuiteInfo<>(
-            IMobilityTorsGetValidationSuiteV1::new
-        )
-    );
-
-    validationSuites.put(
-        new SemanticVersion(2, 0, 0),
-        new ValidationSuiteInfo<>(
-            IMobilityTorsGetSetupValidationSuiteV2::new,
-            IMobilityTorsGetSetupValidationSuiteV2.getParameters()
-        )
-    );
-    validationSuites.put(
-        new SemanticVersion(2, 0, 0),
-        new ValidationSuiteInfo<>(
-            IMobilityTorsGetValidationSuiteV2::new
-        )
-    );
-  }
 
   public IMobilityTorsGetValidator(EwpDocBuilder docBuilder, Internet internet,
       RegistryClient client, ValidatorKeyStoreSet validatorKeyStoreSet) {
@@ -60,15 +29,21 @@ public class IMobilityTorsGetValidator extends ApiValidator<IMobilityTorsSuiteSt
         ApiEndpoint.Get);
   }
 
+  @ValidatorTestStep
+  public ValidationSuiteInfo<IMobilityTorsSuiteState> apiTests = new ValidationSuiteInfo<>(
+      IMobilityTorsGetSetupValidationSuite::new,
+      IMobilityTorsGetSetupValidationSuite.getParameters(),
+      IMobilityTorsGetValidationSuite::new);
+
   @Override
   public Logger getLogger() {
     return logger;
   }
 
   @Override
-  protected ListMultimap<SemanticVersion, ValidationSuiteInfo<IMobilityTorsSuiteState>>
+  protected List<ValidationSuiteInfoWithVersions<IMobilityTorsSuiteState>>
       getValidationSuites() {
-    return validationSuites;
+    return getValidationSuitesFromValidator(this);
   }
 
   @Override

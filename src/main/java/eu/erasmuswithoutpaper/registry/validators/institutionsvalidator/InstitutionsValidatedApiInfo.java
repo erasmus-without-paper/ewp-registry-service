@@ -1,19 +1,33 @@
 package eu.erasmuswithoutpaper.registry.validators.institutionsvalidator;
 
-import eu.erasmuswithoutpaper.registry.documentbuilder.KnownElement;
-import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
 import eu.erasmuswithoutpaper.registry.validators.ApiEndpoint;
 import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
 
-class InstitutionsValidatedApiInfo implements ValidatedApiInfo {
-  @Override
-  public KnownElement getResponseKnownElement() {
-    return KnownElement.RESPONSE_INSTITUTIONS_V2;
+class InstitutionsValidatedApiInfo extends ValidatedApiInfo {
+  private final int version;
+
+  public InstitutionsValidatedApiInfo(int version) {
+    this.version = version;
   }
 
   @Override
-  public KnownNamespace getApiEntryKnownNamespace() {
-    return KnownNamespace.APIENTRY_INSTITUTIONS_V2;
+  public int getVersion() {
+    return this.version;
+  }
+
+  @Override
+  public String preferredPrefix() {
+    return "in";
+  }
+
+  @Override
+  public boolean responseIncludeInCatalogueXmlns() {
+    return false;
+  }
+
+  @Override
+  public boolean apiEntryIncludeInCatalogueXmlns() {
+    return this.version == 2;
   }
 
   @Override

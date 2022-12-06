@@ -1,14 +1,17 @@
 package eu.erasmuswithoutpaper.registry.validators.mtinstitutionsvalidator;
 
+import java.util.List;
+
 import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
 import eu.erasmuswithoutpaper.registry.internet.Internet;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.SemanticVersion;
 import eu.erasmuswithoutpaper.registry.validators.ValidatorKeyStoreSet;
+import eu.erasmuswithoutpaper.registry.validators.ValidatorTestStep;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
+
 import org.springframework.stereotype.Service;
 
-import com.google.common.collect.ListMultimap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,34 +19,6 @@ import org.slf4j.LoggerFactory;
 public class MtInstitutionsValidator extends ApiValidator<MtInstitutionsSuiteState> {
   private static final Logger logger = LoggerFactory.getLogger(
       MtInstitutionsValidator.class);
-  private static ListMultimap<SemanticVersion, ValidationSuiteInfo<MtInstitutionsSuiteState>>
-      validationSuites;
-
-  static {
-    validationSuites = ApiValidator.createMultimap();
-    validationSuites.put(
-        new SemanticVersion(1, 0, 0),
-        new ValidationSuiteInfo<>(
-            MtInstitutionsSetupValidationSuiteV1::new,
-            MtInstitutionsSetupValidationSuiteV1.getParameters()
-        )
-    );
-    validationSuites.put(
-        new SemanticVersion(1, 0, 0),
-        new ValidationSuiteInfo<>(MtInstitutionsValidationSuiteV1::new)
-    );
-    validationSuites.put(
-            new SemanticVersion(1, 0, 0),
-            new ValidationSuiteInfo<>(
-                    MtInstitutionsSetupValidationSuiteV1::new,
-                    MtInstitutionsSetupValidationSuiteV1.getParameters()
-            )
-    );
-    validationSuites.put(
-            new SemanticVersion(1, 0, 0),
-            new ValidationSuiteInfo<>(MtInstitutionsValidationSuiteV1::new)
-    );
-  }
 
   public MtInstitutionsValidator(EwpDocBuilder docBuilder, Internet internet,
       RegistryClient client,
@@ -51,15 +26,21 @@ public class MtInstitutionsValidator extends ApiValidator<MtInstitutionsSuiteSta
     super(docBuilder, internet, client, validatorKeyStoreSet, "mt-institutions");
   }
 
+  @ValidatorTestStep
+  public ValidationSuiteInfo<MtInstitutionsSuiteState> apiTests = new ValidationSuiteInfo<>(
+      MtInstitutionsSetupValidationSuite::new,
+      MtInstitutionsSetupValidationSuite.getParameters(),
+      MtInstitutionsValidationSuite::new);
+
   @Override
   public Logger getLogger() {
     return logger;
   }
 
   @Override
-  protected ListMultimap<SemanticVersion, ValidationSuiteInfo<MtInstitutionsSuiteState>>
+  protected List<ValidationSuiteInfoWithVersions<MtInstitutionsSuiteState>>
       getValidationSuites() {
-    return validationSuites;
+    return getValidationSuitesFromValidator(this);
   }
 
   @Override

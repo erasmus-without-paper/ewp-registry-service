@@ -4,16 +4,43 @@ import java.util.ArrayList;
 import java.util.List;
 
 import eu.erasmuswithoutpaper.registry.validators.AbstractSetupValidationSuite;
+import eu.erasmuswithoutpaper.registry.validators.ApiEndpoint;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.CombEntry;
+import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
+import eu.erasmuswithoutpaper.registry.validators.ValidationParameter;
 
-public abstract class EchoSetupValidationSuite
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class EchoSetupValidationSuite
     extends AbstractSetupValidationSuite<EchoSuiteState> {
+
+  private static final Logger logger = LoggerFactory.getLogger(EchoSetupValidationSuite.class);
+  private final ValidatedApiInfo apiInfo;
+
   protected EchoSetupValidationSuite(
       ApiValidator<EchoSuiteState> echoValidator,
       EchoSuiteState state,
-      ValidationSuiteConfig config) {
+      ValidationSuiteConfig config,
+      int version) {
     super(echoValidator, state, config);
+
+    this.apiInfo = new EchoValidatedApiInfo(version, ApiEndpoint.NoEndpoint);
+  }
+
+  @Override
+  protected Logger getLogger() {
+    return logger;
+  }
+
+  @Override
+  public ValidatedApiInfo getApiInfo() {
+    return apiInfo;
+  }
+
+  public static List<ValidationParameter> getParameters() {
+    return new ArrayList<>();
   }
 
   @Override

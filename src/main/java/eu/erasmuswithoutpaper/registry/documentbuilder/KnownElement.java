@@ -593,7 +593,12 @@ public class KnownElement {
   private final String elementName;
   private final String humanReadableName;
 
-  private KnownElement(KnownNamespace namespace, String elementName, String humanReadableName) {
+  /**
+   * @param namespace A namespace appropriate for the element.
+   * @param elementName A name of the element.
+   * @param humanReadableName A human-readable name for the element.
+   */
+  public KnownElement(KnownNamespace namespace, String elementName, String humanReadableName) {
     this.namespace = namespace;
     this.elementName = elementName;
     this.humanReadableName = humanReadableName;

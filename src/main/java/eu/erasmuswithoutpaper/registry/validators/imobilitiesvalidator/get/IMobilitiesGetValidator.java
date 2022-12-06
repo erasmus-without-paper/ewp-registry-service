@@ -1,17 +1,19 @@
 package eu.erasmuswithoutpaper.registry.validators.imobilitiesvalidator.get;
 
+import java.util.List;
+
 import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
 import eu.erasmuswithoutpaper.registry.internet.Internet;
 import eu.erasmuswithoutpaper.registry.validators.ApiEndpoint;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.SemanticVersion;
 import eu.erasmuswithoutpaper.registry.validators.ValidatorKeyStoreSet;
+import eu.erasmuswithoutpaper.registry.validators.ValidatorTestStep;
 import eu.erasmuswithoutpaper.registry.validators.imobilitiesvalidator.IMobilitiesSuiteState;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 import org.springframework.stereotype.Service;
 
-import com.google.common.collect.ListMultimap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,26 +22,6 @@ import org.slf4j.LoggerFactory;
 public class IMobilitiesGetValidator extends ApiValidator<IMobilitiesSuiteState> {
   private static final Logger logger = LoggerFactory.getLogger(
       IMobilitiesGetValidator.class);
-  private static ListMultimap<SemanticVersion, ValidationSuiteInfo<IMobilitiesSuiteState>>
-      validationSuites;
-
-  static {
-    validationSuites = ApiValidator.createMultimap();
-
-    validationSuites.put(
-        new SemanticVersion(1, 0, 0),
-        new ValidationSuiteInfo<>(
-            IMobilitiesGetSetupValidationSuiteV1::new,
-            IMobilitiesGetSetupValidationSuiteV1.getParameters()
-        )
-    );
-    validationSuites.put(
-        new SemanticVersion(1, 0, 0),
-        new ValidationSuiteInfo<>(
-            IMobilitiesGetValidationSuiteV1::new
-        )
-    );
-  }
 
   public IMobilitiesGetValidator(EwpDocBuilder docBuilder, Internet internet,
       RegistryClient client, ValidatorKeyStoreSet validatorKeyStoreSet) {
@@ -47,15 +29,21 @@ public class IMobilitiesGetValidator extends ApiValidator<IMobilitiesSuiteState>
         ApiEndpoint.Get);
   }
 
+  @ValidatorTestStep
+  public ValidationSuiteInfo<IMobilitiesSuiteState> apiTests = new ValidationSuiteInfo<>(
+      IMobilitiesGetSetupValidationSuite::new,
+      IMobilitiesGetSetupValidationSuite.getParameters(),
+      IMobilitiesGetValidationSuite::new);
+
   @Override
   public Logger getLogger() {
     return logger;
   }
 
   @Override
-  protected ListMultimap<SemanticVersion, ValidationSuiteInfo<IMobilitiesSuiteState>>
+  protected List<ValidationSuiteInfoWithVersions<IMobilitiesSuiteState>>
       getValidationSuites() {
-    return validationSuites;
+    return getValidationSuitesFromValidator(this);
   }
 
   @Override
