@@ -131,15 +131,20 @@ public class ManifestOverviewManager {
   }
 
   private void updateManifestWithoutRecalculatingAggregates(String manifestUrl) {
-    try {
-      String manifest = manifestRepository.getManifestFiltered(manifestUrl);
-      ManifestOverviewInfo manifestOverviewInfo =
-          ManifestOverviewInfo.generateFromManifest(manifestUrl, manifest);
-      if (manifestOverviewInfo != null) {
-        this.overviews.put(manifestUrl, manifestOverviewInfo);
-      }
-    } catch (ManifestNotFound manifestNotFound) {
+    Optional<ManifestSource> source = this.sourceProvider.getOne(manifestUrl);
+    if (!source.isPresent()) {
       this.overviews.remove(manifestUrl);
+    } else {
+      try {
+        String manifest = manifestRepository.getManifestFiltered(manifestUrl);
+        ManifestOverviewInfo manifestOverviewInfo =
+            ManifestOverviewInfo.generateFromManifest(manifestUrl, manifest);
+        if (manifestOverviewInfo != null) {
+          this.overviews.put(manifestUrl, manifestOverviewInfo);
+        }
+      } catch (ManifestNotFound manifestNotFound) {
+        this.overviews.remove(manifestUrl);
+      }
     }
   }
 

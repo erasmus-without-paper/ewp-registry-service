@@ -40,12 +40,6 @@ public class ManifestOverviewManagerTest extends WRTest {
   @Autowired
   private RegistryUpdaterImpl updater;
 
-  @Autowired
-  private ManifestOverviewManager manifestOverviewManager;
-
-  @Autowired
-  private ManifestRepository manifestRepository;
-
   @Value("${app.admin-emails}")
   private List<String> adminEmails;
 
@@ -204,8 +198,6 @@ public class ManifestOverviewManagerTest extends WRTest {
 
     // Manifest 2 is removed - duplicates will be gone.
     this.sourceProvider.removeSource(manifestSource2);
-    this.manifestRepository.deleteManifest(manifestUrl2);
-    this.manifestOverviewManager.updateManifest(manifestUrl2);
 
     List<String> emailsSent = this.internet.popEmailsSent();
     assertThat(emailsSent).hasSize(adminEmailsCount1 + 1);

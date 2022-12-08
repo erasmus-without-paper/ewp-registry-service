@@ -128,6 +128,7 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
       ManifestSource source = entry.getKey();
       if (!sources.contains(source)) {
         this.notifier.removeWatchedFlag(entry.getValue());
+        this.manifestOverviewManager.updateManifest(source.getUrl());
         iter.remove();
       }
     }
