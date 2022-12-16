@@ -8,6 +8,7 @@ import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.List;
@@ -60,16 +61,16 @@ public class EndpointUniqueConstraint implements ManifestConstraint {
         ApiSearchConditions conditions = new ApiSearchConditions();
         conditions.setApiClassRequired(namespaceUri, apiName);
         Collection<Element> apis = registryClient.findApis(conditions);
-        String url = getUrl(match, namespaceUri);
+        String url = getUrl(match);
         for (Element api : apis) {
-          if (url.equals(getUrl($(api), namespaceUri))) {
+          if (url != null && url.equals(getUrl($(api)))) {
             Collection<RSAPublicKey> serverKeysCoveringApi =
                 registryClient.getServerKeysCoveringApi(api);
 
             if (!rsaPublicKeys.containsAll(serverKeysCoveringApi)) {
               notices.add(new FailedConstraintNotice(Severity.ERROR,
                   "API " + apiName + " is already in the registry under the same URL: "
-                      + getUrl($(api), namespaceUri) + ". It will not be imported."));
+                      + getUrl($(api)) + ". It will not be imported."));
               match.remove();
               break;
             }
@@ -95,7 +96,12 @@ public class EndpointUniqueConstraint implements ManifestConstraint {
     return rsaPublicKeys;
   }
 
-  private String getUrl(Match apiMatch, String namespaceUri) {
-    return apiMatch.namespace("entry", namespaceUri).xpath("entry:url | entry:get-url").text();
+  private String getUrl(Match apiMatch) {
+    for (Element child : apiMatch.children()) {
+      if (Arrays.asList("url", "get-url").contains(child.getLocalName())) {
+        return child.getTextContent();
+      }
+    }
+    return null;
   }
 }
