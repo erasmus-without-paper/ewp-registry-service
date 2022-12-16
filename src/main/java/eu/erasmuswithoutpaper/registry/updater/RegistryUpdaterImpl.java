@@ -44,6 +44,8 @@ import org.joox.Match;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 /**
  * Our implementation of {@link RegistryUpdater} interface.
@@ -143,14 +145,23 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
           $(this.docBuilder.build(new BuildParams(this.repo.getCatalogue())).getDocument().get())
               .namespaces(KnownNamespace.prefixMap());
       for (Match host : catalogue.xpath("r:host").each()) {
-        List<String> adminEmails =
-            host.xpath("ewp:admin-email | " + "r:apis-implemented/d5:discovery/ewp:admin-email | "
-                + "r:apis-implemented/d6:discovery/ewp:admin-email").texts();
-        for (String url : host.xpath(
-            "r:apis-implemented/d5:discovery/d5:url | " + "r:apis-implemented/d6:discovery/d6:url")
-            .texts()) {
-          recipients.put(url, adminEmails);
-          this.onManifestAdminEmailsChanged(url, adminEmails);
+        for (Element child : host.children()) {
+          List<String> adminEmails = new ArrayList<>();
+          if ("admin-email".equals(child.getLocalName())) {
+            adminEmails.add(child.getTextContent());
+          } else if ("apis-implemented".equals(child.getLocalName())) {
+            for (Node api : Utils.asNodeList(child.getChildNodes())) {
+              if ("discovery".equals(api.getLocalName())) {
+                for (Node node : Utils.asNodeList(api.getChildNodes())) {
+                  if ("url".equals(node.getLocalName())) {
+                    String url = node.getTextContent();
+                    recipients.put(url, adminEmails);
+                    this.onManifestAdminEmailsChanged(url, adminEmails);
+                  }
+                }
+              }
+            }
+          }
         }
       }
     } catch (CatalogueNotFound e) {

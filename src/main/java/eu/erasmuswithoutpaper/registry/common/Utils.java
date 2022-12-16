@@ -2,14 +2,17 @@ package eu.erasmuswithoutpaper.registry.common;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.RandomAccess;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -326,5 +329,36 @@ public class Utils {
   private static boolean isSchacMatching(String pattern, HeiEntry heiEntry) {
     return heiEntry.getId().toLowerCase(Locale.ENGLISH)
         .contains(pattern.toLowerCase(Locale.ENGLISH));
+  }
+
+  static final class NodeListWrapper extends AbstractList<Node> implements RandomAccess {
+    private final NodeList list;
+
+    /**
+     * @param list a {@link NodeList} to be wrapped.
+     */
+    NodeListWrapper(NodeList list) {
+      this.list = list;
+    }
+
+    @Override
+    public Node get(int index) {
+      return this.list.item(index);
+    }
+
+    @Override
+    public int size() {
+      return this.list.getLength();
+    }
+  }
+
+  /**
+   * Transform a {@link NodeList} into a {@link List} of {@link Node}s.
+   *
+   * @param list a {@link NodeList}.
+   * @return a list of {@link Node}s.
+   */
+  public static List<? extends Node> asNodeList(NodeList list) {
+    return list.getLength() == 0 ? Collections.emptyList() : new NodeListWrapper(list);
   }
 }
