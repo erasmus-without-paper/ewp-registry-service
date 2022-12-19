@@ -28,7 +28,5 @@
                 </tr>
             {% endfor %}
         </table>
-
-        <p class='ewp-para'>(write us to add yours)</p>
     </section>
 {% endblock %}
