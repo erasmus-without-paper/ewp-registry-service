@@ -402,12 +402,6 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
           continue;
         }
 
-        /*
-         * Parse it. Note that this document is already guaranteed to be safe, but during the brief
-         * update-phase (immediately after v5 is introduced), there's a chance that this will be in
-         * version 4, not 5.
-         */
-
         try {
           manifests.add(this.parser.parseManifest(xml, null));
         } catch (NotValidManifest e) {

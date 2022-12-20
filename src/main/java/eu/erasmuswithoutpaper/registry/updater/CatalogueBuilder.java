@@ -67,11 +67,11 @@ class CatalogueBuilder {
   /**
    * Build a catalogue document from the given list of manifests.
    *
-   * @param manifestsV5 List of {@link Document}s - each MUST contain a VALID (and already filtered)
-   *        Discovery API Manifest document in version 5 (otherwise they will be ignored).
+   * @param manifests List of {@link Document}s - each MUST contain a VALID (and already filtered)
+   *        Discovery API Manifest document.
    * @return A new {@link Document} with a valid Registry catalogue response.
    */
-  public synchronized Document build(List<Document> manifestsV5) {
+  public synchronized Document build(List<Document> manifests) {
 
     // Create a new document with the <catalogue> root.
 
@@ -85,7 +85,7 @@ class CatalogueBuilder {
 
     // For each of the given manifests...
 
-    for (Document manifestDoc : manifestsV5) {
+    for (Document manifestDoc : manifests) {
 
       if (!KnownElement.RESPONSE_MANIFEST_V5.matches(manifestDoc.getDocumentElement())
           && !KnownElement.RESPONSE_MANIFEST_V6.matches(manifestDoc.getDocumentElement())) {
