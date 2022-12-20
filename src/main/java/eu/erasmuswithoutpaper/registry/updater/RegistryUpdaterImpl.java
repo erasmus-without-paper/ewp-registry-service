@@ -72,6 +72,7 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
   private final ManifestParser parser;
   private final ManifestOverviewManager manifestOverviewManager;
   private final RegistryClient registryClient;
+  private final Map<ManifestSource, Document> cachedManifestsMap;
 
   /**
    * @param manifestSourceProvider         to get the list of Manifest sources.
@@ -104,6 +105,7 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
     this.registryClient = registryClient;
     this.notifierFlags = new HashMap<>();
     this.parser = parser;
+    this.cachedManifestsMap = new HashMap<>();
     this.onSourcesUpdated();
   }
 
@@ -330,6 +332,7 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
         // If anything changed...
 
         if (changed) {
+          this.cachedManifestsMap.remove(source);
 
           // Update the list of our notifierFlag's recipients.
 
@@ -403,7 +406,13 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
         }
 
         try {
-          manifests.add(this.parser.parseManifest(xml, null));
+          if (this.cachedManifestsMap.containsKey(src)) {
+            manifests.add(this.cachedManifestsMap.get(src));
+          } else {
+            Document manifest = this.parser.parseManifest(xml, null);
+            this.cachedManifestsMap.put(src, manifest);
+            manifests.add(manifest);
+          }
         } catch (NotValidManifest e) {
           logger.error("Ignoring {}, because couldn't load it (should not happen)", src);
           for (String err : e.getErrorList()) {
