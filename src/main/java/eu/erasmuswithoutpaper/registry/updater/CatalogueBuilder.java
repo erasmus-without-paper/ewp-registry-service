@@ -1,14 +1,10 @@
 package eu.erasmuswithoutpaper.registry.updater;
 
 import static org.joox.JOOX.$;
+import static org.w3c.dom.Node.ELEMENT_NODE;
 
-import java.io.ByteArrayInputStream;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateEncodingException;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
@@ -19,7 +15,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 
@@ -30,10 +25,8 @@ import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
 import com.google.common.base.Joiner;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.joox.Match;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -51,17 +44,11 @@ class CatalogueBuilder {
   private static final Logger logger = LoggerFactory.getLogger(CatalogueBuilder.class);
 
   private final DocumentBuilder docbuilder;
-  private final CertificateFactory x509factory;
 
   private Document doc;
 
   public CatalogueBuilder() {
-    try {
-      this.docbuilder = Utils.newSecureDocumentBuilder();
-      this.x509factory = CertificateFactory.getInstance("X.509");
-    } catch (CertificateException e) {
-      throw new RuntimeException(e);
-    }
+    this.docbuilder = Utils.newSecureDocumentBuilder();
   }
 
   /**
@@ -94,193 +81,8 @@ class CatalogueBuilder {
         continue;
       }
 
-      // Extract all the hosts
-      Match srcHosts =
-          $(manifestDoc).namespaces(KnownNamespace.prefixMap()).xpath("mf5:host | mf6:host");
-
-      for (Element srcHostElem : srcHosts) {
-        Match srcHost = $(srcHostElem).namespaces(KnownNamespace.prefixMap());
-
-        // Append a new <host> element to the <catalogue>.
-
-        Element destHostElem = this.newElem("host");
-        catalogueElem.appendChild(destHostElem);
-
-        // Copy all <ewp:admin-email> and <ewp:admin-notes> values.
-
-        for (String email : srcHost.xpath("ewp:admin-email").texts()) {
-          destHostElem.appendChild(this.newEwpElem("admin-email", email));
-        }
-        if (srcHost.xpath("ewp:admin-provider").isNotEmpty()
-            && (srcHost.xpath("ewp:admin-provider").text().length() > 0)) {
-          destHostElem.appendChild(
-              this.newEwpElem("admin-provider", srcHost.xpath("ewp:admin-provider").text()));
-        }
-        if (srcHost.xpath("ewp:admin-notes").isNotEmpty()
-            && (srcHost.xpath("ewp:admin-notes").text().length() > 0)) {
-          destHostElem
-              .appendChild(this.newEwpElem("admin-notes", srcHost.xpath("ewp:admin-notes").text()));
-        }
-
-        // Append a new <apis-implemented> element to the <host>.
-
-        Element destApisElem = this.newElem("apis-implemented");
-        destHostElem.appendChild(destApisElem);
-
-        // Copy all API entries from the manifest (and replace their prefixes with the default
-        // ones).
-
-        for (Element srcApiElem : srcHost.xpath("r:apis-implemented/*")) {
-          Element destApiElem = (Element) this.doc.importNode(srcApiElem, true);
-          Utils.rewritePrefixes(destApiElem);
-          destApisElem.appendChild(destApiElem);
-        }
-
-        // It there are any HEIs covered in the manifest...
-
-        Match srcHeis =
-            srcHost.xpath("mf5:institutions-covered/r:hei | mf6:institutions-covered/r:hei");
-        if (srcHeis.size() > 0) {
-
-          // Create a <institutions-covered> element in the <host>.
-
-          Element destHeisElem = this.newElem("institutions-covered");
-          destHostElem.appendChild(destHeisElem);
-
-          for (Match srcHei : srcHeis.each()) {
-
-            // Append <hei-id> elements to <institutions-covered>.
-
-            String id = srcHei.attr("id");
-            destHeisElem.appendChild(this.newElem("hei-id", id));
-
-            // And keep a copy of all relevant HEI attributes in our maps...
-
-            if (!heiIdTypeSets.containsKey(id)) {
-              heiIdTypeSets.put(id, new TreeMap<>());
-            }
-            Map<String, Set<String>> idTypeSets = heiIdTypeSets.get(id);
-            if (!heiLangNameSets.containsKey(id)) {
-              heiLangNameSets.put(id, new TreeMap<>());
-            }
-            Map<String, Set<String>> langNameSets = heiLangNameSets.get(id);
-
-            // For each <other-id> given for this HEI...
-
-            for (Match otherId : srcHei.xpath("r:other-id").each()) {
-
-              // Find the set of all IDs declared for this ID type.
-
-              String idType = otherId.attr("type");
-              if (!idTypeSets.containsKey(idType)) {
-                idTypeSets.put(idType, new TreeSet<>());
-              }
-              Set<String> set = idTypeSets.get(idType);
-
-              // Add the ID to this set.
-
-              set.add(otherId.text());
-            }
-
-            // For each <name> given for this HEI...
-
-            for (Match name : srcHei.xpath("r:name").each()) {
-
-              // Find the set of all names declared for this language.
-
-              String lang = name.get(0).getAttributeNS(XMLConstants.XML_NS_URI, "lang");
-              if (!langNameSets.containsKey(lang)) {
-                langNameSets.put(lang, new TreeSet<>());
-              }
-              Set<String> set = langNameSets.get(lang);
-
-              // Add the name to this set.
-
-              set.add(name.text());
-            }
-          }
-        }
-
-        // Create <client-credentials-in-use> in <host>.
-
-        Element destCliCreds = this.newElem("client-credentials-in-use");
-        destHostElem.appendChild(destCliCreds);
-
-        // If there are any client certificates...
-
-        List<String> srcCertStrs = srcHost.xpath("mf5:client-credentials-in-use/mf5:certificate | "
-            + "mf6:client-credentials-in-use/mf6:certificate").texts();
-        if (srcCertStrs.size() > 0) {
-
-          // For each certificate, calculate its sha-256 fingerprint, create element, and append it.
-
-          for (String srcCertStr : srcCertStrs) {
-            X509Certificate cert = this.parseCert(srcCertStr);
-            Element destCertElem = this.newElem("certificate");
-            try {
-              destCertElem.setAttribute("sha-256", DigestUtils.sha256Hex(cert.getEncoded()));
-            } catch (CertificateEncodingException e) {
-              throw new RuntimeException(e);
-            } catch (DOMException e) {
-              throw new RuntimeException(e);
-            }
-            destCliCreds.appendChild(destCertElem);
-          }
-        }
-
-        // If there are any client public keys...
-
-        List<String> srcKeyStrs =
-            srcHost.xpath("mf5:client-credentials-in-use/mf5:rsa-public-key | "
-                + "mf6:client-credentials-in-use/mf6:rsa-public-key").texts();
-        if (srcKeyStrs.size() > 0) {
-
-          // For each key, calculate its sha-256 fingerprint, create element, and append it.
-
-          for (String srcKeyStr : srcKeyStrs) {
-            RSAPublicKey key = this.parseValidRsaPublicKey(srcKeyStr);
-            Element destKeyElem = this.newElem("rsa-public-key");
-            String fingerprint = DigestUtils.sha256Hex(key.getEncoded());
-            destKeyElem.setAttribute("sha-256", fingerprint);
-            destCliCreds.appendChild(destKeyElem);
-            actualKeys.put(fingerprint, key);
-          }
-        }
-
-        // If credentials are still empty, then remove their empty container.
-
-        if (destCliCreds.getChildNodes().getLength() == 0) {
-          destHostElem.removeChild(destCliCreds);
-        }
-
-        // Create <server-credentials-in-use> in <host>.
-
-        Element destSrvCreds = this.newElem("server-credentials-in-use");
-        destHostElem.appendChild(destSrvCreds);
-
-        // If there are any server public keys...
-
-        srcKeyStrs = srcHost.xpath("mf5:server-credentials-in-use/mf5:rsa-public-key | "
-            + "mf6:server-credentials-in-use/mf6:rsa-public-key").texts();
-        if (srcKeyStrs.size() > 0) {
-
-          // For each key, calculate its sha-256 fingerprint, create element, and append it.
-
-          for (String srcKeyStr : srcKeyStrs) {
-            RSAPublicKey key = this.parseValidRsaPublicKey(srcKeyStr);
-            Element destKeyElem = this.newElem("rsa-public-key");
-            String fingerprint = DigestUtils.sha256Hex(key.getEncoded());
-            destKeyElem.setAttribute("sha-256", fingerprint);
-            destSrvCreds.appendChild(destKeyElem);
-            actualKeys.put(fingerprint, key);
-          }
-        }
-
-        // If credentials are still empty, then remove their empty container.
-
-        if (destSrvCreds.getChildNodes().getLength() == 0) {
-          destHostElem.removeChild(destSrvCreds);
-        }
+      for (Element hostElement : $(manifestDoc).children()) {
+        catalogueElem.appendChild(getHost(hostElement, heiIdTypeSets, heiLangNameSets, actualKeys));
       }
     }
 
@@ -380,6 +182,114 @@ class CatalogueBuilder {
     return this.doc;
   }
 
+  private Element getHost(Element srcHostElem, Map<String, Map<String, Set<String>>> heiIdTypeSets,
+      Map<String, Map<String, Set<String>>> heiLangNameSets, Map<String, RSAPublicKey> actualKeys) {
+    Element destHostElem = this.newElem("host");
+    Element destApisElem = this.newElem("apis-implemented");
+    Element destCliCreds = this.newElem("client-credentials-in-use");
+    Element destSrvCreds = this.newElem("server-credentials-in-use");
+
+    for (Node node : Utils.asNodeList(srcHostElem.getChildNodes())) {
+      if ("admin-email".equals(node.getLocalName())) {
+        destHostElem.appendChild(this.newEwpElem("admin-email", node.getTextContent()));
+      }
+      if ("admin-provider".equals(node.getLocalName())) {
+        destHostElem.appendChild(this.newEwpElem("admin-provider", node.getTextContent()));
+      }
+      if ("admin-notes".equals(node.getLocalName())) {
+        destHostElem.appendChild(this.newEwpElem("admin-notes", node.getTextContent()));
+      }
+      if ("apis-implemented".equals(node.getLocalName())) {
+        destHostElem.appendChild(destApisElem);
+        // Copy all API entries from the manifest (and replace their prefixes with the default ones)
+        for (Node api : Utils.asNodeList(node.getChildNodes())) {
+          if (api.getNodeType() == ELEMENT_NODE) {
+            Element destApiElem = (Element) this.doc.importNode(api, true);
+            Utils.rewritePrefixes(destApiElem);
+            destApisElem.appendChild(destApiElem);
+          }
+        }
+      }
+      if ("institutions-covered".equals(node.getLocalName())) {
+        destHostElem.appendChild(getInstitutionsCovered(node, heiIdTypeSets, heiLangNameSets));
+      }
+      if ("client-credentials-in-use".equals(node.getLocalName())) {
+        addKey(node, actualKeys, destCliCreds);
+      }
+      if ("server-credentials-in-use".equals(node.getLocalName())) {
+        addKey(node, actualKeys, destSrvCreds);
+      }
+    }
+
+    if (destCliCreds.getChildNodes().getLength() > 0) {
+      destHostElem.appendChild(destCliCreds);
+    }
+    if (destSrvCreds.getChildNodes().getLength() > 0) {
+      destHostElem.appendChild(destSrvCreds);
+    }
+
+    return destHostElem;
+  }
+
+  private void addKey(Node node, Map<String, RSAPublicKey> actualKeys, Element destCreds) {
+    for (Node credential : Utils.asNodeList(node.getChildNodes())) {
+      if ("rsa-public-key".equals(credential.getLocalName())) {
+        RSAPublicKey key = this.parseValidRsaPublicKey(credential.getTextContent());
+        Element destKeyElem = this.newElem("rsa-public-key");
+        String fingerprint = DigestUtils.sha256Hex(key.getEncoded());
+        destKeyElem.setAttribute("sha-256", fingerprint);
+        destCreds.appendChild(destKeyElem);
+        actualKeys.put(fingerprint, key);
+      }
+    }
+  }
+
+  private Element getInstitutionsCovered(Node srcHeis,
+      Map<String, Map<String, Set<String>>> heiIdTypeSets,
+      Map<String, Map<String, Set<String>>> heiLangNameSets) {
+    Element destHeisElem = this.newElem("institutions-covered");
+
+    for (Node srcHei : Utils.asNodeList(srcHeis.getChildNodes())) {
+      if ("hei".equals(srcHei.getLocalName())) {
+        String id = srcHei.getAttributes().getNamedItem("id").getNodeValue();
+        destHeisElem.appendChild(this.newElem("hei-id", id));
+
+        if (!heiIdTypeSets.containsKey(id)) {
+          heiIdTypeSets.put(id, new TreeMap<>());
+        }
+        Map<String, Set<String>> idTypeSets = heiIdTypeSets.get(id);
+        if (!heiLangNameSets.containsKey(id)) {
+          heiLangNameSets.put(id, new TreeMap<>());
+        }
+        Map<String, Set<String>> langNameSets = heiLangNameSets.get(id);
+
+        for (Node heiChild : Utils.asNodeList(srcHei.getChildNodes())) {
+          if ("other-id".equals(heiChild.getLocalName())) {
+            String idType = heiChild.getAttributes().getNamedItem("type").getNodeValue();
+            if (!idTypeSets.containsKey(idType)) {
+              idTypeSets.put(idType, new TreeSet<>());
+            }
+            Set<String> set = idTypeSets.get(idType);
+            set.add(heiChild.getTextContent());
+          }
+
+          if ("name".equals(heiChild.getLocalName())) {
+            Node langAttribute =
+                heiChild.getAttributes().getNamedItemNS(XMLConstants.XML_NS_URI, "lang");
+            String lang = langAttribute != null ? langAttribute.getNodeValue() : "";
+            if (!langNameSets.containsKey(lang)) {
+              langNameSets.put(lang, new TreeSet<>());
+            }
+            Set<String> set = langNameSets.get(lang);
+            set.add(heiChild.getTextContent());
+          }
+        }
+      }
+    }
+
+    return destHeisElem;
+  }
+
   private String[] getBase64EncodedLines(byte[] data) {
     Base64 encoder = new Base64(76, new byte[] { '\n' });
     String encoded = encoder.encodeToString(data);
@@ -403,20 +313,6 @@ class CatalogueBuilder {
         KnownNamespace.COMMON_TYPES_V1.getPreferredPrefix() + ':' + localName);
     elem.appendChild(this.doc.createTextNode(content));
     return elem;
-  }
-
-  private synchronized X509Certificate parseCert(String certStr) {
-
-    certStr = certStr.replaceAll("\\s+", "");
-    byte[] decoded = Base64.decodeBase64(certStr);
-
-    try {
-      return (X509Certificate) this.x509factory
-          .generateCertificate(new ByteArrayInputStream(decoded));
-    } catch (CertificateException e) {
-      // This method assumes that input is already checked and valid.
-      throw new RuntimeException(e);
-    }
   }
 
   private synchronized RSAPublicKey parseValidRsaPublicKey(String keyStr) {

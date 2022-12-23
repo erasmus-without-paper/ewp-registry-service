@@ -92,16 +92,18 @@
             <e2:echo version="2.0.0">
                 <e2:url>https://ladok.se/ewp/echo</e2:url>
             </e2:echo>
-            <ladok-api xmlns="https://ladok.se/api/">
+            <ladok-api
+                xmlns="https://ladok.se/api/"
+                xmlns:ladok="https://ladok.se/api/"
+                attr="x"
+                ladok:nsattr="An unconventional attribute attached to a namespace"
+            >
                 <something/>
             </ladok-api>
         </apis-implemented>
         <institutions-covered>
             <hei-id>lu.se</hei-id>
         </institutions-covered>
-        <client-credentials-in-use>
-            <certificate sha-256="(SHA-256 fingerprint here)"/>
-        </client-credentials-in-use>
     </host>
     <host>
         <apis-implemented>

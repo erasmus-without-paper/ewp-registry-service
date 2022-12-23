@@ -86,10 +86,6 @@
                 <r1:catalogue-url>https://registry.erasmuswithoutpaper.eu/catalogue-v1.xml</r1:catalogue-url>
             </r1:registry>
         </apis-implemented>
-        <client-credentials-in-use>
-            <certificate sha-256="f47643e26f10fd1e5ffe2c933f0a5e6ccf831d789cd80a12720392e90a8f7d42"/>
-            <certificate sha-256="0b9e993d1d4a4e1be879bc5be19c1c0b9073d7bfe1556e015c069c6df6231b7f"/>
-        </client-credentials-in-use>
     </host>
     <host>
         <ewp:admin-email>admin-or-developer@example.com</ewp:admin-email>
@@ -119,7 +115,6 @@
             <hei-id>uw.edu.pl</hei-id>
         </institutions-covered>
         <client-credentials-in-use>
-            <certificate sha-256="19fdd48a85595958035a1a42da8065709a585f78cc01b4df428f68eab39b9dda"/>
             <rsa-public-key sha-256="5531f9a02c44a894d0b706961259fec740ad4ae8a3555871f1a5cd9801285bd4"/>
         </client-credentials-in-use>
         <server-credentials-in-use>

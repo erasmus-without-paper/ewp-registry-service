@@ -13,9 +13,6 @@
                         <hei-id>lu.se</hei-id>
                         <hei-id>hv.se</hei-id>
                     </institutions-covered>
-                    <client-credentials-in-use>
-                        <certificate sha-256="f47643e26f10fd1e5ffe2c933f0a5e6ccf831d789cd80a12720392e90a8f7d42"/>
-                    </client-credentials-in-use>
                 </host>
                 <mf:manifest>
                 </mf:manifest>

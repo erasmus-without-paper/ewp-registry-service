@@ -213,30 +213,6 @@ public class ApiControllerIntegrationTest extends WRIntegrationTest {
     assertThat(this.getCatalogueBodyWithoutBinaries())
         .isEqualTo(this.getFileAsString("demo1/E-out.xml"));
 
-    /* [Test F] Try to use suspicious TLS client certificates (2 invalid, 1 obsolete). */
-
-    this.internet.putURL(urlSE, this.getFile("demo1/F-inSE.xml"));
-    this.forceReload(urlSE);
-    assertThat(this.getCatalogueBodyWithoutBinaries())
-        .isEqualTo(this.getFileAsString("demo1/F-out.xml"));
-    assertThat(this.status(urlSE))
-        .contains("minimum required length of TLS client certificate key is 1024 bits");
-    assertThat(this.status(urlSE))
-        .contains("One of your TLS client certificates (1st of 3) uses 512 bits only");
-    assertThat(this.status(urlSE))
-        .contains("One of your TLS client certificates (2nd of 3) uses an insecure "
-            + "MD-based signature algorithm (MD5withRSA)");
-    assertThat(this.status(urlSE))
-        .doesNotContain("One of your TLS client certificates (3rd of 3) uses a SHA-1-based "
-            + "signature algorithm (SHA1withRSA). Consider upgrading to SHA-256.");
-
-    /* [Test G] Replace certificate with a valid one. */
-
-    this.internet.putURL(urlSE, this.getFile("demo1/G-inSE.xml"));
-    this.forceReload(urlSE);
-    assertThat(this.getCatalogueBodyWithoutBinaries())
-        .isEqualTo(this.getFileAsString("demo1/G-out.xml"));
-
     /* [Test H] Try to invade Poland. */
 
     this.internet.putURL(urlSE, this.getFile("demo1/H-inSE.xml"));
@@ -250,7 +226,7 @@ public class ApiControllerIntegrationTest extends WRIntegrationTest {
      * value should be present exactly once.
      */
 
-    this.internet.putURL(urlSE, this.getFile("demo1/G-inSE.xml"));
+    this.internet.putURL(urlSE, this.getFile("demo1/E-inSE.xml"));
     this.forceReload(urlSE);
     String urlPL2 = "https://schowek.usos.edu.pl/w.rygielski/ewp/uw.edu.pl/manifest2.xml";
     this.manifestSourceProvider.addSource(ManifestSource.newRegularSource(urlPL2, Lists
