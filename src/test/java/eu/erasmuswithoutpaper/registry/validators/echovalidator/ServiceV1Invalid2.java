@@ -1,11 +1,13 @@
 package eu.erasmuswithoutpaper.registry.validators.echovalidator;
 
 import java.io.IOException;
-import java.security.cert.X509Certificate;
 import java.util.List;
 
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
+import eu.erasmuswithoutpaper.registry.internet.sec.EwpClientWithRsaKey;
+import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigRequestAuthorizer;
+import eu.erasmuswithoutpaper.registry.internet.sec.Http4xx;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 import org.assertj.core.util.Lists;
@@ -29,16 +31,16 @@ public class ServiceV1Invalid2 extends AbstractEchoV1Service {
     if (!request.getUrl().startsWith(this.myEndpoint)) {
       return null;
     }
-    if (!request.getClientCertificate().isPresent()) {
-      return this.createErrorResponse(request, 403, "Expecting client certificate.");
-    }
-    X509Certificate cert = request.getClientCertificate().get();
-    if (!this.registryClient.isCertificateKnown(cert)) {
-      return this.createErrorResponse(request, 403, "Unknown client certificate.");
-    }
     List<String> echos = Lists.newArrayList("a", "b");
+    EwpClientWithRsaKey client;
+    try {
+      client = new EwpHttpSigRequestAuthorizer(this.registryClient).authorize(request);
+    } catch (Http4xx e) {
+      return e.generateEwpErrorResponse();
+    }
+
     return this.createEchoResponse(request, echos,
-        this.registryClient.getHeisCoveredByCertificate(cert));
+        this.registryClient.getHeisCoveredByClientKey(client.getRsaPublicKey()));
   }
 
 }

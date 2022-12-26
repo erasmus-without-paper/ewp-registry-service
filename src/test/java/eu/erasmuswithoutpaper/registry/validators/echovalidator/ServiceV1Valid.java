@@ -7,7 +7,8 @@ import eu.erasmuswithoutpaper.registry.internet.InternetTestHelpers;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registry.internet.sec.EwpCertificateRequestAuthorizer;
-import eu.erasmuswithoutpaper.registry.internet.sec.EwpClientWithCertificate;
+import eu.erasmuswithoutpaper.registry.internet.sec.EwpClientWithRsaKey;
+import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigRequestAuthorizer;
 import eu.erasmuswithoutpaper.registry.internet.sec.Http4xx;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
@@ -32,9 +33,9 @@ public class ServiceV1Valid extends AbstractEchoV1Service {
     if (!request.getUrl().startsWith(this.myEndpoint)) {
       return null;
     }
-    EwpClientWithCertificate client;
+    EwpClientWithRsaKey client;
     try {
-      client = this.myAuthorizer.authorize(request);
+      client = new EwpHttpSigRequestAuthorizer(this.registryClient).authorize(request);
     } catch (Http4xx e) {
       return e.generateEwpErrorResponse();
     }
@@ -43,7 +44,7 @@ public class ServiceV1Valid extends AbstractEchoV1Service {
     }
     List<String> echos = InternetTestHelpers.extractParams(request, "echo");
     return this.createEchoResponse(request, echos,
-        this.registryClient.getHeisCoveredByCertificate(client.getCertificate()));
+        this.registryClient.getHeisCoveredByClientKey(client.getRsaPublicKey()));
   }
 
 }

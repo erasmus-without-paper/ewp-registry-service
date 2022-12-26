@@ -111,16 +111,6 @@ public class EchoSetupValidationSuite
     }
     // Even though, we will still run some tests on it.
     ret.add(CombEntry.CLIAUTH_NONE);
-    if (sec.supportsCliAuthTlsCert()) {
-      if (sec.supportsCliAuthTlsCertSelfSigned()) {
-        ret.add(CombEntry.CLIAUTH_TLSCERT_SELFSIGNED);
-      } else {
-        notices.add("Echo API Validator is able to validate TLS Client Authentication "
-            + "ONLY with a self-signed client certificate. You Echo API endpoint declares "
-            + "that it does not support self-signed Client Certificates. Therefore, TLS "
-            + "Client Authentication tests will be skipped.");
-      }
-    }
     if (sec.supportsCliAuthHttpSig()) {
       ret.add(CombEntry.CLIAUTH_HTTPSIG);
     } else {

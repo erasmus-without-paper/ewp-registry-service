@@ -515,13 +515,6 @@ public class KnownElement {
           "Support declaration for Anonymous Client Authentication");
 
   /**
-   * Support declaration for TLS Client Certificate Authentication.
-   */
-  public static final KnownElement SECENTRY_CLIAUTH_TLSCERT_V1 =
-      new KnownElement(KnownNamespace.SECENTRY_CLIAUTH_TLSCERT_V1, "tlscert",
-          "Support declaration for TLS Client Certificate Authentication");
-
-  /**
    * Support declaration for HTTP Signature Client Authentication.
    */
   public static final KnownElement SECENTRY_CLIAUTH_HTTPSIG_V1 =

@@ -15,8 +15,6 @@ public class HttpSecurityDescription {
 
   static {
     legend.put("A---", "No Client Authentication (Anonymous Client)");
-    legend.put("S---", "Client Authentication with TLS Certificate (self-signed)");
-    legend.put("T---", "Client Authentication with TLS Certificate (CA-signed)");
     legend.put("H---", "Client Authentication with HTTP Signature");
     legend.put("-T--", "Server Authentication with TLS Certificate (CA-signed)");
     legend.put("-H--", "Server Authentication with HTTP Signature");
@@ -57,8 +55,6 @@ public class HttpSecurityDescription {
       return CombEntry.CLIAUTH_NONE;
     } else if (code == CombEntry.CLIAUTH_HTTPSIG.getCode()) {
       return CombEntry.CLIAUTH_HTTPSIG;
-    } else if (code == CombEntry.CLIAUTH_TLSCERT_SELFSIGNED.getCode()) {
-      return CombEntry.CLIAUTH_TLSCERT_SELFSIGNED;
     } else {
       throw new InvalidDescriptionString();
     }
@@ -238,10 +234,6 @@ public class HttpSecurityDescription {
    */
   public boolean isCompatible(HttpSecuritySettings httpSecurity) {
     if (this.cliauth == CombEntry.CLIAUTH_NONE && !httpSecurity.supportsCliAuthNone()) {
-      return false;
-    }
-    if (this.cliauth == CombEntry.CLIAUTH_TLSCERT_SELFSIGNED
-        && !httpSecurity.supportsCliAuthTlsCertSelfSigned()) {
       return false;
     }
     if (this.cliauth == CombEntry.CLIAUTH_HTTPSIG && !httpSecurity.supportsCliAuthHttpSig()) {

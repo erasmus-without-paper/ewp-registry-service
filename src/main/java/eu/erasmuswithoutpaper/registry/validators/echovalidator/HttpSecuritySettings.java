@@ -15,8 +15,6 @@ public class HttpSecuritySettings {
   private final List<String> notices;
   private boolean cliAuthHttpSig;
   private boolean cliAuthNone;
-  private boolean cliAuthTlsCert;
-  private boolean cliAuthTlsCertAllowsSelfSigned;
   private boolean reqEncrTls;
   private boolean reqEncrEwp;
   private boolean resEncrTls;
@@ -40,20 +38,10 @@ public class HttpSecuritySettings {
 
     if ($(httpSecurityElement).children("client-auth-methods").isNotEmpty()) {
       this.cliAuthNone = false;
-      this.cliAuthTlsCert = false;
-      this.cliAuthTlsCertAllowsSelfSigned = false;
       this.cliAuthHttpSig = false;
       for (Element elem : $(httpSecurityElement).children("client-auth-methods").children()) {
         if (KnownElement.SECENTRY_CLIAUTH_NONE_V1.matches(elem)) {
           this.cliAuthNone = true;
-        } else if (KnownElement.SECENTRY_CLIAUTH_TLSCERT_V1.matches(elem)) {
-          this.cliAuthTlsCert = true;
-          if ($(elem).attr("allows-self-signed").equals("true")
-              || $(elem).attr("allows-self-signed").equals("1")) {
-            this.cliAuthTlsCertAllowsSelfSigned = true;
-          } else {
-            this.cliAuthTlsCertAllowsSelfSigned = false;
-          }
         } else if (KnownElement.SECENTRY_CLIAUTH_HTTPSIG_V1.matches(elem)) {
           this.cliAuthHttpSig = true;
         } else {
@@ -63,8 +51,6 @@ public class HttpSecuritySettings {
     } else {
       // Using defaults.
       this.cliAuthNone = false;
-      this.cliAuthTlsCert = true;
-      this.cliAuthTlsCertAllowsSelfSigned = true;
       this.cliAuthHttpSig = false;
     }
 
@@ -141,14 +127,6 @@ public class HttpSecuritySettings {
 
   public boolean supportsCliAuthNone() {
     return this.cliAuthNone;
-  }
-
-  public boolean supportsCliAuthTlsCert() {
-    return this.cliAuthTlsCert;
-  }
-
-  public boolean supportsCliAuthTlsCertSelfSigned() {
-    return this.cliAuthTlsCert && this.cliAuthTlsCertAllowsSelfSigned;
   }
 
   public boolean supportsReqEncrEwp() {

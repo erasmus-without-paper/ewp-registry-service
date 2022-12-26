@@ -4,7 +4,6 @@ import static org.joox.JOOX.$;
 
 import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
-import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPublicKey;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -26,7 +25,6 @@ import eu.erasmuswithoutpaper.registry.documentbuilder.BuildResult;
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
-import eu.erasmuswithoutpaper.registry.internet.sec.EwpCertificateRequestSigner;
 import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigRequestSigner;
 import eu.erasmuswithoutpaper.registry.internet.sec.RequestSigner;
 import eu.erasmuswithoutpaper.registry.validators.AbstractValidationSuite;
@@ -493,39 +491,6 @@ public class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSuite
       });
 
     }
-  }
-
-  private void checkEdgeCasesForSxxx(Combination combination)
-      throws SuiteBroken {
-    assert combination.getCliAuth().equals(CombEntry.CLIAUTH_TLSCERT_SELFSIGNED);
-
-    this.addAndRun(false, new InlineValidationStep() {
-
-      @Override
-      public String getName() {
-        return "Trying " + combination + " with an unknown TLS client certificate "
-            + "(a random one, that has never been published in the Registry). "
-            + "Expecting to receive a valid HTTP 401 or HTTP 403 error response.";
-      }
-
-      @Override
-      protected Optional<Response> innerRun() throws Failure {
-        Request request =
-            EchoValidationSuiteCommon.this.createValidRequestForCombination(this, combination);
-
-        // Override the work done by the original (valid) request signer.
-        KeyPair otherKeyPair =
-            EchoValidationSuiteCommon.this.validatorKeyStore.getUnregisteredKeyPair();
-        X509Certificate otherCert =
-            EchoValidationSuiteCommon.this.validatorKeyStore.generateCertificate(otherKeyPair);
-        EwpCertificateRequestSigner mySigner =
-            new EwpCertificateRequestSigner(otherCert, otherKeyPair);
-        mySigner.sign(request);
-
-        return Optional.of(EchoValidationSuiteCommon.this
-            .makeRequestAndExpectError(this, combination, request, Lists.newArrayList(401, 403)));
-      }
-    });
   }
 
   private void checkEdgeCasesForxHxx(Combination combination)
@@ -1121,8 +1086,6 @@ public class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSuite
 
     if (combination.getCliAuth().equals(CombEntry.CLIAUTH_NONE)) {
       this.checkEdgeCasesForAxxx(combination);
-    } else if (combination.getCliAuth().equals(CombEntry.CLIAUTH_TLSCERT_SELFSIGNED)) {
-      this.checkEdgeCasesForSxxx(combination);
     } else if (combination.getCliAuth().equals(CombEntry.CLIAUTH_HTTPSIG)) {
       this.checkEdgeCasesForHxxx(combination);
     } else {

@@ -29,7 +29,7 @@ public class EchoSetupValidationSuiteV1 extends EchoSetupValidationSuite {
   @Override
   @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
   protected void validateSecurityMethods() throws SuiteBroken {
-    // GATTT, PATTT, GSTTT, PSTTT
+    // GATTT, PATTT, GHTTT, PHTTT
     this.currentState.combinations.add(
         new Combination("GET", this.currentState.url, getMatchedApiEntry(),
             CombEntry.CLIAUTH_NONE,
@@ -42,12 +42,12 @@ public class EchoSetupValidationSuiteV1 extends EchoSetupValidationSuite {
         ));
     this.currentState.combinations.add(
         new Combination("GET", this.currentState.url, getMatchedApiEntry(),
-            CombEntry.CLIAUTH_TLSCERT_SELFSIGNED, CombEntry.SRVAUTH_TLSCERT, CombEntry.REQENCR_TLS,
+            CombEntry.CLIAUTH_HTTPSIG, CombEntry.SRVAUTH_TLSCERT, CombEntry.REQENCR_TLS,
             CombEntry.RESENCR_TLS
         ));
     this.currentState.combinations.add(
         new Combination("POST", this.currentState.url, getMatchedApiEntry(),
-            CombEntry.CLIAUTH_TLSCERT_SELFSIGNED, CombEntry.SRVAUTH_TLSCERT, CombEntry.REQENCR_TLS,
+            CombEntry.CLIAUTH_HTTPSIG, CombEntry.SRVAUTH_TLSCERT, CombEntry.REQENCR_TLS,
             CombEntry.RESENCR_TLS
         ));
   }

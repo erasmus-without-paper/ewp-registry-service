@@ -17,19 +17,6 @@ Notices:
 
 ### SUCCESS: Trying Combination[GATTT] (no client authentication). Expecting a valid HTTP 401 or HTTP 403 error response.
 ### SUCCESS: Trying Combination[PATTT] (no client authentication). Expecting a valid HTTP 401 or HTTP 403 error response.
-### SUCCESS: Trying Combination[GSTTT] GET request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.
-### SUCCESS: Trying Combination[GSTTT] with an unknown TLS client certificate (a random one, that has never been published in the Registry). Expecting to receive a valid HTTP 401 or HTTP 403 error response.
-### SUCCESS: Trying Combination[-STTT] with a PUT request. Expecting to receive a valid HTTP 405 error response.
-### SUCCESS: Trying Combination[-STTT] with a DELETE request. Expecting to receive a valid HTTP 405 error response.
-### SUCCESS: Trying Combination[PSTTT] POST request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.
-### SUCCESS: Trying Combination[PSTTT] POST request with a list of echo values [a, b, a], plus an additional GET echo=c&echo=c parameters. Expecting the GET parameters to be ignored. (It's a POST request, so all parameters are passed via POST body.)
-
-### NOTICE: Trying Combination[PSTTT] with additional "gzip" added in Accept-Encoding. Expecting the same response, but preferably gzipped.
-
-The client explicitly accepted gzip, but the server didn't compress its response. That's not an error, but it might be useful to support gzip encoding to save bandwidth.
-
-
-### SUCCESS: Trying Combination[PSTTT] with an unknown TLS client certificate (a random one, that has never been published in the Registry). Expecting to receive a valid HTTP 401 or HTTP 403 error response.
 ### SUCCESS: Trying Combination[GHTTT] GET request with a list of echo values [a, b, a]. Expecting to receive a valid HTTP 200 Echo API response, with proper hei-id and matching echo values.
 ### SUCCESS: Trying Combination[GHTTT] with an unknown RSA client key (a random one, that has never been published in the Registry). Expecting to receive a valid HTTP 401 or HTTP 403 error response.
 ### SUCCESS: Trying Combination[GHTTT] with a known keyId, but invalid signature. Expecting to receive a valid HTTP 400 or HTTP 401 error response.

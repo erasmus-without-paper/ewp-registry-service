@@ -23,9 +23,7 @@ public class ServiceMTTTInvalid1 extends ServiceMTTTValid {
     if (!request.getUrl().startsWith(this.myEndpoint)) {
       return null;
     }
-    if (request.getClientCertificate().isPresent()) {
-      return this.sttt.handleInternetRequest2(request);
-    } else if (request.getHeader("Authorization") != null) {
+    if (request.getHeader("Authorization") != null) {
       return this.httt.handleInternetRequest2(request);
     } else {
       return this.createEchoResponse(request, this.retrieveEchoValues(request),

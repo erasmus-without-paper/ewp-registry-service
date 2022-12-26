@@ -14,8 +14,7 @@ import com.google.common.collect.Lists;
  * Internal "fake" implementation of a slightly invalid Version 1 Echo API endpoint.
  *
  * <p>
- * Invalid because: 1. Accepts HTTP methods other than GET and POST. 2. It doesn't validate the
- * client certificate (trusts any).
+ * Invalid because: 1. Accepts HTTP methods other than GET and POST.
  * </p>
  */
 public class ServiceV1Invalid1 extends AbstractEchoV1Service {
@@ -28,9 +27,6 @@ public class ServiceV1Invalid1 extends AbstractEchoV1Service {
   public Response handleInternetRequest2(Request request) throws IOException {
     if (!request.getUrl().startsWith(this.myEndpoint)) {
       return null;
-    }
-    if (!request.getClientCertificate().isPresent()) {
-      return this.createErrorResponse(request, 403, "Expecting client certificate.");
     }
     List<String> echos;
     try {

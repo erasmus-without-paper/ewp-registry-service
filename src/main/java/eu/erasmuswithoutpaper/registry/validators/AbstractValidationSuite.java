@@ -46,7 +46,6 @@ import eu.erasmuswithoutpaper.registry.internet.Internet;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registry.internet.sec.AnonymousRequestSigner;
-import eu.erasmuswithoutpaper.registry.internet.sec.EwpCertificateRequestSigner;
 import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigRequestSigner;
 import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigResponseAuthorizer;
 import eu.erasmuswithoutpaper.registry.internet.sec.EwpRsaAesRequestEncoder;
@@ -89,7 +88,6 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
   protected ValidatorKeyStore validatorKeyStore;
   protected ValidatorKeyStoreSet validatorKeyStoreSet;
   protected AnonymousRequestSigner reqSignerAnon;
-  protected EwpCertificateRequestSigner reqSignerCert;
   protected EwpHttpSigRequestSigner reqSignerHttpSig;
   protected DecodingHelper resDecoderHelper;
   protected S currentState;
@@ -132,11 +130,6 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
   protected void setValidatorKeyStore(ValidatorKeyStore validatorKeyStore) {
     this.validatorKeyStore = validatorKeyStore;
     this.reqSignerAnon = new AnonymousRequestSigner();
-    this.reqSignerCert =
-        new EwpCertificateRequestSigner(
-            this.validatorKeyStore.getTlsClientCertificateInUse(),
-            this.validatorKeyStore.getTlsKeyPairInUse()
-        );
     this.reqSignerHttpSig =
         new EwpHttpSigRequestSigner(this.validatorKeyStore.getClientRsaKeyPairInUse());
     this.resDecoderHelper = new DecodingHelper();
@@ -447,8 +440,6 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
       return this.reqSignerAnon;
     } else if (combination.getCliAuth().equals(CombEntry.CLIAUTH_HTTPSIG)) {
       return this.reqSignerHttpSig;
-    } else if (combination.getCliAuth().equals(CombEntry.CLIAUTH_TLSCERT_SELFSIGNED)) {
-      return this.reqSignerCert;
     } else {
       throw new RuntimeException();
     }

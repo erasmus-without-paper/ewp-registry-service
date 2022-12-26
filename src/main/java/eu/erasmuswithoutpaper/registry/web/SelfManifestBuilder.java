@@ -173,12 +173,6 @@ public class SelfManifestBuilder {
 
     Host.ClientCredentialsInUse clientCredentials = new Host.ClientCredentialsInUse();
 
-    // Add client certificates in use.
-    for (EncodedCertificateAndKeys encodedCertificateAndKeys : validatorHostCertificatesAndKeys) {
-      clientCredentials.getCertificate().add(
-          Base64.decodeBase64(encodedCertificateAndKeys.getCertificateEncoded()));
-    }
-
     // Add client keys in use.
     for (EncodedCertificateAndKeys encodedCertificateAndKeys : validatorHostCertificatesAndKeys) {
       clientCredentials.getRsaPublicKey().add(

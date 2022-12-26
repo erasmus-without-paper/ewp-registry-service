@@ -36,15 +36,10 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
   protected static HttpSecurityDescription getDescriptionFromSecuritySettings(
       HttpSecuritySettings securitySettings) {
     CombEntry cliauth = CombEntry.CLIAUTH_NONE;
-    if (securitySettings.supportsCliAuthTlsCertSelfSigned()) {
-      cliauth = CombEntry.CLIAUTH_TLSCERT_SELFSIGNED;
-    } else if (securitySettings.supportsCliAuthHttpSig()) {
+    if (securitySettings.supportsCliAuthHttpSig()) {
       cliauth = CombEntry.CLIAUTH_HTTPSIG;
     } else if (securitySettings.supportsCliAuthNone()) {
       cliauth = CombEntry.CLIAUTH_NONE;
-    } else if (securitySettings.supportsCliAuthTlsCert()) {
-      //TODO
-      throw new UnsupportedOperationException();
     }
 
     CombEntry srvauth = CombEntry.SRVAUTH_TLSCERT;
@@ -389,14 +384,6 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
       notices.add("You may consider allowing this API to be accessed by anonymous clients.");
     } else {
       ret.add(CombEntry.CLIAUTH_NONE);
-    }
-
-    if (sec.supportsCliAuthTlsCert()) {
-      if (sec.supportsCliAuthTlsCertSelfSigned()) {
-        ret.add(CombEntry.CLIAUTH_TLSCERT_SELFSIGNED);
-      } else {
-        notices.add("Not implemented."); //TODO
-      }
     }
 
     if (sec.supportsCliAuthHttpSig()) {

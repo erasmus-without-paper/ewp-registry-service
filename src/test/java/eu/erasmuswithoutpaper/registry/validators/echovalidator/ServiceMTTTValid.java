@@ -11,13 +11,10 @@ import eu.erasmuswithoutpaper.registryclient.RegistryClient;
  * both STTT and HTTT combinations).
  */
 public class ServiceMTTTValid extends AbstractEchoV2Service {
-
-  protected final ServiceSTTTValid sttt;
   protected final ServiceHTTTValid httt;
 
   public ServiceMTTTValid(String url, RegistryClient registryClient) {
     super(url, registryClient);
-    this.sttt = new ServiceSTTTValid(url, registryClient);
     this.httt = new ServiceHTTTValid(url, registryClient);
   }
 
@@ -27,11 +24,7 @@ public class ServiceMTTTValid extends AbstractEchoV2Service {
     if (!request.getUrl().startsWith(this.myEndpoint)) {
       return null;
     }
-    if (request.getClientCertificate().isPresent()) {
-      return this.sttt.handleInternetRequest2(request);
-    } else {
-      return this.httt.handleInternetRequest2(request);
-    }
+    return this.httt.handleInternetRequest2(request);
   }
 
 }

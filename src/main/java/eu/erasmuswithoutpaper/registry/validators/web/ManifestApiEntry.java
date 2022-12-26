@@ -172,14 +172,6 @@ public class ManifestApiEntry {
       ret.add(CombEntry.CLIAUTH_NONE);
     }
 
-    if (sec.supportsCliAuthTlsCert()) {
-      if (sec.supportsCliAuthTlsCertSelfSigned()) {
-        ret.add(CombEntry.CLIAUTH_TLSCERT_SELFSIGNED);
-      } else {
-        //TODO not implemented
-      }
-    }
-
     if (sec.supportsCliAuthHttpSig()) {
       ret.add(CombEntry.CLIAUTH_HTTPSIG);
     }
