@@ -94,7 +94,6 @@ public class SelfManifestProvider {
 
     this.validatorHostCoveredHeiIds = new ArrayList<>();
     for (ValidatorKeyStore keyStore : validatorKeyStoreSet.getPrimaryKeyStores()) {
-      String heiId = keyStore.getCoveredHeiIDs().get(0);
       List<EncodedCertificateAndKeys> certificateAndKeys = new ArrayList<>();
       certificateAndKeys.add(new EncodedCertificateAndKeys(keyStore));
 
@@ -102,7 +101,11 @@ public class SelfManifestProvider {
         certificateAndKeys.addAll(additionalCertificateAndKeys);
       }
 
-      this.validatorHostCoveredHeiIds.add(heiId);
+      List<String> heiIds = keyStore.getCoveredHeiIDs();
+      if (!heiIds.isEmpty()) {
+        this.validatorHostCoveredHeiIds.add(heiIds.get(0));
+      }
+
       this.validatorHostCertificatesAndKeys.add(certificateAndKeys);
     }
 
