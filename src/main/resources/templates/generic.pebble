@@ -5,8 +5,8 @@
     <link href="https://fonts.googleapis.com/css?family=Inconsolata:400,700|Lato:300,300i,400,400i|Roboto+Slab:700" rel="stylesheet">
     <link href="{{ baseUrl | default("") }}/style-{{ cssFingerprint }}.css" rel="stylesheet">
     <script
-        src="https://code.jquery.com/jquery-3.2.1.min.js"
-        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+        src="https://code.jquery.com/jquery-3.6.3.min.js"
+        integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU="
         crossorigin="anonymous"></script>
     <script src="{{ baseUrl | default("") }}/scripts-{{ jsFingerprint }}.js"></script>
     {% block scripts %}{% endblock %}
