@@ -28,5 +28,13 @@
                 </tr>
             {% endfor %}
         </table>
+
+        <p class='ewp-para'>
+            <a href="https://esci-sd.atlassian.net/wiki/spaces/EWP/pages/10879608/How+to+join">
+                How to join EWP Network?
+            </a>
+        </p>
+
+        {% include "contact" %}
     </section>
 {% endblock %}

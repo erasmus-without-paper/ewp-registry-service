@@ -395,7 +395,8 @@ public class UiController {
    * @return A page with all manifest sources and their statuses.
    */
   @RequestMapping(value = "/status", method = RequestMethod.GET)
-  public ModelAndView serviceStatus(HttpServletResponse response) {
+  public ModelAndView serviceStatus(HttpServletResponse response,
+      @Value("${app.admin-emails}") List<String> adminEmails) {
     ModelAndView mav = new ModelAndView();
     this.initializeMavCommons(mav);
     mav.setViewName("status");
@@ -412,6 +413,8 @@ public class UiController {
     mav.addObject("manifestStatuses", statuses);
     mav.addObject("manifestValidationUrl", Application.getRootUrl() + "/manifestValidation");
     mav.addObject("isValidatorEnabled", Application.isValidationEnabled());
+    mav.addObject("adminEmails", adminEmails);
+
     return mav;
   }
 
