@@ -115,7 +115,20 @@
                 {% endif %}
             </div>
 
-            {% include "contact" %}
+            <div class='ewp-header__footer ewp-footer'>
+                <p class='ewp-para' style='float: left'>
+                    <a href="https://esci-sd.atlassian.net/wiki/spaces/EWP/pages/10879608/How+to+join">
+                        How to join EWP Network?
+                    </a>
+                </p>
+
+                {% if adminEmails != null %}
+                    Contact:
+                    {% for adminEmail in adminEmails %}
+                    <a href="mailto:{{ adminEmail }}">{{ adminEmail}}</a>
+                    {% endfor %}
+                {% endif %}
+            </div>
         </div>
         <div class='ewp-header__margin ewp-header__margin--bottom'></div>
     </main>

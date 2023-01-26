@@ -1,8 +1,0 @@
-{% if adminEmails != null %}
-    <div class='ewp-header__footer ewp-footer'>
-        Contact:
-        {% for adminEmail in adminEmails %}
-            <a href="mailto:{{ adminEmail }}">{{ adminEmail}}</a>
-        {% endfor %}
-    </div>
-{% endif %}
