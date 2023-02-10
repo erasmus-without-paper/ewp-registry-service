@@ -33,10 +33,10 @@ public class ManifestSourceFactory {
     all.add(new TlsClientCertificateSecurityConstraint(1024));
     all.add(new ClientKeyConstraint(2048));
     all.add(new ServerKeySecurityConstraint(2048));
+    all.add(constraintFactory.getForbidRegistryImplementations());
     all.add(constraintFactory.getApiUniqueConstraint());
     all.add(constraintFactory.getEndpointUniqueConstraint());
     all.add(new VerifyDiscoveryApiEntry(url));
-    all.add(constraintFactory.getForbidRegistryImplementations());
     all.add(constraintFactory.getVerifyApiVersions());
     all.add(new RemoveEmbeddedCatalogues());
     all.addAll(extraConstraints);

@@ -54,6 +54,14 @@ public class ApiUniqueConstraint implements ManifestConstraint {
         conditions.setApiClassRequired(namespaceUri, apiName);
         Collection<Element> apis = registryClient.findApis(conditions);
         String url = getUrl(match, namespaceUri);
+
+        if (url == null) {
+          notices.add(new FailedConstraintNotice(Severity.ERROR,
+              "URL for " + apiName + " API not found. It will not be imported."));
+          match.remove();
+          continue;
+        }
+
         for (Element api : apis) {
           if (!url.equals(getUrl($(api), namespaceUri))) {
             notices.add(new FailedConstraintNotice(Severity.ERROR,
