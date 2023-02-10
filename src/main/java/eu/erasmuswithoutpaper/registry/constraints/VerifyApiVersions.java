@@ -26,10 +26,17 @@ import org.w3c.dom.Document;
  * </p>
  */
 public class VerifyApiVersions implements ManifestConstraint {
+  private final String registryRepoBaseUrl;
+
+  public VerifyApiVersions(String registryRepoBaseUrl) {
+    this.registryRepoBaseUrl = registryRepoBaseUrl;
+  }
 
   /**
    * Returns prefixes of API versions allowed to be used with provided namespace,
    * in format "X.", where X is major version.
+   * @param namespaceUri namespace URI.
+   * @return list of prefixes.
    */
   public static List<String> getExpectedVersionPrefixes(String namespaceUri) {
     Matcher pm = Pattern.compile(".*/stable-v([0-9]+).*").matcher(namespaceUri);
@@ -59,7 +66,7 @@ public class VerifyApiVersions implements ManifestConstraint {
 
     for (Match match : root.xpath("mf6:host/r:apis-implemented/*").each()) {
       String namespaceUri = match.namespaceURI();
-      if (!namespaceUri.startsWith("https://github.com/erasmus-without-paper/")) {
+      if (!namespaceUri.startsWith(registryRepoBaseUrl)) {
         /*
          * Most probably, this API is not related to EWP. And, as such, it does not necessarily
          * follow EWP namespace-naming rules. We will ignore this API.
@@ -79,7 +86,7 @@ public class VerifyApiVersions implements ManifestConstraint {
       }
       if (!foundExpected) {
         StringBuilder sb = new StringBuilder();
-        sb.append("<p>According to EWP's <a href='https://github.com/erasmus-without-paper/");
+        sb.append("<p>According to EWP's <a href='" + registryRepoBaseUrl);
         sb.append("ewp-specs-management#git-branches-and-xml-namespaces'>namespace-naming ");
         sb.append("rules</a>, the version of your API in the <code>");
         sb.append(Utils.escapeHtml(namespaceUri));
@@ -92,7 +99,7 @@ public class VerifyApiVersions implements ManifestConstraint {
         sb.append(Utils.escapeHtml(match.attr("version")));
         sb.append("</code> was found instead.</p>");
         sb.append("<p>Note, that this check is applied only for API namespaces beginning ");
-        sb.append("with <code>https://github.com/erasmus-without-paper/</code>.</p>");
+        sb.append("with <code>" + registryRepoBaseUrl + "</code>.</p>");
         notices.add(new FailedConstraintNotice(Severity.WARNING, sb.toString()));
       }
     }

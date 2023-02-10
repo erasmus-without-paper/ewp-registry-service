@@ -7,6 +7,7 @@ import java.util.List;
 import eu.erasmuswithoutpaper.registry.internet.Internet;
 import eu.erasmuswithoutpaper.registry.validators.SemanticVersion;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +23,10 @@ import org.slf4j.Logger;
 @Service
 @Profile({ "production", "development", "console" })
 public class GitHubTagsGetterProd implements GitHubTagsGetter {
+
+  @Value("${app.ewp-github-api-base-url}")
+  private String githubApiBaseUrl;
+
   /**
    * Sends request to GitHub and parses the response to obtain list of tags available for API.
    * @param apiName API name.
@@ -30,7 +35,7 @@ public class GitHubTagsGetterProd implements GitHubTagsGetter {
    * @return list of available versions.
    */
   public List<SemanticVersion> getTags(String apiName, Internet internet, Logger logger) {
-    String url = "https://api.github.com/repos/erasmus-without-paper/ewp-specs-api-";
+    String url = githubApiBaseUrl + "/ewp-specs-api-";
     url += apiName;
     url += "/tags";
 

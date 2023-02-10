@@ -22,6 +22,7 @@ import eu.erasmuswithoutpaper.registry.notifier.NotifierService;
 import eu.erasmuswithoutpaper.registry.repository.CatalogueNotFound;
 import eu.erasmuswithoutpaper.registry.repository.ManifestRepositoryImpl;
 import eu.erasmuswithoutpaper.registry.sourceprovider.ManifestSource;
+import eu.erasmuswithoutpaper.registry.sourceprovider.ManifestSourceFactory;
 import eu.erasmuswithoutpaper.registry.sourceprovider.TestManifestSourceProvider;
 import eu.erasmuswithoutpaper.registry.xmlformatter.XmlFormatter;
 import eu.erasmuswithoutpaper.registryclient.ApiSearchConditions;
@@ -79,6 +80,9 @@ public class RegistryUpdaterTest extends WRTest {
   @Autowired
   private XmlFormatter xmlFormatter;
 
+  @Autowired
+  private ManifestSourceFactory manifestFactory;
+
   private Match lastCatalogue;
   private List<String> lastEmails;
 
@@ -98,8 +102,8 @@ public class RegistryUpdaterTest extends WRTest {
     this.internet.putURL(urlA, this.getFile("manifests/sample-registry-manifest.xml"));
     this.internet.putURL(urlB,
         this.getFile("latest-examples/ewp-specs-api-discovery-manifest-example.xml"));
-    this.sourceProvider.addSource(ManifestSource.newTrustedSource(urlA));
-    this.sourceProvider.addSource(ManifestSource.newRegularSource(urlB,
+    this.sourceProvider.addSource(manifestFactory.newTrustedSource(urlA));
+    this.sourceProvider.addSource(manifestFactory.newRegularSource(urlB,
         Arrays.asList(new RestrictInstitutionsCovered(".*\\.pl"))));
     this.timePasses();
     assertThat(this.updateStatuses.findOne(urlA).getLastAccessFlagStatus()).isEqualTo(Severity.OK);
@@ -118,7 +122,7 @@ public class RegistryUpdaterTest extends WRTest {
 
     String urlC = "https://example.com/empty.xml";
     this.internet.putURL(urlC, this.getFile("manifests/empty.xml"));
-    this.sourceProvider.addSource(ManifestSource.newRegularSource(urlC, Arrays.asList()));
+    this.sourceProvider.addSource(manifestFactory.newRegularSource(urlC, Arrays.asList()));
     this.timePasses();
     assertThat(this.updateStatuses.findOne(urlC).getLastAccessFlagStatus())
         .isEqualTo(Severity.WARNING);
@@ -151,7 +155,7 @@ public class RegistryUpdaterTest extends WRTest {
 
     this.assertManifestStatuses(null, null, null);
     this.internet.putURL(url1, this.getFile("rsa-public-key-tests/manifest1.xml"));
-    ManifestSource ms1 = ManifestSource.newRegularSource(url1, Arrays.asList());
+    ManifestSource ms1 = manifestFactory.newRegularSource(url1, Arrays.asList());
     this.sourceProvider.addSource(ms1);
     this.timePasses();
     this.assertManifestStatuses("OK", null, null);
@@ -197,7 +201,7 @@ public class RegistryUpdaterTest extends WRTest {
 
     this.internet.putURL(url1, this.getFile("rsa-public-key-tests/manifest1.xml"));
     this.internet.putURL(url2, this.getFile("rsa-public-key-tests/manifest-same-key.xml"));
-    ManifestSource msSameKey = ManifestSource.newRegularSource(url2, Arrays.asList());
+    ManifestSource msSameKey = manifestFactory.newRegularSource(url2, Arrays.asList());
     this.sourceProvider.addSource(msSameKey);
     this.timePasses();
     this.assertManifestStatuses("OK", "Warning", null);
@@ -219,7 +223,7 @@ public class RegistryUpdaterTest extends WRTest {
 
     this.assertManifestStatuses(null, null, null);
     this.internet.putURL(url1, this.getFile("rsa-public-key-tests/server1.xml"));
-    ManifestSource ms1 = ManifestSource.newRegularSource(url1, Arrays.asList());
+    ManifestSource ms1 = manifestFactory.newRegularSource(url1, Arrays.asList());
     this.sourceProvider.addSource(ms1);
     this.timePasses();
     this.assertManifestStatuses("OK", null, null);
@@ -266,13 +270,13 @@ public class RegistryUpdaterTest extends WRTest {
   public void testApiUniqueConstraint() {
     this.assertManifestStatuses(null, null, null);
     this.internet.putURL(url1, this.getFile("api-unique/manifest1.xml"));
-    ManifestSource ms1 = ManifestSource.newRegularSource(url1, Arrays.asList());
+    ManifestSource ms1 = manifestFactory.newRegularSource(url1, Arrays.asList());
     this.sourceProvider.addSource(ms1);
     this.timePasses();
     this.assertManifestStatuses("OK", null, null);
 
     this.internet.putURL(url2, this.getFile("api-unique/manifest2.xml"));
-    ManifestSource ms2 = ManifestSource.newRegularSource(url2, Arrays.asList());
+    ManifestSource ms2 = manifestFactory.newRegularSource(url2, Arrays.asList());
     this.sourceProvider.addSource(ms2);
     this.timePasses();
     this.assertManifestStatuses("OK", "OK", null);
@@ -293,7 +297,7 @@ public class RegistryUpdaterTest extends WRTest {
   public void testEndpointUniqueConstraint() {
     this.assertManifestStatuses(null, null, null);
     this.internet.putURL(url1, this.getFile("endpoint-unique/manifest1.xml"));
-    ManifestSource ms1 = ManifestSource.newRegularSource(url1, Arrays.asList());
+    ManifestSource ms1 = manifestFactory.newRegularSource(url1, Arrays.asList());
     this.sourceProvider.addSource(ms1);
     this.timePasses();
     this.assertManifestStatuses("OK", null, null);
@@ -303,7 +307,7 @@ public class RegistryUpdaterTest extends WRTest {
      */
 
     this.internet.putURL(url2, this.getFile("endpoint-unique/manifest-duplicate.xml"));
-    ManifestSource ms2 = ManifestSource.newRegularSource(url2, Arrays.asList());
+    ManifestSource ms2 = manifestFactory.newRegularSource(url2, Arrays.asList());
     this.sourceProvider.addSource(ms2);
     this.timePasses();
     this.assertManifestStatuses("OK", "Error", null);
@@ -335,7 +339,7 @@ public class RegistryUpdaterTest extends WRTest {
      * yet know who is the admin of this manifest, no emails are sent.
      */
 
-    ManifestSource ms1 = ManifestSource.newRegularSource(url1, Arrays.asList());
+    ManifestSource ms1 = manifestFactory.newRegularSource(url1, Arrays.asList());
     this.sourceProvider.addSource(ms1);
     this.timePasses();
     this.assertManifestStatuses("Error", null, null);
@@ -393,7 +397,7 @@ public class RegistryUpdaterTest extends WRTest {
 
     /* Let's add another manifest source. Two problems should be reported now. No emails sent. */
 
-    ManifestSource ms2 = ManifestSource.newRegularSource(url2, Arrays.asList());
+    ManifestSource ms2 = manifestFactory.newRegularSource(url2, Arrays.asList());
     this.sourceProvider.addSource(ms2);
     this.timePasses();
     this.assertManifestStatuses("Error", "Error", null);
@@ -456,7 +460,7 @@ public class RegistryUpdaterTest extends WRTest {
      */
 
     this.internet.putURL(url3, this.getMinimalManifest("admin-or-developer@example.com"));
-    ManifestSource ms3 = ManifestSource.newRegularSource(url3, Arrays.asList());
+    ManifestSource ms3 = manifestFactory.newRegularSource(url3, Arrays.asList());
     this.sourceProvider.addSource(ms3);
     this.timePasses();
     this.assertManifestStatuses("Warning", "Error", "Warning");
@@ -529,10 +533,10 @@ public class RegistryUpdaterTest extends WRTest {
   private String getMinimalManifest(String email) {
     StringBuilder sb = new StringBuilder();
     sb.append("<manifest xmlns='");
-    sb.append("https://github.com/erasmus-without-paper/ewp-specs-api-discovery/tree/stable-v6");
+    sb.append(registryRepoBaseUrl + "/ewp-specs-api-discovery/tree/stable-v6");
     sb.append("' xmlns:ewp='");
     sb.append(
-        "https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd");
+        registryRepoBaseUrl + "/ewp-specs-architecture/blob/stable-v1/common-types.xsd");
     sb.append("'><host><ewp:admin-email>");
     sb.append(Utils.escapeXml(email));
     sb.append("</ewp:admin-email><ewp:admin-provider>Provider</ewp:admin-provider></host></manifest>");

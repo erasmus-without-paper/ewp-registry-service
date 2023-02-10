@@ -16,6 +16,13 @@ import org.w3c.dom.Document;
  * This constraint forbids the Manifest from declaring Registry API implementations.
  */
 public class ForbidRegistryImplementations implements ManifestConstraint {
+  private final String registryRepoBaseUrl;
+  private final String productionUrl;
+
+  public ForbidRegistryImplementations(String registryRepoBaseUrl, String productionUrl) {
+    this.registryRepoBaseUrl = registryRepoBaseUrl;
+    this.productionUrl = productionUrl;
+  }
 
   @Override
   public List<FailedConstraintNotice> filter(Document doc, RegistryClient registryClient) {
@@ -25,9 +32,9 @@ public class ForbidRegistryImplementations implements ManifestConstraint {
     if (registryApiEntries.isNotEmpty()) {
       registryApiEntries.remove();
       StringBuilder sb = new StringBuilder();
-      sb.append("Only the <a href='https://registry.erasmuswithoutpaper.eu/'>");
+      sb.append("Only the <a href='" + productionUrl + "'>");
       sb.append("Registry Service</a> is allowed to implement the <a href='");
-      sb.append("https://github.com/erasmus-without-paper/ewp-specs-api-registry");
+      sb.append(registryRepoBaseUrl + "/ewp-specs-api-registry");
       sb.append("'>Registry API</a>. Your Registry API entries will not be ");
       sb.append("imported, and should be removed from your manifest.");
       notices.add(new FailedConstraintNotice(Severity.WARNING, sb.toString()));

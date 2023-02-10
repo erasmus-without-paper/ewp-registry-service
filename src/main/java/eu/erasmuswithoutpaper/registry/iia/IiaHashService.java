@@ -17,6 +17,7 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import org.apache.commons.codec.digest.DigestUtils;
@@ -32,17 +33,22 @@ import org.xml.sax.SAXException;
 
 @Service
 public class IiaHashService {
-
-  static final String IIAS_NS =
-      "https://github.com/erasmus-without-paper/ewp-specs-api-iias/blob/stable-v6/endpoints/get-response.xsd";
   private final XPathExpression xpathIiasExpr;
   private final XPathExpression xpathCooperationConditionsExpr;
   private final XPathExpression xpathCooperationConditionsHashExpr;
 
+  @Value("${app.registry-repo-base-url}")
+  private String registryRepoBaseUrl;
+
+  private final String iiasNs;
+
   IiaHashService() throws XPathExpressionException {
+    this.iiasNs = registryRepoBaseUrl
+        + "/ewp-specs-api-iias/blob/stable-v6/endpoints/get-response.xsd";
+
     XPathFactory xpathFactory = XPathFactory.newInstance();
     XPath xpath = xpathFactory.newXPath();
-    xpath.setNamespaceContext(new IiaNamespaceContext());
+    xpath.setNamespaceContext(new IiaNamespaceContext(iiasNs));
 
     xpathIiasExpr = xpath.compile("/iia:iias-get-response/iia:iia");
     xpathCooperationConditionsExpr = xpath.compile("iia:cooperation-conditions");
@@ -80,13 +86,13 @@ public class IiaHashService {
       }
 
       Element mobilitySpec = (Element) node;
-      NodeList sendingContacts = mobilitySpec.getElementsByTagNameNS(IIAS_NS, "sending-contact");
+      NodeList sendingContacts = mobilitySpec.getElementsByTagNameNS(iiasNs, "sending-contact");
       for (int j = sendingContacts.getLength() - 1; j >= 0; j--) {
         mobilitySpec.removeChild(sendingContacts.item(j));
       }
 
       NodeList receivingContacts =
-          mobilitySpec.getElementsByTagNameNS(IIAS_NS, "receiving-contact");
+          mobilitySpec.getElementsByTagNameNS(iiasNs, "receiving-contact");
       for (int j = receivingContacts.getLength() - 1; j >= 0; j--) {
         mobilitySpec.removeChild(receivingContacts.item(j));
       }
@@ -128,10 +134,17 @@ public class IiaHashService {
   }
 
   static class IiaNamespaceContext implements NamespaceContext {
+
+    private final String iiasNs;
+
+    public IiaNamespaceContext(String iiasNs) {
+      this.iiasNs = iiasNs;
+    }
+
     @Override
     public String getNamespaceURI(String prefix) {
       if ("iia".equals(prefix)) {
-        return IIAS_NS;
+        return iiasNs;
       }
       throw new IllegalArgumentException(prefix);
     }

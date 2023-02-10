@@ -46,6 +46,8 @@ public class SelfManifestProvider {
   private final List<String> adminEmails;
   private final List<String> validatorHostCoveredHeiIds;
 
+  private final String registryRepoBaseUrl;
+
   /*
    * i-th element is a list of certificates and keys that should be included in
    * the manifest of i-th validator.
@@ -72,6 +74,8 @@ public class SelfManifestProvider {
    *     List of aliases which should be read from `additionalKeysKeystorePath` keystore.
    * @param password
    *     Password to `additionalKeysKeystorePath` keystore.
+   * @param registryRepoBaseUrl
+   *     Base URL of the GitHub repositories.
    * @throws KeyStoreUtilsException
    *     When there was a problem with reading keys from `additionalKeysKeystorePath`.
    * @throws CertificateEncodingException
@@ -81,11 +85,13 @@ public class SelfManifestProvider {
   public SelfManifestProvider(
       @Value("${app.admin-emails}") List<String> adminEmails,
       ValidatorKeyStoreSet validatorKeyStoreSet,
+      @Value("${app.registry-repo-base-url}") String registryRepoBaseUrl,
       @Value("${app.additional-keys-keystore.path:#{null}}") String additionalKeysKeystorePath,
       @Value("${app.additional-keys-keystore.aliases:#{null}}") List<String> aliases,
       @Value("${app.additional-keys-keystore.password:#{null}}") String password)
       throws KeyStoreUtilsException, CertificateEncodingException {
     this.adminEmails = adminEmails;
+    this.registryRepoBaseUrl = registryRepoBaseUrl;
 
     List<EncodedCertificateAndKeys> additionalCertificateAndKeys = null;
     if (additionalKeysKeystorePath != null && aliases != null && password != null) {
@@ -170,10 +176,10 @@ public class SelfManifestProvider {
     registryBuilder.addAdminEmails(Lists.reverse(this.adminEmails))
         .setAdminNotes("This host handles the EWP Registry Service.")
         .addApi("discovery", "6.0.0",
-            "https://github.com/erasmus-without-paper/ewp-specs-api-discovery/tree/stable-v6/manifest-entry.xsd",
+            registryRepoBaseUrl + "/ewp-specs-api-discovery/tree/stable-v6/manifest-entry.xsd",
             Collections.singletonMap("url", Application.getRootUrl() + "/manifest-registry.xml"))
         .addApi("registry", "1.3.0",
-            "https://github.com/erasmus-without-paper/ewp-specs-api-registry/blob/stable-v1/manifest-entry.xsd",
+            registryRepoBaseUrl + "/ewp-specs-api-registry/blob/stable-v1/manifest-entry.xsd",
             Collections.singletonMap("catalogue-url",
                 Application.getRootUrl() + "/catalogue-v1.xml"));
 
@@ -205,7 +211,7 @@ public class SelfManifestProvider {
       List<List<EncodedCertificateAndKeys>> validatorHostCertificatesAndKeys) {
 
     Map<String, String> manifests = new HashMap<>();
-    String fakeApiXmlns = "https://github.com/erasmus-without-paper/ewp-registry-service/issues/8";
+    String fakeApiXmlns = registryRepoBaseUrl + "/ewp-registry-service/issues/8";
 
     if (validatorHostCoveredHeiIds.size() == 0) {
       // Add necessary info and return if there are no HEIs.

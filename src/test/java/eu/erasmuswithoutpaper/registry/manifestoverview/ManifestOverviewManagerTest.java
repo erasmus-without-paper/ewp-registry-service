@@ -9,6 +9,7 @@ import java.util.List;
 import eu.erasmuswithoutpaper.registry.WRTest;
 import eu.erasmuswithoutpaper.registry.internet.FakeInternet;
 import eu.erasmuswithoutpaper.registry.sourceprovider.ManifestSource;
+import eu.erasmuswithoutpaper.registry.sourceprovider.ManifestSourceFactory;
 import eu.erasmuswithoutpaper.registry.sourceprovider.TestManifestSourceProvider;
 import eu.erasmuswithoutpaper.registry.updater.RegistryUpdater;
 import eu.erasmuswithoutpaper.registry.updater.RegistryUpdaterImpl;
@@ -38,6 +39,9 @@ public class ManifestOverviewManagerTest extends WRTest {
 
   @Autowired
   private RegistryUpdaterImpl updater;
+
+  @Autowired
+  private ManifestSourceFactory manifestFactory;
 
   @Value("${app.admin-emails}")
   private List<String> adminEmails;
@@ -75,14 +79,12 @@ public class ManifestOverviewManagerTest extends WRTest {
       "EWP Duplicate API instances was removed.";
   private static final String adminEmailSubject = "EWP Duplicate API status has changed.";
   private static final String manifestUrl1 = "https://example.com/1";
-  private static final ManifestSource manifestSource1 =
-      ManifestSource.newTrustedSource(manifestUrl1);
+  private ManifestSource manifestSource1;
   private static final List<String> manifestEmails1 =
       Arrays.asList("manifest1-admin1@example.com", "manifest1-admin2@example.com");
 
   private static final String manifestUrl2 = "https://example.com/2";
-  private static final ManifestSource manifestSource2 =
-      ManifestSource.newTrustedSource(manifestUrl2);
+  private ManifestSource manifestSource2;
   private static final List<String> manifestEmails2 =
       Arrays.asList("manifest2-admin1@example.com", "manifest2-admin2@example.com");
   private static final int adminEmailsCount1 = manifestEmails1.size();
@@ -90,6 +92,9 @@ public class ManifestOverviewManagerTest extends WRTest {
 
   @Before
   public void setUp() {
+    manifestSource1 = manifestFactory.newTrustedSource(manifestUrl1);
+    manifestSource2 = manifestFactory.newTrustedSource(manifestUrl2);
+
     this.internet.putURL(manifestUrl1, getManifest1WithoutDuplicate());
     this.internet.putURL(manifestUrl2, getManifest2WithoutDuplicate());
 

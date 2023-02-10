@@ -39,7 +39,7 @@ public class UiControllerTest extends WRTest {
     assertThat(result.getHeaders().getContentType())
         .isEqualByComparingTo(MediaType.APPLICATION_JSON_UTF8);
     assertThat(result.getHeaders().getAccessControlAllowOrigin())
-        .isEqualTo("http://developers.erasmuswithoutpaper.eu");
+        .isEqualTo(documentationUrl);
     String body = result.getBody();
     JsonElement aRoot = new JsonParser().parse(body);
     assertThat(aRoot.isJsonObject()).isTrue();

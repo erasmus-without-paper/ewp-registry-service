@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import eu.erasmuswithoutpaper.registry.Application;
+
 import org.joox.Match;
 
 /**
@@ -742,9 +744,9 @@ public class KnownNamespace {
   // TODO: false->true
 
   private static final String COMMON_URI_PREFIX =
-      "https://github.com/erasmus-without-paper/ewp-specs-";
+      Application.getRegistryRepoBaseUrl() + "/ewp-specs-";
   private static final String COMMON_SCHEMA_LOCATION_PREFIX =
-      "https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-";
+      Application.getEwpSchemaBaseUrl() + "/ewp-specs-";
 
   private static final Map<String, KnownNamespace> map_uri2ns;
   private static final Map<String, String> map_prefix2uri;

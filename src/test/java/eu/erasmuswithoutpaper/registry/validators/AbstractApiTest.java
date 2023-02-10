@@ -11,7 +11,7 @@ import eu.erasmuswithoutpaper.registry.WRTest;
 import eu.erasmuswithoutpaper.registry.internet.FakeInternet;
 import eu.erasmuswithoutpaper.registry.internet.FakeInternetService;
 import eu.erasmuswithoutpaper.registry.repository.ManifestRepositoryImpl;
-import eu.erasmuswithoutpaper.registry.sourceprovider.ManifestSource;
+import eu.erasmuswithoutpaper.registry.sourceprovider.ManifestSourceFactory;
 import eu.erasmuswithoutpaper.registry.sourceprovider.TestManifestSourceProvider;
 import eu.erasmuswithoutpaper.registry.updater.RegistryUpdater;
 import eu.erasmuswithoutpaper.registry.web.SelfManifestProvider;
@@ -48,6 +48,9 @@ public abstract class AbstractApiTest<StateType extends SuiteState> extends WRTe
 
   @Autowired
   protected ValidatorKeyStoreSet validatorKeyStoreSet;
+
+  @Autowired
+  private ManifestSourceFactory manifestFactory;
 
   protected ValidatorKeyStore serviceKeyStore = new ValidatorKeyStore(
       Arrays.asList("test.hei01.uw.edu.pl", "test.hei02.uw.edu.pl")
@@ -148,7 +151,7 @@ public abstract class AbstractApiTest<StateType extends SuiteState> extends WRTe
         String myManifest = registryManifests.get(myManifestName);
         String myUrl = String.format(selfManifestUrl, myManifestName);
         this.internet.putURL(myUrl, myManifest);
-        this.sourceProvider.addSource(ManifestSource.newTrustedSource(myUrl));
+        this.sourceProvider.addSource(manifestFactory.newTrustedSource(myUrl));
       }
 
       String apiManifest = this.getFileAsString(getManifestFilename());
@@ -167,7 +170,7 @@ public abstract class AbstractApiTest<StateType extends SuiteState> extends WRTe
       );
       this.internet.putURL(apiManifestUrl, apiManifest);
       this.sourceProvider
-          .addSource(ManifestSource.newRegularSource(apiManifestUrl, Lists.newArrayList()));
+          .addSource(manifestFactory.newRegularSource(apiManifestUrl, Lists.newArrayList()));
 
       this.registryUpdater.reloadAllManifestSources();
       needsReinit = false;

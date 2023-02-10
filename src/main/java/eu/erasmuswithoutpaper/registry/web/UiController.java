@@ -113,6 +113,7 @@ public class UiController {
   private final RegistryErrorController errorController;
   private final ManifestOverviewManager manifestOverviewManager;
   private final IiaHashService iiaHashService;
+  private final String documentationUrl;
 
   private byte[] cachedCss;
   private String cachedCssFingerprint;
@@ -149,7 +150,8 @@ public class UiController {
       CoverageMatrixGenerator matrixGenerator, RegistryClient regClient,
       CatalogueDependantCache catcache, ApiValidatorsManager apiValidatorsManager,
       ValidatorKeyStoreSet validatorKeyStoreSet, RegistryErrorController errorController,
-      ManifestOverviewManager manifestOverviewManager, IiaHashService iiaHashService) {
+      ManifestOverviewManager manifestOverviewManager, IiaHashService iiaHashService,
+      @Value("${app.ewp-documentation-url}") String documentationUrl) {
     this.taskExecutor = taskExecutor;
     this.manifestStatusRepo = manifestUpdateStatuses;
     this.manifestRepository = manifestRepository;
@@ -167,6 +169,7 @@ public class UiController {
     this.errorController = errorController;
     this.manifestOverviewManager = manifestOverviewManager;
     this.iiaHashService = iiaHashService;
+    this.documentationUrl = documentationUrl;
   }
 
   /**
@@ -473,7 +476,7 @@ public class UiController {
     headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
     headers.setCacheControl("max-age=0, must-revalidate");
     headers.setExpires(0);
-    headers.setAccessControlAllowOrigin("http://developers.erasmuswithoutpaper.eu");
+    headers.setAccessControlAllowOrigin(documentationUrl);
 
     BuildParams params = new BuildParams(xml);
     params.setMakingPretty(true);

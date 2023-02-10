@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import eu.erasmuswithoutpaper.registry.Application;
 import eu.erasmuswithoutpaper.registry.common.Utils;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
@@ -36,6 +37,8 @@ public class EwpHttpSigRequestAuthorizer implements RequestAuthorizer {
    * published in the EWP Registry Service.
    */
   protected final RegistryClient registryClient;
+
+  private static String registryRepoBaseUrl = Application.getRegistryRepoBaseUrl();
 
   /**
    * @param registryClient Needed to verify if the signers' keys were published in the EWP Registry
@@ -118,7 +121,7 @@ public class EwpHttpSigRequestAuthorizer implements RequestAuthorizer {
   protected Http4xx newHttpSig401() {
     Http4xx error = new UnmatchedRequestAuthorizationMethod(401,
         "This endpoint requires HTTP Signature Authorization, as specified here: "
-            + "https://github.com/erasmus-without-paper/ewp-specs-sec-cliauth-httpsig");
+            + registryRepoBaseUrl + "/ewp-specs-sec-cliauth-httpsig");
     error.putEwpErrorResponseHeader("WWW-Authenticate", "Signature realm=\"EWP\"");
     error.putEwpErrorResponseHeader("Want-Digest", "SHA-256");
     return error;

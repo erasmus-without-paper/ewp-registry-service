@@ -17,6 +17,12 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 public class ApiUniqueConstraint implements ManifestConstraint {
+  private final String registryRepoBaseUrl;
+
+  public ApiUniqueConstraint(String registryRepoBaseUrl) {
+    this.registryRepoBaseUrl = registryRepoBaseUrl;
+  }
+
   @Override
   public List<FailedConstraintNotice> filter(Document document, RegistryClient registryClient) {
     List<FailedConstraintNotice> notices = new ArrayList<>();
@@ -36,7 +42,7 @@ public class ApiUniqueConstraint implements ManifestConstraint {
           continue;
         }
         String namespaceUri = match.namespaceURI();
-        if (!namespaceUri.startsWith("https://github.com/erasmus-without-paper/")) {
+        if (!namespaceUri.startsWith(registryRepoBaseUrl)) {
           /*
            * Most probably, this API is not related to EWP. We will ignore this API.
            */

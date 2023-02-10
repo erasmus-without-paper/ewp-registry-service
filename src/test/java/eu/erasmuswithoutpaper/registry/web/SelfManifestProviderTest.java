@@ -8,6 +8,7 @@ import java.util.Map;
 
 import eu.erasmuswithoutpaper.registry.WRTest;
 import eu.erasmuswithoutpaper.registry.constraints.ClientKeyConstraint;
+import eu.erasmuswithoutpaper.registry.constraints.ConstraintFactory;
 import eu.erasmuswithoutpaper.registry.constraints.FailedConstraintNotice;
 import eu.erasmuswithoutpaper.registry.constraints.ManifestConstraint;
 import eu.erasmuswithoutpaper.registry.constraints.RestrictInstitutionsCovered;
@@ -43,6 +44,9 @@ public class SelfManifestProviderTest extends WRTest {
   @Value("${app.root-url}")
   private String rootUrl;
 
+  @Autowired
+  private ConstraintFactory constraintFactory;
+
   /**
    * Check if the manifest returned is valid.
    */
@@ -65,7 +69,7 @@ public class SelfManifestProviderTest extends WRTest {
       constraints.add(new ServerKeySecurityConstraint(2048));
       constraints
           .add(new RestrictInstitutionsCovered("^.*\\.developers\\.erasmuswithoutpaper\\.eu$"));
-      constraints.add(new VerifyApiVersions());
+      constraints.add(constraintFactory.getVerifyApiVersions());
       for (ManifestConstraint c : constraints) {
         List<FailedConstraintNotice> notices = c.filter(doc, registryClient);
         assertThat(notices).isEmpty();

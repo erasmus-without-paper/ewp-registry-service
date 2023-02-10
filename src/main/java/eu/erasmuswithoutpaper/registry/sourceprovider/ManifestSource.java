@@ -2,22 +2,10 @@ package eu.erasmuswithoutpaper.registry.sourceprovider;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import eu.erasmuswithoutpaper.registry.constraints.ApiUniqueConstraint;
-import eu.erasmuswithoutpaper.registry.constraints.ClientKeyConstraint;
-import eu.erasmuswithoutpaper.registry.constraints.EndpointUniqueConstraint;
-import eu.erasmuswithoutpaper.registry.constraints.ForbidRegistryImplementations;
 import eu.erasmuswithoutpaper.registry.constraints.ManifestConstraint;
-import eu.erasmuswithoutpaper.registry.constraints.RemoveEmbeddedCatalogues;
-import eu.erasmuswithoutpaper.registry.constraints.ServerKeySecurityConstraint;
-import eu.erasmuswithoutpaper.registry.constraints.TlsClientCertificateSecurityConstraint;
-import eu.erasmuswithoutpaper.registry.constraints.VerifyApiVersions;
-import eu.erasmuswithoutpaper.registry.constraints.VerifyDiscoveryApiEntry;
-
-import com.google.common.collect.Lists;
 
 /**
  * This describes a single manifest source by its URL (see {@link #getUrl()}) and a list of
@@ -29,45 +17,15 @@ import com.google.common.collect.Lists;
  */
 public class ManifestSource {
 
-  /**
-   * Returns a new instance of {@link ManifestSource} with basic security constraints applied.
-   *
-   * @param url              See {@link #getUrl()}
-   * @param extraConstraints A list of additional constraints for this particular source.
-   * @return New {@link ManifestSource}.
-   */
-  public static ManifestSource newRegularSource(String url,
-      List<ManifestConstraint> extraConstraints) {
-    List<ManifestConstraint> all = new ArrayList<>(extraConstraints.size() + 4);
-    all.add(new TlsClientCertificateSecurityConstraint(1024));
-    all.add(new ClientKeyConstraint(2048));
-    all.add(new ServerKeySecurityConstraint(2048));
-    all.add(new ApiUniqueConstraint());
-    all.add(new EndpointUniqueConstraint());
-    all.add(new VerifyDiscoveryApiEntry(url));
-    all.add(new ForbidRegistryImplementations());
-    all.add(new VerifyApiVersions());
-    all.add(new RemoveEmbeddedCatalogues());
-    all.addAll(extraConstraints);
-    return new ManifestSource(url, all);
-  }
-
-  /**
-   * Returns a new instance of {@link ManifestSource}, with no constraints whatsoever. This should
-   * be used for URLs we really trust.
-   *
-   * @param url See {@link #getUrl()}.
-   * @return New {@link ManifestSource}.
-   */
-  public static ManifestSource newTrustedSource(String url) {
-    return new ManifestSource(url, Lists.newArrayList());
-  }
-
   private final String url;
 
   private final List<ManifestConstraint> constraints;
 
-  private ManifestSource(String url, List<ManifestConstraint> constraints) {
+  /**
+   * @param url Manifest source's URL.
+   * @param constraints List of manifest source's constraints.
+   */
+  public ManifestSource(String url, List<ManifestConstraint> constraints) {
     this.url = url;
     this.constraints = constraints;
 
@@ -94,7 +52,7 @@ public class ManifestSource {
   }
 
   /**
-   * @return An URL at which the manifest file can be found (will always be a valid HTTPS URL).
+   * @return A URL at which the manifest file can be found (will always be a valid HTTPS URL).
    */
   public String getUrl() {
     return this.url;

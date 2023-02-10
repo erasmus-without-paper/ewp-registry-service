@@ -28,10 +28,15 @@ public class EndpointUniqueConstraint implements ManifestConstraint {
 
   private final KeyFactory rsaFactory;
 
+  private final String registryRepoBaseUrl;
+
   /**
    * Initialize dependencies.
+   * @param registryRepoBaseUrl URL of the registries GitHub repository.
    */
-  public EndpointUniqueConstraint() {
+  public EndpointUniqueConstraint(String registryRepoBaseUrl) {
+    this.registryRepoBaseUrl = registryRepoBaseUrl;
+
     try {
       rsaFactory = KeyFactory.getInstance("RSA");
     } catch (NoSuchAlgorithmException e) {
@@ -51,7 +56,7 @@ public class EndpointUniqueConstraint implements ManifestConstraint {
           .each()) {
         String apiName = match.tag();
         String namespaceUri = match.namespaceURI();
-        if (!namespaceUri.startsWith("https://github.com/erasmus-without-paper/")) {
+        if (!namespaceUri.startsWith(registryRepoBaseUrl)) {
           /*
            * Most probably, this API is not related to EWP. We will ignore this API.
            */

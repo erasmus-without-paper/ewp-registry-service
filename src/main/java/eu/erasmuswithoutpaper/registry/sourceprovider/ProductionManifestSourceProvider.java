@@ -50,6 +50,7 @@ public class ProductionManifestSourceProvider extends ManifestSourceProvider {
   private final List<String> manifestSourcesUrls;
   private final ResourceLoader resourceLoader;
   private final SelfManifestProvider selfManifestProvider;
+  private final ManifestSourceFactory manifestFactory;
 
   private List<ManifestSource> sources;
 
@@ -66,11 +67,13 @@ public class ProductionManifestSourceProvider extends ManifestSourceProvider {
   @Autowired
   public ProductionManifestSourceProvider(@Value("${app.root-url}") String rootUrl,
       @Value("${app.manifest-sources.urls}") List<String> manifestSourcesUrls,
-      ResourceLoader resourceLoader, SelfManifestProvider selfManifestProvider) {
+      ResourceLoader resourceLoader, SelfManifestProvider selfManifestProvider,
+      ManifestSourceFactory manifestFactory) {
     this.rootUrl = rootUrl;
     this.manifestSourcesUrls = manifestSourcesUrls;
     this.resourceLoader = resourceLoader;
     this.selfManifestProvider = selfManifestProvider;
+    this.manifestFactory = manifestFactory;
     this.update();
   }
 
@@ -89,7 +92,7 @@ public class ProductionManifestSourceProvider extends ManifestSourceProvider {
 
       for (String manifest : manifests) {
         String url = rootUrl + "/manifest-" + manifest + ".xml";
-        ManifestSource manifestSource = ManifestSource.newTrustedSource(url);
+        ManifestSource manifestSource = manifestFactory.newTrustedSource(url);
         logger.info("Adding self-manifest source: " + manifestSource);
         lst.add(manifestSource);
       }
@@ -119,7 +122,7 @@ public class ProductionManifestSourceProvider extends ManifestSourceProvider {
         for (String regex : $(source).find("hei-regex").texts()) {
           constraints.add(new RestrictInstitutionsCovered(regex));
         }
-        ManifestSource manifestSource = ManifestSource.newRegularSource(location, constraints);
+        ManifestSource manifestSource = manifestFactory.newRegularSource(location, constraints);
         logger.info("Adding new manifest source: " + manifestSource);
         lst.add(manifestSource);
       }

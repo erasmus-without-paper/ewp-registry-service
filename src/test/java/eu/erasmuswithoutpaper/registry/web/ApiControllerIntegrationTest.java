@@ -13,7 +13,7 @@ import eu.erasmuswithoutpaper.registry.documentbuilder.KnownElement;
 import eu.erasmuswithoutpaper.registry.internet.FakeInternet;
 import eu.erasmuswithoutpaper.registry.notifier.NotifierService;
 import eu.erasmuswithoutpaper.registry.repository.ManifestRepositoryImpl;
-import eu.erasmuswithoutpaper.registry.sourceprovider.ManifestSource;
+import eu.erasmuswithoutpaper.registry.sourceprovider.ManifestSourceFactory;
 import eu.erasmuswithoutpaper.registry.sourceprovider.TestManifestSourceProvider;
 import eu.erasmuswithoutpaper.registry.updater.RegistryUpdaterTest;
 
@@ -58,6 +58,9 @@ public class ApiControllerIntegrationTest extends WRIntegrationTest {
 
   @Autowired
   private FakeInternet internet;
+
+  @Autowired
+  private ManifestSourceFactory manifestFactory;
 
   /**
    * Check if requests to non-existent files end with a proper HTTP 404 response.
@@ -144,10 +147,10 @@ public class ApiControllerIntegrationTest extends WRIntegrationTest {
     // urlSelf = "https://registry.erasmuswithoutpaper.eu/manifest.xml";
     urlPL = "https://schowek.usos.edu.pl/w.rygielski/ewp/uw.edu.pl/manifest.xml";
     urlSE = "https://schowek.usos.edu.pl/w.rygielski/ewp/ladok.se/manifest.xml";
-    // this.manifestSourceProvider.addSource(ManifestSource.newTrustedSource(urlSelf));
-    this.manifestSourceProvider.addSource(ManifestSource.newRegularSource(urlPL,
+    // this.manifestSourceProvider.addSource(manifestFactory.newTrustedSource(urlSelf));
+    this.manifestSourceProvider.addSource(manifestFactory.newRegularSource(urlPL,
         Lists.newArrayList(new RestrictInstitutionsCovered("^uw\\.edu\\.pl$"))));
-    this.manifestSourceProvider.addSource(ManifestSource.newRegularSource(urlSE,
+    this.manifestSourceProvider.addSource(manifestFactory.newRegularSource(urlSE,
         Lists.newArrayList(new RestrictInstitutionsCovered("^.+\\.se$"))));
     this.repo.deleteAll();
     // this.internet.putURL(urlSelf, this.apiController.getSelfManifest().getBody());
@@ -229,7 +232,7 @@ public class ApiControllerIntegrationTest extends WRIntegrationTest {
     this.internet.putURL(urlSE, this.getFile("demo1/E-inSE.xml"));
     this.forceReload(urlSE);
     String urlPL2 = "https://schowek.usos.edu.pl/w.rygielski/ewp/uw.edu.pl/manifest2.xml";
-    this.manifestSourceProvider.addSource(ManifestSource.newRegularSource(urlPL2, Lists
+    this.manifestSourceProvider.addSource(manifestFactory.newRegularSource(urlPL2, Lists
         .newArrayList(new RestrictInstitutionsCovered("^(uw\\.edu\\.pl)|(university-a\\.edu)$"))));
     this.internet.putURL(urlPL2, this.getFile("demo1/I-inPL2.xml"));
     this.forceReload(urlPL2);
