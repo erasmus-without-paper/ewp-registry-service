@@ -16,7 +16,7 @@ public final class NonEmptyVerifier extends Verifier {
   }
 
   @Override
-  protected void verify(AbstractValidationSuite suite, Match root, Response response,
+  protected void verify(AbstractValidationSuite<?> suite, Match root, Response response,
       ValidationStepWithStatus.Status failureStatus)
       throws InlineValidationStep.Failure {
     List<Match> foundElements =

@@ -20,14 +20,14 @@ public abstract class Verifier {
     this.selector = selector;
   }
 
-  public void performVerificaion(AbstractValidationSuite suite, Match root, Response response,
+  public void performVerificaion(AbstractValidationSuite<?> suite, Match root, Response response,
       ValidationStepWithStatus.Status failureStatus) throws
       InlineValidationStep.Failure {
     this.verify(suite, root, response, failureStatus);
     verificationResult = true;
   }
 
-  protected abstract void verify(AbstractValidationSuite suite, Match root, Response response,
+  protected abstract void verify(AbstractValidationSuite<?> suite, Match root, Response response,
       ValidationStepWithStatus.Status failureStatus) throws
       InlineValidationStep.Failure;
 

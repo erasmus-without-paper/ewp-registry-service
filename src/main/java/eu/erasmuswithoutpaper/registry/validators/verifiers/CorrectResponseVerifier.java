@@ -13,7 +13,7 @@ public final class CorrectResponseVerifier extends Verifier {
   }
 
   @Override
-  protected void verify(AbstractValidationSuite suite, Match root, Response response,
+  protected void verify(AbstractValidationSuite<?> suite, Match root, Response response,
       ValidationStepWithStatus.Status failureStatus)
       throws InlineValidationStep.Failure {
     // Nothing to verify, pass

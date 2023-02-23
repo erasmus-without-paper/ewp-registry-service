@@ -113,7 +113,7 @@ class InstitutionsValidationSuite
   }
 
 
-  private static void verifyRootOUnitId(AbstractValidationSuite suite, Match root,
+  private static void verifyRootOUnitId(AbstractValidationSuite<?> suite, Match root,
       Response response,
       Status failureStatus)
       throws Failure {
@@ -148,7 +148,7 @@ class InstitutionsValidationSuite
     }
 
     @Override
-    protected void verify(AbstractValidationSuite suite, Match root, Response response,
+    protected void verify(AbstractValidationSuite<?> suite, Match root, Response response,
         Status failureStatus)
         throws Failure {
       super.verify(suite, root, response, failureStatus);
@@ -162,7 +162,7 @@ class InstitutionsValidationSuite
     }
 
     @Override
-    protected void verify(AbstractValidationSuite suite, Match root, Response response,
+    protected void verify(AbstractValidationSuite<?> suite, Match root, Response response,
         Status failureStatus)
         throws Failure {
       super.verify(suite, root, response, failureStatus);
