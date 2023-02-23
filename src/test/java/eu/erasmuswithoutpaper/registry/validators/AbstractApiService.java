@@ -58,7 +58,8 @@ public abstract class AbstractApiService implements FakeInternetService {
     }
   }
 
-  protected <T> T unmarshallObject(byte[] data, Class aClass) throws JAXBException {
+  @SuppressWarnings("unchecked")
+  protected <T> T unmarshallObject(byte[] data, Class<?> aClass) throws JAXBException {
     JAXBContext jc = JAXBContext.newInstance(aClass.getPackage().getName());
     Unmarshaller unmarshaller = jc.createUnmarshaller();
     Element xml = AbstractValidationSuite.makeXmlFromBytes(data, true);
