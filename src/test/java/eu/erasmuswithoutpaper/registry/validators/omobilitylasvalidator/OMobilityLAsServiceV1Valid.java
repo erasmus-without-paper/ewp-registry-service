@@ -32,8 +32,6 @@ import https.github_com.erasmus_without_paper.ewp_specs_api_omobility_las.blob.s
 import https.github_com.erasmus_without_paper.ewp_specs_api_omobility_las.blob.stable_v1.endpoints.get_response.MobilityInstitution;
 import https.github_com.erasmus_without_paper.ewp_specs_api_omobility_las.blob.stable_v1.endpoints.get_response.Signature;
 import https.github_com.erasmus_without_paper.ewp_specs_api_omobility_las.blob.stable_v1.endpoints.get_response.Student;
-import https.github_com.erasmus_without_paper.ewp_specs_architecture.blob.stable_v1.common_types.StringWithOptionalLang;
-
 
 public class OMobilityLAsServiceV1Valid extends AbstractOMobilityLAsService {
   protected List<LearningAgreement> learningAgreements = new ArrayList<>();
@@ -48,12 +46,6 @@ public class OMobilityLAsServiceV1Valid extends AbstractOMobilityLAsService {
                                     RegistryClient registryClient, String heiIdToCover) {
     super(indexUrl, getUrl, updateUrl, registryClient);
     fillDataBase(heiIdToCover);
-  }
-
-  private StringWithOptionalLang stringWithOptionalLang(String string) {
-    StringWithOptionalLang result = new StringWithOptionalLang();
-    result.setValue(string);
-    return result;
   }
 
   private void fillDataBase(String heiIdToCover) {
