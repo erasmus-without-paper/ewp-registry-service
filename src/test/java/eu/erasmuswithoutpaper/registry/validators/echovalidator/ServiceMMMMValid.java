@@ -3,6 +3,7 @@ package eu.erasmuswithoutpaper.registry.validators.echovalidator;
 import java.io.IOException;
 import java.security.KeyPair;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import eu.erasmuswithoutpaper.registry.internet.Request;
@@ -51,7 +52,7 @@ public class ServiceMMMMValid extends AbstractEchoV2Service {
       return this.registryClient.getHeisCoveredByClientKey(clientWithRsaKey.getRsaPublicKey());
     }
     // Unknown client subclass. Shouldn't happen.
-    return Lists.emptyList();
+    return Collections.emptyList();
   }
 
   protected RequestAuthorizer getRequestAuthorizer() {
@@ -68,7 +69,7 @@ public class ServiceMMMMValid extends AbstractEchoV2Service {
   protected ResponseEncoder getResponseEncoder() {
     ResponseCodingEncoder ewp = new EwpRsaAesResponseEncoder(this.registryClient);
     ResponseCodingEncoder gzip = new GzipResponseEncoder();
-    return new MultipleCodingsResponseEncoder(Lists.newArrayList(gzip, ewp), Lists.emptyList());
+    return new MultipleCodingsResponseEncoder(Lists.newArrayList(gzip, ewp), Collections.emptyList());
   }
 
   protected ResponseSigner getResponseSigner() {
