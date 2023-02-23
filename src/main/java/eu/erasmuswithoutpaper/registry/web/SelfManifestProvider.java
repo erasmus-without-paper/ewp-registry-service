@@ -4,6 +4,7 @@ import java.security.KeyStore;
 import java.security.cert.CertificateEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -170,18 +171,11 @@ public class SelfManifestProvider {
         .setAdminNotes("This host handles the EWP Registry Service.")
         .addApi("discovery", "6.0.0",
             "https://github.com/erasmus-without-paper/ewp-specs-api-discovery/tree/stable-v6/manifest-entry.xsd",
-            new HashMap<String, String>() {
-              {
-                put("url", Application.getRootUrl() + "/manifest-registry.xml");
-              }
-            })
+            Collections.singletonMap("url", Application.getRootUrl() + "/manifest-registry.xml"))
         .addApi("registry", "1.3.0",
             "https://github.com/erasmus-without-paper/ewp-specs-api-registry/blob/stable-v1/manifest-entry.xsd",
-            new HashMap<String, String>() {
-              {
-                put("catalogue-url", Application.getRootUrl() + "/catalogue-v1.xml");
-              }
-            });
+            Collections.singletonMap("catalogue-url",
+                Application.getRootUrl() + "/catalogue-v1.xml"));
 
     Map<String, String> manifests = new HashMap<>();
     manifests.put("registry", registryBuilder.buildXml());
