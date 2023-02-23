@@ -154,5 +154,7 @@ public class SemanticVersion implements Comparable<SemanticVersion> {
     return this.releaseCandidate.isPresent();
   }
 
-  public static class InvalidVersionString extends Exception {}
+  public static class InvalidVersionString extends Exception {
+    private static final long serialVersionUID = -5951031258113998548L;
+  }
 }

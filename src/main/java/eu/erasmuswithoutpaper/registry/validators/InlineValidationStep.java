@@ -91,6 +91,7 @@ public abstract class InlineValidationStep implements ValidationStepWithStatus {
   }
 
   public static class FatalFailure extends Exception {
+    private static final long serialVersionUID = 1125543777572622957L;
   }
 
   private Status status = Status.PENDING;

@@ -32,6 +32,8 @@ public class ApiController {
   private final ResourceLoader resLoader;
 
   public static class ManifestNotFoundException extends RuntimeException {
+    private static final long serialVersionUID = 4099597392377045829L;
+
     ManifestNotFoundException(String manifestName) {
       super("Manifest " + manifestName + " does not exist.");
     }

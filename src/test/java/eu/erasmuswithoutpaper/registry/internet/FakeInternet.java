@@ -28,12 +28,16 @@ public class FakeInternet implements Internet {
    * Thrown when multiple handlers wanted to handle the same one request.
    */
   public static class MultipleHandlersConflict extends RuntimeException {
+    private static final long serialVersionUID = 8809425296744155026L;
+
     public MultipleHandlersConflict() {
       super("Multiple handlers wanted to handle the same one request");
     }
   }
 
   public static class NotFound extends IOException {
+    private static final long serialVersionUID = 5717882544981509704L;
+
     public NotFound() {
       super("No such URL in our FakeInternet.");
     }

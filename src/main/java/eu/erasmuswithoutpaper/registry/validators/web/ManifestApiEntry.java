@@ -203,6 +203,8 @@ public class ManifestApiEntry {
   }
 
   private static class ParseException extends Exception {
+    private static final long serialVersionUID = -158870298476008576L;
+
     public ParseException(String reason) {
       super(reason);
     }

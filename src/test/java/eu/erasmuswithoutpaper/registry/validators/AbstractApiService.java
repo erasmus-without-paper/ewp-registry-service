@@ -86,6 +86,7 @@ public abstract class AbstractApiService implements FakeInternetService {
    * Helper class for easier delegation of error responses in {@link AbstractApiService}.
    */
   protected static class ErrorResponseException extends Exception {
+    private static final long serialVersionUID = -8024944558951936409L;
 
     public final Response response;
 

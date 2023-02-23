@@ -39,6 +39,8 @@ public class ApiValidatorsManager {
   }
 
   static class DuplicateApiValidatorError extends RuntimeException {
+    private static final long serialVersionUID = -1105535561582518900L;
+
     DuplicateApiValidatorError(String apiName, ApiEndpoint endpoint) {
       super(
           String.format("ApiValidator for %s%s overridden.",

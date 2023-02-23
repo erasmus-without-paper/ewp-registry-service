@@ -264,5 +264,7 @@ public class HttpSecurityDescription {
     return true;
   }
 
-  public static class InvalidDescriptionString extends Exception {}
+  public static class InvalidDescriptionString extends Exception {
+    private static final long serialVersionUID = 5930023674048063725L;
+  }
 }

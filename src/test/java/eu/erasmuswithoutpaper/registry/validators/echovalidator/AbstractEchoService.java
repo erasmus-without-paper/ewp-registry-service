@@ -19,6 +19,7 @@ abstract public class AbstractEchoService implements FakeInternetService {
    * Helper class for easier delegation of error responses in {@link AbstractEchoService}.
    */
   protected static class ErrorResponseException extends Exception {
+    private static final long serialVersionUID = 4917758848531475570L;
 
     protected final Response response;
 
