@@ -1,9 +1,6 @@
 package eu.erasmuswithoutpaper.registry.validators.iiasvalidator;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;

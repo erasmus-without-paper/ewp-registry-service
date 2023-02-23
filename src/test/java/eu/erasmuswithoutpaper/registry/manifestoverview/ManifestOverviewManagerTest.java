@@ -8,7 +8,6 @@ import java.util.List;
 
 import eu.erasmuswithoutpaper.registry.WRTest;
 import eu.erasmuswithoutpaper.registry.internet.FakeInternet;
-import eu.erasmuswithoutpaper.registry.repository.ManifestRepository;
 import eu.erasmuswithoutpaper.registry.sourceprovider.ManifestSource;
 import eu.erasmuswithoutpaper.registry.sourceprovider.TestManifestSourceProvider;
 import eu.erasmuswithoutpaper.registry.updater.RegistryUpdater;
