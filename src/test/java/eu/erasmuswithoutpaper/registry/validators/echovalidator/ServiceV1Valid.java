@@ -6,7 +6,6 @@ import java.util.List;
 import eu.erasmuswithoutpaper.registry.internet.InternetTestHelpers;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
-import eu.erasmuswithoutpaper.registry.internet.sec.EwpCertificateRequestAuthorizer;
 import eu.erasmuswithoutpaper.registry.internet.sec.EwpClientWithRsaKey;
 import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigRequestAuthorizer;
 import eu.erasmuswithoutpaper.registry.internet.sec.Http4xx;
@@ -21,11 +20,8 @@ import eu.erasmuswithoutpaper.registryclient.RegistryClient;
  */
 public class ServiceV1Valid extends AbstractEchoV1Service {
 
-  private final EwpCertificateRequestAuthorizer myAuthorizer;
-
   public ServiceV1Valid(String url, RegistryClient registryClient) {
     super(url, registryClient);
-    this.myAuthorizer = new EwpCertificateRequestAuthorizer(this.registryClient);
   }
 
   @Override
