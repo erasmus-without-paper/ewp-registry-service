@@ -11,12 +11,13 @@ import eu.erasmuswithoutpaper.registry.validators.AbstractApiTest;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.SemanticVersion;
 import eu.erasmuswithoutpaper.registry.validators.TestValidationReport;
+import eu.erasmuswithoutpaper.registry.validators.coursesreplicationvalidator.CourseReplicationSuiteState;
 import eu.erasmuswithoutpaper.registry.validators.coursesreplicationvalidator.CourseReplicationValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.junit.Test;
 
-public class CourseReplicationValidatorTest extends AbstractApiTest {
+public class CourseReplicationValidatorTest extends AbstractApiTest<CourseReplicationSuiteState> {
   private static String courseReplicationUrlHTTT =
       "https://university.example.com/creplication/HTTT/";
   @Autowired
@@ -152,7 +153,7 @@ public class CourseReplicationValidatorTest extends AbstractApiTest {
   }
 
   @Override
-  protected ApiValidator getValidator() {
+  protected ApiValidator<CourseReplicationSuiteState> getValidator() {
     return validator;
   }
 }

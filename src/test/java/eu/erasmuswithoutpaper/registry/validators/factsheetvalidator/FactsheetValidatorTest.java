@@ -18,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import https.github_com.erasmus_without_paper.ewp_specs_api_factsheet.tree.stable_v1.FactsheetResponse;
 import org.junit.Test;
 
-public class FactsheetValidatorTest extends AbstractApiTest {
+public class FactsheetValidatorTest extends AbstractApiTest<FactsheetSuiteState> {
   private static String factsheetUrl = "https://university.example.com/factsheet/HTTT/";
   @Autowired
   private FactsheetValidator validator;

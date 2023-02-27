@@ -17,7 +17,7 @@ import org.apache.commons.lang.StringUtils;
 import org.assertj.core.util.Lists;
 import org.junit.Test;
 
-public class EchoValidatorTest extends AbstractApiTest {
+public class EchoValidatorTest extends AbstractApiTest<EchoSuiteState> {
   private static final String echoV1Url = "https://university.example.com/echo/v1/";
   private static final String echoUrlHTTT = "https://university.example.com/echo/HTTT/";
   private static final String echoUrlMTTT = "https://university.example.com/echo/MTTT/";

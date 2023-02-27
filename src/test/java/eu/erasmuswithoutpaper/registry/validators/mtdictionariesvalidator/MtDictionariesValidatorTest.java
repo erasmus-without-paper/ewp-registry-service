@@ -5,18 +5,19 @@ import static eu.erasmuswithoutpaper.registry.validators.TestValidationReportAss
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
+
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import eu.erasmuswithoutpaper.registry.validators.AbstractApiTest;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.SemanticVersion;
 import eu.erasmuswithoutpaper.registry.validators.TestValidationReport;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import org.junit.Test;
-
-public class MtDictionariesValidatorTest extends AbstractApiTest {
+public class MtDictionariesValidatorTest extends AbstractApiTest<MtDictionariesSuiteState> {
   private static final String mtDictionariesUrl = "https://university.example.com/mt_dictionaries";
 
   @Autowired
@@ -38,7 +39,7 @@ public class MtDictionariesValidatorTest extends AbstractApiTest {
   }
 
   @Override
-  protected ApiValidator getValidator() {
+  protected ApiValidator<MtDictionariesSuiteState> getValidator() {
     return validator;
   }
 

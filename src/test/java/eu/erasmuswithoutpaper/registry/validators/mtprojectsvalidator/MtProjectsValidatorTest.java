@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.junit.Test;
 
-public class MtProjectsValidatorTest extends AbstractApiTest {
+public class MtProjectsValidatorTest extends AbstractApiTest<MtProjectsSuiteState> {
   private static final String mtProjectsUrl = "https://university.example.com/mt_projects";
 
   @Autowired
@@ -38,7 +38,7 @@ public class MtProjectsValidatorTest extends AbstractApiTest {
   }
 
   @Override
-  protected ApiValidator getValidator() {
+  protected ApiValidator<MtProjectsSuiteState> getValidator() {
     return validator;
   }
 

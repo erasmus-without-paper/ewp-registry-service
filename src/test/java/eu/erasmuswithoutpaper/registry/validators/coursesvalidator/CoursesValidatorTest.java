@@ -14,18 +14,18 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import eu.erasmuswithoutpaper.registry.validators.AbstractApiTest;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.SemanticVersion;
 import eu.erasmuswithoutpaper.registry.validators.TestValidationReport;
 import eu.erasmuswithoutpaper.registry.validators.coursereplicationvalidator.CourseReplicationServiceV1Valid;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import https.github_com.erasmus_without_paper.ewp_specs_api_courses.tree.stable_v1.CoursesResponse;
-import org.junit.Test;
 
-public class CoursesValidatorTest extends AbstractApiTest {
+public class CoursesValidatorTest extends AbstractApiTest<CoursesSuiteState> {
   private static final String replicationUrlHTTT = "https://university.example.com/creplication/HTTT/";
   private static final String coursesUrlHTTT = "https://university.example.com/courses/HTTT/";
   @Autowired
@@ -48,7 +48,7 @@ public class CoursesValidatorTest extends AbstractApiTest {
   }
 
   @Override
-  protected ApiValidator getValidator() {
+  protected ApiValidator<CoursesSuiteState> getValidator() {
     return validator;
   }
 
