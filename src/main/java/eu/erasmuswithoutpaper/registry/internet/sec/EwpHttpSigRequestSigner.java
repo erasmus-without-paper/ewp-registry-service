@@ -3,9 +3,6 @@ package eu.erasmuswithoutpaper.registry.internet.sec;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.KeyPair;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -92,9 +89,7 @@ public class EwpHttpSigRequestSigner implements RequestSigner {
       request.putHeader("Host", this.parseUrl(request).getHost());
     }
     if ((request.getHeader("Date") == null) && (request.getHeader("Original-Date") == null)) {
-      String date =
-          DateTimeFormatter.RFC_1123_DATE_TIME.format(ZonedDateTime.now(ZoneId.of("UTC")));
-      request.putHeader("Date", date);
+      request.putHeader("Date", Utils.getCurrentDateInRFC1123());
     }
     if (request.getHeader("X-Request-Id") == null) {
       request.putHeader("X-Request-Id", UUID.randomUUID().toString());

@@ -5,9 +5,7 @@ import static org.joox.JOOX.$;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
 import java.security.interfaces.RSAPublicKey;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
@@ -64,10 +62,12 @@ public class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSuite
     this.apiInfo = new EchoValidatedApiInfo(version, ApiEndpoint.NoEndpoint);
   }
 
+  @Override
   protected Logger getLogger() {
     return logger;
   }
 
+  @Override
   public ValidatedApiInfo getApiInfo() {
     return apiInfo;
   }
@@ -296,9 +296,9 @@ public class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSuite
       protected Optional<Response> innerRun() throws Failure {
         Request request =
             EchoValidationSuiteCommon.this.createValidRequestForCombination(this, combination);
-        ZonedDateTime dateTime = ZonedDateTime.now(ZoneId.of("UTC"));
+        ZonedDateTime dateTime = Utils.getCurrentZonedDateTime();
         dateTime = dateTime.minusMinutes(20);
-        String date = DateTimeFormatter.RFC_1123_DATE_TIME.format(dateTime);
+        String date = Utils.formatHeaderZonedDateTime(dateTime);
         request.putHeader("Original-Date", date);
 
         Authorization authz = Authorization.parse(request.getHeader("Authorization"));

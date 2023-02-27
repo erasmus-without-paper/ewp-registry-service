@@ -1,9 +1,6 @@
 package eu.erasmuswithoutpaper.registry.internet.sec;
 
 import java.security.KeyPair;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -77,13 +74,6 @@ public class EwpHttpSigResponseSigner extends TlsResponseSigner {
   }
 
   /**
-   * @return Current time, to be used in the Date headers.
-   */
-  protected ZonedDateTime getCurrentTime() {
-    return ZonedDateTime.now(ZoneId.of("UTC"));
-  }
-
-  /**
    * Get the list of headers to be signed. This may include the special "(request-target)" header,
    * as explained in HTTP Signature specs.
    *
@@ -127,7 +117,7 @@ public class EwpHttpSigResponseSigner extends TlsResponseSigner {
    * @param originalDate True, if Original-Date header should be included.
    */
   protected void includeDateHeaders(Response response, boolean date, boolean originalDate) {
-    String now = DateTimeFormatter.RFC_1123_DATE_TIME.format(this.getCurrentTime());
+    String now = Utils.getCurrentDateInRFC1123();
     if (date && (response.getHeader("Date") == null)) {
       response.putHeader("Date", now);
     }

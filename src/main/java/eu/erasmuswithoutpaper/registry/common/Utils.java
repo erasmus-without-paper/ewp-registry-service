@@ -2,6 +2,9 @@ package eu.erasmuswithoutpaper.registry.common;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,6 +54,9 @@ public class Utils {
       { "th", "st", "nd", "rd", "th", "th", "th", "th", "th", "th" };
   private static final String OTHER_ID_PIC = "pic";
   private static final String OTHER_ID_ERASMUS = "erasmus";
+
+  private static final DateTimeFormatter RFC_1123_STRICT_FORMATTER = DateTimeFormatter
+      .ofPattern("EEE, dd MMM yyyy HH:mm:ss z", Locale.ENGLISH);
 
   /**
    * Convert a comma-separated string to a list of tokens. Tokens are trimmed, and empty ones are
@@ -185,6 +191,29 @@ public class Utils {
   public static String formatHeaderName(String headerName) {
     return Arrays.asList(headerName.split("-", -1)).stream().map(s -> upperFirstLatter(s))
         .collect(Collectors.joining("-"));
+  }
+
+  public static String formatHeaderZonedDateTime(ZonedDateTime dateTime) {
+    return RFC_1123_STRICT_FORMATTER.format(dateTime);
+  }
+
+  /**
+   * Get current date in strict HTTP format.
+   *
+   * <p>RFC_1123_STRICT_FORMATTER formatter from java libs
+   * ({@link DateTimeFormatter#RFC_1123_DATE_TIME}) returns invalid date with date for one letter
+   * day of the month, using only one letter for them, but for HTTP it shuld be "fixed-lenght" and
+   * it means two digits.
+   *
+   * @return current date in string RFC-2616 date format
+   * @see <a href="https://www.rfc-editor.org/rfc/rfc2616#section-14.18">RFC-2616</a>
+   */
+  public static String getCurrentDateInRFC1123() {
+    return formatHeaderZonedDateTime(getCurrentZonedDateTime());
+  }
+
+  public static ZonedDateTime getCurrentZonedDateTime() {
+    return ZonedDateTime.now(ZoneId.of("GMT"));
   }
 
   /**
