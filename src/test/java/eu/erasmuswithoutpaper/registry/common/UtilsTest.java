@@ -6,6 +6,8 @@ import static org.joox.JOOX.$;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import eu.erasmuswithoutpaper.registry.WRTest;
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
@@ -40,6 +42,19 @@ public class UtilsTest extends WRTest {
         .containsExactlyInAnyOrder("gzip", "identity");
     assertThat(Utils.extractAcceptableCodings("ewp-rsa-aes128gcm, *;q=0"))
         .containsExactlyInAnyOrder("ewp-rsa-aes128gcm");
+  }
+
+  @Test
+  public void testFindErrorsInHttpSigDateHeader() {
+    String currentButIsoFormat = DateTimeFormatter.ISO_DATE.format(LocalDate.now());
+    assertThat(Utils.findErrorsInHttpSigDateHeader(currentButIsoFormat)).isNotEmpty();
+    String currentDate = Utils.getCurrentDateInRFC1123();
+    assertThat(Utils.findErrorsInHttpSigDateHeader(currentDate)).isNullOrEmpty();
+
+    String pastDate = "Wed, 01 Feb 2023 12:06:52 GMT";
+    assertThat(Utils.findErrorsInHttpSigDateHeader(pastDate)).isNotEmpty();
+    String futureDate = "Fri, 01 Feb 2222 12:06:52 GMT";
+    assertThat(Utils.findErrorsInHttpSigDateHeader(futureDate)).isNotEmpty();
   }
 
   @Test

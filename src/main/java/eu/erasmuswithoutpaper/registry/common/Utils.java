@@ -2,6 +2,7 @@ package eu.erasmuswithoutpaper.registry.common;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.time.Duration;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -10,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collections;
-import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
@@ -26,13 +26,12 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
-
 import eu.erasmuswithoutpaper.registryclient.HeiEntry;
+
 import org.springframework.web.util.HtmlUtils;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.http.client.utils.DateUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -166,14 +165,17 @@ public class Utils {
    *         found).
    */
   public static final String findErrorsInHttpSigDateHeader(String dateValue) {
-    Date parsed = DateUtils.parseDate(dateValue);
-    if (parsed == null) {
+    ZonedDateTime parsedDateTime;
+    try {
+      parsedDateTime = ZonedDateTime.parse(dateValue, RFC_1123_STRICT_FORMATTER);
+    } catch (Exception e) {
       return "Could not parse the date. Make sure it's in a valid RFC 2616 format.";
     }
-    long given = parsed.getTime();
-    long current = new Date().getTime();
-    long differenceSec = Math.abs(current - given) / 1000;
+
+    Duration duration = Duration.between(parsedDateTime, getCurrentZonedDateTime());
+    long differenceSec = Math.abs(duration.getSeconds());
     final long maxThresholdSec = 5 * 60;
+
     if (differenceSec > maxThresholdSec) {
       return "Server/client difference exceeds the maximum allowed threshold (it was "
           + differenceSec + " seconds; allowed: " + maxThresholdSec + ")";
