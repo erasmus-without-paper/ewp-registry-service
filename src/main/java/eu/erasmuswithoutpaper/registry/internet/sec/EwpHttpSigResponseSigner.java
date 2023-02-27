@@ -101,12 +101,12 @@ public class EwpHttpSigResponseSigner extends TlsResponseSigner {
   }
 
   /**
-   * Include Date and/or Original-Date headers, if not already included.
+   * Include Original-Date header, if not already included.
    *
    * @param response The response to add the headers to.
    */
   protected void includeDateHeaders(Response response) {
-    this.includeDateHeaders(response, true, false);
+    this.includeDateHeaders(response, false, true);
   }
 
   /**
