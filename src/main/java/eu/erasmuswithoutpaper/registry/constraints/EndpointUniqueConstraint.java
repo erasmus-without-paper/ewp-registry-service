@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.List;
 
 import eu.erasmuswithoutpaper.registry.common.Severity;
+import eu.erasmuswithoutpaper.registry.common.Utils;
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
 import eu.erasmuswithoutpaper.registryclient.ApiSearchConditions;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
@@ -21,6 +22,7 @@ import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 import org.joox.Match;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 public class EndpointUniqueConstraint implements ManifestConstraint {
 
@@ -61,16 +63,16 @@ public class EndpointUniqueConstraint implements ManifestConstraint {
         ApiSearchConditions conditions = new ApiSearchConditions();
         conditions.setApiClassRequired(namespaceUri, apiName);
         Collection<Element> apis = registryClient.findApis(conditions);
-        String url = getUrl(match);
+        String url = getUrl(match.get(0));
         for (Element api : apis) {
-          if (url != null && url.equals(getUrl($(api)))) {
+          if (url != null && url.equals(getUrl(api))) {
             Collection<RSAPublicKey> serverKeysCoveringApi =
                 registryClient.getServerKeysCoveringApi(api);
 
             if (!rsaPublicKeys.containsAll(serverKeysCoveringApi)) {
               notices.add(new FailedConstraintNotice(Severity.ERROR,
                   "API " + apiName + " is already in the registry under the same URL: "
-                      + getUrl($(api)) + ". It will not be imported."));
+                      + getUrl(api) + ". It will not be imported."));
               match.remove();
               break;
             }
@@ -96,8 +98,8 @@ public class EndpointUniqueConstraint implements ManifestConstraint {
     return rsaPublicKeys;
   }
 
-  private String getUrl(Match apiMatch) {
-    for (Element child : apiMatch.children()) {
+  private String getUrl(Element element) {
+    for (Node child : Utils.asNodeList(element.getChildNodes())) {
       if (Arrays.asList("url", "get-url").contains(child.getLocalName())) {
         return child.getTextContent();
       }
