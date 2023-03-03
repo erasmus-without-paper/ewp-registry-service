@@ -10,4 +10,4 @@ then
     exit 1
 fi
 
-java -Djava.security.egd=file:/dev/./urandom -jar /app.jar
+java -Djava.security.egd=file:/dev/./urandom -jar -XX:-OmitStackTraceInFastThrow /app.jar
