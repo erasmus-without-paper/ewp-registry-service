@@ -163,6 +163,8 @@ mvn package
 
 If you're having problems then you might try adding `-DskipTests` argument.
 Application jar should be stored to `target/ewp-registry-<version>.jar`.
+For development purposes you can also save some time by adding
+`-Dmaven.javadoc.skip`, which will skip Javadoc generation.
 
 
 ### Prepare the environment
