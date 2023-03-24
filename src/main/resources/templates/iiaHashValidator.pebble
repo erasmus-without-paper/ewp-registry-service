@@ -8,7 +8,7 @@
 
     <form id="xml_form" method="post">
         <p class="ewp-para">
-            Paste your IIA XML document below and press <button>Validate</button>
+            Paste your IIA Get Response XML document below and press <button>Validate</button>
         </p>
         <label>
             <textarea class="xml-text" name="xml">{{ xml }}</textarea>
