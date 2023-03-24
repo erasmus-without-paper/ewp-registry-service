@@ -746,8 +746,8 @@ public class UiController {
           iiaHashService.checkCooperationConditionsHash(new InputSource(reader));
       mav.addObject("hashComparisonResults", hashComparisonResults);
       mav.addObject("errorMessage", null);
-      mav.addObject("allResultsCorrect",
-          hashComparisonResults.stream().allMatch(HashComparisonResult::isCorrect));
+      mav.addObject("allResultsCorrect", !hashComparisonResults.isEmpty()
+          && hashComparisonResults.stream().allMatch(HashComparisonResult::isCorrect));
     } catch (ElementHashException | ParserConfigurationException | IOException | SAXException
         | XPathExpressionException exception) {
       mav.addObject("hashComparisonResults", null);

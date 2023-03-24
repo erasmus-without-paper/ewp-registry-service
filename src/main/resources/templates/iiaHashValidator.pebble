@@ -25,6 +25,10 @@
             {% endif %}
         </h3>
 
+        {% if hashComparisonResults is empty %}
+        <h3 class='ewp-section-title'>No IIAs where found.</h3>
+        {% endif %}
+
         {% for hashComparisonResult in hashComparisonResults %}
             {% if not hashComparisonResult.isCorrect %}
             <h4>Expected hash: {{ hashComparisonResult.hashExpected }}</h4>
