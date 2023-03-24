@@ -1,6 +1,7 @@
 package eu.erasmuswithoutpaper.registry.web;
 
 import java.io.IOException;
+import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -740,9 +741,9 @@ public class UiController {
     mav.setViewName("iiaHashValidator");
     mav.addObject("xml", xml);
 
-    try {
+    try (Reader reader = new StringReader(xml)) {
       List<HashComparisonResult> hashComparisonResults =
-          iiaHashService.checkCooperationConditionsHash(new InputSource(new StringReader(xml)));
+          iiaHashService.checkCooperationConditionsHash(new InputSource(reader));
       mav.addObject("hashComparisonResults", hashComparisonResults);
       mav.addObject("errorMessage", null);
       mav.addObject("allResultsCorrect",
