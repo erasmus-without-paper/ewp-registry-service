@@ -80,8 +80,7 @@ public class ManifestApiEntry {
       ApiValidatorsManager manager) {
     List<ManifestApiEntry> ret = new ArrayList<>();
     List<Match> apis = $(manifest).namespaces(KnownNamespace.prefixMap())
-        .xpath("mf5:host/r:apis-implemented/* | mf6:host/r:apis-implemented/*")
-            .each();
+        .xpath("mf6:host/r:apis-implemented/*").each();
     for (Match api : apis) {
       try {
         ret.addAll(parseApiEntry(api, manager));

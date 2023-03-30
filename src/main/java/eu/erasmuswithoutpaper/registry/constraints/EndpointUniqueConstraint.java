@@ -43,13 +43,11 @@ public class EndpointUniqueConstraint implements ManifestConstraint {
   public List<FailedConstraintNotice> filter(Document document, RegistryClient registryClient) {
     List<FailedConstraintNotice> notices = new ArrayList<>();
     Match root = $(document).namespaces(KnownNamespace.prefixMap());
-    Match serverKeys = root.xpath(
-        "mf5:host/mf5:server-credentials-in-use/mf5:rsa-public-key | "
-            + "mf6:host/mf6:server-credentials-in-use/mf6:rsa-public-key");
+    Match serverKeys = root.xpath("mf6:host/mf6:server-credentials-in-use/mf6:rsa-public-key");
     if (serverKeys.isNotEmpty()) {
       Collection<RSAPublicKey> rsaPublicKeys = getRsaPublicKeys(serverKeys);
 
-      for (Match match : root.xpath("mf5:host/r:apis-implemented/* | mf6:host/r:apis-implemented/*")
+      for (Match match : root.xpath("mf6:host/r:apis-implemented/*")
           .each()) {
         String apiName = match.tag();
         String namespaceUri = match.namespaceURI();

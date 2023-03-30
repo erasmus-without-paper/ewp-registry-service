@@ -34,8 +34,7 @@ public class RestrictInstitutionsCovered implements ManifestConstraint {
   public List<FailedConstraintNotice> filter(Document doc, RegistryClient registryClient) {
     List<FailedConstraintNotice> notices = new ArrayList<>();
     Match root = $(doc).namespaces(KnownNamespace.prefixMap());
-    for (Match hei : root.xpath(
-            "mf5:host/mf5:institutions-covered/r:hei | mf6:host/mf6:institutions-covered/r:hei")
+    for (Match hei : root.xpath("mf6:host/mf6:institutions-covered/r:hei")
         .each()) {
       String id = hei.attr("id");
       if (!this.allowedSchacIdRegex.matcher(id).matches()) {

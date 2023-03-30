@@ -95,7 +95,7 @@ public class RegistryUpdaterTest extends WRTest {
      */
     String urlA = "https://registry.erasmuswithoutpaper.eu/manifest.xml";
     String urlB = "https://example.com/manifest.xml";
-    this.internet.putURL(urlA, this.getFile("manifests-v5/sample-registry-manifest.xml"));
+    this.internet.putURL(urlA, this.getFile("manifests/sample-registry-manifest.xml"));
     this.internet.putURL(urlB,
         this.getFile("latest-examples/ewp-specs-api-discovery-manifest-example.xml"));
     this.sourceProvider.addSource(ManifestSource.newTrustedSource(urlA));
@@ -117,7 +117,7 @@ public class RegistryUpdaterTest extends WRTest {
      */
 
     String urlC = "https://example.com/empty.xml";
-    this.internet.putURL(urlC, this.getFile("manifests-v5/empty.xml"));
+    this.internet.putURL(urlC, this.getFile("manifests/empty.xml"));
     this.sourceProvider.addSource(ManifestSource.newRegularSource(urlC, Arrays.asList()));
     this.timePasses();
     assertThat(this.updateStatuses.findOne(urlC).getLastAccessFlagStatus())
@@ -414,7 +414,7 @@ public class RegistryUpdaterTest extends WRTest {
     assertThat(this.lastCatalogue.xpath("r:host/ewp:admin-email").text())
         .isEqualTo("admin-or-developer@example.com"); // new email!
     assertThat(this.lastCatalogue.xpath("r:host/r:apis-implemented/*")).hasSize(2);
-    assertThat(this.lastCatalogue.xpath("r:host/r:apis-implemented/d5:discovery")).hasSize(1);
+    assertThat(this.lastCatalogue.xpath("r:host/r:apis-implemented/d6:discovery")).hasSize(1);
     assertThat(this.lastCatalogue.xpath("r:host/r:apis-implemented/e2:echo")).hasSize(1);
     assertThat(this.lastEmails).hasSize(0);
 
@@ -433,12 +433,12 @@ public class RegistryUpdaterTest extends WRTest {
      */
 
     Match manifest = this.parseURL(url1);
-    manifest.xpath("mf5:host/r:apis-implemented").first()
+    manifest.xpath("mf6:host/r:apis-implemented").first()
         .append("<registry xmlns='" + KnownNamespace.APIENTRY_REGISTRY_V1.getNamespaceUri()
             + "' version='1.0.0'><catalogue-url>https://example.com/catalogue-v1.xml"
             + "</catalogue-url></registry>");
-    assertThat(manifest.xpath("mf5:host/r:apis-implemented/*")).hasSize(3);
-    assertThat(manifest.xpath("mf5:host/r:apis-implemented/r1:registry")).hasSize(1);
+    assertThat(manifest.xpath("mf6:host/r:apis-implemented/*")).hasSize(3);
+    assertThat(manifest.xpath("mf6:host/r:apis-implemented/r1:registry")).hasSize(1);
     this.internet.putURL(url1, this.xmlFormatter.format(manifest.document()));
     this.timePasses();
     this.assertManifestStatuses("Warning", "Error", null);
@@ -529,13 +529,13 @@ public class RegistryUpdaterTest extends WRTest {
   private String getMinimalManifest(String email) {
     StringBuilder sb = new StringBuilder();
     sb.append("<manifest xmlns='");
-    sb.append("https://github.com/erasmus-without-paper/ewp-specs-api-discovery/tree/stable-v5");
-    sb.append("'><host><admin-email xmlns='");
+    sb.append("https://github.com/erasmus-without-paper/ewp-specs-api-discovery/tree/stable-v6");
+    sb.append("' xmlns:ewp='");
     sb.append(
         "https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd");
-    sb.append("'>");
+    sb.append("'><host><ewp:admin-email>");
     sb.append(Utils.escapeXml(email));
-    sb.append("</admin-email></host></manifest>");
+    sb.append("</ewp:admin-email><ewp:admin-provider>Provider</ewp:admin-provider></host></manifest>");
     return sb.toString();
   }
 

@@ -74,8 +74,7 @@ class CatalogueBuilder {
 
     for (Document manifestDoc : manifests) {
 
-      if (!KnownElement.RESPONSE_MANIFEST_V5.matches(manifestDoc.getDocumentElement())
-          && !KnownElement.RESPONSE_MANIFEST_V6.matches(manifestDoc.getDocumentElement())) {
+      if (!KnownElement.RESPONSE_MANIFEST_V6.matches(manifestDoc.getDocumentElement())) {
         logger.error("Ignoring unsupported manifest version while building the catalogue. "
             + "This should not happen.");
         continue;

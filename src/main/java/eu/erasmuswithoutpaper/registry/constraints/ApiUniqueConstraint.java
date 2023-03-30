@@ -21,13 +21,12 @@ public class ApiUniqueConstraint implements ManifestConstraint {
   public List<FailedConstraintNotice> filter(Document document, RegistryClient registryClient) {
     List<FailedConstraintNotice> notices = new ArrayList<>();
     Match root = $(document).namespaces(KnownNamespace.prefixMap());
-    Match heis = root.xpath(
-        "mf5:host/mf5:institutions-covered/r:hei | mf6:host/mf6:institutions-covered/r:hei");
+    Match heis = root.xpath("mf6:host/mf6:institutions-covered/r:hei");
     if (heis.isNotEmpty()) {
       // heis contains at most one element (see VerifySingleHost/Hei constraints)
       String heiCovered = heis.get(0).getAttribute("id");
 
-      for (Match match : root.xpath("mf5:host/r:apis-implemented/* | mf6:host/r:apis-implemented/*")
+      for (Match match : root.xpath("mf6:host/r:apis-implemented/*")
           .each()) {
         String apiName = match.tag();
         if (Arrays.asList("echo", "discovery").contains(apiName)) {

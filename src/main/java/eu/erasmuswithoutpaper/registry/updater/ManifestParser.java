@@ -117,8 +117,7 @@ public class ManifestParser {
     // Verify the namespace.
 
     Document doc = result.getDocument().get();
-    if (KnownElement.RESPONSE_MANIFEST_V5.matches(doc.getDocumentElement())
-        || KnownElement.RESPONSE_MANIFEST_V6.matches(doc.getDocumentElement())) {
+    if (KnownElement.RESPONSE_MANIFEST_V6.matches(doc.getDocumentElement())) {
       return doc;
     } else {
       // Despite the document being valid in itself, it's not a manifest at all.

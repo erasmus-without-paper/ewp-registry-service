@@ -174,7 +174,7 @@ public class ApiControllerIntegrationTest extends WRIntegrationTest {
     assertThat(this.status(urlPL)).contains("unable to fetch");
     assertThat(this.status(urlSE)).contains("unable to fetch");
 
-    /* [Test B] Let's add a simple, empty, valid manifest for Poland (v5). */
+    /* [Test B] Let's add a simple, empty, valid manifest for Poland. */
 
     this.internet.putURL(urlPL, this.getFile("demo1/B-inPL.xml"));
 
@@ -192,7 +192,7 @@ public class ApiControllerIntegrationTest extends WRIntegrationTest {
         .containsPattern("Last access status:[ \n]+<code class='ewpst__bordered-code'>OK</code>");
     assertThat(this.status(urlPL)).doesNotContain("unable to fetch");
 
-    /* [Test C] Define one HEI. Use manifest v5. */
+    /* [Test C] Define one HEI. */
 
     this.internet.putURL(urlPL, this.getFile("demo1/C-inPL.xml"));
     this.forceReload(urlPL);
@@ -251,7 +251,8 @@ public class ApiControllerIntegrationTest extends WRIntegrationTest {
         .isEqualTo(this.getFileAsString("demo1/J-out.xml"));
 
     /*
-     * [Test K] Replace with manifest file with multiple hosts. Expect this raise error.
+     * [Test K] Replace with manifest file with multiple hosts. Expect this raise error
+     * and to ignore extra hosts.
      */
 
     this.internet.putURL(urlPL2, this.getFile("demo1/K-inPL2.xml"));
@@ -259,7 +260,7 @@ public class ApiControllerIntegrationTest extends WRIntegrationTest {
     assertThat(this.status(urlPL2)).containsPattern(
         "Last access status:[ \n]+<code class='ewpst__bordered-code'>Error</code>");
     assertThat(this.getCatalogueBodyWithoutBinaries())
-        .isEqualTo(this.getFileAsString("demo1/K-out.xml"));
+        .isEqualTo(this.getFileAsString("demo1/J-out.xml"));
   }
 
   private int forceReload(String manifestUrl) {

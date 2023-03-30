@@ -46,8 +46,7 @@ public class TlsClientCertificateSecurityConstraint implements ManifestConstrain
     }
 
     Match root = $(doc).namespaces(KnownNamespace.prefixMap());
-    Match certs = root.xpath("mf5:host/mf5:client-credentials-in-use/mf5:certificate | "
-        + "mf6:host/mf6:client-credentials-in-use/mf6:certificate");
+    Match certs = root.xpath("mf6:host/mf6:client-credentials-in-use/mf6:certificate");
     for (int i = 0; i < certs.size(); i++) {
 
       Match certElem = certs.eq(i);

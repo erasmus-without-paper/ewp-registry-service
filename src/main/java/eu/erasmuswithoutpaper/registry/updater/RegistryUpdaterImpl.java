@@ -348,8 +348,7 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
           // Update the list of our notifierFlag's recipients.
 
           Match manifest = $(doc).namespaces(KnownNamespace.prefixMap());
-          List<String> emails =
-              manifest.xpath("mf5:host/ewp:admin-email | mf6:host/ewp:admin-email").texts();
+          List<String> emails = manifest.xpath("mf6:host/ewp:admin-email").texts();
           notifierFlag.setRecipientEmails(emails);
           this.onManifestAdminEmailsChanged(source.getUrl(), emails);
 

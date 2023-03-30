@@ -24,12 +24,6 @@
     name="https://github.com/erasmus-without-paper/ewp-specs-api-courses/blob/stable-v1/manifest-entry.xsd"
     uri="ewp-specs-api-courses-v0.7.1/manifest-entry.xsd" />
 <uri
-    name="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/tree/stable-v5"
-    uri="ewp-specs-api-discovery-v5.0.0/manifest.xsd" />
-<uri
-    name="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/blob/stable-v5/manifest-entry.xsd"
-    uri="ewp-specs-api-discovery-v5.0.0/manifest-entry.xsd" />
-<uri
     name="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/tree/stable-v6"
     uri="ewp-specs-api-discovery-v6.0.0/manifest.xsd" />
 <uri

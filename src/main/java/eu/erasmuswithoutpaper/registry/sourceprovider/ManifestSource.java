@@ -16,8 +16,6 @@ import eu.erasmuswithoutpaper.registry.constraints.ServerKeySecurityConstraint;
 import eu.erasmuswithoutpaper.registry.constraints.TlsClientCertificateSecurityConstraint;
 import eu.erasmuswithoutpaper.registry.constraints.VerifyApiVersions;
 import eu.erasmuswithoutpaper.registry.constraints.VerifyDiscoveryApiEntry;
-import eu.erasmuswithoutpaper.registry.constraints.VerifySingleHei;
-import eu.erasmuswithoutpaper.registry.constraints.VerifySingleHost;
 
 import com.google.common.collect.Lists;
 
@@ -42,8 +40,6 @@ public class ManifestSource {
       List<ManifestConstraint> extraConstraints) {
     List<ManifestConstraint> all = new ArrayList<>(extraConstraints.size() + 4);
     all.add(new TlsClientCertificateSecurityConstraint(1024));
-    all.add(new VerifySingleHost());
-    all.add(new VerifySingleHei());
     all.add(new ClientKeyConstraint(2048));
     all.add(new ServerKeySecurityConstraint(2048));
     all.add(new ApiUniqueConstraint());

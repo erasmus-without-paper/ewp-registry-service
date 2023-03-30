@@ -328,7 +328,6 @@ public class EwpDocBuilder {
       source = new SAXSource(xmlFilter, new InputSource(new ByteArrayInputStream(xml)));
 
       JAXBContext jc = JAXBContext.newInstance(
-          https.github_com.erasmus_without_paper.ewp_specs_api_discovery.tree.stable_v5.Manifest.class,
           https.github_com.erasmus_without_paper.ewp_specs_api_discovery.tree.stable_v6.Manifest.class);
       unmarshaller = jc.createUnmarshaller();
       unmarshaller.setSchema(this.compoundSchema);

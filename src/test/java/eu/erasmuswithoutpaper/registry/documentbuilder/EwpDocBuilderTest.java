@@ -72,9 +72,9 @@ public class EwpDocBuilderTest extends WRTest {
   }
 
   @Test
-  public void checkForXxeV5() {
-    BuildParams params = new BuildParams(this.getFile("manifests-v5/xxe.xml"));
-    params.setExpectedKnownElement(KnownElement.RESPONSE_MANIFEST_V5);
+  public void checkForXxe() {
+    BuildParams params = new BuildParams(this.getFile("manifests/xxe.xml"));
+    params.setExpectedKnownElement(KnownElement.RESPONSE_MANIFEST_V6);
     BuildResult result = this.builder.buildManifest(params);
     assertThat(result.isValid()).isFalse();
     assertThat(result.getErrors()).hasSize(1);
@@ -83,10 +83,10 @@ public class EwpDocBuilderTest extends WRTest {
 
 
   @Test
-  public void checkIfAcceptsInvalidAPIentriesV5() {
+  public void checkIfAcceptsInvalidAPIentries() {
     BuildParams params = new BuildParams(
-        this.getFile("manifests-v5/which-fails-external-api-schema-validation.xml"));
-    params.setExpectedKnownElement(KnownElement.RESPONSE_MANIFEST_V5);
+        this.getFile("manifests/which-fails-external-api-schema-validation.xml"));
+    params.setExpectedKnownElement(KnownElement.RESPONSE_MANIFEST_V6);
     BuildResult result = this.builder.buildManifest(params);
     assertThat(result.isValid()).isTrue();
   }
@@ -284,17 +284,17 @@ public class EwpDocBuilderTest extends WRTest {
   }
 
   @Test
-  public void testEmptyManifestV5() {
-    BuildParams params = new BuildParams(this.getFile("manifests-v5/empty.xml"));
-    params.setExpectedKnownElement(KnownElement.RESPONSE_MANIFEST_V5);
+  public void testEmptyManifest() {
+    BuildParams params = new BuildParams(this.getFile("manifests/empty.xml"));
+    params.setExpectedKnownElement(KnownElement.RESPONSE_MANIFEST_V6);
     BuildResult result = this.builder.buildManifest(params);
     assertThat(result.isValid()).isTrue();
   }
 
   @Test
   public void testExternalAPIsV5() {
-    BuildParams params = new BuildParams(this.getFile("manifests-v5/a-bit-weird-but-valid.xml"));
-    params.setExpectedKnownElement(KnownElement.RESPONSE_MANIFEST_V5);
+    BuildParams params = new BuildParams(this.getFile("manifests/a-bit-weird-but-valid.xml"));
+    params.setExpectedKnownElement(KnownElement.RESPONSE_MANIFEST_V6);
     BuildResult result = this.builder.buildManifest(params);
     assertThat(result.isValid()).isTrue();
   }
@@ -303,15 +303,15 @@ public class EwpDocBuilderTest extends WRTest {
   public void testManifestExample() {
     BuildParams params = new BuildParams(
         this.getFile("latest-examples/ewp-specs-api-discovery-manifest-example.xml"));
-    params.setExpectedKnownElement(KnownElement.RESPONSE_MANIFEST_V5);
+    params.setExpectedKnownElement(KnownElement.RESPONSE_MANIFEST_V6);
     BuildResult result = this.builder.buildManifest(params);
     assertThat(result.isValid()).isTrue();
   }
 
   @Test
-  public void testManifestMinimalV5() {
-    BuildParams params = new BuildParams(this.getFile("manifests-v5/tiny-but-valid.xml"));
-    params.setExpectedKnownElement(KnownElement.RESPONSE_MANIFEST_V5);
+  public void testManifestMinimal() {
+    BuildParams params = new BuildParams(this.getFile("manifests/tiny-but-valid.xml"));
+    params.setExpectedKnownElement(KnownElement.RESPONSE_MANIFEST_V6);
     BuildResult result = this.builder.buildManifest(params);
     assertThat(result.isValid()).isTrue();
   }
@@ -360,8 +360,8 @@ public class EwpDocBuilderTest extends WRTest {
   @Test
   public void testInvalidApiEntryIsIgnoredV5() {
     BuildParams params = new BuildParams(
-        this.getFile("docbuilder/invalid-api-entry-manifest-v5.xml"));
-    params.setExpectedKnownElement(KnownElement.RESPONSE_MANIFEST_V5);
+        this.getFile("docbuilder/invalid-api-entry-manifest.xml"));
+    params.setExpectedKnownElement(KnownElement.RESPONSE_MANIFEST_V6);
     BuildResult result = this.builder.buildManifest(params);
     assertThat(result.isValid()).isTrue();
     assertThat(result.getErrors()).isNotEmpty();
@@ -370,8 +370,8 @@ public class EwpDocBuilderTest extends WRTest {
   @Test
   public void testInvalidXmlWithInvalidApiEntryIsNotIgnored() {
     BuildParams params = new BuildParams(
-        this.getFile("docbuilder/syntax-error-in-api-entry-manifest-v5.xml"));
-    params.setExpectedKnownElement(KnownElement.RESPONSE_MANIFEST_V5);
+        this.getFile("docbuilder/syntax-error-in-api-entry-manifest.xml"));
+    params.setExpectedKnownElement(KnownElement.RESPONSE_MANIFEST_V6);
     BuildResult result = this.builder.buildManifest(params);
     assertThat(result.isValid()).isFalse();
   }

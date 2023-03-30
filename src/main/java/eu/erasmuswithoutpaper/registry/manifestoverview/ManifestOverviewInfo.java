@@ -51,7 +51,7 @@ public class ManifestOverviewInfo {
     final String endsWithUrlXPath =
         "substring(local-name(), string-length(local-name()) - string-length('url') + 1) = 'url'";
 
-    Match hosts = matcher.xpath("/mf5:manifest/mf5:host | /mf6:manifest/mf6:host");
+    Match hosts = matcher.xpath("/mf6:manifest/mf6:host");
     for (Element host : hosts) {
       HostOverviewInfo hostOverviewInfo = new HostOverviewInfo();
       Match hostMatch = $(host).namespaces(KnownNamespace.prefixMap());
@@ -77,8 +77,7 @@ public class ManifestOverviewInfo {
             )
         );
       }
-      for (Element elem : hostMatch.xpath(
-          "mf5:institutions-covered/r:hei | mf6:institutions-covered/r:hei")) {
+      for (Element elem : hostMatch.xpath("mf6:institutions-covered/r:hei")) {
         hostOverviewInfo.coveredHeiIds.add(elem.getAttribute("id"));
       }
       result.hosts.add(hostOverviewInfo);

@@ -46,8 +46,7 @@ public abstract class AbstractRsaKeySecurityConstraint implements ManifestConstr
     }
 
     Match root = $(doc).namespaces(KnownNamespace.prefixMap());
-    Match heis = root.xpath(
-        "mf5:host/mf5:institutions-covered/r:hei | " + "mf6:host/mf6:institutions-covered/r:hei");
+    Match heis = root.xpath("mf6:host/mf6:institutions-covered/r:hei");
     // heis contains at most one element (see VerifySingleHost/Hei constraints)
     String heiCovered = heis.size() == 0 ? null : heis.get(0).getAttribute("id");
     Match keyElems = root.xpath(this.getXPath());

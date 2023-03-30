@@ -57,8 +57,7 @@ public class VerifyApiVersions implements ManifestConstraint {
     List<FailedConstraintNotice> notices = new ArrayList<>();
     Match root = $(doc).namespaces(KnownNamespace.prefixMap());
 
-    for (Match match : root.xpath("mf5:host/r:apis-implemented/* | mf6:host/r:apis-implemented/*")
-        .each()) {
+    for (Match match : root.xpath("mf6:host/r:apis-implemented/*").each()) {
       String namespaceUri = match.namespaceURI();
       if (!namespaceUri.startsWith("https://github.com/erasmus-without-paper/")) {
         /*

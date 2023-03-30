@@ -107,40 +107,6 @@ public class ManifestOverviewManagerTest extends WRTest {
   }
 
   @Test
-  public void testEmailsAboutDuplicatesAreSentForDuplicatesInSingleManifest() {
-    this.internet.putURL(manifestUrl1, getManifest1WithInternalDuplicate());
-    this.reloadManifest(manifestUrl1);
-
-    // Duplicate found - emails sent
-    List<String> emailsSent = this.internet.popEmailsSent();
-    assertThat(emailsSent).hasSize(adminEmailsCount1 + 1);
-    this.checkEmail(emailsSent, manifestEmails1.get(0), duplicateDetectedSubject, manifestUrl1);
-    this.checkEmail(emailsSent, manifestEmails1.get(1), duplicateDetectedSubject, manifestUrl1);
-    this.checkEmail(emailsSent, adminEmails, adminEmailSubject, manifestUrl1);
-
-    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findOne(manifestUrl1)).isNotNull();
-    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findOne(manifestUrl2)).isNull();
-
-    // Already notified about duplicates - no emails sent
-    this.reloadManifest(manifestUrl1);
-    assertThat(this.internet.popEmailsSent()).isEmpty();
-    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findOne(manifestUrl1)).isNotNull();
-    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findOne(manifestUrl2)).isNull();
-
-    // And change back to manifest without duplicates
-    this.internet.putURL(manifestUrl1, getManifest1WithoutDuplicate());
-    this.reloadManifest(manifestUrl1);
-
-    emailsSent = this.internet.popEmailsSent();
-    assertThat(emailsSent).hasSize(adminEmailsCount1 + 1);
-    this.checkEmail(emailsSent, manifestEmails1.get(0), duplicateRemovedSubject, manifestUrl1);
-    this.checkEmail(emailsSent, manifestEmails1.get(1), duplicateRemovedSubject, manifestUrl1);
-    this.checkEmail(emailsSent, adminEmails, adminEmailSubject, manifestUrl1);
-    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findOne(manifestUrl1)).isNull();
-    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findOne(manifestUrl2)).isNull();
-  }
-
-  @Test
   public void testEmailsAboutDuplicatesAreSentForDuplicatesInMultipleManifests() {
     this.internet.putURL(manifestUrl1, getManifest1WithExternalDuplicate());
     this.internet.putURL(manifestUrl2, getManifest2WithExternalDuplicate());
@@ -204,53 +170,6 @@ public class ManifestOverviewManagerTest extends WRTest {
     this.checkEmail(emailsSent, manifestEmails1.get(1), duplicateRemovedSubject, manifestUrl1);
     this.checkEmail(emailsSent, adminEmails, adminEmailSubject,
         Collections.singletonList(manifestUrl1));
-
-    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findOne(manifestUrl1)).isNull();
-    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findOne(manifestUrl2)).isNull();
-  }
-
-  @Test
-  public void testManifestsWithInternalAndExternalDuplicates() {
-    this.internet.putURL(manifestUrl1, getManifest1WithInternalAndExternalDuplicate());
-    this.internet.putURL(manifestUrl2, getManifest2WithExternalDuplicate());
-
-    this.reloadManifest(manifestUrl1);
-
-    // Duplicates in manifest1 detected.
-    List<String> emailsSent = this.internet.popEmailsSent();
-    assertThat(emailsSent).hasSize(adminEmailsCount1 + 1);
-    this.checkEmail(emailsSent, manifestEmails1.get(0), duplicateDetectedSubject, manifestUrl1);
-    this.checkEmail(emailsSent, manifestEmails1.get(1), duplicateDetectedSubject, manifestUrl1);
-    this.checkEmail(emailsSent, adminEmails, adminEmailSubject, manifestUrl1);
-
-    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findOne(manifestUrl1)).isNotNull();
-    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findOne(manifestUrl2)).isNull();
-
-
-    this.reloadManifest(manifestUrl2);
-
-    // Duplicates in manifest2 detected.
-    emailsSent = this.internet.popEmailsSent();
-    assertThat(emailsSent).hasSize(adminEmailsCount2 + 1);
-    this.checkEmail(emailsSent, manifestEmails2.get(0), duplicateDetectedSubject, manifestUrl2);
-    this.checkEmail(emailsSent, manifestEmails2.get(1), duplicateDetectedSubject, manifestUrl2);
-    this.checkEmail(emailsSent, adminEmails, adminEmailSubject, manifestUrl2);
-
-    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findOne(manifestUrl1)).isNotNull();
-    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findOne(manifestUrl2)).isNotNull();
-
-    // Removing all duplicates from manifest 1.
-    this.internet.putURL(manifestUrl1, getManifest1WithoutDuplicate());
-    this.reloadManifest(manifestUrl1);
-
-    emailsSent = this.internet.popEmailsSent();
-    assertThat(emailsSent).hasSize(adminEmailsCount1 + adminEmailsCount2 + 1);
-    this.checkEmail(emailsSent, manifestEmails1.get(0), duplicateRemovedSubject, manifestUrl1);
-    this.checkEmail(emailsSent, manifestEmails1.get(1), duplicateRemovedSubject, manifestUrl1);
-    this.checkEmail(emailsSent, manifestEmails2.get(0), duplicateRemovedSubject, manifestUrl2);
-    this.checkEmail(emailsSent, manifestEmails2.get(1), duplicateRemovedSubject, manifestUrl2);
-    this.checkEmail(emailsSent, adminEmails, adminEmailSubject,
-        Arrays.asList(manifestUrl1, manifestUrl2));
 
     assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findOne(manifestUrl1)).isNull();
     assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findOne(manifestUrl2)).isNull();
@@ -334,20 +253,12 @@ public class ManifestOverviewManagerTest extends WRTest {
         .hasSize(1);
   }
 
-  private byte[] getManifest1WithInternalDuplicate() {
-    return this.getFile("manifestoverview/manifest1-with-internal-duplicates.xml");
-  }
-
   private byte[] getManifest1WithoutDuplicate() {
     return this.getFile("manifestoverview/manifest1-no-duplicates.xml");
   }
 
   private byte[] getManifest1WithExternalDuplicate() {
     return this.getFile("manifestoverview/manifest1-external-duplicates.xml");
-  }
-
-  private byte[] getManifest1WithInternalAndExternalDuplicate() {
-    return this.getFile("manifestoverview/manifest1-with-internal-and-external-duplicates.xml");
   }
 
   private byte[] getManifest2WithoutDuplicate() {

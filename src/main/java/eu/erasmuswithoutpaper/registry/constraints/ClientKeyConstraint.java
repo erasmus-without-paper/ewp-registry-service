@@ -50,7 +50,6 @@ public class ClientKeyConstraint extends AbstractRsaKeySecurityConstraint {
 
   @Override
   protected String getXPath() {
-    return "mf5:host/mf5:client-credentials-in-use/mf5:rsa-public-key | "
-        + "mf6:host/mf6:client-credentials-in-use/mf6:rsa-public-key";
+    return "mf6:host/mf6:client-credentials-in-use/mf6:rsa-public-key";
   }
 }
