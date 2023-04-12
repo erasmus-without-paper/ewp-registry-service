@@ -75,5 +75,5 @@ class OMobilitiesGetValidationSuite
   }
 
   private VerifierFactory omobilityIdVerifierFactory =
-      new VerifierFactory(Arrays.asList("student-mobility-for-studies", "omobility-id"));
+      new VerifierFactory(Arrays.asList("student-mobility", "omobility-id"));
 }

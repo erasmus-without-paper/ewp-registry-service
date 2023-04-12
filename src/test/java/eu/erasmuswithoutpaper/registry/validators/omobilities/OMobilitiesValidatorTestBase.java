@@ -17,7 +17,7 @@ public abstract class OMobilitiesValidatorTestBase extends AbstractApiTest<OMobi
 
   @Override
   protected SemanticVersion getVersion() {
-    return new SemanticVersion(1, 0, 0);
+    return new SemanticVersion(2, 0, 0);
   }
 }
 

@@ -15,12 +15,14 @@ import eu.erasmuswithoutpaper.registry.internet.sec.EwpClientWithRsaKey;
 import eu.erasmuswithoutpaper.registry.validators.ParameterInfo;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
-import https.github_com.erasmus_without_paper.ewp_specs_api_omobilities.blob.stable_v1.endpoints.get_response.MobilityStatus;
-import https.github_com.erasmus_without_paper.ewp_specs_api_omobilities.blob.stable_v1.endpoints.get_response.StudentMobilityForStudies;
+import https.github_com.erasmus_without_paper.ewp_specs_api_omobilities.blob.stable_v2.endpoints.get_response.MobilityActivityAttributes;
+import https.github_com.erasmus_without_paper.ewp_specs_api_omobilities.blob.stable_v2.endpoints.get_response.MobilityActivityType;
+import https.github_com.erasmus_without_paper.ewp_specs_api_omobilities.blob.stable_v2.endpoints.get_response.MobilityStatus;
+import https.github_com.erasmus_without_paper.ewp_specs_api_omobilities.blob.stable_v2.endpoints.get_response.StudentMobility;
 import https.github_com.erasmus_without_paper.ewp_specs_architecture.blob.stable_v1.common_types.StringWithOptionalLang;
 
 
-public class OMobilitiesServiceV1Valid extends AbstractOMobilitiesService {
+public class OMobilitiesServiceV2Valid extends AbstractOMobilitiesService {
   protected List<OMobilityEntry> mobilities = new ArrayList<>();
 
   /**
@@ -28,7 +30,7 @@ public class OMobilitiesServiceV1Valid extends AbstractOMobilitiesService {
    * @param getUrl         The endpoint at which to listen for requests.
    * @param registryClient Initialized and refreshed {@link RegistryClient} instance.
    */
-  public OMobilitiesServiceV1Valid(String indexUrl, String getUrl,
+  public OMobilitiesServiceV2Valid(String indexUrl, String getUrl,
       RegistryClient registryClient, String heiIdToCover) {
     super(indexUrl, getUrl, registryClient);
     fillDataBase(heiIdToCover);
@@ -44,39 +46,45 @@ public class OMobilitiesServiceV1Valid extends AbstractOMobilitiesService {
     final String RECEIVING_HEI_ID_1 = "validator-hei01.developers.erasmuswithoutpaper.eu";
     final String RECEIVING_HEI_ID_2 = "uw.edu.pl";
 
-    StudentMobilityForStudies mobility1 = new StudentMobilityForStudies();
+    StudentMobility mobility1 = new StudentMobility();
     mobility1.setOmobilityId("omobility-1");
     mobility1.setReceivingAcademicYearId("2020/2021");
-    StudentMobilityForStudies.SendingHei sendingHei1 = new StudentMobilityForStudies.SendingHei();
+    StudentMobility.SendingHei sendingHei1 = new StudentMobility.SendingHei();
     sendingHei1.setHeiId(heiIdToCover);
     mobility1.setSendingHei(sendingHei1);
-    StudentMobilityForStudies.ReceivingHei receivingHei1 = new StudentMobilityForStudies.ReceivingHei();
+    StudentMobility.ReceivingHei receivingHei1 = new StudentMobility.ReceivingHei();
     receivingHei1.setHeiId(RECEIVING_HEI_ID_1);
     mobility1.setReceivingHei(receivingHei1);
     mobility1.setSendingAcademicTermEwpId("2020/2021-1/2");
-    StudentMobilityForStudies.Student student1 = new StudentMobilityForStudies.Student();
+    StudentMobility.Student student1 = new StudentMobility.Student();
     student1.getGivenNames().add(stringWithOptionalLang("test1"));
     student1.getFamilyName().add(stringWithOptionalLang("test2"));
+    student1.setGlobalId("1");
     mobility1.setStudent(student1);
     mobility1.setStatus(MobilityStatus.LIVE);
+    mobility1.setActivityType(MobilityActivityType.STUDENT_STUDIES);
+    mobility1.setActivityAttributes(MobilityActivityAttributes.LONG_TERM);
     mobilities.add(new OMobilityEntry(mobility1, heiIdToCover, RECEIVING_HEI_ID_1));
 
 
-    StudentMobilityForStudies mobility2 = new StudentMobilityForStudies();
+    StudentMobility mobility2 = new StudentMobility();
     mobility2.setOmobilityId("omobility-2");
     mobility2.setReceivingAcademicYearId("2020/2021");
-    StudentMobilityForStudies.SendingHei sendingHei2 = new StudentMobilityForStudies.SendingHei();
+    StudentMobility.SendingHei sendingHei2 = new StudentMobility.SendingHei();
     sendingHei2.setHeiId(heiIdToCover);
     mobility2.setSendingHei(sendingHei2);
-    StudentMobilityForStudies.ReceivingHei receivingHei2 = new StudentMobilityForStudies.ReceivingHei();
+    StudentMobility.ReceivingHei receivingHei2 = new StudentMobility.ReceivingHei();
     receivingHei2.setHeiId(RECEIVING_HEI_ID_2);
     mobility2.setReceivingHei(receivingHei2);
     mobility2.setSendingAcademicTermEwpId("2020/2021-8/9");
-    StudentMobilityForStudies.Student student2 = new StudentMobilityForStudies.Student();
+    StudentMobility.Student student2 = new StudentMobility.Student();
     student2.getGivenNames().add(stringWithOptionalLang("test1"));
     student2.getFamilyName().add(stringWithOptionalLang("test2"));
+    student2.setGlobalId("2");
     mobility2.setStudent(student2);
     mobility2.setStatus(MobilityStatus.LIVE);
+    mobility2.setActivityType(MobilityActivityType.STUDENT_STUDIES);
+    mobility2.setActivityAttributes(MobilityActivityAttributes.LONG_TERM);
     mobilities.add(new OMobilityEntry(mobility2, heiIdToCover, RECEIVING_HEI_ID_2));
   }
 
@@ -144,7 +152,7 @@ public class OMobilitiesServiceV1Valid extends AbstractOMobilitiesService {
       checkSendingHeiId(requestData);
       checkOMobilityIds(requestData);
       List<OMobilityEntry> selectedOMobilities = filterOMobilitiesForGet(mobilities, requestData);
-      List<StudentMobilityForStudies> result = selectedOMobilities.stream()
+      List<StudentMobility> result = selectedOMobilities.stream()
           .map(oMobilityEntry -> oMobilityEntry.mobility)
           .collect(Collectors.toList());
       return createOMobilitiesGetResponse(result);
@@ -416,11 +424,11 @@ public class OMobilitiesServiceV1Valid extends AbstractOMobilitiesService {
 
 
   protected static class OMobilityEntry {
-    public StudentMobilityForStudies mobility;
+    public StudentMobility mobility;
     public String sending_hei_id;
     public String receiving_hei_id;
 
-    public OMobilityEntry(StudentMobilityForStudies mobility, String sending_hei_id,
+    public OMobilityEntry(StudentMobility mobility, String sending_hei_id,
         String receiving_hei_id) {
       this.mobility = mobility ;
       this.sending_hei_id = sending_hei_id;

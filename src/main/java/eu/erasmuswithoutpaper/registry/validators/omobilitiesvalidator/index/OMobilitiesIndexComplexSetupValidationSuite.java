@@ -25,8 +25,8 @@ import eu.erasmuswithoutpaper.registry.validators.omobilitiesvalidator.OMobiliti
 import eu.erasmuswithoutpaper.registry.validators.omobilitiesvalidator.OMobilitiesValidatedApiInfo;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import https.github_com.erasmus_without_paper.ewp_specs_api_omobilities.blob.stable_v1.endpoints.get_response.OmobilitiesGetResponse;
-import https.github_com.erasmus_without_paper.ewp_specs_api_omobilities.blob.stable_v1.endpoints.get_response.StudentMobilityForStudies;
+import https.github_com.erasmus_without_paper.ewp_specs_api_omobilities.blob.stable_v2.endpoints.get_response.OmobilitiesGetResponse;
+import https.github_com.erasmus_without_paper.ewp_specs_api_omobilities.blob.stable_v2.endpoints.get_response.StudentMobility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
@@ -186,7 +186,7 @@ public class OMobilitiesIndexComplexSetupValidationSuite
         }
 
         // receiving-academic-year-id element is required by the schema.
-        StudentMobilityForStudies mobility =
+        StudentMobility mobility =
             getResponse.getSingleMobilityObject().get(0);
         receivedAcademicYearIds.add(mobility.getReceivingAcademicYearId());
 

@@ -28,7 +28,7 @@ public class OMobilitiesGetValidator extends ApiValidator<OMobilitiesSuiteState>
         ApiEndpoint.Get);
   }
 
-  @ValidatorTestStep
+  @ValidatorTestStep(minMajorVersion = "2")
   public ValidationSuiteInfo<OMobilitiesSuiteState> apiTests = new ValidationSuiteInfo<>(
       OMobilitiesGetSetupValidationSuite::new,
       OMobilitiesGetSetupValidationSuite.getParameters(),

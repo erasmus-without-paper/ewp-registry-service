@@ -472,6 +472,24 @@ public class KnownElement {
       );
 
   /**
+   * The root of the Outgoing Mobility API v2 index response.
+   */
+  public static final KnownElement RESPONSE_OMOBILITIES_INDEX_V2 =
+      new KnownElement(KnownNamespace.RESPONSE_OMOBILITIES_INDEX_V2 ,
+          "omobilities-index-response",
+          "OMobility API v2 Index Response"
+      );
+
+  /**
+   * The root of the Oncoming Mobility API v2 get response.
+   */
+  public static final KnownElement RESPONSE_OMOBILITIES_GET_V2 =
+      new KnownElement(KnownNamespace.RESPONSE_OMOBILITIES_GET_V2,
+          "omobilities-get-response",
+          "OMobility API v2 Get Response"
+      );
+  
+  /**
    * The root of the Outgoing Mobility Learning Agreements API v1 index response.
    */
   public static final KnownElement RESPONSE_OMOBILITY_LAS_INDEX_V1 =

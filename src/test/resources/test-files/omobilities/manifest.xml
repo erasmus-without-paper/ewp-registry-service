@@ -9,8 +9,8 @@
         <ewp:admin-provider>Provider</ewp:admin-provider>
         <r:apis-implemented>
             <omobilities
-                xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/blob/stable-v1/manifest-entry.xsd"
-                version="1.0.0"
+                xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/blob/stable-v2/manifest-entry.xsd"
+                version="2.0.0"
             >
                 <http-security>
                     <sec:client-auth-methods>

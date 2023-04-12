@@ -8,9 +8,9 @@ import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registry.validators.AbstractApiService;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
-import https.github_com.erasmus_without_paper.ewp_specs_api_omobilities.blob.stable_v1.endpoints.get_response.OmobilitiesGetResponse;
-import https.github_com.erasmus_without_paper.ewp_specs_api_omobilities.blob.stable_v1.endpoints.get_response.StudentMobilityForStudies;
-import https.github_com.erasmus_without_paper.ewp_specs_api_omobilities.blob.stable_v1.endpoints.index_response.OmobilitiesIndexResponse;
+import https.github_com.erasmus_without_paper.ewp_specs_api_omobilities.blob.stable_v2.endpoints.get_response.OmobilitiesGetResponse;
+import https.github_com.erasmus_without_paper.ewp_specs_api_omobilities.blob.stable_v2.endpoints.get_response.StudentMobility;
+import https.github_com.erasmus_without_paper.ewp_specs_api_omobilities.blob.stable_v2.endpoints.index_response.OmobilitiesIndexResponse;
 
 public abstract class AbstractOMobilitiesService extends AbstractApiService {
   protected final RegistryClient registryClient;
@@ -47,7 +47,7 @@ public abstract class AbstractOMobilitiesService extends AbstractApiService {
   }
 
   protected Response createOMobilitiesGetResponse(
-      List<StudentMobilityForStudies> data) {
+      List<StudentMobility> data) {
     OmobilitiesGetResponse response = new OmobilitiesGetResponse();
     response.getSingleMobilityObject().addAll(data);
     return marshallResponse(200, response);

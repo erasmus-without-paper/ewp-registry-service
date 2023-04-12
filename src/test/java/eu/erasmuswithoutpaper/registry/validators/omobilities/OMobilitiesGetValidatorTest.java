@@ -28,7 +28,7 @@ public class OMobilitiesGetValidatorTest extends OMobilitiesValidatorTestBase {
 
   @Test
   public void testValidationOnValidServiceIsSuccessful() {
-    OMobilitiesServiceV1Valid service = new OMobilitiesServiceV1Valid(omobilitiesIndexUrl,
+    OMobilitiesServiceV2Valid service = new OMobilitiesServiceV2Valid(omobilitiesIndexUrl,
         omobilitiesGetUrl, this.client, this.serviceKeyStore.getCoveredHeiIDs().get(0));
     TestValidationReport report = this.getRawReport(service);
     assertThat(report).isCorrect();
@@ -36,7 +36,7 @@ public class OMobilitiesGetValidatorTest extends OMobilitiesValidatorTestBase {
 
   @Test
   public void testNotValidatingIMobilityTorsIdListIsDetected() {
-    OMobilitiesServiceV1Valid service = new OMobilitiesServiceV1Valid(omobilitiesIndexUrl,
+    OMobilitiesServiceV2Valid service = new OMobilitiesServiceV2Valid(omobilitiesIndexUrl,
         omobilitiesGetUrl, this.client, this.serviceKeyStore.getCoveredHeiIDs().get(0)) {
       @Override
       protected void errorMaxOMobilityIdsExceeded(RequestData requestData)
@@ -51,7 +51,7 @@ public class OMobilitiesGetValidatorTest extends OMobilitiesValidatorTestBase {
 
   @Test
   public void testNotReportingMissingRequiredParametersAsAnErrorIsDetected() {
-    OMobilitiesServiceV1Valid service = new OMobilitiesServiceV1Valid(omobilitiesIndexUrl,
+    OMobilitiesServiceV2Valid service = new OMobilitiesServiceV2Valid(omobilitiesIndexUrl,
         omobilitiesGetUrl, this.client, this.serviceKeyStore.getCoveredHeiIDs().get(0)) {
       @Override
       protected void errorNoParams(RequestData requestData)
@@ -66,7 +66,7 @@ public class OMobilitiesGetValidatorTest extends OMobilitiesValidatorTestBase {
 
   @Test
   public void testNotReportingMissingHeiIdParameterAsAnErrorIsDetected() {
-    OMobilitiesServiceV1Valid service = new OMobilitiesServiceV1Valid(omobilitiesIndexUrl,
+    OMobilitiesServiceV2Valid service = new OMobilitiesServiceV2Valid(omobilitiesIndexUrl,
         omobilitiesGetUrl, this.client, this.serviceKeyStore.getCoveredHeiIDs().get(0)) {
       @Override
       protected void errorNoSendingHeiId(RequestData requestData) throws ErrorResponseException {
@@ -82,7 +82,7 @@ public class OMobilitiesGetValidatorTest extends OMobilitiesValidatorTestBase {
 
   @Test
   public void testIgnoringAdditionalHeiIdsIsDetected() {
-    OMobilitiesServiceV1Valid service = new OMobilitiesServiceV1Valid(omobilitiesIndexUrl,
+    OMobilitiesServiceV2Valid service = new OMobilitiesServiceV2Valid(omobilitiesIndexUrl,
         omobilitiesGetUrl, this.client, this.serviceKeyStore.getCoveredHeiIDs().get(0)) {
       @Override
       protected void errorMultipleSendingHeiIds(
@@ -97,7 +97,7 @@ public class OMobilitiesGetValidatorTest extends OMobilitiesValidatorTestBase {
 
   @Test
   public void testReturningCorrectDataWhenNoHeiIdIsPassedIsDetected() {
-    OMobilitiesServiceV1Valid service = new OMobilitiesServiceV1Valid(omobilitiesIndexUrl,
+    OMobilitiesServiceV2Valid service = new OMobilitiesServiceV2Valid(omobilitiesIndexUrl,
         omobilitiesGetUrl, this.client, this.serviceKeyStore.getCoveredHeiIDs().get(0)) {
       @Override
       protected void errorNoSendingHeiId(RequestData requestData) throws ErrorResponseException {
@@ -111,7 +111,7 @@ public class OMobilitiesGetValidatorTest extends OMobilitiesValidatorTestBase {
 
   @Test
   public void testNotReportingErrorWhenUnknownHeiIdIsPassedIsDetected() {
-    OMobilitiesServiceV1Valid service = new OMobilitiesServiceV1Valid(omobilitiesIndexUrl,
+    OMobilitiesServiceV2Valid service = new OMobilitiesServiceV2Valid(omobilitiesIndexUrl,
         omobilitiesGetUrl, this.client, this.serviceKeyStore.getCoveredHeiIDs().get(0)) {
       @Override
       protected void handleUnknownSendingHeiId(
@@ -127,7 +127,7 @@ public class OMobilitiesGetValidatorTest extends OMobilitiesValidatorTestBase {
 
   @Test
   public void testCorrectResponseWhenUnknownReceivingHeiIdIsPassedIsDetected() {
-    OMobilitiesServiceV1Valid service = new OMobilitiesServiceV1Valid(omobilitiesIndexUrl,
+    OMobilitiesServiceV2Valid service = new OMobilitiesServiceV2Valid(omobilitiesIndexUrl,
         omobilitiesGetUrl, this.client, this.serviceKeyStore.getCoveredHeiIDs().get(0)) {
       @Override
       protected void handleUnknownSendingHeiId(
@@ -143,7 +143,7 @@ public class OMobilitiesGetValidatorTest extends OMobilitiesValidatorTestBase {
 
   @Test
   public void testReturningWrongIMobilityTorIsDetected() {
-    OMobilitiesServiceV1Valid service = new OMobilitiesServiceV1Valid(omobilitiesIndexUrl,
+    OMobilitiesServiceV2Valid service = new OMobilitiesServiceV2Valid(omobilitiesIndexUrl,
         omobilitiesGetUrl, this.client, this.serviceKeyStore.getCoveredHeiIDs().get(0)) {
       @Override
       protected boolean filterOMobilitiesForGet(OMobilityEntry mobility, RequestData requestData) {
@@ -159,7 +159,7 @@ public class OMobilitiesGetValidatorTest extends OMobilitiesValidatorTestBase {
 
   @Test
   public void testReturningDataForUnknownOMobilityIdIsDetected() {
-    OMobilitiesServiceV1Valid service = new OMobilitiesServiceV1Valid(omobilitiesIndexUrl,
+    OMobilitiesServiceV2Valid service = new OMobilitiesServiceV2Valid(omobilitiesIndexUrl,
         omobilitiesGetUrl, this.client, this.serviceKeyStore.getCoveredHeiIDs().get(0)) {
       @Override
       protected boolean filterOMobilitiesForGet(OMobilityEntry mobility, RequestData requestData) {
@@ -173,7 +173,7 @@ public class OMobilitiesGetValidatorTest extends OMobilitiesValidatorTestBase {
 
   @Test
   public void testTooLargeMaxIMobilityTorsIdsInManifestIsDetected() {
-    OMobilitiesServiceV1Valid service = new OMobilitiesServiceV1Valid(omobilitiesIndexUrl,
+    OMobilitiesServiceV2Valid service = new OMobilitiesServiceV2Valid(omobilitiesIndexUrl,
         omobilitiesGetUrl, this.client, this.serviceKeyStore.getCoveredHeiIDs().get(0)) {
       @Override
       protected int getMaxOmobilityIds() {
