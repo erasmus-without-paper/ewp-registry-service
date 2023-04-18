@@ -206,7 +206,7 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
   }
 
   @Override
-  public void reloadManifestSource(ManifestSource source) {
+  public synchronized void reloadManifestSource(ManifestSource source) {
 
     // Get the flag for this source.
 
