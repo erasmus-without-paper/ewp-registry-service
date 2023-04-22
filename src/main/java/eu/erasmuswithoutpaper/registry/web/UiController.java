@@ -660,7 +660,7 @@ public class UiController {
    * @return Manifests Overview page.
    */
   @RequestMapping(path = "/manifestsOverview", method = RequestMethod.GET)
-  public Object validateApiVersion(HttpServletResponse response) {
+  public Object manifestOverview(HttpServletResponse response) {
     ModelAndView mav = new ModelAndView();
     this.initializeMavCommons(mav);
     mav.setViewName("manifestsOverview");
