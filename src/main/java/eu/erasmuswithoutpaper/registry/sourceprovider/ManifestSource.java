@@ -4,6 +4,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import eu.erasmuswithoutpaper.registry.constraints.ApiUniqueConstraint;
 import eu.erasmuswithoutpaper.registry.constraints.ClientKeyConstraint;
@@ -107,5 +108,22 @@ public class ManifestSource {
   public String toString() {
     return "ManifestSource[" + this.getUrl() + ", " + this.getConstraints().size()
         + " constraint(s)]";
+  }
+
+  @Override
+  public boolean equals(Object object) {
+    if (this == object) {
+      return true;
+    }
+    if (object == null || getClass() != object.getClass()) {
+      return false;
+    }
+    ManifestSource that = (ManifestSource) object;
+    return url.equals(that.url);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(url);
   }
 }
