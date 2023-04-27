@@ -109,6 +109,11 @@ public class ManifestRepositoryImpl implements ManifestRepository {
   }
 
   @Override
+  public void acquireReadLock() {
+    this.lock.readLock().lock();
+  }
+
+  @Override
   public void acquireWriteLock() {
     this.lock.writeLock().lock();
   }
@@ -423,6 +428,11 @@ public class ManifestRepositoryImpl implements ManifestRepository {
     } finally {
       this.lock.writeLock().unlock();
     }
+  }
+
+  @Override
+  public void releaseReadLock() {
+    this.lock.readLock().unlock();
   }
 
   @Override

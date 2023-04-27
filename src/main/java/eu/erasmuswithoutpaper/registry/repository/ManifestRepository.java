@@ -41,6 +41,16 @@ public interface ManifestRepository extends DisposableBean {
   }
 
   /**
+   * Acquire a read lock for the current thread.
+   *
+   * <p>
+   * This guarantees that no other thread will read the repository until the lock is
+   * released. You MUST release the lock after you make your changes (use try..finally).
+   * </p>
+   */
+  void acquireReadLock();
+
+  /**
    * Acquire a write lock for the current thread.
    *
    * <p>
@@ -170,6 +180,12 @@ public interface ManifestRepository extends DisposableBean {
    * @return <b>true</b> if the new content differs from the previous one.
    */
   boolean putOriginalManifest(String urlString, byte[] originalContents);
+
+
+  /**
+   * Release the lock previously acquired with {@link #acquireReadLock()}.
+   */
+  void releaseReadLock();
 
   /**
    * Release the lock previously acquired with {@link #acquireWriteLock()}.

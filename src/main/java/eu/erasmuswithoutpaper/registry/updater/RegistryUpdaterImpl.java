@@ -115,85 +115,96 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
 
   /**
    * This needs to be called if the sources provided by {@link ManifestSourceProvider} have changed.
-   * And this SHOULD happen ONLY IN TESTS (that's why this method is not part of the
-   * {@link RegistryUpdater} interface).
    */
   public void onSourcesUpdated() {
 
-    /*
-     * First, try to find flags which are no longer valid because our manifestSourceProvider stopped
-     * serving the ManifestSources related to these flags.
+    /**
+     * Lock the manifest repository for exclusive read access as it will be acquired by
+     * {@link ManifestOverviewManager}. We must be sure to always take repository lock first!
      */
 
-    Set<ManifestSource> sources = Sets.newLinkedHashSet(this.manifestSourceProvider.getAll());
-    for (Iterator<Map.Entry<ManifestSource, ManifestUpdateStatusNotifierFlag>> iter =
-         this.notifierFlags.entrySet().iterator(); iter.hasNext(); ) {
-      Map.Entry<ManifestSource, ManifestUpdateStatusNotifierFlag> entry = iter.next();
-      ManifestSource source = entry.getKey();
-      if (!sources.contains(source)) {
-        this.notifier.removeWatchedFlag(entry.getValue());
-        this.manifestOverviewManager.updateManifest(source.getUrl());
-        iter.remove();
-      }
-    }
-
-    /*
-     * Second, create new flags for all ManifestSources for which no flags have been yet created. In
-     * order to properly set the recipients for those flags, we need to fetch the catalogue.
-     */
-    Map<String, List<String>> recipients = new HashMap<>();
+    this.repo.acquireReadLock();
     try {
-      Match catalogue =
-          $(this.docBuilder.build(new BuildParams(this.repo.getCatalogue())).getDocument().get())
-              .namespaces(KnownNamespace.prefixMap());
-      for (Match host : catalogue.xpath("r:host").each()) {
-        for (Element child : host.children()) {
-          List<String> adminEmails = new ArrayList<>();
-          if ("admin-email".equals(child.getLocalName())) {
-            adminEmails.add(child.getTextContent());
-          } else if ("apis-implemented".equals(child.getLocalName())) {
-            for (Node api : Utils.asNodeList(child.getChildNodes())) {
-              if ("discovery".equals(api.getLocalName())) {
-                for (Node node : Utils.asNodeList(api.getChildNodes())) {
-                  if ("url".equals(node.getLocalName())) {
-                    String url = node.getTextContent();
-                    recipients.put(url, adminEmails);
-                    this.onManifestAdminEmailsChanged(url, adminEmails);
+
+      /*
+       * First, try to find flags which are no longer valid because our manifestSourceProvider
+       * stopped
+       * serving the ManifestSources related to these flags.
+       */
+
+      Set<ManifestSource> sources = Sets.newLinkedHashSet(this.manifestSourceProvider.getAll());
+      for (Iterator<Map.Entry<ManifestSource, ManifestUpdateStatusNotifierFlag>> iter =
+           this.notifierFlags.entrySet().iterator(); iter.hasNext(); ) {
+        Map.Entry<ManifestSource, ManifestUpdateStatusNotifierFlag> entry = iter.next();
+        ManifestSource source = entry.getKey();
+        if (!sources.contains(source)) {
+          this.notifier.removeWatchedFlag(entry.getValue());
+          this.manifestOverviewManager.updateManifest(source.getUrl());
+          iter.remove();
+        }
+      }
+
+      /*
+       * Second, create new flags for all ManifestSources for which no flags have been yet
+       * created. In
+       * order to properly set the recipients for those flags, we need to fetch the catalogue.
+       */
+      Map<String, List<String>> recipients = new HashMap<>();
+      try {
+        Match catalogue =
+            $(this.docBuilder.build(new BuildParams(this.repo.getCatalogue())).getDocument()
+                .get()).namespaces(KnownNamespace.prefixMap());
+        for (Match host : catalogue.xpath("r:host").each()) {
+          for (Element child : host.children()) {
+            List<String> adminEmails = new ArrayList<>();
+            if ("admin-email".equals(child.getLocalName())) {
+              adminEmails.add(child.getTextContent());
+            } else if ("apis-implemented".equals(child.getLocalName())) {
+              for (Node api : Utils.asNodeList(child.getChildNodes())) {
+                if ("discovery".equals(api.getLocalName())) {
+                  for (Node node : Utils.asNodeList(api.getChildNodes())) {
+                    if ("url".equals(node.getLocalName())) {
+                      String url = node.getTextContent();
+                      recipients.put(url, adminEmails);
+                      this.onManifestAdminEmailsChanged(url, adminEmails);
+                    }
                   }
                 }
               }
             }
           }
         }
+      } catch (CatalogueNotFound e) {
+        // No recipients yet.
       }
-    } catch (CatalogueNotFound e) {
-      // No recipients yet.
-    }
-    for (ManifestSource source : sources) {
-      ManifestUpdateStatusNotifierFlag flag = new ManifestUpdateStatusNotifierFlag(source);
-      if (recipients.containsKey(source.getUrl())) {
-        flag.setRecipientEmails(recipients.get(source.getUrl()));
+      for (ManifestSource source : sources) {
+        ManifestUpdateStatusNotifierFlag flag = new ManifestUpdateStatusNotifierFlag(source);
+        if (recipients.containsKey(source.getUrl())) {
+          flag.setRecipientEmails(recipients.get(source.getUrl()));
+        }
+        if (!this.notifierFlags.containsKey(source)) {
+          this.notifier.addWatchedFlag(flag);
+          this.notifierFlags.put(source, flag);
+        }
       }
-      if (!this.notifierFlags.containsKey(source)) {
-        this.notifier.addWatchedFlag(flag);
-        this.notifierFlags.put(source, flag);
-      }
-    }
 
-    /*
-     * Clean up all obsolete ManifestUpdateStatus entries.
-     */
-    Set<String> sourceUrls = new LinkedHashSet<>();
-    for (ManifestSource source : sources) {
-      sourceUrls.add(source.getUrl());
-    }
-    for (ManifestUpdateStatus status : this.manifestUpdateStatusRepository.findAll()) {
-      if (!sourceUrls.contains(status.getUrl())) {
-        this.manifestUpdateStatusRepository.delete(status);
+      /*
+       * Clean up all obsolete ManifestUpdateStatus entries.
+       */
+      Set<String> sourceUrls = new LinkedHashSet<>();
+      for (ManifestSource source : sources) {
+        sourceUrls.add(source.getUrl());
       }
-    }
+      for (ManifestUpdateStatus status : this.manifestUpdateStatusRepository.findAll()) {
+        if (!sourceUrls.contains(status.getUrl())) {
+          this.manifestUpdateStatusRepository.delete(status);
+        }
+      }
 
-    this.manifestOverviewManager.updateAllManifests();
+      this.manifestOverviewManager.updateAllManifests();
+    } finally {
+      this.repo.releaseReadLock();
+    }
   }
 
   @Override
