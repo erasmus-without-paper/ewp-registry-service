@@ -97,11 +97,13 @@ public class EndpointUniqueConstraint implements ManifestConstraint {
   }
 
   private String getUrl(Element element) {
-    for (Node child : Utils.asNodeList(element.getChildNodes())) {
-      if (Arrays.asList("url", "get-url").contains(child.getLocalName())) {
-        return child.getTextContent();
+    synchronized (element.getOwnerDocument()) {
+      for (Node child : Utils.asNodeList(element.getChildNodes())) {
+        if (Arrays.asList("url", "get-url").contains(child.getLocalName())) {
+          return child.getTextContent();
+        }
       }
+      return null;
     }
-    return null;
   }
 }
