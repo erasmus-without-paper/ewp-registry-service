@@ -196,11 +196,11 @@ class CoverageMatrixRow {
     int colorClass = getNextColorClass(NAME_COLOR_CLASS);
 
     // discov.
-    cell = new ApiVersionsCell(colorClass, client, hei, KnownElement.APIENTRY_DISCOVERY_V6);
+    cell = new ApiVersionsCell(colorClass, client, hei, false, KnownElement.APIENTRY_DISCOVERY_V6);
     this.cells.add(cell);
 
     // echo
-    cell = new ApiVersionsCell(colorClass, client, hei, KnownElement.APIENTRY_ECHO_V1,
+    cell = new ApiVersionsCell(colorClass, client, hei, false, KnownElement.APIENTRY_ECHO_V1,
             KnownElement.APIENTRY_ECHO_V2);
     this.cells.add(cell);
 
@@ -209,26 +209,27 @@ class CoverageMatrixRow {
     colorClass = getNextColorClass(colorClass);
 
     // inst.
-    cell = new ApiVersionsCell(colorClass, client, hei, KnownElement.APIENTRY_INSTITUTIONS_V1,
-        KnownElement.APIENTRY_INSTITUTIONS_V2);
+    cell =
+        new ApiVersionsCell(colorClass, client, hei, false, KnownElement.APIENTRY_INSTITUTIONS_V1,
+            KnownElement.APIENTRY_INSTITUTIONS_V2);
     this.cells.add(cell);
 
     // ounits
-    cell = new ApiVersionsCell(colorClass, client, hei, KnownElement.APIENTRY_OUNITS_V1,
+    cell = new ApiVersionsCell(colorClass, client, hei, false, KnownElement.APIENTRY_OUNITS_V1,
         KnownElement.APIENTRY_OUNITS_V2);
     this.cells.add(cell);
 
     // courses
-    cell = new ApiVersionsCell(colorClass, client, hei, KnownElement.APIENTRY_COURSES_V1);
+    cell = new ApiVersionsCell(colorClass, client, hei, false, KnownElement.APIENTRY_COURSES_V1);
     this.cells.add(cell);
 
     // course replic.
-    cell = new ApiVersionsCell(colorClass, client, hei,
+    cell = new ApiVersionsCell(colorClass, client, hei, false,
         KnownElement.APIENTRY_COURSE_REPLICATION_V1);
     this.cells.add(cell);
 
     // file
-    cell = new ApiVersionsCell(colorClass, client, hei, KnownElement.APIENTRY_FILE_V1);
+    cell = new ApiVersionsCell(colorClass, client, hei, false, KnownElement.APIENTRY_FILE_V1);
     this.cells.add(cell);
 
     /* IIAs */
@@ -236,19 +237,19 @@ class CoverageMatrixRow {
     colorClass = getNextColorClass(colorClass);
 
     // ver.
-    cell = new ApiVersionsCell(colorClass, client, hei, KnownElement.APIENTRY_IIAS_V1,
+    cell = new ApiVersionsCell(colorClass, client, hei, true, KnownElement.APIENTRY_IIAS_V1,
         KnownElement.APIENTRY_IIAS_V2, KnownElement.APIENTRY_IIAS_V3,
         KnownElement.APIENTRY_IIAS_V4, KnownElement.APIENTRY_IIAS_V5,
         KnownElement.APIENTRY_IIAS_V6);
     this.cells.add(cell);
 
     // CNR recv.
-    cell = new ApiVersionsCell(colorClass, client, hei, KnownElement.APIENTRY_IIA_CNR_V1,
+    cell = new ApiVersionsCell(colorClass, client, hei, false, KnownElement.APIENTRY_IIA_CNR_V1,
         KnownElement.APIENTRY_IIA_CNR_V2);
     this.cells.add(cell);
 
     // Factsheet
-    cell = new ApiVersionsCell(colorClass, client, hei, KnownElement.APIENTRY_FACTSHEET_V1);
+    cell = new ApiVersionsCell(colorClass, client, hei, false, KnownElement.APIENTRY_FACTSHEET_V1);
     this.cells.add(cell);
 
     /* IIAs Approval */
@@ -256,11 +257,13 @@ class CoverageMatrixRow {
     colorClass = getNextColorClass(colorClass);
 
     // ver.
-    cell = new ApiVersionsCell(colorClass, client, hei, KnownElement.APIENTRY_IIAS_APPROVAL_V1);
+    cell =
+        new ApiVersionsCell(colorClass, client, hei, false, KnownElement.APIENTRY_IIAS_APPROVAL_V1);
     this.cells.add(cell);
 
     // CNR recv.
-    cell = new ApiVersionsCell(colorClass, client, hei, KnownElement.APIENTRY_IIA_APPROVAL_CNR_V1);
+    cell = new ApiVersionsCell(colorClass, client, hei, false,
+        KnownElement.APIENTRY_IIA_APPROVAL_CNR_V1);
     this.cells.add(cell);
 
     /* OMobilities */
@@ -268,12 +271,13 @@ class CoverageMatrixRow {
     colorClass = getNextColorClass(colorClass);
 
     // ver.
-    cell = new ApiVersionsCell(colorClass, client, hei, KnownElement.APIENTRY_OMOBILITIES_V1,
+    cell = new ApiVersionsCell(colorClass, client, hei, false, KnownElement.APIENTRY_OMOBILITIES_V1,
         KnownElement.APIENTRY_OMOBILITIES_V2);
     this.cells.add(cell);
 
     // CNR recv.
-    cell = new ApiVersionsCell(colorClass, client, hei, KnownElement.APIENTRY_OMOBILITY_CNR_V1);
+    cell =
+        new ApiVersionsCell(colorClass, client, hei, false, KnownElement.APIENTRY_OMOBILITY_CNR_V1);
     this.cells.add(cell);
 
     /* OMobility LAs */
@@ -281,11 +285,13 @@ class CoverageMatrixRow {
     colorClass = getNextColorClass(colorClass);
 
     // ver.
-    cell = new ApiVersionsCell(colorClass, client, hei, KnownElement.APIENTRY_OMOBILITY_LAS_V1);
+    cell =
+        new ApiVersionsCell(colorClass, client, hei, true, KnownElement.APIENTRY_OMOBILITY_LAS_V1);
     this.cells.add(cell);
 
     // CNR recv.
-    cell = new ApiVersionsCell(colorClass, client, hei, KnownElement.APIENTRY_OMOBILITY_LA_CNR_V1);
+    cell = new ApiVersionsCell(colorClass, client, hei, true,
+        KnownElement.APIENTRY_OMOBILITY_LA_CNR_V1);
     this.cells.add(cell);
 
     /* IMobilities */
@@ -293,11 +299,13 @@ class CoverageMatrixRow {
     colorClass = getNextColorClass(colorClass);
 
     // ver.
-    cell = new ApiVersionsCell(colorClass, client, hei, KnownElement.APIENTRY_IMOBILITIES_V1);
+    cell =
+        new ApiVersionsCell(colorClass, client, hei, false, KnownElement.APIENTRY_IMOBILITIES_V1);
     this.cells.add(cell);
 
     // CNR recv.
-    cell = new ApiVersionsCell(colorClass, client, hei, KnownElement.APIENTRY_IMOBILITY_CNR_V1);
+    cell =
+        new ApiVersionsCell(colorClass, client, hei, false, KnownElement.APIENTRY_IMOBILITY_CNR_V1);
     this.cells.add(cell);
 
     /* IMobility ToRs */
@@ -305,12 +313,14 @@ class CoverageMatrixRow {
     colorClass = getNextColorClass(colorClass);
 
     // ver.
-    cell = new ApiVersionsCell(colorClass, client, hei, KnownElement.APIENTRY_IMOBILITY_TORS_V1,
-        KnownElement.APIENTRY_IMOBILITY_TORS_V2);
+    cell =
+        new ApiVersionsCell(colorClass, client, hei, false, KnownElement.APIENTRY_IMOBILITY_TORS_V1,
+            KnownElement.APIENTRY_IMOBILITY_TORS_V2);
     this.cells.add(cell);
 
     // CNR recv.
-    cell = new ApiVersionsCell(colorClass, client, hei, KnownElement.APIENTRY_IMOBILITY_TOR_CNR_V1);
+    cell = new ApiVersionsCell(colorClass, client, hei, false,
+        KnownElement.APIENTRY_IMOBILITY_TOR_CNR_V1);
     this.cells.add(cell);
 
     /* Other APIs */

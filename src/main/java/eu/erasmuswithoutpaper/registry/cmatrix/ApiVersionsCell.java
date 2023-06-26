@@ -14,7 +14,7 @@ import org.w3c.dom.Element;
 
 class ApiVersionsCell extends ApiEntriesCell {
 
-  ApiVersionsCell(int colorClass, RegistryClient client, HeiEntry hei,
+  ApiVersionsCell(int colorClass, RegistryClient client, HeiEntry hei, boolean hasStatsEndpoint,
       KnownElement... apiEntryClasses) {
     super(colorClass, client, hei, apiEntryClasses);
 
@@ -28,6 +28,8 @@ class ApiVersionsCell extends ApiEntriesCell {
       );
       boolean namespaceAndVersionMatch = expectedVersionPrefixes.isEmpty()
           || expectedVersionPrefixes.stream().anyMatch(version::startsWith);
+      boolean statsEndpointNotImplemented =
+          hasStatsEndpoint && $(apiEntry).children().matchTag("stats-url").isEmpty();
 
       line.addClass("ewpst__apiVersion");
       if (i == 0) {
@@ -35,8 +37,11 @@ class ApiVersionsCell extends ApiEntriesCell {
       }
 
       if (namespaceAndVersionMatch) {
-        if (this.lastClass.matches(apiEntry)) {
+        if (this.lastClass.matches(apiEntry) && !statsEndpointNotImplemented) {
           line.addClass("ewpst__apiVersion--upToDate");
+        } else if (statsEndpointNotImplemented) {
+          line.addClass("ewpst__apiVersion--noStats");
+          line.addTooltipLine("Stats endpoint has not been implemented.");
         } else {
           line.addClass("ewpst__apiVersion--obsolete");
           line.addTooltipLine("This major version of this API is obsolete or deprecated.");
