@@ -5,12 +5,14 @@ import static org.joox.JOOX.$;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import eu.erasmuswithoutpaper.registry.common.Utils;
 import eu.erasmuswithoutpaper.registry.constraints.VerifyApiVersions;
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownElement;
 import eu.erasmuswithoutpaper.registryclient.HeiEntry;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 class ApiVersionsCell extends ApiEntriesCell {
 
@@ -29,7 +31,7 @@ class ApiVersionsCell extends ApiEntriesCell {
       boolean namespaceAndVersionMatch = expectedVersionPrefixes.isEmpty()
           || expectedVersionPrefixes.stream().anyMatch(version::startsWith);
       boolean statsEndpointNotImplemented =
-          hasStatsEndpoint && $(apiEntry).children().matchTag("stats-url").isEmpty();
+          hasStatsEndpoint && !isStatsEndpointImplemented(apiEntry);
 
       line.addClass("ewpst__apiVersion");
       if (i == 0) {
@@ -61,6 +63,16 @@ class ApiVersionsCell extends ApiEntriesCell {
 
       this.addContentLine(line);
     }
+  }
+
+  private boolean isStatsEndpointImplemented(Element apiEntry) {
+    for (Node apiEntryChild : Utils.asNodeList(apiEntry.getChildNodes())) {
+      if ("stats-url".equals(apiEntryChild.getLocalName())) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
 }
