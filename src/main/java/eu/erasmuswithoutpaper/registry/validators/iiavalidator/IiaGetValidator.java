@@ -3,6 +3,7 @@ package eu.erasmuswithoutpaper.registry.validators.iiavalidator;
 import java.util.List;
 
 import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
+import eu.erasmuswithoutpaper.registry.iia.IiaHashService;
 import eu.erasmuswithoutpaper.registry.internet.Internet;
 import eu.erasmuswithoutpaper.registry.validators.ApiEndpoint;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
@@ -17,19 +18,24 @@ import org.slf4j.LoggerFactory;
 
 @Service
 public class IiaGetValidator extends ApiValidator<IiaSuiteState> {
+
+  private IiaHashService iiaHashService;
+
   private static final Logger logger = LoggerFactory.getLogger(
       IiaGetValidator.class);
 
   public IiaGetValidator(EwpDocBuilder docBuilder, Internet internet, RegistryClient client,
-      ValidatorKeyStoreSet validatorKeyStoreSet) {
+      ValidatorKeyStoreSet validatorKeyStoreSet, IiaHashService iiaHashService) {
     super(docBuilder, internet, client, validatorKeyStoreSet, "iias", ApiEndpoint.GET);
+    this.iiaHashService = iiaHashService;
   }
 
   @ValidatorTestStep
   public ValidationSuiteInfo<IiaSuiteState> universalTests = new ValidationSuiteInfo<>(
       IiaGetSetupValidationSuite::new,
       IiaGetSetupValidationSuite.getParameters(),
-      IiaGetValidationSuite::new);
+      (validator, state, config, version) -> new IiaGetValidationSuite(validator, state, config,
+          version, iiaHashService));
 
   @Override
   public Logger getLogger() {

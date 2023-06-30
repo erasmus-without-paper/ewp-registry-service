@@ -97,6 +97,7 @@ public class IiasServiceValidV6 extends AbstractIiasService {
     studentTraineeshipMobilitySpec.getReceivingAcademicYearId().add("2019/2020");
     cooperationConditions.getStudentTraineeshipMobilitySpec().add(studentTraineeshipMobilitySpec);
     iia1.setCooperationConditions(cooperationConditions);
+    iia1.setConditionsHash("830765a4a0ab87b4f243692e76138ee18d39760b1ad32a0228410485ec1a7e76");
 
     iias.add(iia1);
 

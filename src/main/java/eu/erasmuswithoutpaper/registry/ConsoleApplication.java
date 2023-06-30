@@ -8,6 +8,7 @@ import eu.erasmuswithoutpaper.registry.configuration.ProductionConfiguration;
 import eu.erasmuswithoutpaper.registry.consoleapplication.ConsoleValidator;
 import eu.erasmuswithoutpaper.registry.consoleapplication.RegistryDomainProvider;
 import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
+import eu.erasmuswithoutpaper.registry.iia.IiaHashService;
 import eu.erasmuswithoutpaper.registry.internet.RealInternet;
 import eu.erasmuswithoutpaper.registry.updater.ManifestParser;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
@@ -32,6 +33,7 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
  */
 @ComponentScan(basePackageClasses = {
     ApiValidator.class,
+    IiaHashService.class,
     ConsoleConfiguration.class,
     ProductionConfiguration.class,
     EwpDocBuilder.class,
