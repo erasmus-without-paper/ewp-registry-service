@@ -66,9 +66,11 @@ class ApiVersionsCell extends ApiEntriesCell {
   }
 
   private boolean isStatsEndpointImplemented(Element apiEntry) {
-    for (Node apiEntryChild : Utils.asNodeList(apiEntry.getChildNodes())) {
-      if ("stats-url".equals(apiEntryChild.getLocalName())) {
-        return true;
+    synchronized (apiEntry.getOwnerDocument()) {
+      for (Node apiEntryChild : Utils.asNodeList(apiEntry.getChildNodes())) {
+        if ("stats-url".equals(apiEntryChild.getLocalName())) {
+          return true;
+        }
       }
     }
 
