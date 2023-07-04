@@ -37,12 +37,10 @@ public class IiaHashService {
   private final XPathExpression xpathCooperationConditionsExpr;
   private final XPathExpression xpathCooperationConditionsHashExpr;
 
-  @Value("${app.registry-repo-base-url}")
-  private String registryRepoBaseUrl;
-
   private final String iiasNs;
 
-  IiaHashService() throws XPathExpressionException {
+  IiaHashService(@Value("${app.registry-repo-base-url}") String registryRepoBaseUrl)
+      throws XPathExpressionException {
     this.iiasNs = registryRepoBaseUrl
         + "/ewp-specs-api-iias/blob/stable-v6/endpoints/get-response.xsd";
 
