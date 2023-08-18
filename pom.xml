@@ -295,6 +295,7 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <quiet>true</quiet>
                     <excludePackageNames>https.github_com</excludePackageNames>
                 </configuration>
             </plugin>
