@@ -224,7 +224,7 @@
 
     <properties>
         <java.version>1.8</java.version>
-        <project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <vueBuildProfile>prod</vueBuildProfile>
         <start-class>eu.erasmuswithoutpaper.registry.Application</start-class>
     </properties>
@@ -280,7 +280,6 @@
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
-                    <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
             <plugin>
