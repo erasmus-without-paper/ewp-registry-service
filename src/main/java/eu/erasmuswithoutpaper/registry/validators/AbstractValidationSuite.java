@@ -66,7 +66,7 @@ import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 import com.google.common.collect.Lists;
 import net.adamcin.httpsig.api.Algorithm;
 import net.adamcin.httpsig.api.Challenge;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.joox.Match;
 import org.slf4j.Logger;
@@ -523,7 +523,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
       return response;
     } catch (SocketTimeoutException e) {
       getLogger().debug(
-          "Timeout when retrieving response from server: {}", ExceptionUtils.getFullStackTrace(e));
+          "Timeout when retrieving response from server: {}", ExceptionUtils.getStackTrace(e));
       throw new Failure(
           String.format("Timeout when retrieving %s response from url %s.",
               request.getMethod(), request.getUrl()),
@@ -532,7 +532,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
       );
     } catch (IOException e) {
       getLogger().debug(
-          "Problems retrieving response from server: {}", ExceptionUtils.getFullStackTrace(e));
+          "Problems retrieving response from server: {}", ExceptionUtils.getStackTrace(e));
       throw new Failure(
           "Problems retrieving response from server: " + e.getMessage(),
           Status.ERROR,

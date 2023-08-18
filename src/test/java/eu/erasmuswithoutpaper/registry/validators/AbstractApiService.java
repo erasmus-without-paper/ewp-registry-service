@@ -14,6 +14,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
+import eu.erasmuswithoutpaper.registry.common.Utils;
 import eu.erasmuswithoutpaper.registry.internet.FakeInternetService;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
@@ -24,7 +25,6 @@ import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 import https.github_com.erasmus_without_paper.ewp_specs_architecture.blob.stable_v1.common_types.ErrorResponse;
 import https.github_com.erasmus_without_paper.ewp_specs_architecture.blob.stable_v1.common_types.MultilineString;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.w3c.dom.Element;
 
 public abstract class AbstractApiService implements FakeInternetService {
@@ -77,7 +77,7 @@ public abstract class AbstractApiService implements FakeInternetService {
   protected Response createErrorResponse(Request request, int status, String developerMessage) {
     ErrorResponse response = new ErrorResponse();
     MultilineString multilineString = new MultilineString();
-    multilineString.setValue(StringEscapeUtils.escapeXml(developerMessage));
+    multilineString.setValue(Utils.escapeXml(developerMessage));
     response.setDeveloperMessage(multilineString);
     return marshallResponse(status, response);
   }

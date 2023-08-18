@@ -5,13 +5,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.List;
 
+import eu.erasmuswithoutpaper.registry.common.Utils;
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
 import eu.erasmuswithoutpaper.registry.internet.FakeInternetService;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
-
-import org.apache.commons.lang.StringEscapeUtils;
 
 abstract public class AbstractEchoService implements FakeInternetService {
 
@@ -54,10 +53,10 @@ abstract public class AbstractEchoService implements FakeInternetService {
     StringBuilder sb = new StringBuilder();
     sb.append("<response xmlns='").append(xmlns).append("'>");
     for (String heiId : heiIds) {
-      sb.append("<hei-id>").append(StringEscapeUtils.escapeXml(heiId)).append("</hei-id>");
+      sb.append("<hei-id>").append(Utils.escapeXml(heiId)).append("</hei-id>");
     }
     for (String echo : echos) {
-      sb.append("<echo>").append(StringEscapeUtils.escapeXml(echo)).append("</echo>");
+      sb.append("<echo>").append(Utils.escapeXml(echo)).append("</echo>");
     }
     sb.append("</response>");
     return new Response(200, sb.toString().getBytes(StandardCharsets.UTF_8));
@@ -68,7 +67,7 @@ abstract public class AbstractEchoService implements FakeInternetService {
     String NS = KnownNamespace.COMMON_TYPES_V1.getNamespaceUri();
     sb.append("<error-response xmlns='").append(NS).append("'>");
     sb.append("<developer-message>");
-    sb.append(StringEscapeUtils.escapeXml(developerMessage));
+    sb.append(Utils.escapeXml(developerMessage));
     sb.append("</developer-message>");
     sb.append("</error-response>");
     return new Response(status, sb.toString().getBytes(StandardCharsets.UTF_8));

@@ -11,7 +11,7 @@ import java.util.Optional;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.joox.Match;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;

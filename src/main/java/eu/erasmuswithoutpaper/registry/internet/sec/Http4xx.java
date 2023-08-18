@@ -4,11 +4,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Map;
 
+import eu.erasmuswithoutpaper.registry.common.Utils;
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
 import eu.erasmuswithoutpaper.registry.internet.HeaderMap;
 import eu.erasmuswithoutpaper.registry.internet.Response;
-
-import org.apache.commons.lang.StringEscapeUtils;
 
 /**
  * Thrown by signers and authorizers when the input supplied by the external client is invalid in
@@ -41,7 +40,7 @@ public class Http4xx extends Exception {
     String ns = KnownNamespace.COMMON_TYPES_V1.getNamespaceUri();
     sb.append("<error-response xmlns='").append(ns).append("'>");
     sb.append("<developer-message>");
-    sb.append(StringEscapeUtils.escapeXml(this.developerMessage));
+    sb.append(Utils.escapeXml(this.developerMessage));
     sb.append("</developer-message>");
     sb.append("</error-response>");
     byte[] body = sb.toString().getBytes(StandardCharsets.UTF_8);

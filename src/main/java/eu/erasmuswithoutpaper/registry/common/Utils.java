@@ -29,7 +29,7 @@ import eu.erasmuswithoutpaper.registryclient.HeiEntry;
 import org.springframework.web.util.HtmlUtils;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -96,7 +96,7 @@ public class Utils {
    * @return The escaped string.
    */
   public static String escapeHtml(String str) {
-    return StringEscapeUtils.escapeHtml(str);
+    return StringEscapeUtils.escapeHtml4(str);
   }
 
   /**
@@ -106,7 +106,7 @@ public class Utils {
    * @return The escaped string.
    */
   public static String escapeXml(String str) {
-    return StringEscapeUtils.escapeXml(str);
+    return StringEscapeUtils.escapeXml11(str);
   }
 
   /**
