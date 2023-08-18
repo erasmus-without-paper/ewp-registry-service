@@ -35,6 +35,9 @@ public class ProductionScheduledTasks {
 
   private static final Logger logger = LoggerFactory.getLogger(ProductionConfiguration.class);
 
+  private static final int SECOND = 1000;
+  private static final int MINUTE = 60 * SECOND;
+
   private final RegistryUpdater updater;
   private final NotifierService notifier;
   private final ManifestRepository repo;
@@ -97,7 +100,7 @@ public class ProductionScheduledTasks {
   /**
    * Push all commits to the remote repository (if there are any to be pushed).
    */
-  @Scheduled(initialDelay = 0, fixedRate = 30000)
+  @Scheduled(initialDelay = 0, fixedRate = 30 * SECOND)
   public void pushGitCommits() {
     try {
       this.repo.push();
@@ -116,7 +119,7 @@ public class ProductionScheduledTasks {
   /**
    * Fetch the current uptime-stats from remote monitoring service.
    */
-  @Scheduled(initialDelay = 0, fixedRate = 30 * 60000)
+  @Scheduled(initialDelay = 0, fixedRate = 30 * MINUTE)
   public void refreshUptimeStats() {
     try {
       this.uptimeChecker.refresh();
@@ -131,7 +134,7 @@ public class ProductionScheduledTasks {
   /**
    * Reload all manifest sources.
    */
-  @Scheduled(initialDelay = 0, fixedRate = 300000)
+  @Scheduled(initialDelay = 0, fixedRate = 5 * MINUTE)
   public void reloadManifestSources() {
     try {
       this.updater.reloadAllManifestSources();
@@ -146,7 +149,7 @@ public class ProductionScheduledTasks {
   /**
    * Send notifications (if there are any to be sent).
    */
-  @Scheduled(initialDelay = 0, fixedRate = 5000)
+  @Scheduled(initialDelay = 0, fixedRate = 5 * SECOND)
   public void sendNotifications() {
     try {
       this.notifier.sendNotifications();
