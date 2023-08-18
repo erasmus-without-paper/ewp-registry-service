@@ -14,7 +14,6 @@ import eu.erasmuswithoutpaper.registry.constraints.ManifestConstraint;
 import eu.erasmuswithoutpaper.registry.constraints.RestrictInstitutionsCovered;
 import eu.erasmuswithoutpaper.registry.constraints.ServerKeySecurityConstraint;
 import eu.erasmuswithoutpaper.registry.constraints.TlsClientCertificateSecurityConstraint;
-import eu.erasmuswithoutpaper.registry.constraints.VerifyApiVersions;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildParams;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildResult;
 import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
