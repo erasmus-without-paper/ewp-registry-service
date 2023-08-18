@@ -14,6 +14,6 @@ public class ConsoleTest {
     private ConsoleApplication consoleApplication;
     @Test
     public void testConsoleApplicationRun() {
-      consoleApplication.run(new DefaultApplicationArguments(new String[] {}));
+      consoleApplication.run(new DefaultApplicationArguments());
     }
 }

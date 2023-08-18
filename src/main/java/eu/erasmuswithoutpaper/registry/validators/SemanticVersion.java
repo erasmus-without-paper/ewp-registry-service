@@ -4,7 +4,6 @@ import java.util.Objects;
 import java.util.OptionalInt;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.validation.constraints.NotNull;
 
 public class SemanticVersion implements Comparable<SemanticVersion> {
   private static String patternString = "v?(\\d+)\\.(\\d+)\\.(\\d+)(?:-rc(\\d))?";
@@ -114,7 +113,7 @@ public class SemanticVersion implements Comparable<SemanticVersion> {
   }
 
   @Override
-  public int compareTo(@NotNull SemanticVersion other) {
+  public int compareTo(SemanticVersion other) {
     if (this.major != other.major) {
       return this.major - other.major;
     }
