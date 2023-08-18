@@ -42,7 +42,7 @@ import org.w3c.dom.NodeList;
  * <p>
  * Some of these methods might seem redundant, but this is intentional. They serve as a facade to
  * make it easier to switch all calls from one library to another, for example from
- * {@link StringEscapeUtils#escapeHtml(String)} to {@link HtmlUtils#htmlEscape(String)}.
+ * {@link StringEscapeUtils#escapeHtml4(String)} to {@link HtmlUtils#htmlEscape(String)}.
  * </p>
  */
 public class Utils {
