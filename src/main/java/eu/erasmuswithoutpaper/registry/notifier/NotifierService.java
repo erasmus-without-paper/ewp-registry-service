@@ -181,11 +181,7 @@ public class NotifierService {
   }
 
   private synchronized RecipientStatus getOrCreateRecipient(String email) {
-    RecipientStatus result = this.rcptRepo.findOne(email);
-    if (result == null) {
-      result = new RecipientStatus(email);
-    }
-    return result;
+    return this.rcptRepo.findById(email).orElseGet(() -> new RecipientStatus(email));
   }
 
   /**

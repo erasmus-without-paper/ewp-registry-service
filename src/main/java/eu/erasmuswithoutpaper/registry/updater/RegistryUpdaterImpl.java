@@ -236,11 +236,9 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
     List<UpdateNotice> notices = new ArrayList<>();
 
     // Fetch the previous status from the database, or create a new one.
-
-    ManifestUpdateStatus status = this.manifestUpdateStatusRepository.findOne(source.getUrl());
-    if (status == null) {
-      status = new ManifestUpdateStatus(source.getUrl());
-    }
+    String sourceUrl = source.getUrl();
+    ManifestUpdateStatus status = this.manifestUpdateStatusRepository
+        .findById(sourceUrl).orElseGet(() -> new ManifestUpdateStatus(sourceUrl));
 
     try {
 

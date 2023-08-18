@@ -71,7 +71,8 @@ public class RealInternet implements Internet {
   public RealInternet(Optional<JavaMailSender> mailSender,
       @Value("${app.admin-emails}") List<String> adminEmails,
       @Value("${app.instance-name}") String replyToName,
-      @Value("${app.reply-to-address}") String replyToAddress, TaskExecutor taskExecutor,
+      @Value("${app.reply-to-address}") String replyToAddress,
+      @Autowired(required = false) TaskExecutor taskExecutor,
       Environment env) {
 
     this.mailSender = mailSender.orElse(null);

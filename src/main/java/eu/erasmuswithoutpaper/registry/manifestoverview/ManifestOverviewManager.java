@@ -249,7 +249,7 @@ public class ManifestOverviewManager {
     );
 
     this.sendNotificationEmail(manifestWithoutDuplicateUrl, subject, contentTemplate);
-    this.manifestsNotifiedAboutDuplicatesRepository.delete(manifestWithoutDuplicateUrl);
+    this.manifestsNotifiedAboutDuplicatesRepository.deleteById(manifestWithoutDuplicateUrl);
     this.manifestAlreadyNotified.remove(manifestWithoutDuplicateUrl);
   }
 

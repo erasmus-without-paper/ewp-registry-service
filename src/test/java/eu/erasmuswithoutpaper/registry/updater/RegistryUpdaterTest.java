@@ -106,8 +106,10 @@ public class RegistryUpdaterTest extends WRTest {
     this.sourceProvider.addSource(manifestFactory.newRegularSource(urlB,
         Arrays.asList(new RestrictInstitutionsCovered(".*\\.pl"))));
     this.timePasses();
-    assertThat(this.updateStatuses.findOne(urlA).getLastAccessFlagStatus()).isEqualTo(Severity.OK);
-    assertThat(this.updateStatuses.findOne(urlB).getLastAccessFlagStatus()).isEqualTo(Severity.OK);
+    assertThat(this.updateStatuses.findById(urlA).get().getLastAccessFlagStatus())
+        .isEqualTo(Severity.OK);
+    assertThat(this.updateStatuses.findById(urlB).get().getLastAccessFlagStatus())
+        .isEqualTo(Severity.OK);
     try {
       assertThat(this.repo.getCatalogue()).isEqualTo(
           this.getFileAsString("latest-examples/ewp-specs-api-registry-catalogue-example.xml"));
@@ -124,7 +126,7 @@ public class RegistryUpdaterTest extends WRTest {
     this.internet.putURL(urlC, this.getFile("manifests/empty.xml"));
     this.sourceProvider.addSource(manifestFactory.newRegularSource(urlC, Arrays.asList()));
     this.timePasses();
-    assertThat(this.updateStatuses.findOne(urlC).getLastAccessFlagStatus())
+    assertThat(this.updateStatuses.findById(urlC).get().getLastAccessFlagStatus())
         .isEqualTo(Severity.WARNING);
     try {
       assertThat(this.repo.getCatalogue()).isEqualTo(
@@ -502,7 +504,7 @@ public class RegistryUpdaterTest extends WRTest {
 
     for (Map.Entry<String, String> pair : pairs) {
       String url = pair.getKey();
-      ManifestUpdateStatus status = this.updateStatuses.findOne(url);
+      ManifestUpdateStatus status = this.updateStatuses.findById(url).orElse(null);
       String expectedSeverityString = pair.getValue();
       if (expectedSeverityString == null) {
         assertThat(status).as("status of %s", url).isNull();
@@ -518,7 +520,7 @@ public class RegistryUpdaterTest extends WRTest {
    * Read all the notices reported for the URL and check if they meet the given regexps.
    */
   private void assertNoticesMatch(String url, String... regexps) {
-    ManifestUpdateStatus status = this.updateStatuses.findOne(url);
+    ManifestUpdateStatus status = this.updateStatuses.findById(url).get();
     List<UpdateNotice> notices = status.getLastAccessNotices();
     assertThat(notices).hasSameSizeAs(regexps);
     for (int i = 0; i < regexps.length; i++) {

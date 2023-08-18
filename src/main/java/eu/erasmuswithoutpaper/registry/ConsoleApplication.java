@@ -20,6 +20,7 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.Banner;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.context.annotation.ComponentScan;
 
@@ -80,7 +81,7 @@ public class ConsoleApplication implements ApplicationRunner {
       }
     }
 
-    app.setWebEnvironment(false);
+    app.setWebApplicationType(WebApplicationType.NONE);
     app.setBannerMode(Banner.Mode.OFF);
     app.setLogStartupInfo(false);
     app.run(args);

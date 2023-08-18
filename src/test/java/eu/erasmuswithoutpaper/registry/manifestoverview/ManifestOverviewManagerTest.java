@@ -107,8 +107,8 @@ public class ManifestOverviewManagerTest extends WRTest {
   @Test
   public void testEmailsAreNotSentWhenThereAreManifestsWithoutDuplicates() {
     assertThat(this.internet.popEmailsSent()).isEmpty();
-    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findOne(manifestUrl1)).isNull();
-    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findOne(manifestUrl2)).isNull();
+    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findById(manifestUrl1)).isEmpty();
+    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findById(manifestUrl2)).isEmpty();
   }
 
   @Test
@@ -133,8 +133,8 @@ public class ManifestOverviewManagerTest extends WRTest {
     this.checkEmail(emailsSent, adminEmails, adminEmailSubject,
         Arrays.asList(manifestUrl1, manifestUrl2));
 
-    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findOne(manifestUrl1)).isNotNull();
-    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findOne(manifestUrl2)).isNotNull();
+    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findById(manifestUrl1)).isNotEmpty();
+    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findById(manifestUrl2)).isNotEmpty();
 
     // Manifest 2 changes - now it will contain different major version and duplicates will be gone.
     this.internet.putURL(manifestUrl2, getManifest2WithDuplicatedHeiIdButDifferentVersion());
@@ -149,8 +149,8 @@ public class ManifestOverviewManagerTest extends WRTest {
     this.checkEmail(emailsSent, adminEmails, adminEmailSubject,
         Arrays.asList(manifestUrl1, manifestUrl2));
 
-    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findOne(manifestUrl1)).isNull();
-    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findOne(manifestUrl2)).isNull();
+    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findById(manifestUrl1)).isEmpty();
+    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findById(manifestUrl2)).isEmpty();
   }
 
   @Test
@@ -163,8 +163,8 @@ public class ManifestOverviewManagerTest extends WRTest {
 
     assertThat(this.internet.popEmailsSent()).hasSize(adminEmailsCount1 + adminEmailsCount2 + 1);
 
-    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findOne(manifestUrl1)).isNotNull();
-    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findOne(manifestUrl2)).isNotNull();
+    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findById(manifestUrl1)).isNotEmpty();
+    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findById(manifestUrl2)).isNotEmpty();
 
     // Manifest 2 is removed - duplicates will be gone.
     this.sourceProvider.removeSource(manifestSource2);
@@ -176,8 +176,8 @@ public class ManifestOverviewManagerTest extends WRTest {
     this.checkEmail(emailsSent, adminEmails, adminEmailSubject,
         Collections.singletonList(manifestUrl1));
 
-    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findOne(manifestUrl1)).isNull();
-    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findOne(manifestUrl2)).isNull();
+    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findById(manifestUrl1)).isEmpty();
+    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findById(manifestUrl2)).isEmpty();
   }
 
   @Test
@@ -189,8 +189,8 @@ public class ManifestOverviewManagerTest extends WRTest {
     this.reloadManifest(manifestUrl2);
     assertThat(this.internet.popEmailsSent()).isEmpty();
 
-    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findOne(manifestUrl1)).isNull();
-    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findOne(manifestUrl2)).isNull();
+    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findById(manifestUrl1)).isEmpty();
+    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findById(manifestUrl2)).isEmpty();
   }
 
   @Test
@@ -202,8 +202,8 @@ public class ManifestOverviewManagerTest extends WRTest {
     this.reloadManifest(manifestUrl2);
 
     assertThat(this.internet.popEmailsSent()).isNotEmpty();
-    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findOne(manifestUrl1)).isNotNull();
-    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findOne(manifestUrl2)).isNotNull();
+    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findById(manifestUrl1)).isNotEmpty();
+    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findById(manifestUrl2)).isNotEmpty();
   }
 
   @Test
@@ -211,7 +211,7 @@ public class ManifestOverviewManagerTest extends WRTest {
     this.internet.putURL(manifestUrl1, getManifest1WithDuplicateInsideASingleHost());
     this.reloadManifest(manifestUrl1);
     assertThat(this.internet.popEmailsSent()).isNotEmpty();
-    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findOne(manifestUrl1)).isNotNull();
+    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findById(manifestUrl1)).isNotEmpty();
   }
 
   @Test
@@ -219,7 +219,7 @@ public class ManifestOverviewManagerTest extends WRTest {
     this.internet.putURL(manifestUrl1, getManifest1WithEchoDuplicateInsideASingleHost());
     this.reloadManifest(manifestUrl1);
     assertThat(this.internet.popEmailsSent()).isNotEmpty();
-    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findOne(manifestUrl1)).isNotNull();
+    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findById(manifestUrl1)).isNotEmpty();
   }
 
   @Test
@@ -237,8 +237,8 @@ public class ManifestOverviewManagerTest extends WRTest {
     this.checkEmail(emailsSent, adminEmails, adminEmailSubject, manifestUrl1);
     assertThat(emailsSent).allMatch(s -> !s.contains(manifestUrl2));
 
-    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findOne(manifestUrl1)).isNotNull();
-    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findOne(manifestUrl2)).isNull();
+    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findById(manifestUrl1)).isNotEmpty();
+    assertThat(this.manifestsNotifiedAboutDuplicatesRepository.findById(manifestUrl2)).isEmpty();
   }
 
   private void checkEmail(List<String> emailsSent, String recipient, String subject,

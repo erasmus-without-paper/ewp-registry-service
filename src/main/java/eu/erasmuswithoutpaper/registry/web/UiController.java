@@ -302,8 +302,7 @@ public class UiController {
     response.addHeader("Cache-Control", "max-age=0, must-revalidate");
 
     mav.addObject("manifestUrl", url);
-    Optional<ManifestUpdateStatus> status =
-        Optional.ofNullable(this.manifestStatusRepo.findOne(url));
+    Optional<ManifestUpdateStatus> status = this.manifestStatusRepo.findById(url);
     if (status.isPresent() && (!status.get().getLastAccessAttempt().isPresent())) {
       status = Optional.empty();
     }
@@ -406,7 +405,7 @@ public class UiController {
 
     List<ManifestUpdateStatus> statuses = new ArrayList<>();
     for (ManifestSource source : this.sourceProvider.getAll()) {
-      ManifestUpdateStatus status = this.manifestStatusRepo.findOne(source.getUrl());
+      ManifestUpdateStatus status = this.manifestStatusRepo.findById(source.getUrl()).orElse(null);
       // Manifests that weren't loaded yet won't be displayed.
       if (status != null) {
         statuses.add(status);
