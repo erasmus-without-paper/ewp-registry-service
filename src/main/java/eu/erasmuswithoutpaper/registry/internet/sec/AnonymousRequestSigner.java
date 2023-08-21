@@ -8,6 +8,7 @@ import eu.erasmuswithoutpaper.registry.internet.Request;
 public class AnonymousRequestSigner implements RequestSigner {
 
   @Override
-  public void sign(Request request) {}
+  public void sign(Request request) {
+  }
 
 }

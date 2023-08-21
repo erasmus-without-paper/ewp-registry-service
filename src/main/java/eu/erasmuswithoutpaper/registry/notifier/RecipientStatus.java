@@ -24,7 +24,8 @@ class RecipientStatus {
   /**
    * Needed by Hibernate.
    */
-  public RecipientStatus() {}
+  public RecipientStatus() {
+  }
 
   /**
    * Use this constructor to create a new {@link RecipientStatus}.

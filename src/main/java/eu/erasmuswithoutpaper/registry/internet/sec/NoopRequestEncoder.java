@@ -8,6 +8,7 @@ import eu.erasmuswithoutpaper.registry.internet.Request;
 public class NoopRequestEncoder implements RequestEncoder {
 
   @Override
-  public void encode(Request request) {}
+  public void encode(Request request) {
+  }
 
 }

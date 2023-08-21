@@ -16,7 +16,8 @@ public class ManifestAlreadyNotifiedAboutDuplicates {
   /**
    * Needed for Hibernate. Don't use explicitly.
    */
-  public ManifestAlreadyNotifiedAboutDuplicates() {}
+  public ManifestAlreadyNotifiedAboutDuplicates() {
+  }
 
   public ManifestAlreadyNotifiedAboutDuplicates(String manifestUrl) {
     this.manifestUrl = manifestUrl;

@@ -59,7 +59,8 @@ public class ManifestUpdateStatus {
   /**
    * Needed for Hibernate. Don't use explicitly.
    */
-  public ManifestUpdateStatus() {}
+  public ManifestUpdateStatus() {
+  }
 
   /**
    * Use this constructor when creating new entities. The new entity will have a
