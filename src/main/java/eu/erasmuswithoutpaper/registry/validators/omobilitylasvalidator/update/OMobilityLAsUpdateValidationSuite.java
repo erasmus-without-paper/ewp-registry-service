@@ -2,7 +2,6 @@ package eu.erasmuswithoutpaper.registry.validators.omobilitylasvalidator.update;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
-
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;

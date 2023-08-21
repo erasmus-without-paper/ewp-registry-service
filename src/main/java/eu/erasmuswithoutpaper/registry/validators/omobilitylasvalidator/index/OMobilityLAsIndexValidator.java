@@ -11,7 +11,6 @@ import eu.erasmuswithoutpaper.registry.validators.ValidatorKeyStoreSet;
 import eu.erasmuswithoutpaper.registry.validators.ValidatorTestStep;
 import eu.erasmuswithoutpaper.registry.validators.omobilitylasvalidator.OMobilityLAsSuiteState;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
-
 import org.springframework.stereotype.Service;
 
 import org.slf4j.Logger;

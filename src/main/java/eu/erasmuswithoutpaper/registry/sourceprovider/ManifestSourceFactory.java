@@ -10,7 +10,6 @@ import eu.erasmuswithoutpaper.registry.constraints.RemoveEmbeddedCatalogues;
 import eu.erasmuswithoutpaper.registry.constraints.ServerKeySecurityConstraint;
 import eu.erasmuswithoutpaper.registry.constraints.TlsClientCertificateSecurityConstraint;
 import eu.erasmuswithoutpaper.registry.constraints.VerifyDiscoveryApiEntry;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

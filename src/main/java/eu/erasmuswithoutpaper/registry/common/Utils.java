@@ -19,7 +19,6 @@ import java.util.RandomAccess;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -27,7 +26,6 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
 import eu.erasmuswithoutpaper.registryclient.HeiEntry;
-
 import org.springframework.web.util.HtmlUtils;
 
 import org.apache.commons.codec.digest.DigestUtils;

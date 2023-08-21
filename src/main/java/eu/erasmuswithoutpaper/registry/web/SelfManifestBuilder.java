@@ -3,7 +3,6 @@ package eu.erasmuswithoutpaper.registry.web;
 import java.io.StringWriter;
 import java.util.List;
 import java.util.Map;
-
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -19,7 +18,6 @@ import https.github_com.erasmus_without_paper.ewp_specs_api_registry.tree.stable
 import https.github_com.erasmus_without_paper.ewp_specs_api_registry.tree.stable_v1.Hei;
 import https.github_com.erasmus_without_paper.ewp_specs_architecture.blob.stable_v1.common_types.MultilineString;
 import https.github_com.erasmus_without_paper.ewp_specs_architecture.blob.stable_v1.common_types.StringWithOptionalLang;
-
 import org.apache.commons.codec.binary.Base64;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

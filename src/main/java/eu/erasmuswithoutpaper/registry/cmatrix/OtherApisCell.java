@@ -7,7 +7,6 @@ import eu.erasmuswithoutpaper.registry.documentbuilder.KnownElement;
 import eu.erasmuswithoutpaper.registryclient.ApiSearchConditions;
 import eu.erasmuswithoutpaper.registryclient.HeiEntry;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
-
 import org.springframework.web.util.HtmlUtils;
 
 import org.w3c.dom.Element;

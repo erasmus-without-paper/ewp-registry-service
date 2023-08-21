@@ -10,7 +10,6 @@ import eu.erasmuswithoutpaper.registry.common.Utils;
 import eu.erasmuswithoutpaper.registryclient.ApiSearchConditions;
 import eu.erasmuswithoutpaper.registryclient.HeiEntry;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
-
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;

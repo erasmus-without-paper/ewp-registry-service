@@ -4,7 +4,6 @@ import java.util.Objects;
 import java.util.OptionalInt;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.validation.constraints.NotNull;
 
 public class SemanticVersion implements Comparable<SemanticVersion> {

@@ -34,7 +34,6 @@ import eu.erasmuswithoutpaper.registry.sourceprovider.ManifestSourceProvider;
 import eu.erasmuswithoutpaper.registry.updater.ManifestParser.NotValidManifest;
 import eu.erasmuswithoutpaper.registry.xmlformatter.XmlFormatter;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Service;
