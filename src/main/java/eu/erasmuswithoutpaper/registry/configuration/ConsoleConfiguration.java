@@ -22,10 +22,10 @@ public class ConsoleConfiguration {
    *
    * @param registryDomainProvider
    *      Provider of Registry Domain that will be passed to RegistryClient.
-   * @throws RegistryClient.RefreshFailureException
-   *      If RegistryClient cannot refresh its catalogue.
    * @return
    *      RegistryClient that represents data read from remote catalogue.
+   * @throws RegistryClient.RefreshFailureException
+   *      If RegistryClient cannot refresh its catalogue.
    */
   @Autowired
   @Bean

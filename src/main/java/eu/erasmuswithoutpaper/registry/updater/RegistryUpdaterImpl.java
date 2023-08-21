@@ -84,7 +84,8 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
    * @param notifier                       to register our custom {@link NotifierFlag}s.
    * @param parser                         to be able to parse manifests in supported versions.
    * @param manifestOverviewManager        stores
-   * {@link eu.erasmuswithoutpaper.registry.manifestoverview.ManifestOverviewInfo} for
+   *         {@link eu.erasmuswithoutpaper.registry.manifestoverview.ManifestOverviewInfo} for
+   *         each of covered manifests.
    * @param registryClient                 to be able to check current catalogue state.
    */
   @Autowired

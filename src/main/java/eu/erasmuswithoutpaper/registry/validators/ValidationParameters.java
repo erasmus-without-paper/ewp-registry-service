@@ -40,9 +40,9 @@ public class ValidationParameters {
   /**
    * Checks if parameters in this object fulfill dependencies of parameters.
    * @param parameters
-   *    List of parameters with dependencies to check.
+   *        List of parameters with dependencies to check.
    * @return
-   *    Whether parameters stored in this object fulfill dependencies of parameters.
+   *        Whether parameters stored in this object fulfill dependencies of parameters.
    */
   public boolean checkDependencies(List<ValidationParameter> parameters) {
     for (ValidationParameter parameter : parameters) {
