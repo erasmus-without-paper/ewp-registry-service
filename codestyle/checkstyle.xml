@@ -5,7 +5,7 @@
 
 <!--
 Adapted from Google Java Style
-https://google-styleguide.googlecode.com/svn-history/r130/trunk/javaguide.html
+https://github.com/checkstyle/checkstyle/blob/860adf34323aff54b3d9dda283d9c0f636c2fd65/src/main/resources/google_checks.xml
 -->
 <module name = "Checker">
     <property name="charset" value="UTF-8"/>
@@ -24,6 +24,11 @@ https://google-styleguide.googlecode.com/svn-history/r130/trunk/javaguide.html
 
     <module name="SuppressWarningsFilter"/>
 
+    <module name="LineLength">
+        <property name="max" value="100"/>
+        <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
+    </module>
+
     <module name="TreeWalker">
         <module name="SuppressWarningsHolder"/>
         <module name="OuterTypeFilename"/>
@@ -37,10 +42,6 @@ https://google-styleguide.googlecode.com/svn-history/r130/trunk/javaguide.html
             <property name="allowByTailComment" value="true"/>
             <property name="allowNonPrintableEscapes" value="true"/>
         </module>
-        <module name="LineLength">
-            <property name="max" value="100"/>
-            <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
-        </module>
         <module name="AvoidStarImport"/>
         <module name="OneTopLevelClass"/>
         <module name="NoLineWrap"/>
@@ -49,9 +50,7 @@ https://google-styleguide.googlecode.com/svn-history/r130/trunk/javaguide.html
             <property name="tokens" value="LITERAL_TRY, LITERAL_CATCH, LITERAL_FINALLY, LITERAL_IF, LITERAL_ELSE, LITERAL_SWITCH"/>
         </module>
         <module name="NeedBraces"/>
-        <module name="LeftCurly">
-            <property name="maxLineLength" value="100"/>
-        </module>
+        <module name="LeftCurly" />
         <module name="RightCurly"/>
         <module name="RightCurly">
             <property name="option" value="alone"/>
@@ -173,13 +172,14 @@ https://google-styleguide.googlecode.com/svn-history/r130/trunk/javaguide.html
             <property name="target" value="CLASS_DEF, INTERFACE_DEF, ENUM_DEF, METHOD_DEF, CTOR_DEF, VARIABLE_DEF"/>
         </module>
         <module name="JavadocMethod">
-            <property name="scope" value="public"/>
             <property name="allowMissingParamTags" value="true"/>
-            <property name="allowMissingThrowsTags" value="true"/>
             <property name="allowMissingReturnTag" value="true"/>
-            <property name="minLineCount" value="2"/>
             <property name="allowedAnnotations" value="Override, Test"/>
-            <property name="allowThrowsTagsForSubclasses" value="true"/>
+        </module>
+        <module name="MissingJavadocMethod">
+             <property name="scope" value="public"/>
+             <property name="minLineCount" value="2"/>
+             <property name="allowedAnnotations" value="Override, Test"/>
         </module>
         <module name="MethodName">
             <property name="format" value="^[a-z][a-z0-9][a-zA-Z0-9_]*$"/>
