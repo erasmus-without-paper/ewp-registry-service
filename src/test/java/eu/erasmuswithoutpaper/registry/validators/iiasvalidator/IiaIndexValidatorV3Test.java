@@ -8,7 +8,7 @@ import eu.erasmuswithoutpaper.registry.validators.iiavalidator.IiaIndexValidator
 
 import org.springframework.beans.factory.annotation.Autowired;
 import static eu.erasmuswithoutpaper.registry.validators.TestValidationReportAsset.assertThat;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class IiaIndexValidatorV3Test extends IiaValidatorTestBase {
   @Autowired

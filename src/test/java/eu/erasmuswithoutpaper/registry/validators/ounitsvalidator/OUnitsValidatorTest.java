@@ -17,7 +17,7 @@ import eu.erasmuswithoutpaper.registry.validators.institutionsvalidator.Institut
 import org.springframework.beans.factory.annotation.Autowired;
 
 import https.github_com.erasmus_without_paper.ewp_specs_api_ounits.tree.stable_v2.OunitsResponse;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class OUnitsValidatorTest extends AbstractApiTest<OUnitsSuiteState> {
   private static final String institutionsUrlHTTT =

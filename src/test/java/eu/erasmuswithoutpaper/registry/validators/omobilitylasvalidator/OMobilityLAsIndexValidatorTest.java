@@ -13,7 +13,7 @@ import eu.erasmuswithoutpaper.registry.validators.omobilitylasvalidator.index.OM
 import org.springframework.beans.factory.annotation.Autowired;
 
 import https.github_com.erasmus_without_paper.ewp_specs_api_omobility_las.blob.stable_v1.endpoints.get_response.LearningAgreement;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class OMobilityLAsIndexValidatorTest extends OMobilityLAsValidatorTestBase {
   @Autowired

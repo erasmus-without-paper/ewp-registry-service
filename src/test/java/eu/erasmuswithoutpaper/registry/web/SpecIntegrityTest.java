@@ -13,8 +13,8 @@ import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.joox.Match;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.w3c.dom.Element;
 
 /**
@@ -29,7 +29,7 @@ public class SpecIntegrityTest extends WRTest {
 
   private Match root;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     this.root =
         $(this.docBuilder.build(new BuildParams(this.getFile("catalogues/sample-catalogue.xml")))

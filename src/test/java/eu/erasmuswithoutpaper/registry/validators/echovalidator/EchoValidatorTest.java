@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.util.Lists;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class EchoValidatorTest extends AbstractApiTest<EchoSuiteState> {
   private static final String echoV1Url = "https://university.example.com/echo/v1/";

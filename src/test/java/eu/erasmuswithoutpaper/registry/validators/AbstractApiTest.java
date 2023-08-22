@@ -21,8 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.Lists;
 import org.apache.xerces.impl.dv.util.Base64;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 
 public abstract class AbstractApiTest<StateType extends SuiteState> extends WRTest {
   @Autowired
@@ -129,12 +129,12 @@ public abstract class AbstractApiTest<StateType extends SuiteState> extends WRTe
   We need to reset it to `true` between running tests from different classes to perform
   manifest initialization when `setUp` method is called.
    */
-  @BeforeClass
+  @BeforeAll
   public static void setUpClass() {
     needsReinit = true;
   }
 
-  @Before
+  @BeforeEach
   public void setUp() {
     if (needsReinit) {
       /*

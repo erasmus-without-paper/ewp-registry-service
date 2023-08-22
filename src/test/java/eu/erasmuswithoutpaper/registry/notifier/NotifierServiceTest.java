@@ -12,7 +12,7 @@ import eu.erasmuswithoutpaper.registry.internet.FakeInternet;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.assertj.core.util.Lists;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for {@link NotifierService}.

@@ -15,7 +15,7 @@ import eu.erasmuswithoutpaper.registry.validators.coursesreplicationvalidator.Co
 import eu.erasmuswithoutpaper.registry.validators.coursesreplicationvalidator.CourseReplicationValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class CourseReplicationValidatorTest extends AbstractApiTest<CourseReplicationSuiteState> {
   private static String courseReplicationUrlHTTT =

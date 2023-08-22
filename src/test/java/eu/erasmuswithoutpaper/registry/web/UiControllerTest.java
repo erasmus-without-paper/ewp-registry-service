@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for {@link ApiController}.

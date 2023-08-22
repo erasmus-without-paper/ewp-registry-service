@@ -13,7 +13,7 @@ import eu.erasmuswithoutpaper.registry.WRTest;
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
 
 import org.joox.Match;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
 
 /**

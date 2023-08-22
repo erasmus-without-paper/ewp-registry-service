@@ -31,9 +31,9 @@ import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.joox.Match;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for the {@link RegistryUpdaterImpl}.
@@ -46,7 +46,7 @@ public class RegistryUpdaterTest extends WRTest {
 
   private static String url3;
 
-  @BeforeClass
+  @BeforeAll
   public static void setUpClass() {
     url1 = "https://example.com/manifest.xml";
     url2 = "https://example.com/manifest2.xml";
@@ -136,7 +136,7 @@ public class RegistryUpdaterTest extends WRTest {
     }
   }
 
-  @Before
+  @BeforeEach
   public void setUp() {
     this.sourceProvider.clearSources();
     this.repo.deleteAll();

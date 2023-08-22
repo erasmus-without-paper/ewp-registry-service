@@ -8,9 +8,9 @@ import java.nio.charset.StandardCharsets;
 import eu.erasmuswithoutpaper.registry.WRTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import org.junit.After;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for {@link ManifestRepositoryImpl}.
@@ -20,7 +20,7 @@ public class ManifestRepositoryTest extends WRTest {
   private static String manifestUrl1;
   private static String manifestUrl2;
 
-  @BeforeClass
+  @BeforeAll
   public static void setUpClass() {
     manifestUrl1 = "https://example.com/manifest1.xml";
     manifestUrl2 = "https://example.com/manifest2.xml";
@@ -32,7 +32,7 @@ public class ManifestRepositoryTest extends WRTest {
   @Autowired
   private CatalogueDependantCache catcache;
 
-  @After
+  @AfterEach
   public void tearDown() {
     this.repo.deleteAll();
   }

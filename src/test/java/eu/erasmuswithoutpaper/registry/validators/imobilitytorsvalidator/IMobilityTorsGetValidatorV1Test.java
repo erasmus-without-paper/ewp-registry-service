@@ -10,7 +10,7 @@ import eu.erasmuswithoutpaper.registry.validators.TestValidationReport;
 import eu.erasmuswithoutpaper.registry.validators.imobilitytorsvalidator.get.IMobilityTorsGetValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class IMobilityTorsGetValidatorV1Test extends IMobilityTorsValidatorTestBaseV1 {
   @Autowired

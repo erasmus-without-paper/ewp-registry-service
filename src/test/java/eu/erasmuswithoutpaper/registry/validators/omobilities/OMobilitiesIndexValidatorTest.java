@@ -11,7 +11,7 @@ import eu.erasmuswithoutpaper.registry.validators.omobilitiesvalidator.index.OMo
 
 import org.springframework.beans.factory.annotation.Autowired;
 import static eu.erasmuswithoutpaper.registry.validators.TestValidationReportAsset.assertThat;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class OMobilitiesIndexValidatorTest extends OMobilitiesValidatorTestBase {
   @Autowired

@@ -26,8 +26,8 @@ import eu.erasmuswithoutpaper.registry.internet.sec.Http4xx;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.assertj.core.util.Maps;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for {@link FakeInternet}.
@@ -87,7 +87,7 @@ public class FakeInternetTest extends WRTest {
   private static String url1;
   private static String url2;
 
-  @BeforeClass
+  @BeforeAll
   public static void setUpClass() {
     url1 = "https://example.com/url1.xml";
     url2 = "https://example.com/url2.xml";
@@ -193,7 +193,7 @@ public class FakeInternetTest extends WRTest {
     String publicRsaBase64 = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDCFENGw33yGihy92pDjZQhl0C3"
         + "6rPJj+CvfSC8+q28hxA161QFNUd13wuCTUcq0Qd2qsBe/2hFyc2DCJJg0h1L78+6"
         + "Z4UMR7EOcpfdUE9Hf3m/hs+FUR45uBJeDK1HSFHD8bHKD6kv8FPGfJTotc+2xjJw"
-        + "oYi+1hqp1fIekaxsyQIDAQAB";;
+        + "oYi+1hqp1fIekaxsyQIDAQAB";
     String privateRsaBase64 = "MIICXgIBAAKBgQDCFENGw33yGihy92pDjZQhl0C36rPJj+CvfSC8+q28hxA161QF"
         + "NUd13wuCTUcq0Qd2qsBe/2hFyc2DCJJg0h1L78+6Z4UMR7EOcpfdUE9Hf3m/hs+F"
         + "UR45uBJeDK1HSFHD8bHKD6kv8FPGfJTotc+2xjJwoYi+1hqp1fIekaxsyQIDAQAB"

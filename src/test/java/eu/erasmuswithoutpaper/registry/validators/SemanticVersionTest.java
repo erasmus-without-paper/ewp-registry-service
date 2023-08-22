@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 
 import eu.erasmuswithoutpaper.registry.WRTest;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class SemanticVersionTest extends WRTest {
   @Test

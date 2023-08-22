@@ -11,7 +11,7 @@ import org.springframework.core.env.Environment;
 
 import org.joox.JOOX;
 import org.joox.Match;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 

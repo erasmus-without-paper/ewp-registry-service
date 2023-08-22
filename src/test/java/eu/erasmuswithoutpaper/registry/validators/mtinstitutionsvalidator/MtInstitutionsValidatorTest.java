@@ -19,7 +19,7 @@ import eu.erasmuswithoutpaper.registry.validators.TestValidationReport;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import https.github_com.erasmus_without_paper.ewp_specs_api_mt_institutions.tree.stable_v1.MtInstitutionsResponse;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class MtInstitutionsValidatorTest extends AbstractApiTest<MtInstitutionsSuiteState> {
   private static final String mtInstitutionsUrl = "https://university.example.com/mt_institutions";

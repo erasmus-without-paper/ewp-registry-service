@@ -9,7 +9,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 
 public class UiControllerIntegrationTest extends WRIntegrationTest {

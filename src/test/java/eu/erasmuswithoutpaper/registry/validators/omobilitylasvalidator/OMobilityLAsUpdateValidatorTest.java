@@ -6,7 +6,7 @@ import eu.erasmuswithoutpaper.registry.validators.omobilitylasvalidator.update.O
 
 import org.springframework.beans.factory.annotation.Autowired;
 import static eu.erasmuswithoutpaper.registry.validators.TestValidationReportAsset.assertThat;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class OMobilityLAsUpdateValidatorTest extends OMobilityLAsValidatorTestBase {
   @Autowired

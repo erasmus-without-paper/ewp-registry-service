@@ -14,7 +14,7 @@ import eu.erasmuswithoutpaper.registry.validators.SemanticVersion;
 import eu.erasmuswithoutpaper.registry.validators.TestValidationReport;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class MtProjectsValidatorTest extends AbstractApiTest<MtProjectsSuiteState> {
   private static final String mtProjectsUrl = "https://university.example.com/mt_projects";

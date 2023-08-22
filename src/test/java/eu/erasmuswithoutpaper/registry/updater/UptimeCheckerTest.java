@@ -7,7 +7,7 @@ import eu.erasmuswithoutpaper.registry.internet.FakeInternet;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for the {@link RegistryUpdaterImpl}.

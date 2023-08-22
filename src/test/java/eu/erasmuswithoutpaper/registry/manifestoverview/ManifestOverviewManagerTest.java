@@ -17,8 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.annotation.DirtiesContext;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Testing integration between {@link ManifestOverviewManager} and {@link RegistryUpdater}.
@@ -90,7 +90,7 @@ public class ManifestOverviewManagerTest extends WRTest {
   private static final int adminEmailsCount1 = manifestEmails1.size();
   private static final int adminEmailsCount2 = manifestEmails2.size();
 
-  @Before
+  @BeforeEach
   public void setUp() {
     manifestSource1 = manifestFactory.newTrustedSource(manifestUrl1);
     manifestSource2 = manifestFactory.newTrustedSource(manifestUrl2);

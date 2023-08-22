@@ -13,7 +13,7 @@ import eu.erasmuswithoutpaper.registry.validators.iiavalidator.IiaSuiteState;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import https.github_com.erasmus_without_paper.ewp_specs_api_iias.blob.stable_v2.endpoints.get_response.IiasGetResponse;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class IiaIndexValidatorV2Test extends IiaValidatorTestBase {
   @Autowired

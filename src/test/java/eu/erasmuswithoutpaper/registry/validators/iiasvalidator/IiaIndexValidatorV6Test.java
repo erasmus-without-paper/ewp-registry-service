@@ -5,7 +5,7 @@ import eu.erasmuswithoutpaper.registry.validators.SemanticVersion;
 import eu.erasmuswithoutpaper.registry.validators.TestValidationReport;
 import eu.erasmuswithoutpaper.registry.validators.iiavalidator.IiaIndexValidator;
 import eu.erasmuswithoutpaper.registry.validators.iiavalidator.IiaSuiteState;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static eu.erasmuswithoutpaper.registry.validators.TestValidationReportAsset.assertThat;

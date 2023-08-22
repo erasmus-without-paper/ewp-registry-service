@@ -13,7 +13,7 @@ import eu.erasmuswithoutpaper.registry.common.Utils;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
