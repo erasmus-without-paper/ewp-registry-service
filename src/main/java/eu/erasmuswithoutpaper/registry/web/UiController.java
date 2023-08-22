@@ -484,7 +484,7 @@ public class UiController {
   public ResponseEntity<String> validateXml(@RequestParam String xml) {
 
     HttpHeaders headers = new HttpHeaders();
-    headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
+    headers.setContentType(MediaType.APPLICATION_JSON);
     headers.setCacheControl("max-age=0, must-revalidate");
     headers.setExpires(0);
     headers.setAccessControlAllowOrigin(documentationUrl);

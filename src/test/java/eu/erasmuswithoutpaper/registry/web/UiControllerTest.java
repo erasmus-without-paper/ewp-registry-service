@@ -37,7 +37,7 @@ public class UiControllerTest extends WRTest {
     ResponseEntity<String> result = this.uiController.validateXml(sb.toString());
     assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(result.getHeaders().getContentType())
-        .isEqualByComparingTo(MediaType.APPLICATION_JSON_UTF8);
+        .isEqualByComparingTo(MediaType.APPLICATION_JSON);
     assertThat(result.getHeaders().getAccessControlAllowOrigin())
         .isEqualTo(documentationUrl);
     String body = result.getBody();

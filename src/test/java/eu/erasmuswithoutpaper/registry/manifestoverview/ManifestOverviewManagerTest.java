@@ -15,6 +15,7 @@ import eu.erasmuswithoutpaper.registry.updater.RegistryUpdater;
 import eu.erasmuswithoutpaper.registry.updater.RegistryUpdaterImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.test.annotation.DirtiesContext;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -26,6 +27,8 @@ import org.junit.jupiter.api.Test;
  * updated.
  */
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+// fixes problem of @DirtiesContext: https://stackoverflow.com/questions/59591979/
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
 public class ManifestOverviewManagerTest extends WRTest {
 
   @Autowired
