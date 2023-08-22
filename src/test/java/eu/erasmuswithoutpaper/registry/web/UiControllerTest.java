@@ -41,7 +41,7 @@ public class UiControllerTest extends WRTest {
     assertThat(result.getHeaders().getAccessControlAllowOrigin())
         .isEqualTo(documentationUrl);
     String body = result.getBody();
-    JsonElement aRoot = new JsonParser().parse(body);
+    JsonElement aRoot = JsonParser.parseString(body);
     assertThat(aRoot.isJsonObject()).isTrue();
     assertThat(body).isEqualTo(this.getFileAsString("validatorResults/result1.json"));
   }

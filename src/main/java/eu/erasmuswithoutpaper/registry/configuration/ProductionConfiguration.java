@@ -81,13 +81,13 @@ public class ProductionConfiguration {
    *
    * @return {@link ThreadPoolTaskExecutor} instance.
    */
-  @Bean
+  @Bean(name = "customTaskExecutor")
   @ConditionalOnWebApplication
   public TaskExecutor getTaskExecutor() {
     return new ThreadPoolTaskExecutor();
   }
 
-  @Bean
+  @Bean(name = "customTaskExecutor")
   @ConditionalOnNotWebApplication
   public TaskExecutor getConsoleTaskExecutor() {
     return null;

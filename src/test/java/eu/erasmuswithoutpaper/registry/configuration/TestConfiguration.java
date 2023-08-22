@@ -61,7 +61,7 @@ public class TestConfiguration {
    *
    * @return a {@link SyncTaskExecutor} instance.
    */
-  @Bean
+  @Bean(name = "customTaskExecutor")
   TaskExecutor getTaskExecutor() {
     return new SyncTaskExecutor();
   }

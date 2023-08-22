@@ -19,9 +19,11 @@ import eu.erasmuswithoutpaper.registry.common.Severity;
 import eu.erasmuswithoutpaper.registry.notifier.NotifierFlag;
 import eu.erasmuswithoutpaper.registry.notifier.NotifierService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
+import org.springframework.core.env.Profiles;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -72,7 +74,7 @@ public class RealInternet implements Internet {
       @Value("${app.admin-emails}") List<String> adminEmails,
       @Value("${app.instance-name}") String replyToName,
       @Value("${app.reply-to-address}") String replyToAddress,
-      @Autowired(required = false) TaskExecutor taskExecutor,
+      @Autowired(required = false) @Qualifier("customTaskExecutor") TaskExecutor taskExecutor,
       Environment env) {
 
     this.mailSender = mailSender.orElse(null);
@@ -208,7 +210,7 @@ public class RealInternet implements Internet {
         throw new RuntimeException(e);
       }
 
-      if (this.env.acceptsProfiles("production")) {
+      if (this.env.acceptsProfiles(Profiles.of("production"))) {
         this.mailSender.send(message);
       } else {
         logger.warn("Non-production profile detected. As a safety measure, this prevents "

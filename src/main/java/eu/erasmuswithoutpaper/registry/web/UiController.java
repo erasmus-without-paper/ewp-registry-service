@@ -58,6 +58,7 @@ import eu.erasmuswithoutpaper.registry.validators.web.ManifestApiEntry;
 import eu.erasmuswithoutpaper.registryclient.HeiEntry;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.core.io.ResourceLoader;
@@ -141,7 +142,7 @@ public class UiController {
    * @param iiaHashService used to validate IIA cooperation conditions hash
    */
   @Autowired
-  public UiController(TaskExecutor taskExecutor,
+  public UiController(@Qualifier("customTaskExecutor") TaskExecutor taskExecutor,
       ManifestUpdateStatusRepository manifestUpdateStatuses, ManifestRepository manifestRepository,
       ManifestSourceProvider sourceProvider, RegistryUpdater updater, NotifierService notifier,
       UptimeChecker uptimeChecker, EwpDocBuilder docBuilder, ResourceLoader resLoader,

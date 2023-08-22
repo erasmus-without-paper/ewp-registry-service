@@ -106,8 +106,7 @@ public class ManifestUpdateStatus {
    */
   public List<UpdateNotice> getLastAccessNotices() {
     Gson gson = new Gson();
-    JsonParser parser = new JsonParser();
-    JsonArray arr = parser.parse(this.lastAccessNoticesJson).getAsJsonArray();
+    JsonArray arr = JsonParser.parseString(this.lastAccessNoticesJson).getAsJsonArray();
     List<UpdateNotice> result = new ArrayList<>(arr.size());
     for (JsonElement elem : arr) {
       result.add(gson.fromJson(elem, UpdateNotice.class));
