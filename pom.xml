@@ -485,7 +485,7 @@
                 </executions>
                 <configuration>
                     <workingDirectory>src/main/webapp</workingDirectory>
-                    <nodeVersion>v18.17.1</nodeVersion>
+                    <nodeVersion>v20.6.1</nodeVersion>
                 </configuration>
             </plugin>
         </plugins>
