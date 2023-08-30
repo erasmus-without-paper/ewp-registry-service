@@ -16,7 +16,7 @@
     export default {
         name: "validationEntry",
         props: {
-            entry: String
+            entry: Object
         },
         methods: {
             openResult: function() {

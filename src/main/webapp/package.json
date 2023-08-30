@@ -6,8 +6,8 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "build-dev": "cross-env NODE_ENV=dev webpack --color",
-    "build-prod": "cross-env NODE_ENV=production webpack --hide-modules"
+    "build-dev": "cross-env NODE_ENV=dev NODE_OPTIONS=--openssl-legacy-provider webpack --color",
+    "build-prod": "cross-env NODE_ENV=production NODE_OPTIONS=--openssl-legacy-provider webpack --hide-modules"
   },
   "dependencies": {
     "vue": "2.6.10"
