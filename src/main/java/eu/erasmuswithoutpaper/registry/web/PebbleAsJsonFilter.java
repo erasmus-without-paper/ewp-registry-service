@@ -10,8 +10,11 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.AbstractExtension;
 import com.mitchellbosecke.pebble.extension.Filter;
+import com.mitchellbosecke.pebble.template.EvaluationContext;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +42,8 @@ public class PebbleAsJsonFilter extends AbstractExtension {
     }
 
     @Override
-    public Object apply(Object inputObject, Map<String, Object> args) {
+    public Object apply(Object inputObject, Map<String, Object> args, PebbleTemplate self,
+        EvaluationContext context, int lineNumber) throws PebbleException {
       try {
         return writer.writeValueAsString(inputObject);
       } catch (JsonProcessingException e) {
