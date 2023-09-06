@@ -25,6 +25,30 @@
                 newWindow.document.close();
             }
         },
+        created() {
+            $.ajax({
+                url: "/validateApi",
+                data: JSON.stringify({
+                    url: this.entry.url,
+                    name: this.entry.name,
+                    endpoint: this.entry.endpoint,
+                    version: this.entry.version,
+                    security: this.entry.security,
+                    parameters: this.entry.parameters
+                }),
+                type: "POST",
+                contentType: 'application/json',
+                dataType: "html",
+                success: result => {
+                    this.entry.status = "DONE";
+                    this.entry.response = result;
+                },
+                fail: result => {
+                    this.entry.status = "ERROR";
+                    this.entry.response = result;
+                }
+            })
+      }
     }
 </script>
 

@@ -17,35 +17,6 @@
             this.parameters = parameters;
             this.text = "In progress...";
             this.status = "IN_PROGRESS";
-            this.sendRequest();
-        }
-
-        sendRequest() {
-            $.ajax({
-                url: "/validateApi",
-                data: JSON.stringify({
-                    url: this.url,
-                    name: this.name,
-                    endpoint: this.endpoint,
-                    version: this.version,
-                    security: this.security,
-                    parameters: this.parameters
-                }),
-                type: "POST",
-                contentType: 'application/json',
-                dataType: "html"
-            }).done((result) => this.onSuccess(result))
-                .fail((result) => this.onError(result));
-        }
-
-        onError(result) {
-            this.status = "ERROR";
-            this.response = result;
-        }
-
-        onSuccess(result) {
-            this.status = "DONE";
-            this.response = result;
         }
     }
 
