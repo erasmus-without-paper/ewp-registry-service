@@ -125,7 +125,7 @@ public class Utils {
       return result;
     }
     List<String> items = commaSeparatedTokens(acceptEncodingHeader).stream()
-        .map(s -> s.toLowerCase()).collect(Collectors.toList());
+        .map(s -> s.toLowerCase(Locale.ENGLISH)).collect(Collectors.toList());
     for (String entry : items) {
       List<String> params = Arrays.asList(entry.split(";")).stream().map(s -> s.trim())
           .filter(s -> s.length() > 0).collect(Collectors.toList());
@@ -347,7 +347,7 @@ public class Utils {
 
   private static boolean isOtherIdMatching(String pattern, HeiEntry heiEntry, String otherIdType) {
     return heiEntry.getOtherIds(otherIdType).stream()
-        .anyMatch(otherId -> otherId.toLowerCase().startsWith(pattern.toLowerCase()));
+        .anyMatch(otherId -> otherId.regionMatches(true, 0, pattern, 0, pattern.length()));
   }
 
   private static boolean isNameMatching(String pattern, HeiEntry heiEntry) {
