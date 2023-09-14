@@ -10,8 +10,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebAppli
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 @Configuration
 @ConditionalOnNotWebApplication
 public class ConsoleConfiguration {
@@ -29,7 +27,6 @@ public class ConsoleConfiguration {
    */
   @Autowired
   @Bean
-  @SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
   public RegistryClient getRemoteRegistryClient(
       RegistryDomainProvider registryDomainProvider)
       throws RegistryClient.RefreshFailureException {

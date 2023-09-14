@@ -91,7 +91,6 @@ import org.xml.sax.SAXException;
  * Handles UI requests.
  */
 @Controller
-@SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
 @ConditionalOnWebApplication
 public class UiController {
 

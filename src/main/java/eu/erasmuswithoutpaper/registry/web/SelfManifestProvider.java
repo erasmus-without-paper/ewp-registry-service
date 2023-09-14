@@ -21,7 +21,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +35,6 @@ import org.slf4j.LoggerFactory;
  * </p>
  */
 @Service
-@SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
 public class SelfManifestProvider {
 
   private static final Logger logger = LoggerFactory.getLogger(SelfManifestProvider.class);
