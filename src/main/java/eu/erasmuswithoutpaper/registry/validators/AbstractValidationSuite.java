@@ -63,6 +63,7 @@ import eu.erasmuswithoutpaper.registry.validators.verifiers.Verifier;
 import eu.erasmuswithoutpaper.registry.validators.verifiers.VerifierFactory;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
+import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import net.adamcin.httpsig.api.Algorithm;
@@ -433,9 +434,8 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
   // fixed around version 4.4.2
   @SuppressFBWarnings("DMI_RANDOM_USED_ONLY_ONCE")
   private RSAPublicKey pickRandom(Collection<RSAPublicKey> keys) {
-    List<RSAPublicKey> lst = new ArrayList<>(keys);
-    int index = RANDOM.nextInt(lst.size());
-    return lst.get(index);
+    int randomIndex = RANDOM.nextInt(keys.size());
+    return Iterators.get(keys.iterator(), randomIndex);
   }
 
   protected RequestSigner getRequestSignerForCombination(InlineValidationStep step, Request request,
