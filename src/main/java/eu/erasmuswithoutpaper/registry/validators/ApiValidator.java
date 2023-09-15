@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.MultimapBuilder;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.slf4j.Logger;
 
 
@@ -81,6 +82,7 @@ public abstract class ApiValidator<S extends SuiteState> {
     this.endpoint = endpoint;
   }
 
+  @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
   protected static <K extends Comparable<? super K>, V> ListMultimap<K, V> createMultimap() {
     return MultimapBuilder.treeKeys().linkedListValues().build();
   }
