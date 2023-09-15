@@ -64,6 +64,7 @@ import eu.erasmuswithoutpaper.registry.validators.verifiers.VerifierFactory;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 import com.google.common.collect.Lists;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import net.adamcin.httpsig.api.Algorithm;
 import net.adamcin.httpsig.api.Challenge;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -78,6 +79,8 @@ import org.xml.sax.SAXException;
 
 public abstract class AbstractValidationSuite<S extends SuiteState> {
   protected static final String fakeId = "this-is-some-unknown-and-unexpected-id";
+  private static final Random RANDOM = new Random();
+
   protected final List<ValidationStepWithStatus> steps;
   protected final EwpDocBuilder docBuilder;
   protected final Internet internet;
@@ -426,9 +429,12 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
     }
   }
 
+  // TODO SP bug: https://github.com/spotbugs/spotbugs/issues/1539
+  // fixed around version 4.4.2
+  @SuppressFBWarnings("DMI_RANDOM_USED_ONLY_ONCE")
   private RSAPublicKey pickRandom(Collection<RSAPublicKey> keys) {
     List<RSAPublicKey> lst = new ArrayList<>(keys);
-    int index = new Random().nextInt(lst.size());
+    int index = RANDOM.nextInt(lst.size());
     return lst.get(index);
   }
 
