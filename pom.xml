@@ -225,13 +225,13 @@
         </dependency>
         <dependency>
             <groupId>io.sentry</groupId>
-            <artifactId>sentry-spring</artifactId>
-            <version>1.7.30</version>
+            <artifactId>sentry</artifactId>
+            <version>6.33.1</version>
         </dependency>
         <dependency>
             <groupId>io.sentry</groupId>
-            <artifactId>sentry-spring-boot-starter</artifactId>
-            <version>1.7.30</version>
+            <artifactId>sentry-spring-boot-starter-jakarta</artifactId>
+            <version>6.33.1</version>
         </dependency>
         <dependency>
             <groupId>org.apache.santuario</groupId>

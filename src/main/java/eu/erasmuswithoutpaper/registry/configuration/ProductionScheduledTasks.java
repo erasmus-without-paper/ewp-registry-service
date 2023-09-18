@@ -105,11 +105,11 @@ public class ProductionScheduledTasks {
       this.repo.push();
       this.logPushingStatus.setStatus(Severity.OK);
     } catch (ConfigurationException | GitAPIException e) {
-      Sentry.capture(e);
+      Sentry.captureException(e);
       logger.error("Exception while pushing repository changes: " + e);
       this.logPushingStatus.setStatus(Severity.WARNING);
     } catch (RuntimeException e) {
-      Sentry.capture(e);
+      Sentry.captureException(e);
       logger.error("RuntimeException while pushing repository changes", e);
       this.logPushingStatus.setStatus(Severity.ERROR);
     }
@@ -124,7 +124,7 @@ public class ProductionScheduledTasks {
       this.uptimeChecker.refresh();
       this.uptimeCheckerStatus.setStatus(Severity.OK);
     } catch (RuntimeException e) {
-      Sentry.capture(e);
+      Sentry.captureException(e);
       logger.error("RuntimeException while refreshing uptime stats", e);
       this.uptimeCheckerStatus.setStatus(Severity.ERROR);
     }
@@ -139,7 +139,7 @@ public class ProductionScheduledTasks {
       this.updater.reloadAllManifestSources();
       this.manifestReloadingStatus.setStatus(Severity.OK);
     } catch (RuntimeException e) {
-      Sentry.capture(e);
+      Sentry.captureException(e);
       logger.error("RuntimeException while reloading manifests", e);
       this.manifestReloadingStatus.setStatus(Severity.ERROR);
     }
@@ -154,7 +154,7 @@ public class ProductionScheduledTasks {
       this.notifier.sendNotifications();
       this.notificationSendingStatus.setStatus(Severity.OK);
     } catch (RuntimeException e) {
-      Sentry.capture(e);
+      Sentry.captureException(e);
       logger.error("RuntimeException while sending notifications", e);
       this.notificationSendingStatus.setStatus(Severity.ERROR);
     }
