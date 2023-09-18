@@ -376,6 +376,7 @@
                     <excludeRoots>
                         <excludeRoot>target/generated-sources/jaxb</excludeRoot>
                     </excludeRoots>
+                    <linkXRef>false</linkXRef>
                 </configuration>
                 <executions>
                     <execution>
