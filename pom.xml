@@ -486,4 +486,16 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+          <profile>
+               <id>skipValidation</id>
+               <properties>
+                    <maven.test.skip>true</maven.test.skip>
+                    <maven.javadoc.skip>true</maven.javadoc.skip>
+                    <checkstyle.skip>true</checkstyle.skip>
+                    <spotbugs.skip>true</spotbugs.skip>
+               </properties>
+          </profile>
+     </profiles>
 </project>
