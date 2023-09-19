@@ -104,7 +104,7 @@ public class Response {
    * @return The response body, as returned by the server. This is available regardless of the
    *         response status. In case of error responses, it will contain the error response body.
    */
-  @SuppressFBWarnings(value = "EI_EXPOSE_REP")
+  @SuppressFBWarnings("EI_EXPOSE_REP")
   public byte[] getBody() {
     return this.body;
   }
@@ -178,7 +178,7 @@ public class Response {
    *
    * @param changed New value.
    */
-  @SuppressFBWarnings(value = "EI_EXPOSE_REP2")
+  @SuppressFBWarnings("EI_EXPOSE_REP2")
   public void setBody(byte[] changed) {
     this.body = changed;
   }

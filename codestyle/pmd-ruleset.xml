@@ -34,6 +34,8 @@
     <rule name="ShortMethodName" ref="category/java/codestyle.xml/ShortMethodName" />
     <rule name="SuspiciousConstantFieldName" ref="category/java/codestyle.xml/SuspiciousConstantFieldName" />
     <rule name="TooManyStaticImports" ref="category/java/codestyle.xml/TooManyStaticImports" />
+    <rule name="UnnecessaryAnnotationValueElement"
+        ref="category/java/codestyle.xml/UnnecessaryAnnotationValueElement" />
     <rule name="UnnecessaryFullyQualifiedName"
         ref="category/java/codestyle.xml/UnnecessaryFullyQualifiedName" />
 
