@@ -105,4 +105,6 @@
     <rule name="UseStringBufferLength" ref="category/java/performance.xml/UseStringBufferLength" />
     <rule name="UselessStringValueOf" ref="category/java/performance.xml/UselessStringValueOf" />
 
+    <rule name="HardCodedCryptoKey" ref="category/java/security.xml/HardCodedCryptoKey" />
+
 </ruleset>
