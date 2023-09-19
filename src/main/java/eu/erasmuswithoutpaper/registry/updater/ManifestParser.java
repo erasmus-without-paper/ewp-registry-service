@@ -56,8 +56,8 @@ public class ManifestParser {
     }
   }
 
-  @SuppressWarnings("serial")
   private static class ValidEwpDocumentButNotManifest extends NotValidManifest {
+    private static final long serialVersionUID = 1499657089895282725L;
 
     private final String namespaceUri;
     private final String localName;

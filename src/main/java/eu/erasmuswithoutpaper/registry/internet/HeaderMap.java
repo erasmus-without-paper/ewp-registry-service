@@ -2,14 +2,11 @@ package eu.erasmuswithoutpaper.registry.internet;
 
 import java.util.TreeMap;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 /**
  * A special Map implementation, good for storing headers (case-insensitive keys, etc.).
  */
-@SuppressWarnings("serial")
-@SuppressFBWarnings("SE_NO_SERIALVERSIONID")
 public class HeaderMap extends TreeMap<String, String> {
+  private static final long serialVersionUID = 8754027427076578401L;
 
   /**
    * Create an empty map.

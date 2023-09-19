@@ -2,6 +2,7 @@ package eu.erasmuswithoutpaper.registry.cmatrix;
 
 import static org.joox.JOOX.$;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -13,7 +14,6 @@ import eu.erasmuswithoutpaper.registryclient.ApiSearchConditions;
 import eu.erasmuswithoutpaper.registryclient.HeiEntry;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.w3c.dom.Element;
 
 /**
@@ -21,8 +21,8 @@ import org.w3c.dom.Element;
  */
 class ApiEntriesCell extends CoverageMatrixCell {
 
-  @SuppressFBWarnings("SE_COMPARATOR_SHOULD_BE_SERIALIZABLE")
-  private static class ApiVersionComparator implements Comparator<Element> {
+  private static class ApiVersionComparator implements Comparator<Element>, Serializable {
+    private static final long serialVersionUID = 1958058332903191615L;
 
     private final List<String> apiNamespacesOrder;
 

@@ -5,8 +5,8 @@ package eu.erasmuswithoutpaper.registry.internet.sec;
  * request is not using any of the authorization methods recognized by this
  * {@link RequestAuthorizer}.
  */
-@SuppressWarnings("serial")
 public class UnmatchedRequestAuthorizationMethod extends Http4xx {
+  private static final long serialVersionUID = -6996262125623733090L;
 
   /**
    * @param statusCode HTTP status code to be returned to the client.

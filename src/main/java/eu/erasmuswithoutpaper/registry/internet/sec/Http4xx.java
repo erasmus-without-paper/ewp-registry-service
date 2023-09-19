@@ -13,8 +13,8 @@ import eu.erasmuswithoutpaper.registry.internet.Response;
  * Thrown by signers and authorizers when the input supplied by the external client is invalid in
  * some way (or doesn't match what the signer or authenticator expects).
  */
-@SuppressWarnings("serial")
 public class Http4xx extends Exception {
+  private static final long serialVersionUID = -7398350332545099251L;
 
   private final int statusCode;
   private final String developerMessage;

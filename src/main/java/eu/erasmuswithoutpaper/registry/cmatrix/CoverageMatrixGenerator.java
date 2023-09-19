@@ -1,5 +1,6 @@
 package eu.erasmuswithoutpaper.registry.cmatrix;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -13,7 +14,6 @@ import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * This service allows you generate HEI/API coverage reports.
@@ -21,8 +21,8 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 @Service
 public class CoverageMatrixGenerator {
 
-  @SuppressFBWarnings("SE_COMPARATOR_SHOULD_BE_SERIALIZABLE")
-  public static class HeiComparator implements Comparator<HeiEntry> {
+  public static class HeiComparator implements Comparator<HeiEntry>, Serializable {
+    private static final long serialVersionUID = -7592792474068837484L;
 
     @Override
     public int compare(HeiEntry e1, HeiEntry e2) {
