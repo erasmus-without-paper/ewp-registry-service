@@ -15,7 +15,11 @@
 
     <rule name="AvoidDollarSigns" ref="category/java/codestyle.xml/AvoidDollarSigns" />
     <rule name="BooleanGetMethodName" ref="category/java/codestyle.xml/BooleanGetMethodName" />
-    <rule name="ClassNamingConventions" ref="category/java/codestyle.xml/ClassNamingConventions" />
+    <rule name="ClassNamingConventions" ref="category/java/codestyle.xml/ClassNamingConventions">
+        <properties>
+            <property name="utilityClassPattern" value="[A-Z][a-zA-Z0-9]+(Utils?|Helper)?" />
+        </properties>
+    </rule>
     <rule name="DontImportJavaLang" ref="category/java/codestyle.xml/DontImportJavaLang" />
     <rule name="DuplicateImports" ref="category/java/codestyle.xml/DuplicateImports" />
     <rule name="ExtendsObject" ref="category/java/codestyle.xml/ExtendsObject" />
