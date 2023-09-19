@@ -44,6 +44,7 @@ class CourseReplicationValidationSuite
     this.apiInfo = new CourseReplicationValidatedApiInfo(version, ApiEndpoint.NoEndpoint);
   }
 
+  @Override
   //FindBugs is not smart enough to infer that actual type of this.currentState
   //is CourseReplicationSuiteState not just SuiteState
   @SuppressFBWarnings("BC_UNCONFIRMED_CAST")

@@ -7,6 +7,7 @@
     <rule name="AvoidStringBufferField" ref="category/java/bestpractices.xml/AvoidStringBufferField" />
     <rule name="AvoidUsingHardCodedIP" ref="category/java/bestpractices.xml/AvoidUsingHardCodedIP" />
     <rule name="CheckResultSet" ref="category/java/bestpractices.xml/CheckResultSet" />
+    <rule name="MissingOverride" ref="category/java/bestpractices.xml/MissingOverride" />
     <rule name="UnusedFormalParameter" ref="category/java/bestpractices.xml/UnusedFormalParameter" />
     <rule name="UnusedImports" ref="category/java/bestpractices.xml/UnusedImports" />
     <rule name="UnusedLocalVariable" ref="category/java/bestpractices.xml/UnusedLocalVariable" />

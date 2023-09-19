@@ -39,6 +39,7 @@ class MtProjectsValidationSuite extends AbstractValidationSuite<MtProjectsSuiteS
     this.apiInfo = new MtProjectsValidatedApiInfo(version, ApiEndpoint.NoEndpoint);
   }
 
+  @Override
   //FindBugs is not smart enough to infer that actual type of this.currentState
   //is MtProjectsSuiteState not just SuiteState
   @SuppressFBWarnings("BC_UNCONFIRMED_CAST")

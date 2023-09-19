@@ -48,6 +48,7 @@ class IMobilitiesGetValidationSuite
     return apiInfo;
   }
 
+  @Override
   //FindBugs is not smart enough to infer that actual type of this.currentState
   //is IMobilitiesSuiteState not just SuiteState
   @SuppressFBWarnings("BC_UNCONFIRMED_CAST")

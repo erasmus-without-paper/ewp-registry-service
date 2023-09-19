@@ -50,6 +50,7 @@ class OUnitsValidationSuite
     this.apiInfo = new OUnitsValidatedApiInfo(version, ApiEndpoint.NoEndpoint);
   }
 
+  @Override
   //FindBugs is not smart enough to infer that actual type of this.currentState
   //is OUnitsSuiteState not just SuiteState
   @SuppressFBWarnings("BC_UNCONFIRMED_CAST")

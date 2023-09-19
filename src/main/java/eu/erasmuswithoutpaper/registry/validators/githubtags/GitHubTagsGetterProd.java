@@ -32,6 +32,7 @@ public class GitHubTagsGetterProd implements GitHubTagsGetter {
    * @param logger Logger of class using this method.
    * @return list of available versions.
    */
+  @Override
   public List<SemanticVersion> getTags(String apiName, Internet internet, Logger logger) {
     String url = githubApiBaseUrl + "/ewp-specs-api-";
     url += apiName;

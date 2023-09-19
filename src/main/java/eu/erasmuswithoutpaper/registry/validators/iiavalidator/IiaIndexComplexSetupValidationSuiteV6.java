@@ -43,6 +43,7 @@ public class IiaIndexComplexSetupValidationSuiteV6 extends IiaIndexComplexSetupV
     super(validator, state, config, version);
   }
 
+  @Override
   protected IiaSuiteState.IiaInfo getIiaInfo(
       String heiId, String iiaId, String url,
       HttpSecurityDescription securityDescription

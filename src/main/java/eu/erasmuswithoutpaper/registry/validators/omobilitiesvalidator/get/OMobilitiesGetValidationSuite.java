@@ -46,6 +46,7 @@ class OMobilitiesGetValidationSuite
     this.apiInfo = new OMobilitiesValidatedApiInfo(version, ApiEndpoint.Get);
   }
 
+  @Override
   //FindBugs is not smart enough to infer that actual type of this.currentState
   //is OMobilitiesSuiteState not just SuiteState
   @SuppressFBWarnings("BC_UNCONFIRMED_CAST")

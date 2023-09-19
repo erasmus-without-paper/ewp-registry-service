@@ -44,6 +44,7 @@ class IMobilityTorsIndexValidationSuite
     this.apiInfo = new IMobilityTorsValidatedApiInfo(version, ApiEndpoint.Index);
   }
 
+  @Override
   //FindBugs is not smart enough to infer that actual type of this.currentState
   //is IMobilityTorsSuiteState not just SuiteState
   @SuppressFBWarnings("BC_UNCONFIRMED_CAST")

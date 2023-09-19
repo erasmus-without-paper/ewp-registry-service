@@ -49,6 +49,7 @@ class InstitutionsValidationSuite
     this.apiInfo = new InstitutionsValidatedApiInfo(version);
   }
 
+  @Override
   //FindBugs is not smart enough to infer that actual type of this.currentState
   //is InstitutionsSuiteState not just SuiteState
   @SuppressFBWarnings("BC_UNCONFIRMED_CAST")

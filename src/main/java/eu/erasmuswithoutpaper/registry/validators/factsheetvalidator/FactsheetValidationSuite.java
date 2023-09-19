@@ -43,6 +43,7 @@ class FactsheetValidationSuite
     return apiInfo;
   }
 
+  @Override
   //FindBugs is not smart enough to infer that actual type of this.currentState
   //is FactsheetSuiteState not just SuiteState
   @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
