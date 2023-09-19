@@ -39,7 +39,6 @@ public class Application {
    *
    * @return String or null.
    */
-  @SuppressFBWarnings("UPM_UNCALLED_PRIVATE_METHOD")
   public static String getRootUrl() {
     return rootUrl;
   }
@@ -50,7 +49,6 @@ public class Application {
    *
    * @return String or null.
    */
-  @SuppressFBWarnings("UPM_UNCALLED_PRIVATE_METHOD")
   public static String getRegistryRepoBaseUrl() {
     return registryRepoBaseUrl;
   }
@@ -61,7 +59,6 @@ public class Application {
    *
    * @return String or null.
    */
-  @SuppressFBWarnings("UPM_UNCALLED_PRIVATE_METHOD")
   public static String getEwpSchemaBaseUrl() {
     return ewpSchemaBaseUrl;
   }
