@@ -20,14 +20,12 @@
             <property name="utilityClassPattern" value="[A-Z][a-zA-Z0-9]+(Utils?|Helper)?" />
         </properties>
     </rule>
+    <rule name="ControlStatementBraces" ref="category/java/codestyle.xml/ControlStatementBraces" />
     <rule name="DontImportJavaLang" ref="category/java/codestyle.xml/DontImportJavaLang" />
     <rule name="DuplicateImports" ref="category/java/codestyle.xml/DuplicateImports" />
     <rule name="ExtendsObject" ref="category/java/codestyle.xml/ExtendsObject" />
     <rule name="ForLoopShouldBeWhileLoop" ref="category/java/codestyle.xml/ForLoopShouldBeWhileLoop" />
-    <rule name="ForLoopsMustUseBraces" ref="category/java/codestyle.xml/ForLoopsMustUseBraces" />
     <rule name="GenericsNaming" ref="category/java/codestyle.xml/GenericsNaming" />
-    <rule name="IfElseStmtsMustUseBraces" ref="category/java/codestyle.xml/IfElseStmtsMustUseBraces" />
-    <rule name="IfStmtsMustUseBraces" ref="category/java/codestyle.xml/IfStmtsMustUseBraces" />
     <rule name="MIsLeadingVariableName" ref="category/java/codestyle.xml/MIsLeadingVariableName" />
     <rule name="MethodNamingConventions" ref="category/java/codestyle.xml/MethodNamingConventions" />
     <rule name="NoPackage" ref="category/java/codestyle.xml/NoPackage" />
@@ -38,7 +36,6 @@
     <rule name="TooManyStaticImports" ref="category/java/codestyle.xml/TooManyStaticImports" />
     <rule name="UnnecessaryFullyQualifiedName"
         ref="category/java/codestyle.xml/UnnecessaryFullyQualifiedName" />
-    <rule name="WhileLoopsMustUseBraces" ref="category/java/codestyle.xml/WhileLoopsMustUseBraces" />
 
     <rule name="CollapsibleIfStatements" ref="category/java/design.xml/CollapsibleIfStatements" />
     <rule name="SimplifiedTernary" ref="category/java/design.xml/SimplifiedTernary" />
