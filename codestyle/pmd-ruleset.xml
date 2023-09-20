@@ -42,6 +42,7 @@
     <rule ref="category/java/codestyle.xml/ShortMethodName" />
     <rule ref="category/java/codestyle.xml/TooManyStaticImports" />
     <rule ref="category/java/codestyle.xml/UnnecessaryAnnotationValueElement" />
+    <rule ref="category/java/codestyle.xml/UnnecessaryCast" />
     <rule ref="category/java/codestyle.xml/UnnecessaryFullyQualifiedName" />
     <rule ref="category/java/codestyle.xml/UseDiamondOperator" />
     <rule ref="category/java/codestyle.xml/UseShortArrayInitializer" />
@@ -91,6 +92,7 @@
     <rule ref="category/java/multithreading.xml/DoubleCheckedLocking" />
 
     <rule ref="category/java/performance.xml/AppendCharacterWithChar" />
+    <rule ref="category/java/performance.xml/AvoidCalendarDateCreation" />
     <rule ref="category/java/performance.xml/BigIntegerInstantiation" />
     <rule ref="category/java/performance.xml/BooleanInstantiation" />
     <rule ref="category/java/performance.xml/InefficientEmptyStringCheck" />
