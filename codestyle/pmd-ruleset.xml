@@ -27,6 +27,7 @@
     <rule name="ExtendsObject" ref="category/java/codestyle.xml/ExtendsObject" />
     <rule name="ForLoopShouldBeWhileLoop" ref="category/java/codestyle.xml/ForLoopShouldBeWhileLoop" />
     <rule name="GenericsNaming" ref="category/java/codestyle.xml/GenericsNaming" />
+    <rule name="IdenticalCatchBranches" ref="category/java/codestyle.xml/IdenticalCatchBranches" />
     <rule name="MethodNamingConventions" ref="category/java/codestyle.xml/MethodNamingConventions" />
     <rule name="NoPackage" ref="category/java/codestyle.xml/NoPackage" />
     <rule name="PackageCase" ref="category/java/codestyle.xml/PackageCase" />

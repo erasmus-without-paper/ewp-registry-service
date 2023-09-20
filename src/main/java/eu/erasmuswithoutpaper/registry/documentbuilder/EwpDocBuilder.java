@@ -147,9 +147,7 @@ public class EwpDocBuilder {
         StreamSource xsdSource = new StreamSource(xsd.getInputStream());
         xsdSources.add(xsdSource);
       }
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    } catch (SAXException e) {
+    } catch (IOException | SAXException e) {
       throw new RuntimeException(e);
     }
 
