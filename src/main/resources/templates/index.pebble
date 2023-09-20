@@ -108,11 +108,7 @@
                         </div>
                     </div>
                 </div>
-                {% if artifactVersion != null %}
-                    <div class='ewp-header__version'>
-                        v{{ artifactVersion }}
-                    </div>
-                {% endif %}
+                <div class='ewp-header__version'>v{{ artifactVersion }}<br/>{{ gitVersion }}</div>
             </div>
 
             <div class='ewp-header__footer ewp-footer'>

@@ -2,3 +2,4 @@ application.properties
 /target/
 /var/
 /src/main/webapp/node/
+src/main/resources/git.properties
