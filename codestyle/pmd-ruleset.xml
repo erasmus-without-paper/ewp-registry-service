@@ -15,6 +15,7 @@
     <rule ref="category/java/bestpractices.xml/UnusedLocalVariable" />
     <rule ref="category/java/bestpractices.xml/UnusedPrivateField" />
     <rule ref="category/java/bestpractices.xml/UnusedPrivateMethod" />
+    <rule ref="category/java/bestpractices.xml/WhileLoopWithLiteralBoolean" />
 
     <rule ref="category/java/codestyle.xml/AvoidDollarSigns" />
     <rule ref="category/java/codestyle.xml/BooleanGetMethodName" />
@@ -60,6 +61,7 @@
     <rule ref="category/java/errorprone.xml/CloneMethodMustImplementCloneable" />
     <rule ref="category/java/errorprone.xml/CloneMethodReturnTypeMustMatchClassName" />
     <rule ref="category/java/errorprone.xml/CloneThrowsCloneNotSupportedException" />
+    <rule ref="category/java/errorprone.xml/DetachedTestCase" />
     <rule ref="category/java/errorprone.xml/DontUseFloatTypeForLoopIndices" />
     <rule ref="category/java/errorprone.xml/EmptyFinalizer" />
     <rule ref="category/java/errorprone.xml/FinalizeDoesNotCallSuperFinalize" />
