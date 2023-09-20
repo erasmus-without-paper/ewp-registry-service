@@ -42,6 +42,7 @@
     <rule ref="category/java/codestyle.xml/UnnecessaryAnnotationValueElement" />
     <rule ref="category/java/codestyle.xml/UnnecessaryFullyQualifiedName" />
     <rule ref="category/java/codestyle.xml/UseDiamondOperator" />
+    <rule ref="category/java/codestyle.xml/UseShortArrayInitializer" />
     <rule ref="category/java/codestyle.xml/UseUnderscoresInNumericLiterals" />
 
     <rule ref="category/java/design.xml/CollapsibleIfStatements" />
