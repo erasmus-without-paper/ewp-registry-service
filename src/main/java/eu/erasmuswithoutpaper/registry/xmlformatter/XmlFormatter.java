@@ -66,7 +66,7 @@ public class XmlFormatter {
       String val = attr.getValue();
       List<String> inchunks = Arrays.asList(val.split("\\s+")).stream()
           .filter(str -> !str.isEmpty()).collect(Collectors.toList());
-      List<String> outchunks = new ArrayList<String>(inchunks.size() / 2);
+      List<String> outchunks = new ArrayList<>(inchunks.size() / 2);
       if (inchunks.size() % 2 == 0) {
         for (int i = 0; i < inchunks.size(); i += 2) {
           outchunks.add(inchunks.get(i) + "\n        " + inchunks.get(i + 1));

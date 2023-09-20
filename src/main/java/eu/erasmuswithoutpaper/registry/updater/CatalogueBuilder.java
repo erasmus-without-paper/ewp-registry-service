@@ -159,7 +159,7 @@ class CatalogueBuilder {
 
     // Add xmlns:xxx attributes for most of the KnownNamespace prefixes.
 
-    List<String> chunks = new ArrayList<String>();
+    List<String> chunks = new ArrayList<>();
     for (KnownNamespace ns : KnownNamespace.values()) {
       if (ns.isToBeIncludedInCatalogueXmlns() && ns != KnownNamespace.RESPONSE_REGISTRY_V1) {
         catalogueElem.setAttributeNS(XMLConstants.XMLNS_ATTRIBUTE_NS_URI,
