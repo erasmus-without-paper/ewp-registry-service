@@ -27,13 +27,11 @@
     <rule name="ExtendsObject" ref="category/java/codestyle.xml/ExtendsObject" />
     <rule name="ForLoopShouldBeWhileLoop" ref="category/java/codestyle.xml/ForLoopShouldBeWhileLoop" />
     <rule name="GenericsNaming" ref="category/java/codestyle.xml/GenericsNaming" />
-    <rule name="MIsLeadingVariableName" ref="category/java/codestyle.xml/MIsLeadingVariableName" />
     <rule name="MethodNamingConventions" ref="category/java/codestyle.xml/MethodNamingConventions" />
     <rule name="NoPackage" ref="category/java/codestyle.xml/NoPackage" />
     <rule name="PackageCase" ref="category/java/codestyle.xml/PackageCase" />
     <rule name="ShortClassName" ref="category/java/codestyle.xml/ShortClassName" />
     <rule name="ShortMethodName" ref="category/java/codestyle.xml/ShortMethodName" />
-    <rule name="SuspiciousConstantFieldName" ref="category/java/codestyle.xml/SuspiciousConstantFieldName" />
     <rule name="TooManyStaticImports" ref="category/java/codestyle.xml/TooManyStaticImports" />
     <rule name="UnnecessaryAnnotationValueElement"
         ref="category/java/codestyle.xml/UnnecessaryAnnotationValueElement" />
