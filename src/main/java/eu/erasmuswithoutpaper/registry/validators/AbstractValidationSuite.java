@@ -86,7 +86,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
   protected final EwpDocBuilder docBuilder;
   protected final Internet internet;
   protected final RegistryClient regClient;
-  protected final Integer timeoutMillis = 10000;
+  protected final Integer timeoutMillis = 10_000;
   private final CatalogueMatcherProvider catalogueMatcherProvider;
   protected ValidatorKeyStore validatorKeyStore;
   protected ValidatorKeyStoreSet validatorKeyStoreSet;

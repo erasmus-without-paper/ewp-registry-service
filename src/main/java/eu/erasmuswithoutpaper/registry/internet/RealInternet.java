@@ -98,8 +98,8 @@ public class RealInternet implements Internet {
     InputStream is = null;
     try {
       URLConnection conn = url.openConnection();
-      conn.setConnectTimeout(10000);
-      conn.setReadTimeout(10000);
+      conn.setConnectTimeout(10_000);
+      conn.setReadTimeout(10_000);
       conn.setAllowUserInteraction(false);
       is = conn.getInputStream();
       return IOUtils.toByteArray(is);

@@ -64,7 +64,7 @@ public class ApiController {
       HttpHeaders headers = new HttpHeaders();
       headers.setCacheControl("max-age=300, must-revalidate");
       headers.setContentType(MediaType.APPLICATION_XML);
-      headers.setExpires(System.currentTimeMillis() + 300000);
+      headers.setExpires(System.currentTimeMillis() + 300_000);
       return new ResponseEntity<String>(this.repo.getCatalogue(), headers, HttpStatus.OK);
     } catch (CatalogueNotFound e) {
       String xml;
