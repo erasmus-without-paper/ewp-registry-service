@@ -4,6 +4,7 @@
     xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd">
     <description>ewp-registry-service PMD Ruleset</description>
 
+    <rule ref="category/java/bestpractices.xml/AvoidMessageDigestField" />
     <rule ref="category/java/bestpractices.xml/AvoidReassigningLoopVariables" />
     <rule ref="category/java/bestpractices.xml/AvoidStringBufferField" />
     <rule ref="category/java/bestpractices.xml/AvoidUsingHardCodedIP" />
