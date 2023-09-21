@@ -231,15 +231,10 @@ public class Utils {
        * XXE prevention. See here:
        * https://www.owasp.org/index.php/XML_External_Entity_(XXE)_Prevention_Cheat_Sheet#Java
        */
-      String feature = null;
-      feature = "http://apache.org/xml/features/disallow-doctype-decl";
-      dbf.setFeature(feature, true);
-      feature = "http://xml.org/sax/features/external-general-entities";
-      dbf.setFeature(feature, false);
-      feature = "http://xml.org/sax/features/external-parameter-entities";
-      dbf.setFeature(feature, false);
-      feature = "http://apache.org/xml/features/nonvalidating/load-external-dtd";
-      dbf.setFeature(feature, false);
+      dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+      dbf.setFeature("http://xml.org/sax/features/external-general-entities", false);
+      dbf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+      dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
       dbf.setXIncludeAware(false);
       dbf.setExpandEntityReferences(false);
 

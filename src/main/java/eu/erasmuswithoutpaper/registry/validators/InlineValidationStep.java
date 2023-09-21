@@ -34,7 +34,7 @@ public abstract class InlineValidationStep implements ValidationStepWithStatus {
 
     private final Status status;
     private boolean fatal = false;
-    private transient Response serverResponse = null;
+    private transient Response serverResponse;
 
     /**
      * Create a Failure with certain message and status for given response.

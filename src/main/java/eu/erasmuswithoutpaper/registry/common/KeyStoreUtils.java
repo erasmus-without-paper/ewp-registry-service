@@ -97,9 +97,8 @@ public class KeyStoreUtils {
    */
   public static PublicKey getPublicKeyFromPrivateKey(RSAPrivateCrtKey rsaPrivateKey)
       throws KeyStoreUtilsException {
-    KeyFactory keyFactory = null;
     try {
-      keyFactory = KeyFactory.getInstance("RSA");
+      KeyFactory keyFactory = KeyFactory.getInstance("RSA");
 
       RSAPublicKeySpec publicKeySpec = new RSAPublicKeySpec(
           rsaPrivateKey.getModulus(), rsaPrivateKey.getPublicExponent()

@@ -161,7 +161,7 @@ class OMobilityLAsUpdateValidationSuite
 
   private Document cloneDocument(Document document) {
     DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-    DocumentBuilder db = null;
+    DocumentBuilder db;
     try {
       db = dbf.newDocumentBuilder();
     } catch (ParserConfigurationException e) {

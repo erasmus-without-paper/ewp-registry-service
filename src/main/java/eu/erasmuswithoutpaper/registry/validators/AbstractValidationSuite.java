@@ -211,7 +211,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
    */
   protected void addAndRun(Status failedStatus, InlineValidationStep step) throws SuiteBroken {
     this.steps.add(step);
-    Status status = null;
+    Status status;
     try {
       status = step.run();
     } catch (InlineValidationStep.FatalFailure e) {
@@ -1924,7 +1924,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
 
     @Override
     public String getGetUrl(String url) {
-      URIBuilder builder = null;
+      URIBuilder builder;
       try {
         builder = new URIBuilder(url);
       } catch (URISyntaxException e) {

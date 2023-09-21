@@ -80,22 +80,15 @@ public class ReportUtils {
     classpathLoader.setPrefix("templates");
     classpathLoader.setSuffix(".pebble");
     PebbleEngine engine = new PebbleEngine.Builder().loader(classpathLoader).build();
-    PebbleTemplate compiledTemplate = null;
-    try {
-      compiledTemplate = engine.getTemplate("validationResult");
-    } catch (PebbleException e) {
-      logger.error("Problem with generating full report as HTML.", e);
-      return "An error occurred";
-    }
 
-    Writer writer = new StringWriter();
     try {
+      PebbleTemplate compiledTemplate = engine.getTemplate("validationResult");
+      Writer writer = new StringWriter();
       compiledTemplate.evaluate(writer, pebbleContext);
+      return writer.toString();
     } catch (PebbleException | IOException e) {
       logger.error("Problem with generating full report as HTML.", e);
       return "An error occurred";
     }
-
-    return writer.toString();
   }
 }

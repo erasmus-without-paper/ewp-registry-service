@@ -32,7 +32,7 @@ public class RegistryCatalogueMatcherProvider implements CatalogueMatcherProvide
   @Override
   public Match getMatcher() {
     DocumentBuilder docBuilder = Utils.newSecureDocumentBuilder();
-    Document doc = null;
+    Document doc;
     try {
       doc = docBuilder.parse(
           new ByteArrayInputStream(
