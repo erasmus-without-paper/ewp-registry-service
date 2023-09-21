@@ -13,10 +13,12 @@
     <rule ref="category/java/bestpractices.xml/DoubleBraceInitialization" />
     <rule ref="category/java/bestpractices.xml/ForLoopVariableCount" />
     <rule ref="category/java/bestpractices.xml/MissingOverride" />
+    <rule ref="category/java/bestpractices.xml/SimplifiableTestAssertion" />
     <rule ref="category/java/bestpractices.xml/UnusedFormalParameter" />
     <rule ref="category/java/bestpractices.xml/UnusedLocalVariable" />
     <rule ref="category/java/bestpractices.xml/UnusedPrivateField" />
     <rule ref="category/java/bestpractices.xml/UnusedPrivateMethod" />
+    <rule ref="category/java/bestpractices.xml/UseStandardCharsets" />
     <rule ref="category/java/bestpractices.xml/WhileLoopWithLiteralBoolean" />
 
     <rule ref="category/java/codestyle.xml/AvoidDollarSigns" />
@@ -28,6 +30,7 @@
     </rule>
     <rule ref="category/java/codestyle.xml/ControlStatementBraces" />
     <rule ref="category/java/codestyle.xml/ExtendsObject" />
+    <rule ref="category/java/codestyle.xml/FinalParameterInAbstractMethod" />
     <rule ref="category/java/codestyle.xml/ForLoopShouldBeWhileLoop" />
     <rule ref="category/java/codestyle.xml/FormalParameterNamingConventions" />
     <rule ref="category/java/codestyle.xml/GenericsNaming" />
@@ -48,6 +51,7 @@
     <rule ref="category/java/codestyle.xml/UseUnderscoresInNumericLiterals" />
 
     <rule ref="category/java/design.xml/CollapsibleIfStatements" />
+    <rule ref="category/java/design.xml/MutableStaticState" />
     <rule ref="category/java/design.xml/SimplifiedTernary" />
 
     <rule ref="category/java/errorprone.xml/AssignmentToNonFinalStatic" />
