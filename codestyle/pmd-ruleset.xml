@@ -23,11 +23,7 @@
 
     <rule ref="category/java/codestyle.xml/AvoidDollarSigns" />
     <rule ref="category/java/codestyle.xml/BooleanGetMethodName" />
-    <rule ref="category/java/codestyle.xml/ClassNamingConventions">
-        <properties>
-            <property name="utilityClassPattern" value="[A-Z][a-zA-Z0-9]+(Utils?|Helper)?" />
-        </properties>
-    </rule>
+    <rule ref="category/java/codestyle.xml/ClassNamingConventions" />
     <rule ref="category/java/codestyle.xml/ControlStatementBraces" />
     <rule ref="category/java/codestyle.xml/ExtendsObject" />
     <rule ref="category/java/codestyle.xml/FinalParameterInAbstractMethod" />
