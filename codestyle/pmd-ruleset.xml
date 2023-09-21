@@ -65,7 +65,6 @@
     <rule ref="category/java/errorprone.xml/CloneMethodMustBePublic" />
     <rule ref="category/java/errorprone.xml/CloneMethodMustImplementCloneable" />
     <rule ref="category/java/errorprone.xml/CloneMethodReturnTypeMustMatchClassName" />
-    <rule ref="category/java/errorprone.xml/CloneThrowsCloneNotSupportedException" />
     <rule ref="category/java/errorprone.xml/DetachedTestCase" />
     <rule ref="category/java/errorprone.xml/DontUseFloatTypeForLoopIndices" />
     <rule ref="category/java/errorprone.xml/EmptyFinalizer" />
