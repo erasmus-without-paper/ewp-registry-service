@@ -2,7 +2,6 @@ package eu.erasmuswithoutpaper.registry.cmatrix;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.web.util.HtmlUtils;
 
@@ -42,34 +41,18 @@ class ContentLine {
   }
 
   void renderHtmlLine(StringBuilder sb) {
-    sb.append("<div class='");
-    sb.append(String.join(" ",
-        this.classes.stream().map(s -> HtmlUtils.htmlEscape(s)).collect(Collectors.toList())));
-    sb.append('\'');
+    sb.append("<div class='").append(String.join(" ", this.classes)).append('\'');
     if (this.tooltipLine.size() > 0) {
-      sb.append(" title='");
-      for (int i = 0; i < this.tooltipLine.size(); i++) {
-        if (i > 0) {
-          sb.append('\n');
-        }
-        sb.append(HtmlUtils.htmlEscape(this.tooltipLine.get(i)));
-      }
-      sb.append('\'');
+      sb.append(" title='").append(String.join("\n", this.tooltipLine)).append('\'');
     }
-    sb.append('>');
-    if (this.isContentSafeHtml) {
-      sb.append(this.content);
-    } else {
-      sb.append(HtmlUtils.htmlEscape(this.content));
-    }
-    sb.append("</div>");
+    sb.append('>').append(getSafeContent()).append("</div>");
   }
 
-  void renderTooltipLine(StringBuilder sb) {
+  private String getSafeContent() {
     if (this.isContentSafeHtml) {
-      sb.append(this.content);
+      return this.content;
     } else {
-      sb.append(HtmlUtils.htmlEscape(this.content));
+      return HtmlUtils.htmlEscape(this.content);
     }
   }
 
