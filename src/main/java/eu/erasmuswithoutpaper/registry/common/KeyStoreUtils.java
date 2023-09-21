@@ -1,7 +1,9 @@
 package eu.erasmuswithoutpaper.registry.common;
 
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.Key;
 import java.security.KeyFactory;
 import java.security.KeyPair;
@@ -132,7 +134,7 @@ public class KeyStoreUtils {
       throws KeyStoreUtilsException {
     try {
       KeyStore keyStore = KeyStore.getInstance(format);
-      try (FileInputStream is = new FileInputStream(path)) {
+      try (InputStream is = Files.newInputStream(Paths.get(path))) {
         keyStore.load(is, password);
       }
       return keyStore;

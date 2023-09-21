@@ -2,10 +2,10 @@ package eu.erasmuswithoutpaper.registry.consoleapplication;
 
 import static eu.erasmuswithoutpaper.registry.consoleapplication.ApplicationParametersUtils.readParameter;
 
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyStore;
@@ -182,10 +182,7 @@ public class CryptoParameters {
       throws ApplicationArgumentException, KeyStoreUtilsException {
     PemObject pemObject;
     try (PEMParser pemParser = new PEMParser(
-        new InputStreamReader(
-            new FileInputStream(clientPemPath),
-            StandardCharsets.UTF_8
-        )
+        Files.newBufferedReader(Paths.get(clientPemPath), StandardCharsets.UTF_8)
     )) {
       pemObject = pemParser.readPemObject();
     } catch (IOException e) {
