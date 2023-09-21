@@ -71,7 +71,7 @@ public class CoverageMatrixGenerator {
       row.generateHtmlRow(sb);
     }
     // Header moved after table body to work around sticky-opacity bug in browsers
-    CoverageMatrixRow.generateHtmlTableHeader(sb);
+    sb.append(CoverageMatrixRow.generateTableHeader());
     sb.append("</table>");
     sb.append("<div class='ewpst__footnotes'>");
     for (CoverageMatrixRow row : rows) {

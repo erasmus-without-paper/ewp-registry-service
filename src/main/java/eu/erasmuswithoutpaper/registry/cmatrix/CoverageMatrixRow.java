@@ -24,28 +24,20 @@ class CoverageMatrixRow {
     StringBuilder sb = new StringBuilder();
     sb.append("<th ");
     if (colspan != 1) {
-      sb.append("colspan='");
-      sb.append(colspan);
-      sb.append('\'');
+      sb.append("colspan='").append(colspan).append('\'');
     }
     if (rowspan != 1) {
-      sb.append("rowspan='");
-      sb.append(rowspan);
-      sb.append('\'');
+      sb.append("rowspan='").append(rowspan).append('\'');
     }
-    sb.append("class='ewpst__cell ewpst__cell--cc");
-    sb.append(colorClass);
+    sb.append("class='ewpst__cell ewpst__cell--cc").append(colorClass);
     if (!classes.isEmpty()) {
-      sb.append(' ');
-      sb.append(classes);
+      sb.append(' ').append(classes);
     }
-    sb.append("'>");
-    sb.append(text);
-    sb.append("</th>");
+    sb.append("'>").append(text).append("</th>");
     return sb.toString();
   }
 
-  static void generateHtmlTableHeader(StringBuilder sb) {
+  static String generateTableHeader() {
 
     StringBuilder row1 = new StringBuilder();
     StringBuilder row2 = new StringBuilder();
@@ -144,11 +136,8 @@ class CoverageMatrixRow {
     row1.append("</tr>");
     row2.append("</tr>");
     row3.append("</tr>");
-    sb.append("<thead>");
-    sb.append(row1);
-    sb.append(row2);
-    sb.append(row3);
-    sb.append("</thead>");
+
+    return "<thead>" + row1.toString() + row2.toString() + row3.toString() + "</thead>";
   }
 
   private static final int NAME_COLOR_CLASS = 1;
