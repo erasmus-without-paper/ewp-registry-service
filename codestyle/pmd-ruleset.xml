@@ -89,15 +89,18 @@
     <rule ref="category/java/multithreading.xml/DontCallThreadRun" />
     <rule ref="category/java/multithreading.xml/DoubleCheckedLocking" />
 
-    <rule ref="category/java/performance.xml/AppendCharacterWithChar" />
-    <rule ref="category/java/performance.xml/AvoidCalendarDateCreation" />
-    <rule ref="category/java/performance.xml/BigIntegerInstantiation" />
-    <rule ref="category/java/performance.xml/InefficientEmptyStringCheck" />
-    <rule ref="category/java/performance.xml/StringInstantiation" />
-    <rule ref="category/java/performance.xml/StringToString" />
-    <rule ref="category/java/performance.xml/UseIndexOfChar" />
-    <rule ref="category/java/performance.xml/UseStringBufferLength" />
-    <rule ref="category/java/performance.xml/UselessStringValueOf" />
+    <rule ref="category/java/performance.xml">
+        <exclude name="AvoidFileStream" />
+        <exclude name="AvoidInstantiatingObjectsInLoops" />
+        <exclude name="ConsecutiveAppendsShouldReuse" />
+        <exclude name="ConsecutiveLiteralAppends" />
+        <exclude name="InsufficientStringBufferDeclaration" />
+        <exclude name="InefficientStringBuffering" />
+        <exclude name="OptimizableToArrayCall" />
+        <exclude name="RedundantFieldInitializer" />
+        <exclude name="SimplifyStartsWith" />
+        <exclude name="UseStringBufferForStringAppends" />
+    </rule>
 
     <rule ref="category/java/security.xml" />
 
