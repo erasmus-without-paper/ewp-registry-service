@@ -55,8 +55,7 @@ public class SecurityParameters {
 
   private static String userSelectSecurity(TextIO console, List<String> securities,
       String apiName) {
-    return userSelectList(console, securities,
-        String.format("Select security method for API %s", apiName));
+    return userSelectList(console, securities, "Select security method for API " + apiName);
   }
 
   /**

@@ -103,23 +103,19 @@ public class CryptoParameters {
 
   private static KeyPair readHttpSigKeyFromParameters(ApplicationArguments args, String keyName)
       throws ApplicationArgumentException, KeyStoreUtilsException {
-    String keyStorePathParameter = String.format("http-%s-keystore", keyName);
-    String pemPathParameter = String.format("http-%s-pem", keyName);
+    String keyStorePathParameter = "http-" + keyName + "-keystore";
+    String pemPathParameter = "http-" + keyName + "-pem";
     String keyStorePath = readParameter(args, keyStorePathParameter, "file-path", false);
     String pemPath = readParameter(args, pemPathParameter, "file-path", false);
     if (keyStorePath != null && pemPath != null) {
       throw new ApplicationArgumentException(
-          String.format(
-              "You should provide only one http-%s private key path.",
-              keyName
-          )
+          "You should provide only one http-" + keyName + " private key path."
       );
     }
 
     KeyPair keyPair;
     if (keyStorePath != null) {
-      keyPair = readKeyPairFromKeyStoreParameters(args, keyStorePath,
-          String.format("http-%s", keyName));
+      keyPair = readKeyPairFromKeyStoreParameters(args, keyStorePath, "http-" + keyName);
     } else if (pemPath != null) {
       keyPair = readPkcs8KeyFromFile(pemPath);
     } else {
@@ -286,11 +282,8 @@ public class CryptoParameters {
         return pkcs12KeyFormatString;
       } else {
         throw new ApplicationArgumentException(
-            String.format(
-                "Cannot infer KeyStore format from filename, please provide %s parameter.",
-                parameter
-            )
-        );
+            "Cannot infer KeyStore format from filename, please provide " + parameter
+            + " parameter.");
       }
     }
 

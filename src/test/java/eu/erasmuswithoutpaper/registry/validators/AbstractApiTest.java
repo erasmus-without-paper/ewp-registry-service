@@ -56,7 +56,6 @@ public abstract class AbstractApiTest<StateType extends SuiteState> extends WRTe
       Arrays.asList("test.hei01.uw.edu.pl", "test.hei02.uw.edu.pl")
   );
 
-  private static final String selfManifestUrl = "https://registry.example.com/manifest-%s.xml";
   private static final String apiManifestUrl = "https://university.example.com/manifest.xml";
 
   private static boolean needsReinit;
@@ -149,7 +148,7 @@ public abstract class AbstractApiTest<StateType extends SuiteState> extends WRTe
 
       for (String myManifestName : registryManifests.keySet()) {
         String myManifest = registryManifests.get(myManifestName);
-        String myUrl = String.format(selfManifestUrl, myManifestName);
+        String myUrl = "https://registry.example.com/manifest-" + myManifestName + ".xml";
         this.internet.putURL(myUrl, myManifest);
         this.sourceProvider.addSource(manifestFactory.newTrustedSource(myUrl));
       }

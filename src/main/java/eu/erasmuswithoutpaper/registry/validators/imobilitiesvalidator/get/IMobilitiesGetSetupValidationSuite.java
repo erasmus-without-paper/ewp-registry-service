@@ -79,7 +79,7 @@ class IMobilitiesGetSetupValidationSuite
     this.setup(new InlineValidationStep() {
       @Override
       public String getName() {
-        return String.format("Check if %s parameter is provided.", OMOBILITY_ID_PARAMETER);
+        return "Check if " + OMOBILITY_ID_PARAMETER + " parameter is provided.";
       }
 
       @Override

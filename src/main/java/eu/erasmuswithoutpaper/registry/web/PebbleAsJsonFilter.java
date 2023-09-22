@@ -47,9 +47,7 @@ public class PebbleAsJsonFilter extends AbstractExtension {
       try {
         return writer.writeValueAsString(inputObject);
       } catch (JsonProcessingException e) {
-        logger.error(
-            String.format("Exception raised while serializing object to JSON: %s", inputObject),
-            e);
+        logger.error("Exception raised while serializing object to JSON: " + inputObject, e);
         return null;
       }
     }

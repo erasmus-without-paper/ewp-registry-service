@@ -41,7 +41,7 @@ public class KeyStoreUtils {
       Certificate certificate = keyStore.getCertificate(keyStoreAlias);
       if (!(certificate instanceof X509Certificate)) {
         throw new KeyStoreUtilsException(
-            String.format("Certificate '%s' is not X509Certificate.", keyStoreAlias)
+            "Certificate '" + keyStoreAlias + "' is not X509Certificate."
         );
       }
       PublicKey publicKey = certificate.getPublicKey();
@@ -49,10 +49,7 @@ public class KeyStoreUtils {
       return new KeyPairAndCertificate(keyPair, (X509Certificate) certificate);
     } catch (KeyStoreException e) {
       throw new KeyStoreUtilsException(
-          String.format(
-              "Problem while reading certificate from provided keystore: %s",
-              e.getMessage()
-          )
+          "Problem while reading certificate from provided keystore: " + e.getMessage()
       );
     }
   }
@@ -75,19 +72,12 @@ public class KeyStoreUtils {
       key = keyStore.getKey(keyStoreAlias, password);
     } catch (UnrecoverableKeyException | NoSuchAlgorithmException | KeyStoreException e) {
       throw new KeyStoreUtilsException(
-          String.format(
-              "Cannot recover key from keystore. Alias: \"%s\", %s",
-              keyStoreAlias, e.getMessage()
-          )
-      );
+          "Cannot recover key from keystore. Alias: '" + keyStoreAlias + "', " + e.getMessage());
     }
 
     if (key == null) {
       throw new KeyStoreUtilsException(
-          String.format(
-              "Cannot recover key, invalid alias: \"%s\"",
-              keyStoreAlias
-          )
+          "Cannot recover key, invalid alias: '" + keyStoreAlias + "'"
       );
     }
 
@@ -139,12 +129,7 @@ public class KeyStoreUtils {
       }
       return keyStore;
     } catch (IOException | CertificateException | NoSuchAlgorithmException | KeyStoreException e) {
-      throw new KeyStoreUtilsException(
-          String.format(
-              "Cannot load KeyStore, %s",
-              e.getMessage()
-          )
-      );
+      throw new KeyStoreUtilsException("Cannot load KeyStore: " + e.getMessage());
     }
   }
 

@@ -34,8 +34,8 @@ public class ReportUtils {
         steps.stream().map(ValidationStepWithStatus::getStatus).max(
             ValidationStepWithStatus.Status::compareTo)
             .orElse(ValidationStepWithStatus.Status.SUCCESS);
-    results.add(String.format("RESULT: %s", worstStatus));
-    results.add(String.format("Run %s tests", steps.size()));
+    results.add("RESULT: " + worstStatus);
+    results.add("Run " + steps.size() + " tests");
     for (ValidationStepWithStatus.Status status : ValidationStepWithStatus.Status.values()) {
       long numberOfStepsWithStatus = steps.stream()
           .filter(step -> step.getStatus().equals(status))
