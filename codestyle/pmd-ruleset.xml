@@ -49,6 +49,7 @@
     <rule ref="category/java/codestyle.xml/UseUnderscoresInNumericLiterals" />
 
     <rule ref="category/java/design.xml/CollapsibleIfStatements" />
+    <rule ref="category/java/design.xml/InvalidJavaBean"/>
     <rule ref="category/java/design.xml/MutableStaticState" />
     <rule ref="category/java/design.xml/SimplifiedTernary" />
 
