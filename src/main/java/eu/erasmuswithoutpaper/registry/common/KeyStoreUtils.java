@@ -20,6 +20,8 @@ import java.security.interfaces.RSAPrivateCrtKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.RSAPublicKeySpec;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 public class KeyStoreUtils {
 
   /**
@@ -130,6 +132,8 @@ public class KeyStoreUtils {
    * @return read KeyStore.
    * @throws KeyStoreUtilsException If KeyStore cannot be loaded.
    */
+  // probably spotbugs bug, try for inputStream reports fine on Java 8, but not on Java 11
+  @SuppressFBWarnings("RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE")
   public static KeyStore loadKeyStore(String path, String format, char[] password)
       throws KeyStoreUtilsException {
     try {
