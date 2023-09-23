@@ -154,7 +154,7 @@ public class ManifestRepositoryImpl implements ManifestRepository {
    * Remember to {@link #commit(String)} the changes afterwards, for logging purposes.
    * </p>
    */
-  public void deleteAll() {
+  public final void deleteAll() {
     this.lock.writeLock().lock();
     try {
       Path path = this.repoProperties.getFileSystem().getPath(this.repoProperties.getPath());

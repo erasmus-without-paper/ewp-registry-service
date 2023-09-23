@@ -116,7 +116,7 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
   /**
    * This needs to be called if the sources provided by {@link ManifestSourceProvider} have changed.
    */
-  public void onSourcesUpdated() {
+  public final void onSourcesUpdated() {
 
     /**
      * Lock the manifest repository for exclusive read access as it will be acquired by

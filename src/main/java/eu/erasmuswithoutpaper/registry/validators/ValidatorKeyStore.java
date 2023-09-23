@@ -167,7 +167,7 @@ public class ValidatorKeyStore {
    *
    * @return Generated KeyPair.
    */
-  public KeyPair generateKeyPair() {
+  public final KeyPair generateKeyPair() {
     KeyPairGenerator generator;
     try {
       generator = KeyPairGenerator.getInstance("RSA");

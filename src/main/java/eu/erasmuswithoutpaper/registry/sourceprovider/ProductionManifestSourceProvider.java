@@ -81,7 +81,7 @@ public class ProductionManifestSourceProvider extends ManifestSourceProvider {
   }
 
   @Override
-  public void update() {
+  public final void update() {
     // The first manifest source is our own.
 
     ArrayList<ManifestSource> lst = new ArrayList<>();
