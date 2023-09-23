@@ -25,7 +25,6 @@ import eu.erasmuswithoutpaper.registry.validators.ValidationParameters;
 import eu.erasmuswithoutpaper.registry.validators.web.ManifestApiEntry;
 import org.springframework.boot.ApplicationArguments;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.beryx.textio.TextIO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -164,8 +163,6 @@ public class ApiParameters {
    * @throws IOException
    *     When there were problems while downloading the manifest.
    */
-  // probably SB bug: https://github.com/spotbugs/spotbugs/issues/1694
-  @SuppressFBWarnings("RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE")
   public static String readManifestFromUrl(String manifestUrl) throws IOException {
     try (InputStream manifestStream = new URL(manifestUrl).openStream();
          InputStreamReader reader = new InputStreamReader(manifestStream, StandardCharsets.UTF_8);

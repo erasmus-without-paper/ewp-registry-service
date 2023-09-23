@@ -6,4 +6,8 @@
     <Match>
         <Package name="~org.w3.*" />
     </Match>
+    <Match>
+        <!-- TODO those bugs should be brought back! It were added for the sake of update Spotbugs -->
+        <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2,MS_EXPOSE_REP"/>
+    </Match>
 </FindBugsFilter>

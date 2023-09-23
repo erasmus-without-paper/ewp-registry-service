@@ -82,7 +82,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
 import org.xml.sax.InputSource;
@@ -206,7 +205,6 @@ public class UiController {
    */
   @ResponseBody
   @RequestMapping(value = "/style-{version}.css", method = RequestMethod.GET, produces = "text/css")
-  @SuppressFBWarnings("EI_EXPOSE_REP")
   public byte[] getCss(HttpServletResponse response) {
     response.addHeader("Cache-Control", "public, max-age=86400, stale-while-revalidate=604800");
     if (this.cachedCss == null) {
@@ -222,7 +220,6 @@ public class UiController {
   @ResponseBody
   @RequestMapping(value = "/scripts-{version}.js", method = RequestMethod.GET,
       produces = "application/javascript")
-  @SuppressFBWarnings("EI_EXPOSE_REP")
   public byte[] getJs(HttpServletResponse response) {
     response.addHeader("Cache-Control", "public, max-age=86400, stale-while-revalidate=604800");
     if (this.cachedJs == null) {
@@ -238,7 +235,6 @@ public class UiController {
   @ResponseBody
   @RequestMapping(value = "/ui-{version}.js", method = RequestMethod.GET,
       produces = "application/javascript")
-  @SuppressFBWarnings("EI_EXPOSE_REP")
   public byte[] getUiJs(HttpServletResponse response) {
     response.addHeader("Cache-Control", "public, max-age=86400, stale-while-revalidate=604800");
     if (this.cachedUiJs == null) {
@@ -253,7 +249,6 @@ public class UiController {
    */
   @ResponseBody
   @RequestMapping(value = "/logo.png", method = RequestMethod.GET, produces = "image/png")
-  @SuppressFBWarnings("EI_EXPOSE_REP")
   public byte[] getLogo(HttpServletResponse response) {
     response.addHeader("Cache-Control", "public, max-age=86400, stale-while-revalidate=604800");
     if (this.cachedLogo == null) {

@@ -65,7 +65,6 @@ import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import net.adamcin.httpsig.api.Algorithm;
 import net.adamcin.httpsig.api.Challenge;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -430,9 +429,6 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
     }
   }
 
-  // TODO SP bug: https://github.com/spotbugs/spotbugs/issues/1539
-  // fixed around version 4.4.2
-  @SuppressFBWarnings("DMI_RANDOM_USED_ONLY_ONCE")
   private RSAPublicKey pickRandom(Collection<RSAPublicKey> keys) {
     int randomIndex = RANDOM.nextInt(keys.size());
     return Iterators.get(keys.iterator(), randomIndex);

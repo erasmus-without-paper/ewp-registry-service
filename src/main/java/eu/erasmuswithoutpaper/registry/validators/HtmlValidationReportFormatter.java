@@ -72,7 +72,6 @@ public class HtmlValidationReportFormatter {
       this.url = url;
       this.version = version;
       this.httpSecurityDescription = httpSecurityDescription;
-      // cloning to prevent EI_EXPOSE_REP2 FindBugs warning.
       this.validationStartedDate = (Date) validationStartedDate.clone();
       this.clientKeysRegenerationDate = null;
       if (clientKeysRegenerationDate != null) {

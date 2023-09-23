@@ -2,8 +2,6 @@ package eu.erasmuswithoutpaper.registry.documentbuilder;
 
 import java.nio.charset.StandardCharsets;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 /**
  * A set of parameters for the {@link EwpDocBuilder#build(BuildParams)} method.
  */
@@ -19,7 +17,6 @@ public class BuildParams {
    *
    * @param xml the XML contents to be parsed.
    */
-  @SuppressFBWarnings("EI_EXPOSE_REP2")
   public BuildParams(byte[] xml) {
     this.xml = xml;
   }
@@ -54,7 +51,6 @@ public class BuildParams {
   /**
    * @return XML contents to be parsed.
    */
-  @SuppressFBWarnings("EI_EXPOSE_REP")
   public byte[] getXml() {
     return this.xml;
   }

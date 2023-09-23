@@ -97,7 +97,7 @@
         <dependency>
             <groupId>com.github.spotbugs</groupId>
             <artifactId>spotbugs-annotations</artifactId>
-            <version>4.2.3</version>
+            <version>4.7.3</version>
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>
@@ -347,7 +347,7 @@
             <plugin>
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-maven-plugin</artifactId>
-                <version>4.2.3</version>
+                <version>4.7.3.5</version>
                 <configuration>
                     <effort>Max</effort>
                     <threshold>Low</threshold>
