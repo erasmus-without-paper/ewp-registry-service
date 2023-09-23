@@ -3,11 +3,11 @@ package eu.erasmuswithoutpaper.registry.cmatrix;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownElement;
 import eu.erasmuswithoutpaper.registryclient.HeiEntry;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
+import org.springframework.web.util.HtmlUtils;
 
 class CoverageMatrixRow {
 
@@ -178,8 +178,16 @@ class CoverageMatrixRow {
     cell.addClass("ewpst__cell-erasmus");
     this.cells.add(cell);
     Collection<String> erasmusCodes = hei.getOtherIds("erasmus");
-    Optional<String> erasmusCode = erasmusCodes.stream().findFirst();
-    cell.addContentLine(erasmusCode.orElse(""));
+    if (erasmusCodes.isEmpty()) {
+      cell.addContentLine("");
+    } else {
+      String erasmusCode = erasmusCodes.iterator().next();
+      ContentLine erasmusCodeLine = new ContentLine(
+          // ensure spaces in erasmus code
+          HtmlUtils.htmlEscape(erasmusCode).replace(" ", "&nbsp;"));
+      erasmusCodeLine.setContentSafeHtml(true);
+      cell.addContentLine(erasmusCodeLine);
+    }
 
     /* Primary Network APIs */
     int colorClass = getNextColorClass(NAME_COLOR_CLASS);
