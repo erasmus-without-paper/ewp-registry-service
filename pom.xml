@@ -492,10 +492,10 @@
             </plugin>
 
             <plugin>
-                <groupId>pl.project13.maven</groupId>
-                <artifactId>git-commit-id-plugin</artifactId>
+                <groupId>io.github.git-commit-id</groupId>
+                <artifactId>git-commit-id-maven-plugin</artifactId>
                 <!-- newer versions works only with Java >= 11-->
-                <version>4.0.5</version>
+                <version>5.0.1</version>
                 <configuration>
                     <dateFormat>dd.MM.yyyy</dateFormat>
                     <generateGitPropertiesFile>true</generateGitPropertiesFile>
