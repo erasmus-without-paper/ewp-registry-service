@@ -107,12 +107,12 @@
         <dependency>
             <groupId>org.eclipse.jgit</groupId>
             <artifactId>org.eclipse.jgit</artifactId>
-            <version>5.13.2.202306221912-r</version>
+            <version>6.7.0.202309050840-r</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.jgit</groupId>
             <artifactId>org.eclipse.jgit.ssh.jsch</artifactId>
-            <version>5.13.2.202306221912-r</version>
+            <version>6.7.0.202309050840-r</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
