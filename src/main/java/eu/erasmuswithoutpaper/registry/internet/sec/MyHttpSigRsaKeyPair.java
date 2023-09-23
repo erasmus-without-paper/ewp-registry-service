@@ -11,11 +11,10 @@ import java.util.Set;
 import net.adamcin.httpsig.api.Algorithm;
 import net.adamcin.httpsig.api.Key;
 import net.adamcin.httpsig.ssh.jce.KeyFormat;
-import net.adamcin.httpsig.ssh.jce.SSHKey;
 
 /**
- * This custom class was needed because, at the time of writing this, {@link SSHKey} didn't allow us
- * to set a valid EWP-compatible keyId.
+ * This custom class was needed because, at the time of writing this,
+ * {@link net.adamcin.httpsig.ssh.jce.SSHKey} didn't allow us to set a valid EWP-compatible keyId.
  */
 public class MyHttpSigRsaKeyPair implements Key {
 
