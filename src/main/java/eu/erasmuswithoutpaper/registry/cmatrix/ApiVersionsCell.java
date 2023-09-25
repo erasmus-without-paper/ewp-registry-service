@@ -33,18 +33,18 @@ class ApiVersionsCell extends ApiEntriesCell {
       boolean statsEndpointNotImplemented =
           hasStatsEndpoint && !isStatsEndpointImplemented(apiEntry);
 
-      line.addClass("ewpst__apiVersion");
+      line.addClass("apiV");
 
       if (namespaceAndVersionMatch) {
         if (statsEndpointNotImplemented) {
-          line.addClass("ewpst__apiVersion--noStats");
+          line.addClass("noStats");
           line.addTooltipLine("Stats endpoint has not been implemented.");
         } else if (!this.lastClass.matches(apiEntry)) {
-          line.addClass("ewpst__apiVersion--obsolete");
+          line.addClass("obsolete");
           line.addTooltipLine("This major version of this API is obsolete or deprecated.");
         }
       } else {
-        line.addClass("ewpst__apiVersion--error");
+        line.addClass("error");
         String versionsWithAsteriskString = expectedVersionPrefixes.stream()
             .map(v -> String.format("%s*.*", v))
             .collect(Collectors.joining(", "));

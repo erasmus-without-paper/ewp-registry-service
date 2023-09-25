@@ -382,18 +382,18 @@ a:hover {
 
 /* apiVersion colors */
 
-.ewpst__apiVersion--obsolete {
+.apiV.obsolete {
     text-decoration: underline red dotted 2px;
     color: #d01818;
     font-weight: 700;
 }
-.ewpst__apiEntriesCell--containsUpToDate .ewpst__apiVersion--obsolete,
-.ewpst__apiEntriesCell--containsUpToDate .ewpst__apiVersion--noStats {
+.ewpst__apiEntriesCell--containsUpToDate .apiV.obsolete,
+.ewpst__apiEntriesCell--containsUpToDate .apiV.noStats {
     text-decoration: underline red dotted 2px;
     color: #4747f5;
     font-weight: 700;
 }
-.ewpst__apiVersion--error {
+.apiV.error {
     color: #f00;
 }
 
