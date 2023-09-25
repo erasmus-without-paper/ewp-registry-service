@@ -487,7 +487,6 @@ td.ewpsrc__test_index {
 }
 .ewpsrc__test_value {
     word-break: break-all;
-    overlap-wrap: break-all;
     word-wrap: anywhere;
 }
 .ewpsrc__test_http-header .ewpsrc__test_key {
