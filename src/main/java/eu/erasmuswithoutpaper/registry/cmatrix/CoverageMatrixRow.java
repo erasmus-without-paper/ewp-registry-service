@@ -168,14 +168,12 @@ class CoverageMatrixRow {
     /* SCHAC */
 
     cell = new CoverageMatrixCell(NAME_COLOR_CLASS);
-    cell.addClass("ewpst__cell-schac");
     this.cells.add(cell);
     cell.addContentLine(hei.getId());
 
     /* Erasmus code */
 
     cell = new CoverageMatrixCell(NAME_COLOR_CLASS);
-    cell.addClass("ewpst__cell-erasmus");
     this.cells.add(cell);
     Collection<String> erasmusCodes = hei.getOtherIds("erasmus");
     if (erasmusCodes.isEmpty()) {
