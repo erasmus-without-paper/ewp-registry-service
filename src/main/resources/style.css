@@ -519,7 +519,6 @@ td.ewpsrc__test_index {
     color: #555;
     font-weight: bold;
 }
-
 .ewpsrc__test_validation-table summary {
     cursor: pointer;
 }
@@ -529,6 +528,25 @@ td.ewpsrc__test_index {
     border: 1px solid rgba(0,0,0,0.25);
     font-size: larger;
 }
+.ewpsrc__api_stats_table {
+    margin: 2px;
+    display: inline-flex;
+}
+
+.ewpsrc__host_overview_info_table {
+    width: 100%;
+    table-layout: fixed;
+}
+
+.ewpsrc__host_overview_info_table td {
+    overflow-wrap: break-word;
+    vertical-align: top;
+}
+
+.ewpsrc__section_with_top_margin {
+    margin-top: 5em;
+}
+
 .ewp-section-validation-results {
     max-width: 1024px;
     margin: auto;
@@ -755,23 +773,4 @@ td.ewpsrc__test_index {
 
 .ewp-api-validator--security-disclaimer {
     text-align: justify;
-}
-
-.ewpsrc__api_stats_table {
-    margin: 2px;
-    display: inline-flex;
-}
-
-.ewpsrc__host_overview_info_table {
-    width: 100%;
-    table-layout: fixed;
-}
-
-.ewpsrc__host_overview_info_table td {
-    overflow-wrap: break-word;
-    vertical-align: top;
-}
-
-.ewpsrc__section_with_top_margin {
-    margin-top: 5em;
 }
