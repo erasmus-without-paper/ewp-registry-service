@@ -29,7 +29,7 @@ class CoverageMatrixRow {
     if (rowspan != 1) {
       sb.append("rowspan='").append(rowspan).append('\'');
     }
-    sb.append("class='ewpst__cell ewpst__cell--cc").append(colorClass);
+    sb.append("class='cell cc").append(colorClass);
     if (!classes.isEmpty()) {
       sb.append(' ').append(classes);
     }
@@ -52,15 +52,15 @@ class CoverageMatrixRow {
 
     /* Institution */
 
-    row1.append(genRow("Institution", NAME_COLOR_CLASS, 2, 1, "ewpst__cell-institution"));
+    row1.append(genRow("Institution", NAME_COLOR_CLASS, 2, 1, "institution"));
 
     /* SCHAC */
 
-    row1.append(genRow("SCHAC", NAME_COLOR_CLASS, 2, 1, "ewpst__cell-schac"));
+    row1.append(genRow("SCHAC", NAME_COLOR_CLASS, 2, 1, "schac"));
 
     /* Erasmus code */
 
-    row1.append(genRow("Erasmus code", NAME_COLOR_CLASS, 2, 1, "ewpst__cell-erasmus"));
+    row1.append(genRow("Erasmus code", NAME_COLOR_CLASS, 2, 1, "erasmus"));
 
     /* Primary Network APIs */
 
@@ -332,7 +332,7 @@ class CoverageMatrixRow {
   }
 
   void generateHtmlRow(StringBuilder sb) {
-    sb.append("<tr class='ewpst_row'>");
+    sb.append("<tr>");
 
     for (CoverageMatrixCell cell : this.cells) {
       cell.renderHtmlCell(sb);

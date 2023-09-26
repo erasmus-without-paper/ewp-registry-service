@@ -17,21 +17,21 @@
         <table class="ewpst__table">
             <thead>
                 <tr class="ewpst__row ewpst__row--header">
-                    <th class="ewpst__cell ewpst__cell--cc1">Name</th>
-                    <th class="ewpst__cell ewpst__cell--cc1">SCHAC</th>
-                    <th class="ewpst__cell ewpst__cell--cc1">Erasmus code</th>
+                    <th class="cell cc1">Name</th>
+                    <th class="cell cc1">SCHAC</th>
+                    <th class="cell cc1">Erasmus code</th>
                 </tr>
             </thead>
             <tbody>
                 {% for hei in heis %}
-                <tr class="ewpst_row">
-                    <td class="ewpst__cell ewpst__cell--cc1">{{ hei.name }}</td>
-                    <td class="ewpst__cell ewpst__cell--cc1 ewpst__cell-schac">
+                <tr>
+                    <td class="cell cc1">{{ hei.name }}</td>
+                    <td class="cell cc1 schac">
                         <a href="https://hei.api.uni-foundation.eu/schac/{{ hei.id }}">
                             {{ hei.id }}
                         </a>
                     </td>
-                    <td class="ewpst__cell ewpst__cell--cc1 ewpst__cell-erasmus">
+                    <td class="cell cc1 erasmus">
                         {% if hei.otherIds('erasmus') is not empty %}
                         {{ hei.otherIds('erasmus') | first }}
                         {% endif %}

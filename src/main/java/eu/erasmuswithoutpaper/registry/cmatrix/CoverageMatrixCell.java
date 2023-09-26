@@ -14,8 +14,8 @@ class CoverageMatrixCell {
     this.contentLines = new ArrayList<>();
     this.colSpan = 1;
 
-    this.addClass("ewpst__cell");
-    this.addClass("ewpst__cell--cc" + colorClass);
+    this.addClass("cell");
+    this.addClass("cc" + colorClass);
   }
 
   void addClass(String className) {
@@ -35,11 +35,22 @@ class CoverageMatrixCell {
     if (this.colSpan > 1) {
       sb.append(" colspan='").append(this.colSpan).append('\'');
     }
-    sb.append(" class='").append(String.join(" ", this.classes)).append("'>");
-    for (ContentLine line : this.contentLines) {
-      line.renderHtmlLine(sb);
+    if (!this.classes.isEmpty()) {
+      sb.append(" class='").append(String.join(" ", this.classes));
     }
+    sb.append("'>");
+    renderLines(sb);
     sb.append("</td>");
+  }
+
+  private void renderLines(StringBuilder sb) {
+    if (this.contentLines.size() == 1) {
+      contentLines.get(0).renderSimpleHtmlLine(sb);
+    } else {
+      for (ContentLine line : this.contentLines) {
+        line.renderHtmlLine(sb);
+      }
+    }
   }
 
   void setColSpan(int colSpan) {

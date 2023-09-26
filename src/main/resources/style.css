@@ -315,7 +315,7 @@ a:hover {
 
 /* cell element */
 
-.ewpst__cell {
+.cell {
     border-right: 1px solid #b0b0b0;
     border-bottom: 1px solid #b0b0b0;
     background: #fff;
@@ -328,17 +328,17 @@ a:hover {
     color: #000;
 }
 
-.ewpst__cell-institution {
+.cell.institution {
     min-width: 200px;
 }
 
-.ewpst__cell-schac {
+.cell.schac {
 	min-width: 200px;
     width: 200px;
     word-break: break-all;
 }
 
-.ewpst__cell-erasmus {
+.cell.erasmus {
     min-width: 10em;
     width: 200px;
     word-break: break-all;
@@ -346,54 +346,54 @@ a:hover {
 
 /* Column appearance (cc stands for "column color") */
 
-.ewpst__cell.ewpst__cell--cc1 {
+.cell.cc1 {
     background: #d9ead3;
     text-align: right;
     padding-left: 5px;
     padding-right: 5px;
 }
-.ewpst__cell.ewpst__cell--cc2 {
+.cell.cc2 {
     background: #fff2cc;
     width: 50px;
 }
-.ewpst__cell.ewpst__cell--cc3 {
+.cell.cc3 {
     background: #fce5cd;
     width: 50px;
 }
-.ewpst__cell.ewpst__cell--cc4 {
+.cell.cc4 {
     background: #cfe2f3;
     min-width: 100px;
     padding-left: 5px;
     padding-right: 5px;
 }
-.ewpst__row--header .ewpst__cell.ewpst__cell--cc1 {
+.ewpst__row--header .cell.cc1 {
     background: #b6d7a8;
     text-align: center;
 }
-.ewpst__row--header .ewpst__cell.ewpst__cell--cc2 {
+.ewpst__row--header .cell.cc2 {
     background: #ffeb99;
 }
-.ewpst__row--header .ewpst__cell.ewpst__cell--cc3 {
+.ewpst__row--header .cell.cc3 {
     background: #f9cb9c;
 }
-.ewpst__row--header .ewpst__cell.ewpst__cell--cc4 {
+.ewpst__row--header .cell.cc4 {
     background: #9fc5e8;
 }
 
 /* apiVersion colors */
 
-.apiV.obsolete {
+.obsolete {
     text-decoration: underline red dotted 2px;
     color: #d01818;
     font-weight: 700;
 }
-.ewpst__apiEntriesCell--containsUpToDate .apiV.obsolete,
-.ewpst__apiEntriesCell--containsUpToDate .apiV.noStats {
+.upToDate .obsolete,
+.upToDate .noStats {
     text-decoration: underline red dotted 2px;
     color: #4747f5;
     font-weight: 700;
 }
-.apiV.error {
+.error {
     color: #f00;
 }
 

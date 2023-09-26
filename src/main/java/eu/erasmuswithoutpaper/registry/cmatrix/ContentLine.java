@@ -14,7 +14,6 @@ class ContentLine {
 
   ContentLine() {
     this.classes = new ArrayList<>();
-    this.classes.add("ewpst__line");
     this.tooltipLine = new ArrayList<>();
     this.isContentSafeHtml = false;
   }
@@ -38,6 +37,14 @@ class ContentLine {
 
   boolean isSafeHtml() {
     return this.isContentSafeHtml;
+  }
+
+  void renderSimpleHtmlLine(StringBuilder sb) {
+    if (classes.isEmpty() && tooltipLine.isEmpty()) {
+      sb.append(getSafeContent());
+    } else {
+      renderHtmlLine(sb);
+    }
   }
 
   void renderHtmlLine(StringBuilder sb) {

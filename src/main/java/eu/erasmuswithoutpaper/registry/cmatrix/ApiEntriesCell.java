@@ -94,7 +94,6 @@ class ApiEntriesCell extends CoverageMatrixCell {
     this.apiEntryClasses = apiEntryClasses;
     this.matchedApiEntries = new ArrayList<>();
 
-    this.addClass("ewpst__apiEntriesCell");
     this.lastClass = this.apiEntryClasses[this.apiEntryClasses.length - 1];
     for (int i = 0; i < this.apiEntryClasses.length; i++) {
       KnownElement apiClass = this.apiEntryClasses[i];
@@ -108,7 +107,7 @@ class ApiEntriesCell extends CoverageMatrixCell {
     boolean isLastClassImplemented = (this.matchedApiEntries.size() > 0
         && this.lastClass.matches(this.matchedApiEntries.get(0)));
     if (isLastClassImplemented) {
-      this.addClass("ewpst__apiEntriesCell--containsUpToDate");
+      this.addClass("upToDate");
     }
   }
 

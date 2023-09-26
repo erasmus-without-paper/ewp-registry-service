@@ -33,8 +33,6 @@ class ApiVersionsCell extends ApiEntriesCell {
       boolean statsEndpointNotImplemented =
           hasStatsEndpoint && !isStatsEndpointImplemented(apiEntry);
 
-      line.addClass("apiV");
-
       if (namespaceAndVersionMatch) {
         if (statsEndpointNotImplemented) {
           line.addClass("noStats");
