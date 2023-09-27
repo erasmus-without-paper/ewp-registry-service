@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
@@ -62,6 +61,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.http.HttpHeaders;
@@ -92,19 +92,8 @@ import org.xml.sax.SAXException;
  */
 @Controller
 @ConditionalOnWebApplication
+@PropertySource("classpath:git.properties")
 public class UiController {
-
-  private static final String GIT_BUILD_INFO;
-  private static final String GIT_BUILD_VERSION;
-
-  static {
-    ResourceBundle rb = ResourceBundle.getBundle("git");
-    GIT_BUILD_VERSION = rb.getString("git.build.version");
-
-    String buildTime = rb.getString("git.build.time");
-    String commintAbbrev = rb.getString("git.commit.id.abbrev");
-    GIT_BUILD_INFO = '(' + commintAbbrev + ", " + buildTime + ')';
-  }
 
   private final TaskExecutor taskExecutor;
   private final ManifestUpdateStatusRepository manifestStatusRepo;
@@ -124,6 +113,11 @@ public class UiController {
   private final ManifestOverviewManager manifestOverviewManager;
   private final IiaHashService iiaHashService;
   private final String documentationUrl;
+
+  @Value("${git.build.version}")
+  private String gitBuildVersion;
+  @Value("(${git.commit.id.abbrev}, ${git.build.time})")
+  private String gitBuildInfo;
 
   private byte[] cachedCss;
   private String cachedCssFingerprint;
@@ -291,8 +285,8 @@ public class UiController {
     mav.addObject("uptime7", this.uptimeChecker.getLast7DaysUptimeRatio());
     mav.addObject("uptime30", this.uptimeChecker.getLast30DaysUptimeRatio());
     mav.addObject("uptime365", this.uptimeChecker.getLast365DaysUptimeRatio());
-    mav.addObject("artifactVersion", GIT_BUILD_VERSION);
-    mav.addObject("gitVersion", GIT_BUILD_INFO);
+    mav.addObject("artifactVersion", gitBuildVersion);
+    mav.addObject("gitVersion", gitBuildInfo);
     mav.addObject("adminEmails", adminEmails);
 
     return mav;
