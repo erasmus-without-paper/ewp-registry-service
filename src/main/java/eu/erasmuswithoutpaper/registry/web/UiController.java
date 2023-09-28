@@ -114,8 +114,8 @@ public class UiController {
   private final IiaHashService iiaHashService;
   private final String documentationUrl;
 
-  @Value("#{buildProperties.version}")
-  private String pomBuildVersion;
+  @Value("${git.build.version}")
+  private String gitBuildVersion;
   @Value("(${git.commit.id.abbrev}, ${git.build.time})")
   private String gitBuildInfo;
 
@@ -285,7 +285,7 @@ public class UiController {
     mav.addObject("uptime7", this.uptimeChecker.getLast7DaysUptimeRatio());
     mav.addObject("uptime30", this.uptimeChecker.getLast30DaysUptimeRatio());
     mav.addObject("uptime365", this.uptimeChecker.getLast365DaysUptimeRatio());
-    mav.addObject("artifactVersion", pomBuildVersion);
+    mav.addObject("artifactVersion", gitBuildVersion);
     mav.addObject("gitVersion", gitBuildInfo);
     mav.addObject("adminEmails", adminEmails);
 
