@@ -41,6 +41,7 @@ import org.springframework.stereotype.Service;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import https.github_com.erasmus_without_paper.ewp_specs_api_discovery.tree.stable_v6.Manifest;
 import org.apache.xerces.util.XMLCatalogResolver;
 import org.joox.Match;
 import org.slf4j.Logger;
@@ -283,7 +284,6 @@ public class EwpDocBuilder {
    *     Required set of input parameters (including the XML content).
    * @return An object describing the results of the validation.
    */
-  @SuppressWarnings("checkstyle:LineLength")
   public BuildResult buildManifest(BuildParams input) {
 
     byte[] xml = input.getXml();
@@ -323,8 +323,7 @@ public class EwpDocBuilder {
       eventHandler = new IgnoreApisValidationEventHandler(xmlFilter);
       source = new SAXSource(xmlFilter, new InputSource(new ByteArrayInputStream(xml)));
 
-      JAXBContext jc = JAXBContext.newInstance(
-          https.github_com.erasmus_without_paper.ewp_specs_api_discovery.tree.stable_v6.Manifest.class);
+      JAXBContext jc = JAXBContext.newInstance(Manifest.class);
       unmarshaller = jc.createUnmarshaller();
       unmarshaller.setSchema(this.compoundSchema);
       unmarshaller.setEventHandler(eventHandler);
