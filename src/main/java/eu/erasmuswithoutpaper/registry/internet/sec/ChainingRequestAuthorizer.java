@@ -1,5 +1,6 @@
 package eu.erasmuswithoutpaper.registry.internet.sec;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -41,25 +42,21 @@ public class ChainingRequestAuthorizer implements RequestAuthorizer {
 
   @Override
   public EwpClient authorize(Request request) throws Http4xx, UnmatchedRequestAuthorizationMethod {
-    UnmatchedRequestAuthorizationMethod preferredBaseError = null;
-    for (RequestAuthorizer authorizer : this.authorizers) {
+    for (Iterator<RequestAuthorizer> iterator = this.authorizers.iterator(); iterator.hasNext();) {
+      RequestAuthorizer authorizer = iterator.next();
       try {
         return authorizer.authorize(request);
       } catch (UnmatchedRequestAuthorizationMethod e) {
-        preferredBaseError = e;
-        continue;
+        if (!iterator.hasNext()) {
+          throw this.withChangedMessage(e, "Could not authorize this request. "
+              + "Authorizers tried: "
+              + this.authorizers.stream().map(s -> s.toString()).collect(Collectors.joining(", ")));
+        }
       } catch (Http4xx e) {
         throw this.withChangedMessage(e, "While trying " + authorizer + ": " + e.getMessage());
       }
     }
-    if (preferredBaseError == null) {
-      // Shouldn't happen.
-      throw new RuntimeException();
-    }
-    throw this.withChangedMessage(preferredBaseError,
-        "Could not authorize this request. " + "Authorizers tried: "
-            + this.authorizers.stream().map(s -> s.toString()).collect(Collectors.joining(", "))
-            + ".");
+    throw new RuntimeException(); // Shouldn't happen.
   }
 
   private Http4xx withChangedMessage(Http4xx prev, String newMessage) {
