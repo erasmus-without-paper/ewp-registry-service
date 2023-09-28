@@ -509,8 +509,16 @@
             <plugin>
                 <groupId>io.github.git-commit-id</groupId>
                 <artifactId>git-commit-id-maven-plugin</artifactId>
-                <!-- newer versions works only with Java >= 11-->
                 <version>5.0.1</version>
+                <executions>
+                    <execution>
+                        <id>get-the-git-infos</id>
+                        <goals>
+                            <goal>revision</goal>
+                        </goals>
+                        <phase>initialize</phase>
+                    </execution>
+                </executions>
                 <configuration>
                     <dateFormat>dd.MM.yyyy</dateFormat>
                     <generateGitPropertiesFile>true</generateGitPropertiesFile>
