@@ -1,6 +1,48 @@
 Release notes
 =============
 
+1.11.0
+-----
+
+*Released on 2023-10-03*
+
+* Require & use Java 11
+* Coverage Matrix:
+    * Optimize Coverage CSS for smaller HTML size (about 77% reduction)
+    * Improve styles for API versions containing warnings
+    * Fix concurrency issue
+    * Add hard spaces in Erasmus code
+* Remove support for client TLS authentication
+* Adding build info to the main page
+* "How to join" on the main page
+* Replace HEI Search Page with link to EWP Stats Portal (on Production)
+* Change Docker base image to eclipse-temurin:11-jre-jammy and enable JVM args on start
+* Maven profile 'skipValidation' for faster builds
+* Support multiple manifest sources files
+* Speed up updates by removing XPath calls
+* Many, many fixes of concurrency issues and api versions compatibility
+* Add info about APIs that lack stats endpoint implementation
+* #28 Corrected RFC 2616 date format in validator
+* Add "How to join" and contact emails to status page
+* Update registry's manifest to version 6.0.0
+* Check public key uniqueness in manifests
+* Add support for admin provider field to Manifests Overview page
+* Update schema versions
+
+* Updated dependencies:
+    * Spring Boot (1.5.22 -> 2.1.18)
+    * JGit (4.11.9 -> 6.7.0)
+    * Guava (30.1.1 -> 32.1.2)
+    * commons-io (2.7 -> 2.13.0)
+    * ewp-registry-client (to 1.9.1)
+    * JUnit 4 to 5
+    * jQuery (3.2.1 -> 3.7.1)
+    * node (8.11.1 -> 20.6.1)
+    * Vue (2.6.10  -> 3.3.4)
+    * pebble (2.6.2 -> 3.1.0)
+    * All explicitly used maven plugins are updated to the newest versions (Docker,
+    Jar, Compiler, Surefire, Frontend, PMD, Jaxb2, Findbugs to the newest Spotbugs)
+
 1.10.0
 -----
 
