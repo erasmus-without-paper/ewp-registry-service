@@ -32,8 +32,8 @@
         },
         methods: {
             addEntry: function(url, name, endpoint, version, security, parameters) {
-                this.entries.unshift(new ValidationRequest(url, name, endpoint, version, security, parameters));
-                this.entries = this.entries.slice(0, 5);
+                this.entries.push(new ValidationRequest(url, name, endpoint, version, security, parameters));
+                this.entries = this.entries.slice(-5);
             }
         }
     }
