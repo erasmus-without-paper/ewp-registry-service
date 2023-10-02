@@ -1,9 +1,7 @@
 <template>
     <div class="api-entry">
-        <div class="api-info"> <span class="api-name">{{name}}</span>
-            <span v-if='endpoint' class="api-name"> - {{endpoint}}</span>
-            <span class="api-version">{{version}}</span>
-            <code class="api-url">{{ url }}</code>
+        <div class="api-info">
+            <span class="api-name">{{name}}{{endpoint ? ' - ' + endpoint : ''}}</span> {{version}} <code>{{url}}</code>
         </div>
         <div class="api-entry-content">
             <div class="securities">
