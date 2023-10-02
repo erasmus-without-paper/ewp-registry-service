@@ -158,11 +158,18 @@ public class RealInternet implements Internet {
 
     // Body
     byte[] body;
-    try (InputStream errorStream = conn.getErrorStream();
-        InputStream inputStream = conn.getInputStream()) {
-      body = IOUtils.toByteArray(errorStream == null ? inputStream : errorStream);
+    InputStream bodyStream = conn.getErrorStream(); // NOPMD used stream will be closed
+    try {
+      if (bodyStream == null) {
+        bodyStream = conn.getInputStream(); // NOPMD previous stream is null (closed)
+      }
+      body = IOUtils.toByteArray(bodyStream);
     } catch (IOException e) {
       body = new byte[0];
+    } finally {
+      if (bodyStream != null) {
+        bodyStream.close();
+      }
     }
 
     conn.disconnect();
