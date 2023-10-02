@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -23,9 +22,6 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * Spring beans to be used when running both the actual application server AND unit tests.
  */
 @Configuration
-// FIXME @Lazy is for preventing cycle in dependencies with RealInternet i production profile. This
-// should be unraveled.
-@Lazy
 @ConditionalOnWebApplication
 public class WebConfiguration {
   /**
