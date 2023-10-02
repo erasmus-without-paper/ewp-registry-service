@@ -1,6 +1,6 @@
 <template>
     <div class="validation-list">
-        <validation-entry v-for="entry in entries" :entry="entry"></validation-entry>
+        <validation-entry v-for="entry in entries" :entry="entry" :key="entry"></validation-entry>
     </div>
 </template>
 
@@ -32,8 +32,8 @@
         },
         methods: {
             addEntry: function(url, name, endpoint, version, security, parameters) {
-                this.entries.push(new ValidationRequest(url, name, endpoint, version, security, parameters));
-                this.entries = this.entries.slice(-5);
+                this.entries.unshift(new ValidationRequest(url, name, endpoint, version, security, parameters));
+                this.entries = this.entries.slice(0, 5);
             }
         }
     }
