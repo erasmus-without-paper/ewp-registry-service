@@ -152,13 +152,12 @@
     {% for notice in message.processingNoticesHtml %}
         <p class="ewpsrc__test_processing-notice"> {{ notice }} </p>
     {% endfor %}
-
-    {% if message.developerMessage is not null %}
-        <p class="ewpsrc__test_developer-message"> Developer message:<br>{{ message.developerMessage }} </p>
-    {% endif %}
 {% endmacro %}
 
 {% macro printResponseBody(message) %}
+    {% if message.developerMessage is not null %}
+        <p class="ewpsrc__test_developer-message"> Developer message:<br>{{ message.developerMessage }} </p>
+    {% endif %}
     {% if message.rawBodyBase64 is null %}
         <pre class="ewpsrc__test_message-body">(empty body)</pre>
     {% elseif message.prettyXml is not null %}
