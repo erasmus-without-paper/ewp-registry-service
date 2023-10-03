@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
@@ -84,6 +85,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -94,6 +97,8 @@ import org.xml.sax.SAXException;
 @ConditionalOnWebApplication
 @PropertySource("classpath:git.properties")
 public class UiController {
+
+  private static final Logger logger = LoggerFactory.getLogger(UiController.class);
 
   private final TaskExecutor taskExecutor;
   private final ManifestUpdateStatusRepository manifestStatusRepo;
@@ -174,6 +179,12 @@ public class UiController {
     this.manifestOverviewManager = manifestOverviewManager;
     this.iiaHashService = iiaHashService;
     this.documentationUrl = documentationUrl;
+  }
+
+  @PostConstruct
+  private void postContruct() { // NOPMD
+    logger.info("Application is starting with version {}, as build: {}", gitBuildVersion,
+        gitBuildInfo);
   }
 
   /**
