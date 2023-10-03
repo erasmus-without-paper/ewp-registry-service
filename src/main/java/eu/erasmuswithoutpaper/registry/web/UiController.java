@@ -77,7 +77,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -514,7 +513,7 @@ public class UiController {
     }
 
     // prettyLines
-    List<String> prettyLines1 = result1.getPrettyLines().orElseGet(Lists::newArrayList);
+    List<String> prettyLines1 = result1.getPrettyLines().orElseGet(ArrayList::new);
     JsonArray prettyLines2 = new JsonArray();
     result2.add("prettyLines", prettyLines2);
     for (String line : prettyLines1) {

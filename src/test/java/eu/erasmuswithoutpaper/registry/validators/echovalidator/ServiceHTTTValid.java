@@ -2,6 +2,7 @@ package eu.erasmuswithoutpaper.registry.validators.echovalidator;
 
 import java.io.IOException;
 import java.security.interfaces.RSAPublicKey;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -11,8 +12,6 @@ import eu.erasmuswithoutpaper.registry.internet.sec.EwpClientWithRsaKey;
 import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigRequestAuthorizer;
 import eu.erasmuswithoutpaper.registry.internet.sec.Http4xx;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
-
-import com.google.common.collect.Lists;
 
 /**
  * Internal "fake" implementation of a valid HTTT API endpoint.
@@ -46,7 +45,7 @@ public class ServiceHTTTValid extends AbstractEchoV2Service {
   }
 
   protected List<String> getAcceptedHttpMethods() {
-    return Lists.newArrayList("GET", "POST");
+    return Arrays.asList("GET", "POST");
   }
 
   protected Collection<String> identifyCoveredHeis(RSAPublicKey clientKey) {

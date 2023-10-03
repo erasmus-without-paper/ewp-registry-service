@@ -2,6 +2,7 @@ package eu.erasmuswithoutpaper.registry.internet.sec;
 
 import java.security.interfaces.RSAPublicKey;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -16,7 +17,6 @@ import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registryclient.ApiSearchConditions;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
-import com.google.common.collect.Lists;
 import net.adamcin.httpsig.api.Algorithm;
 import net.adamcin.httpsig.api.Authorization;
 import net.adamcin.httpsig.api.Challenge;
@@ -280,7 +280,8 @@ public class EwpHttpSigResponseAuthorizer extends TlsResponseAuthorizer {
   protected void verifyRequiredHeadersAreSigned(Response response, Authorization authz)
       throws InvalidResponseError {
     Set<String> signedHeaders = new HashSet<>(authz.getHeaders());
-    List<String> headersThatShouldBeSigned = Lists.newArrayList("digest");
+    List<String> headersThatShouldBeSigned = new ArrayList<>();
+    headersThatShouldBeSigned.add("digest");
     if (response.getHeader("X-Request-Id") != null) {
       headersThatShouldBeSigned.add("x-request-id");
     }
@@ -325,8 +326,8 @@ public class EwpHttpSigResponseAuthorizer extends TlsResponseAuthorizer {
     }
     // The library needs this challenge object in order to verify signature. So,
     // we need to create a "fake" instance just for that.
-    Challenge challenge = new Challenge("Not verified", Lists.newArrayList("digest"),
-        Lists.newArrayList(Algorithm.RSA_SHA256));
+    Challenge challenge = new Challenge("Not verified", Collections.singletonList("digest"),
+        Collections.singletonList(Algorithm.RSA_SHA256));
     VerifyResult verifyResult = verifier.verifyWithResult(challenge, rcb.build(), authz);
     if (!verifyResult.equals(VerifyResult.SUCCESS)) {
       throw new InvalidResponseError(

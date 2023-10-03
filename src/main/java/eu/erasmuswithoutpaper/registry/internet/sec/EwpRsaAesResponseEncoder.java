@@ -5,6 +5,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
@@ -16,7 +17,6 @@ import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 import eu.erasmuswithoutpaper.rsaaes.EwpRsaAes128GcmEncoder;
 
-import com.google.common.collect.Lists;
 import net.adamcin.httpsig.api.Authorization;
 
 /**
@@ -170,7 +170,7 @@ public class EwpRsaAesResponseEncoder extends CommonResponseEncoder {
    *         {@link #extractKeyFromRequest(Request)} searched the keys for.
    */
   protected List<String> getKeyExtractionSources() {
-    return Lists.newArrayList("Accept-Response-Encryption-Key header",
+    return Arrays.asList("Accept-Response-Encryption-Key header",
         "HTTPSIG's Authorization header");
   }
 

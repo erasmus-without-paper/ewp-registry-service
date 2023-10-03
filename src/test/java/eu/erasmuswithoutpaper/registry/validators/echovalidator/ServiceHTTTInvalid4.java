@@ -1,5 +1,6 @@
 package eu.erasmuswithoutpaper.registry.validators.echovalidator;
 
+import java.util.Arrays;
 import java.util.List;
 
 import eu.erasmuswithoutpaper.registry.internet.Request;
@@ -7,7 +8,6 @@ import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigRequestAuthorizer;
 import eu.erasmuswithoutpaper.registry.internet.sec.Http4xx;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
-import com.google.common.collect.Lists;
 import net.adamcin.httpsig.api.Authorization;
 
 /**
@@ -27,7 +27,7 @@ public class ServiceHTTTInvalid4 extends ServiceHTTTValid {
       protected Authorization verifyHttpSignatureAuthorizationHeader(Request request)
           throws Http4xx {
         Authorization authz = super.verifyHttpSignatureAuthorizationHeader(request);
-        List<String> expected = Lists.newArrayList("(request-target)", "host", "date",
+        List<String> expected = Arrays.asList("(request-target)", "host", "date",
             "original-date", "digest", "x-request-id");
         for (String headerName : authz.getHeaders()) {
           if (!expected.contains(headerName)) {

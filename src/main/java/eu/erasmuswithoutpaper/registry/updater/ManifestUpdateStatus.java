@@ -1,6 +1,7 @@
 package eu.erasmuswithoutpaper.registry.updater;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -12,7 +13,6 @@ import javax.persistence.Table;
 import eu.erasmuswithoutpaper.registry.common.Severity;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 
-import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -71,7 +71,7 @@ public class ManifestUpdateStatus {
   public ManifestUpdateStatus(String url) {
     this.url = url;
     this.setLastAccessFlagStatus(Severity.UNDETERMINED);
-    this.setLastAccessNotices(Lists.newArrayList());
+    this.setLastAccessNotices(Collections.emptyList());
   }
 
   /**

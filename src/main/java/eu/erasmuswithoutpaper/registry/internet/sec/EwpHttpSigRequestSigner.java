@@ -4,6 +4,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.KeyPair;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -13,7 +14,6 @@ import java.util.stream.Collectors;
 import eu.erasmuswithoutpaper.registry.common.Utils;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 
-import com.google.common.collect.Lists;
 import net.adamcin.httpsig.api.Algorithm;
 import net.adamcin.httpsig.api.Authorization;
 import net.adamcin.httpsig.api.Challenge;
@@ -131,7 +131,7 @@ public class EwpHttpSigRequestSigner implements RequestSigner {
       headersBeingSigned.add("date");
     }
     signer.rotateKeys(new Challenge("Not verified", headersBeingSigned,
-        Lists.newArrayList(Algorithm.RSA_SHA256)));
+        Collections.singletonList(Algorithm.RSA_SHA256)));
 
     RequestContent.Builder rcb = new RequestContent.Builder();
     rcb.setRequestTarget(request.getMethod(), request.getPathPseudoHeader());

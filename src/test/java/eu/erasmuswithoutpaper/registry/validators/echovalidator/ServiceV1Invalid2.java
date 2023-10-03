@@ -1,6 +1,7 @@
 package eu.erasmuswithoutpaper.registry.validators.echovalidator;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import eu.erasmuswithoutpaper.registry.internet.Request;
@@ -9,8 +10,6 @@ import eu.erasmuswithoutpaper.registry.internet.sec.EwpClientWithRsaKey;
 import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigRequestAuthorizer;
 import eu.erasmuswithoutpaper.registry.internet.sec.Http4xx;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
-
-import org.assertj.core.util.Lists;
 
 /**
  * Internal "fake" implementation of an INVALID Version 1 Echo API endpoint.
@@ -31,7 +30,7 @@ public class ServiceV1Invalid2 extends AbstractEchoV1Service {
     if (!request.getUrl().startsWith(this.myEndpoint)) {
       return null;
     }
-    List<String> echos = Lists.newArrayList("a", "b");
+    List<String> echos = Arrays.asList("a", "b");
     EwpClientWithRsaKey client;
     try {
       client = new EwpHttpSigRequestAuthorizer(this.registryClient).authorize(request);

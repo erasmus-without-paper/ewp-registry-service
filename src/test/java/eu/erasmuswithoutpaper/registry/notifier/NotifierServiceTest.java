@@ -2,6 +2,7 @@ package eu.erasmuswithoutpaper.registry.notifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -11,7 +12,6 @@ import eu.erasmuswithoutpaper.registry.internet.FakeInternet;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -40,14 +40,14 @@ public class NotifierServiceTest extends WRTest {
     // When application context is being loaded, other components register their own flags. Let's
     // register some.
 
-    NotifierFlag flag1 = new NotifierFlag(Lists.newArrayList("john@example.com")) {
+    NotifierFlag flag1 = new NotifierFlag(Collections.singletonList("john@example.com")) {
       @Override
       public String getName() {
         return "My flag 1";
       }
     };
     NotifierFlag flag2 =
-        new NotifierFlag(Lists.newArrayList("john@example.com", "bob@example.com")) {
+        new NotifierFlag(Arrays.asList("john@example.com", "bob@example.com")) {
           @Override
           public String getName() {
             return "My flag 2";

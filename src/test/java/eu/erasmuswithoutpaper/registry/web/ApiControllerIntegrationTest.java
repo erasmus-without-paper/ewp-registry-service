@@ -2,6 +2,7 @@ package eu.erasmuswithoutpaper.registry.web;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Collections;
 import java.util.Map;
 
 import eu.erasmuswithoutpaper.registry.WRIntegrationTest;
@@ -25,7 +26,6 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import com.google.common.collect.Lists;
 import org.junit.jupiter.api.Test;
 
 
@@ -152,9 +152,9 @@ public class ApiControllerIntegrationTest extends WRIntegrationTest {
     urlSE = "https://schowek.usos.edu.pl/w.rygielski/ewp/ladok.se/manifest.xml";
     // this.manifestSourceProvider.addSource(manifestFactory.newTrustedSource(urlSelf));
     this.manifestSourceProvider.addSource(manifestFactory.newRegularSource(urlPL,
-        Lists.newArrayList(new RestrictInstitutionsCovered("^uw\\.edu\\.pl$"))));
+        Collections.singletonList(new RestrictInstitutionsCovered("^uw\\.edu\\.pl$"))));
     this.manifestSourceProvider.addSource(manifestFactory.newRegularSource(urlSE,
-        Lists.newArrayList(new RestrictInstitutionsCovered("^.+\\.se$"))));
+        Collections.singletonList(new RestrictInstitutionsCovered("^.+\\.se$"))));
     this.repo.deleteAll(client);
     // this.internet.putURL(urlSelf, this.apiController.getSelfManifest().getBody());
 
@@ -235,8 +235,8 @@ public class ApiControllerIntegrationTest extends WRIntegrationTest {
     this.internet.putURL(urlSE, this.getFile("demo1/E-inSE.xml"));
     this.forceReload(urlSE);
     String urlPL2 = "https://schowek.usos.edu.pl/w.rygielski/ewp/uw.edu.pl/manifest2.xml";
-    this.manifestSourceProvider.addSource(manifestFactory.newRegularSource(urlPL2, Lists
-        .newArrayList(new RestrictInstitutionsCovered("^(uw\\.edu\\.pl)|(university-a\\.edu)$"))));
+    this.manifestSourceProvider.addSource(manifestFactory.newRegularSource(urlPL2, Collections
+        .singletonList(new RestrictInstitutionsCovered("^(uw\\.edu\\.pl)|(university-a\\.edu)$"))));
     this.internet.putURL(urlPL2, this.getFile("demo1/I-inPL2.xml"));
     this.forceReload(urlPL2);
     assertThat(this.status(urlPL2))

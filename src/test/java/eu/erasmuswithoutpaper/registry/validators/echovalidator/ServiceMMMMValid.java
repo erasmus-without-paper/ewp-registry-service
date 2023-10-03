@@ -2,6 +2,7 @@ package eu.erasmuswithoutpaper.registry.validators.echovalidator;
 
 import java.io.IOException;
 import java.security.KeyPair;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -31,8 +32,6 @@ import eu.erasmuswithoutpaper.registry.internet.sec.ResponseSigner;
 import eu.erasmuswithoutpaper.registry.internet.sec.TlsResponseSigner;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
-import org.assertj.core.util.Lists;
-
 public class ServiceMMMMValid extends AbstractEchoV2Service {
 
   public ServiceMMMMValid(String url, RegistryClient registryClient, List<KeyPair> serverKeys) {
@@ -58,24 +57,24 @@ public class ServiceMMMMValid extends AbstractEchoV2Service {
   protected RequestAuthorizer getRequestAuthorizer() {
     RequestAuthorizer tlscert = new EwpCertificateRequestAuthorizer(this.registryClient);
     RequestAuthorizer httpsig = new EwpHttpSigRequestAuthorizer(this.registryClient);
-    return new ChainingRequestAuthorizer(Lists.newArrayList(tlscert, httpsig), httpsig);
+    return new ChainingRequestAuthorizer(Arrays.asList(tlscert, httpsig), httpsig);
   }
 
   protected RequestDecoder getRequestDecoder() {
     RequestCodingDecoder ewp = new EwpRsaAesRequestDecoder(this.serverKeys);
-    return new MultipleCodingsRequestDecoder(Lists.newArrayList(ewp));
+    return new MultipleCodingsRequestDecoder(Collections.singletonList(ewp));
   }
 
   protected ResponseEncoder getResponseEncoder() {
     ResponseCodingEncoder ewp = new EwpRsaAesResponseEncoder(this.registryClient);
     ResponseCodingEncoder gzip = new GzipResponseEncoder();
-    return new MultipleCodingsResponseEncoder(Lists.newArrayList(gzip, ewp), Collections.emptyList());
+    return new MultipleCodingsResponseEncoder(Arrays.asList(gzip, ewp), Collections.emptyList());
   }
 
   protected ResponseSigner getResponseSigner() {
     ResponseSigner httpsig = new EwpHttpSigResponseSigner(this.serverKeys.get(0));
     ResponseSigner tls = new TlsResponseSigner();
-    return new ChainingResponseSigner(Lists.newArrayList(httpsig, tls));
+    return new ChainingResponseSigner(Arrays.asList(httpsig, tls));
   }
 
   @Override

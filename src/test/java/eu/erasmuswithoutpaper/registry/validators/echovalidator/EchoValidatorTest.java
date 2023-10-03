@@ -3,6 +3,7 @@ package eu.erasmuswithoutpaper.registry.validators.echovalidator;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.security.KeyPair;
+import java.util.Collections;
 
 import eu.erasmuswithoutpaper.registry.internet.FakeInternetService;
 import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigResponseSigner;
@@ -15,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;
 
 public class EchoValidatorTest extends AbstractApiTest<EchoSuiteState> {
@@ -313,7 +313,7 @@ public class EchoValidatorTest extends AbstractApiTest<EchoSuiteState> {
     try {
       FakeInternetService service;
 
-      service = new ServiceMMMMValid(echoUrlMMMM, this.client, Lists.newArrayList(myKeyPair));
+      service = new ServiceMMMMValid(echoUrlMMMM, this.client, Collections.singletonList(myKeyPair));
       this.internet.addFakeInternetService(service);
       String out = this.getValidatorReport(echoUrlMMMM, new SemanticVersion(2, 0, 0), null);
       assertThat(out).doesNotContain("FAILURE");

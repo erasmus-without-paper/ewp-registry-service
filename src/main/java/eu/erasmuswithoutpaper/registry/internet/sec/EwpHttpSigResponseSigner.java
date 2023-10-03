@@ -2,6 +2,7 @@ package eu.erasmuswithoutpaper.registry.internet.sec;
 
 import java.security.KeyPair;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -12,7 +13,6 @@ import eu.erasmuswithoutpaper.registry.common.Utils;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
 
-import com.google.common.collect.Lists;
 import net.adamcin.httpsig.api.Algorithm;
 import net.adamcin.httpsig.api.Authorization;
 import net.adamcin.httpsig.api.Challenge;
@@ -157,7 +157,7 @@ public class EwpHttpSigResponseSigner extends TlsResponseSigner {
       headersSigned.add("date");
     }
     signer.rotateKeys(
-        new Challenge("Not verified", headersSigned, Lists.newArrayList(Algorithm.RSA_SHA256)));
+        new Challenge("Not verified", headersSigned, Collections.singleton(Algorithm.RSA_SHA256)));
 
     RequestContent.Builder rcb = new RequestContent.Builder();
     rcb.setRequestTarget(request.getMethod(), request.getPathPseudoHeader());

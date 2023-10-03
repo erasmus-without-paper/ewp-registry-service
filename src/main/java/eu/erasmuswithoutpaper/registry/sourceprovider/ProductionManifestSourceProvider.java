@@ -21,7 +21,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
-import com.google.common.collect.Lists;
 import org.joox.Match;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -116,7 +115,7 @@ public class ProductionManifestSourceProvider extends ManifestSourceProvider {
       }
       for (Element source : sources) {
         String location = $(source).find("location").text();
-        List<ManifestConstraint> constraints = Lists.newArrayList();
+        List<ManifestConstraint> constraints = new ArrayList<>();
         for (String regex : $(source).find("hei-regex").texts()) {
           constraints.add(new RestrictInstitutionsCovered(regex));
         }

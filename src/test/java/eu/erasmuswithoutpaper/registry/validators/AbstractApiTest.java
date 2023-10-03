@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.security.KeyPair;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -19,7 +20,6 @@ import eu.erasmuswithoutpaper.registry.web.UiController;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.google.common.collect.Lists;
 import org.apache.xerces.impl.dv.util.Base64;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -169,7 +169,7 @@ public abstract class AbstractApiTest<StateType extends SuiteState> extends WRTe
       );
       this.internet.putURL(apiManifestUrl, apiManifest);
       this.sourceProvider
-          .addSource(manifestFactory.newRegularSource(apiManifestUrl, Lists.newArrayList()));
+          .addSource(manifestFactory.newRegularSource(apiManifestUrl, Collections.emptyList()));
 
       this.registryUpdater.reloadAllManifestSources();
       needsReinit = false;

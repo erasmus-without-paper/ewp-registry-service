@@ -1,10 +1,11 @@
 package eu.erasmuswithoutpaper.registry.validators.echovalidator;
 
+import java.util.Collections;
+
 import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigRequestAuthorizer;
 import eu.erasmuswithoutpaper.registry.internet.sec.Http4xx;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
-import com.google.common.collect.Lists;
 import net.adamcin.httpsig.api.Algorithm;
 import net.adamcin.httpsig.api.Challenge;
 
@@ -24,8 +25,8 @@ public class ServiceHTTTInvalid6 extends ServiceHTTTValid {
       @Override
       protected Http4xx newHttpSig401() {
         Http4xx e = super.newHttpSig401();
-        Challenge newOne = new Challenge("EWP", Lists.newArrayList("some-header"),
-            Lists.newArrayList(Algorithm.RSA_SHA256));
+        Challenge newOne = new Challenge("EWP", Collections.singletonList("some-header"),
+            Collections.singletonList(Algorithm.RSA_SHA256));
         e.putEwpErrorResponseHeader("WWW-Authenticate", newOne.getHeaderValue());
         return e;
       }

@@ -1,6 +1,7 @@
 package eu.erasmuswithoutpaper.registry.notifier;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -16,7 +17,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -95,7 +95,7 @@ public class NotifierService {
     for (NotifierFlag flag : this.watchedFlags) {
       unique.addAll(flag.getRecipientEmails());
     }
-    return Lists.newArrayList(unique);
+    return new ArrayList<>(unique);
   }
 
   /**
@@ -267,7 +267,7 @@ public class NotifierService {
           worstDeterminedStatus.toString(), email, prevStatus.toString());
 
       String subject = "EWP Status Update";
-      ArrayList<String> recipients = Lists.newArrayList(email);
+      List<String> recipients = Collections.singletonList(email);
       this.internet.queueEmail(recipients, subject, contents);
       return true;
     } catch (OneOfTheValuesIsUndetermined e) {

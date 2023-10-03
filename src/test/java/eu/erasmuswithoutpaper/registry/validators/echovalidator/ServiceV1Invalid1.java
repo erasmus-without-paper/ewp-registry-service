@@ -1,14 +1,13 @@
 package eu.erasmuswithoutpaper.registry.validators.echovalidator;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 import eu.erasmuswithoutpaper.registry.internet.InternetTestHelpers;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
-
-import com.google.common.collect.Lists;
 
 /**
  * Internal "fake" implementation of a slightly invalid Version 1 Echo API endpoint.
@@ -32,8 +31,8 @@ public class ServiceV1Invalid1 extends AbstractEchoV1Service {
     try {
       echos = InternetTestHelpers.extractParams(request, "echo");
     } catch (RuntimeException e) {
-      echos = Lists.newArrayList();
+      echos = Collections.emptyList();
     }
-    return this.createEchoResponse(request, echos, Lists.newArrayList());
+    return this.createEchoResponse(request, echos, Collections.emptyList());
   }
 }

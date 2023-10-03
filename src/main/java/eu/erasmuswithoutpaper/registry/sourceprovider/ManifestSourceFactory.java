@@ -13,8 +13,6 @@ import eu.erasmuswithoutpaper.registry.constraints.VerifyDiscoveryApiEntry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.google.common.collect.Lists;
-
 @Component
 public class ManifestSourceFactory {
   @Autowired
@@ -50,6 +48,6 @@ public class ManifestSourceFactory {
    * @return New {@link ManifestSource}.
    */
   public ManifestSource newTrustedSource(String url) {
-    return new ManifestSource(url, Lists.newArrayList());
+    return new ManifestSource(url, new ArrayList<>());
   }
 }
