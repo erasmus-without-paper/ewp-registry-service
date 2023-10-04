@@ -19,7 +19,7 @@ public class SharedConfiguration {
   /**
    * This enables Spring's default conversion filters to be applied to Spring's {@link Value}
    * annotations, e.g. comma-separated list of property values will be properly mapped to
-   * {@link List}s.
+   * {@link List Lists}.
    *
    * @return {@link DefaultConversionService}
    */
