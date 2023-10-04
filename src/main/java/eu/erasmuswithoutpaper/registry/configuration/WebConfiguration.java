@@ -46,15 +46,15 @@ public class WebConfiguration {
 
       @Override
       public RegistryResponse fetchCatalogue(String etag) throws IOException {
+        String response;
         try {
-          return new Http200RegistryResponse(repo.getCatalogue().getBytes(StandardCharsets.UTF_8),
-              null, null);
+          response = repo.getCatalogue();
         } catch (CatalogueNotFound e) {
           // We want our local client to never throw UnacceptableStaleness errors.
-          String xml = "<catalogue xmlns=\"" + KnownNamespace.RESPONSE_REGISTRY_V1.getNamespaceUri()
+          response = "<catalogue xmlns=\"" + KnownNamespace.RESPONSE_REGISTRY_V1.getNamespaceUri()
               + "\"><institutions/></catalogue>";
-          return new Http200RegistryResponse(xml.getBytes(StandardCharsets.UTF_8), null, null);
         }
+        return new Http200RegistryResponse(response.getBytes(StandardCharsets.UTF_8), null, null);
       }
     });
     // Refresh will be called whenever catalogue is changed, so we don't need to worry
