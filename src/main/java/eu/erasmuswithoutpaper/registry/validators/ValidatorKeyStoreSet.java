@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import eu.erasmuswithoutpaper.registry.Application;
-import eu.erasmuswithoutpaper.registry.configuration.ConsoleEnvInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -34,15 +33,15 @@ public class ValidatorKeyStoreSet {
 
   /**
    * Generates credential and certificates to be used by validators.
+   * @param isConsoleEnabled
+   *      Provides info whether this application is run as a standalone console validator.
    * @param rootUrl
    *      URL where this instance is hosted, used to check, if we are in a production environment.
-   * @param consoleEnvInfo
-   *      Provides info whether this application is run as a standalone console validator.
    * @param additionalHeiIdsArray
    *      List of hei ids that should be added to validators covered-institutions list.
    */
   @Autowired
-  public ValidatorKeyStoreSet(ConsoleEnvInfo consoleEnvInfo,
+  public ValidatorKeyStoreSet(Boolean isConsoleEnabled,
       @Value("${app.root-url}") String rootUrl,
       @Value("${app.local-registry.additional-hei-ids:#{null}}") List<String> additionalHeiIdsArray
   ) {
@@ -63,7 +62,7 @@ public class ValidatorKeyStoreSet {
       // No hei ids should be added in production environment, even if explicitly specified.
       this.mainKeyStore = new ValidatorKeyStore();
       this.primaryKeyStores.add(this.mainKeyStore);
-    } else if (!consoleEnvInfo.isConsole()) {
+    } else if (!isConsoleEnabled) {
       // In development environment we add artificial hei ids for validator.
       for (int i = 1; i <= 2; i++) {
         String heiId = "validator-hei0" + i + ".developers.erasmuswithoutpaper.eu";

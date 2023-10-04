@@ -42,8 +42,8 @@ public class ConsoleConfiguration {
   }
 
   @Bean
-  public ConsoleEnvInfo getConsoleEnvInfo() {
-    return new ConsoleEnvInfo(true);
+  public Boolean isConsoleEnabled() {
+    return Boolean.TRUE;
   }
 
 }
