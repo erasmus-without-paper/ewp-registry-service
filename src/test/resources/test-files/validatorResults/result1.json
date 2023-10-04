@@ -26,7 +26,6 @@
     "    someOtherAttribute\u003d\"value\"",
     "\u003e",
     "    \u003curl\u003ehttp://example.com/\u003c/url\u003e",
-    "\u003c/echo\u003e",
-    ""
+    "\u003c/echo\u003e"
   ]
 }

@@ -6,6 +6,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -38,8 +39,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
-import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import https.github_com.erasmus_without_paper.ewp_specs_api_discovery.tree.stable_v6.Manifest;
 import org.apache.xerces.util.XMLCatalogResolver;
@@ -190,7 +189,7 @@ public class EwpDocBuilder {
       List<String> notSoPrettyLines = null;
       if (input.isMakingPretty()) {
         recovered = new String(xml, StandardCharsets.UTF_8);
-        notSoPrettyLines = Lists.newArrayList(Splitter.on("\n").split(recovered));
+        notSoPrettyLines = Arrays.asList(recovered.split("\n"));
       }
       List<BuildError> parseErrors = new ArrayList<>();
       parseErrors.add(new BuildError(e.getMessage()));
@@ -206,7 +205,7 @@ public class EwpDocBuilder {
     if (input.isMakingPretty()) {
       prettyXml = this.xmlFormatter.format(doc);
       xml = prettyXml.getBytes(StandardCharsets.UTF_8);
-      prettyLines = Lists.newArrayList(Splitter.on("\n").split(prettyXml));
+      prettyLines = Arrays.asList(prettyXml.split("\n"));
     }
 
     // Validators are not thread-safe (hence, separate instance).
