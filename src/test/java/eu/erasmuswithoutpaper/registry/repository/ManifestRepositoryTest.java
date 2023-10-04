@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.fail;
 import java.nio.charset.StandardCharsets;
 
 import eu.erasmuswithoutpaper.registry.WRTest;
+import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.junit.jupiter.api.AfterEach;
@@ -27,6 +28,9 @@ public class ManifestRepositoryTest extends WRTest {
   }
 
   @Autowired
+  private RegistryClient client;
+
+  @Autowired
   private ManifestRepositoryImpl repo;
 
   @Autowired
@@ -34,26 +38,26 @@ public class ManifestRepositoryTest extends WRTest {
 
   @AfterEach
   public void tearDown() {
-    this.repo.deleteAll();
+    this.repo.deleteAll(client);
   }
 
   @Test
   public void testCatalogueDependantCache() {
-    this.repo.deleteAll();
+    this.repo.deleteAll(client);
 
-    this.repo.putCatalogue("1");
+    this.repo.putCatalogue("1", client);
     this.catcache.putCoverageMatrixHtml("1");
     assertThat(this.catcache.getCoverageMatrixHtml()).isEqualTo("1");
 
-    this.repo.putCatalogue("1");
+    this.repo.putCatalogue("1", client);
     assertThat(this.catcache.getCoverageMatrixHtml()).isEqualTo("1");
 
-    this.repo.putCatalogue("2");
+    this.repo.putCatalogue("2", client);
     assertThat(this.catcache.getCoverageMatrixHtml()).isNull();
     this.catcache.putCoverageMatrixHtml("2");
     assertThat(this.catcache.getCoverageMatrixHtml()).isEqualTo("2");
 
-    this.repo.putCatalogue("1");
+    this.repo.putCatalogue("1", client);
     assertThat(this.catcache.getCoverageMatrixHtml()).isNull();
   }
 
@@ -63,7 +67,7 @@ public class ManifestRepositoryTest extends WRTest {
   @Test
   public void testCatalogueStorage() {
 
-    this.repo.deleteAll();
+    this.repo.deleteAll(client);
 
     // No catalogue should exist before this test is run.
 
@@ -84,10 +88,10 @@ public class ManifestRepositoryTest extends WRTest {
     // should accept any string here.
 
     this.repo.commit("commit things which were changed before");
-    this.repo.putCatalogue("a string with the catalogue");
+    this.repo.putCatalogue("a string with the catalogue", client);
     boolean r = this.repo.commit("commit the catalogue");
     assertThat(r).isTrue();
-    this.repo.putCatalogue("a string with the catalogue");
+    this.repo.putCatalogue("a string with the catalogue", client);
     r = this.repo.commit("try to commit unchanged catalogue");
     assertThat(r).isFalse();
 
@@ -107,14 +111,14 @@ public class ManifestRepositoryTest extends WRTest {
    * inconsistent.
    */
   public void testDeleteAll() {
-    this.repo.deleteAll();
+    this.repo.deleteAll(client);
     assertThat(this.repo.getAllFilePaths()).containsExactly("index.xml");
     this.repo.putOriginalManifest(manifestUrl1, "some string".getBytes(StandardCharsets.UTF_8));
     this.repo.putFilteredManifest(manifestUrl2, "some string");
     assertThat(this.repo.getAllFilePaths()).containsExactlyInAnyOrder("index.xml",
         "manifests/com/example.com/51d9ca82ce863381a7648647ab688b966f3b2260-filtered.xml",
         "manifests/com/example.com/bb937788ce84767ff64935e70c3856bd8c7bd16d.xml");
-    this.repo.deleteAll();
+    this.repo.deleteAll(client);
     assertThat(this.repo.getAllFilePaths()).containsExactly("index.xml");
   }
 
@@ -125,7 +129,7 @@ public class ManifestRepositoryTest extends WRTest {
   @Test
   public void testManifestStorage() {
 
-    this.repo.deleteAll();
+    this.repo.deleteAll(client);
 
     // Attempt to get a nonexistent manifest from the repo.
 

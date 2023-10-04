@@ -139,7 +139,7 @@ public class RegistryUpdaterTest extends WRTest {
   @BeforeEach
   public void setUp() {
     this.sourceProvider.clearSources();
-    this.repo.deleteAll();
+    this.repo.deleteAll(regClient);
     this.internet.clearURLs();
     this.internet.clearEmailsSent();
     this.lastCatalogue = null;

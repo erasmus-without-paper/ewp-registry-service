@@ -16,7 +16,7 @@ import eu.erasmuswithoutpaper.registry.repository.ManifestRepositoryImpl;
 import eu.erasmuswithoutpaper.registry.sourceprovider.ManifestSourceFactory;
 import eu.erasmuswithoutpaper.registry.sourceprovider.TestManifestSourceProvider;
 import eu.erasmuswithoutpaper.registry.updater.RegistryUpdaterTest;
-
+import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
@@ -40,6 +40,9 @@ public class ApiControllerIntegrationTest extends WRIntegrationTest {
 
   @Autowired
   private EwpDocBuilder docBuilder;
+
+  @Autowired
+  private RegistryClient client;
 
   @Autowired
   private ManifestRepositoryImpl repo;
@@ -104,7 +107,7 @@ public class ApiControllerIntegrationTest extends WRIntegrationTest {
    */
   @Test
   public void servesTheCatalogue() {
-    this.repo.putCatalogue("<xml/>");
+    this.repo.putCatalogue("<xml/>", client);
     ResponseEntity<String> response =
         this.template.getForEntity(this.baseURL + "/catalogue-v1.xml", String.class);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -152,7 +155,7 @@ public class ApiControllerIntegrationTest extends WRIntegrationTest {
         Lists.newArrayList(new RestrictInstitutionsCovered("^uw\\.edu\\.pl$"))));
     this.manifestSourceProvider.addSource(manifestFactory.newRegularSource(urlSE,
         Lists.newArrayList(new RestrictInstitutionsCovered("^.+\\.se$"))));
-    this.repo.deleteAll();
+    this.repo.deleteAll(client);
     // this.internet.putURL(urlSelf, this.apiController.getSelfManifest().getBody());
 
     /* Call the refresh URL and verify its response status. */
@@ -267,7 +270,7 @@ public class ApiControllerIntegrationTest extends WRIntegrationTest {
   }
 
   private int forceReload(String manifestUrl) {
-    MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
+    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     params.add("url", manifestUrl);
     ResponseEntity<String> response =
         this.template.postForEntity(this.baseURL + "/reload", params, String.class);

@@ -141,7 +141,7 @@ public abstract class AbstractApiTest<StateType extends SuiteState> extends WRTe
        * consistent with the certificates returned by the validator.
        */
       this.sourceProvider.clearSources();
-      this.repo.deleteAll();
+      this.repo.deleteAll(client);
       this.internet.clearAll();
 
       Map<String,String> registryManifests = this.selfManifestProvider.getManifests();

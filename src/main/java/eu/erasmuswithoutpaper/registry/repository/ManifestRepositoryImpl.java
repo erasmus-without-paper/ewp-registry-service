@@ -27,7 +27,6 @@ import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient.RefreshFailureException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Iterables;
@@ -60,9 +59,6 @@ import org.xml.sax.SAXException;
  */
 @Service
 @SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
-// FIXME @Lazy is for preventing cycle in dependencies with RealInternet i production profile.
-// This should be unraveled.
-@Lazy
 @ConditionalOnWebApplication
 public class ManifestRepositoryImpl implements ManifestRepository {
 
@@ -70,7 +66,6 @@ public class ManifestRepositoryImpl implements ManifestRepository {
 
   private final ManifestRepositoryImplProperties repoProperties;
   private final CatalogueDependantCache catcache;
-  private RegistryClient client = null;
   private final Git git;
 
   private final ReentrantReadWriteLock lock;
@@ -105,7 +100,6 @@ public class ManifestRepositoryImpl implements ManifestRepository {
       this.index = this.loadIndex().get();
     } else {
       this.index = new TreeSet<>();
-      this.deleteAll();
       this.flushIndex();
       this.commit("Upgrade repository structure");
     }
@@ -158,7 +152,7 @@ public class ManifestRepositoryImpl implements ManifestRepository {
    * Remember to {@link #commit(String)} the changes afterwards, for logging purposes.
    * </p>
    */
-  public final void deleteAll() {
+  public final void deleteAll(RegistryClient client) {
     this.lock.writeLock().lock();
     try {
       Path path = this.repoProperties.getFileSystem().getPath(this.repoProperties.getPath());
@@ -202,7 +196,7 @@ public class ManifestRepositoryImpl implements ManifestRepository {
       this.cachedCatalogueContent = null;
       this.index.clear();
       this.flushIndex();
-      this.onCatalogueContentChanged();
+      this.onCatalogueContentChanged(client);
     } catch (IOException e) {
       throw new RuntimeException(e);
     } finally {
@@ -393,13 +387,13 @@ public class ManifestRepositoryImpl implements ManifestRepository {
   }
 
   @Override
-  public boolean putCatalogue(String contents) {
+  public boolean putCatalogue(String contents, RegistryClient client) {
     this.lock.writeLock().lock();
     try {
       boolean changed = this.writeFile(this.getPathForCatalogue(), contents);
       this.cachedCatalogueContent = contents;
       if (changed) {
-        this.onCatalogueContentChanged();
+        this.onCatalogueContentChanged(client);
       }
       return changed;
     } finally {
@@ -441,18 +435,6 @@ public class ManifestRepositoryImpl implements ManifestRepository {
   @Override
   public void releaseWriteLock() {
     this.lock.writeLock().unlock();
-  }
-
-  /**
-   * Once set, {@link ManifestRepositoryImpl} will refresh this {@link RegistryClient} whenever the
-   * catalogue is changed.
-   *
-   * @param client The client to be kept in sync.
-   */
-  @Autowired
-  public void setRegistryClient(RegistryClient client) {
-    this.client = client;
-    this.onCatalogueContentChanged();
   }
 
   private void addToIndex(String url) {
@@ -526,14 +508,12 @@ public class ManifestRepositoryImpl implements ManifestRepository {
     return Optional.of(result);
   }
 
-  private void onCatalogueContentChanged() {
+  private void onCatalogueContentChanged(RegistryClient client) {
     this.catcache.clear();
-    if (this.client != null) {
-      try {
-        this.client.refresh();
-      } catch (RefreshFailureException e) {
-        logger.error("Local registry client refresh failed: " + e);
-      }
+    try {
+      client.refresh();
+    } catch (RefreshFailureException e) {
+      logger.error("Local registry client refresh failed: " + e);
     }
   }
 

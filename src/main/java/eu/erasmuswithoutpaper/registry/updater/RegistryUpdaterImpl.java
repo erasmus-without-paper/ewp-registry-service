@@ -437,7 +437,7 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
 
       // Store it.
 
-      this.repo.putCatalogue(catalogueXml);
+      this.repo.putCatalogue(catalogueXml, registryClient);
       if (commit) {
         this.repo.commit("Update catalogue");
       }

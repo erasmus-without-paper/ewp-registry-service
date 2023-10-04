@@ -2,6 +2,7 @@ package eu.erasmuswithoutpaper.registry.repository;
 
 import java.util.List;
 
+import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 import org.springframework.beans.factory.DisposableBean;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -151,7 +152,7 @@ public interface ManifestRepository extends DisposableBean {
    * @param contents A string with the catalogue contents to be stored.
    * @return <b>true</b> if the new content differs from the previous one.
    */
-  boolean putCatalogue(String contents);
+  boolean putCatalogue(String contents, RegistryClient client);
 
   /**
    * Store a new filtered version of the manifest.
