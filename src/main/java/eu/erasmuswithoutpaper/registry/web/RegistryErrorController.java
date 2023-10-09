@@ -91,7 +91,7 @@ public class RegistryErrorController implements ErrorController {
       xml = "Internal Server Error";
       headers.setContentType(MediaType.TEXT_PLAIN);
     }
-    return new ResponseEntity<String>(xml, headers, HttpStatus.INTERNAL_SERVER_ERROR);
+    return new ResponseEntity<>(xml, headers, HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
   /**
@@ -111,12 +111,7 @@ public class RegistryErrorController implements ErrorController {
     }
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_XML);
-    return new ResponseEntity<String>(xml, headers, HttpStatus.NOT_FOUND);
-  }
-
-  @Override
-  public String getErrorPath() {
-    return "/error";
+    return new ResponseEntity<>(xml, headers, HttpStatus.NOT_FOUND);
   }
 
   @ExceptionHandler({ ManifestNotFoundException.class })
