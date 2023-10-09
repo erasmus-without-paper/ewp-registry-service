@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.net.SocketTimeoutException;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.interfaces.RSAPublicKey;
 import java.util.ArrayList;
@@ -1888,6 +1889,11 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
       this.name = name;
       this.value = value;
     }
+
+    private String getEscaped() {
+      return URLEncoder.encode(name, StandardCharsets.UTF_8) + "="
+          + URLEncoder.encode(value, StandardCharsets.UTF_8);
+    }
   }
 
   protected interface Parameters {
@@ -1911,15 +1917,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
 
     @Override
     public String getPostBody() {
-      URIBuilder builder = new URIBuilder();
-      for (Parameter parameter : this.parameters) {
-        builder.addParameter(parameter.name, parameter.value);
-      }
-      String parameters = builder.toString();
-      if (parameters.isEmpty()) {
-        return parameters;
-      }
-      return parameters.substring(1); // Remove leading '?'
+      return parameters.stream().map(param -> param.getEscaped()).collect(Collectors.joining("&"));
     }
 
     @Override
