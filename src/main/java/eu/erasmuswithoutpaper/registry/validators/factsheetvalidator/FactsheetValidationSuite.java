@@ -55,9 +55,9 @@ class FactsheetValidationSuite
 
 
     testParameters200(combination, "Request for one of known hei_ids, expect 200 OK.",
-        new ParameterList(new Parameter("hei_id", currentState.selectedHeiId)),
+        new ParameterList(new Parameter("hei_id", currentState.getSelectedHeiId())),
         verfierFactory.expectResponseToContainExactly(
-            Collections.singletonList(currentState.selectedHeiId)
+            Collections.singletonList(currentState.getSelectedHeiId())
         )
     );
 
@@ -66,15 +66,15 @@ class FactsheetValidationSuite
         verfierFactory.expectResponseToBeEmpty()
     );
 
-    if (this.currentState.maxHeiIds > 1) {
+    if (this.currentState.getMaxHeiIds() > 1) {
       testParameters200(
           combination,
           "Request one known and one unknown hei_id, expect 200 and only one <hei-id> in response.",
-          new ParameterList(new Parameter("hei_id", currentState.selectedHeiId),
+          new ParameterList(new Parameter("hei_id", currentState.getSelectedHeiId()),
               new Parameter("hei_id", fakeHeiId)
           ),
           verfierFactory.expectResponseToContainExactly(
-              Collections.singletonList(currentState.selectedHeiId)
+              Collections.singletonList(currentState.getSelectedHeiId())
           )
       );
     }
@@ -87,8 +87,8 @@ class FactsheetValidationSuite
 
     testParametersError(combination, "Request more than <max-hei-ids> known hei_ids, expect 400.",
         new ParameterList(
-            Collections.nCopies(this.currentState.maxHeiIds + 1,
-                new Parameter("hei_id", currentState.selectedHeiId)
+            Collections.nCopies(this.currentState.getMaxHeiIds() + 1,
+                new Parameter("hei_id", currentState.getSelectedHeiId())
             )
         ),
         400
@@ -97,7 +97,8 @@ class FactsheetValidationSuite
     testParametersError(combination,
         "Request more than <max-hei-ids> unknown hei_ids, expect 400.",
         new ParameterList(
-            Collections.nCopies(this.currentState.maxHeiIds + 1, new Parameter("hei_id", fakeHeiId))
+            Collections.nCopies(this.currentState.getMaxHeiIds() + 1,
+                new Parameter("hei_id", fakeHeiId))
         ),
         400
     );
@@ -105,16 +106,16 @@ class FactsheetValidationSuite
     testParameters200(combination, "Request exactly <max-hei-ids> known hei_ids, "
             + "expect 200 and non-empty response.",
         new ParameterList(
-            Collections.nCopies(this.currentState.maxHeiIds,
-                new Parameter("hei_id", currentState.selectedHeiId)
+            Collections.nCopies(this.currentState.getMaxHeiIds(),
+                new Parameter("hei_id", currentState.getSelectedHeiId())
             )
         ),
         verfierFactory
-            .expectResponseToContain(Collections.singletonList(currentState.selectedHeiId))
+            .expectResponseToContain(Collections.singletonList(currentState.getSelectedHeiId()))
     );
 
     testParametersError(combination, "Request with single incorrect parameter, expect 400.",
-        new ParameterList(new Parameter("hei_id_param", currentState.selectedHeiId)), 400
+        new ParameterList(new Parameter("hei_id_param", currentState.getSelectedHeiId())), 400
     );
   }
 }

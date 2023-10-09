@@ -62,7 +62,7 @@ class FactsheetSetupValidationSuite
   @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
   protected void runApiSpecificTests(HttpSecurityDescription securityDescription)
       throws SuiteBroken {
-    this.currentState.maxHeiIds = getMaxHeiIds();
-    this.currentState.selectedHeiId = getParameterValue(HEI_ID_PARAMETER, this::getSelectedHeiId);
+    this.currentState.setMaxHeiIds(getMaxHeiIds());
+    this.currentState.setSelectedHeiId(getParameterValue(HEI_ID_PARAMETER, this::getSelectedHeiId));
   }
 }
