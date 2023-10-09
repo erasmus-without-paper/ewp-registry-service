@@ -170,7 +170,7 @@
 {% macro printRequestBody(message) %}
     {% if message.body is not null and message.body is not empty %}
         <pre class="ewpsrc__test_message-body"> {{ message.body }} </pre>
-    {% elseif message.rawBodyBase64 is not null %}
+    {% elseif message.rawBodyBase64 is not null and message.rawBodyBase64 is not empty %}
         <pre class="ewpsrc__test_message-body"> {{ message.rawBodyBase64 }} </pre>
     {% endif %}
 {% endmacro %}

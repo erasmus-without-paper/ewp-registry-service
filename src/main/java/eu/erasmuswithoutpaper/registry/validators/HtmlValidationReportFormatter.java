@@ -214,7 +214,7 @@ public class HtmlValidationReportFormatter {
   private Map<String, Object> formatResponseSnapshotToMap(Response response) {
     Map<String, Object> result = new HashMap<>();
     result.put("status", response.getStatus());
-    result.put("rawBodyBase64", Base64.encode(response.getBody()));
+    result.put("rawBodyBase64", getRawBodyBase64(response.getBody()));
     BuildParams params = new BuildParams(response.getBody());
     params.setMakingPretty(true);
     BuildResult buildResult = this.docBuilder.build(params);
@@ -246,7 +246,7 @@ public class HtmlValidationReportFormatter {
     Map<String, Object> result = new HashMap<>();
     if (request.getBody().isPresent()) {
       byte[] body = request.getBody().get();
-      result.put("rawBodyBase64", Base64.encode(body));
+      result.put("rawBodyBase64", getRawBodyBase64(body));
       CharsetDecoder decoder = StandardCharsets.UTF_8.newDecoder();
       try {
         CharBuffer decoded = decoder.decode(ByteBuffer.wrap(body));
@@ -275,6 +275,10 @@ public class HtmlValidationReportFormatter {
     }
     result.put("processingNoticesHtml", request.getProcessingNoticesHtml());
     return result;
+  }
+
+  private String getRawBodyBase64(byte[] body) {
+    return new String(Base64.encode(body), StandardCharsets.UTF_8);
   }
 
 }
