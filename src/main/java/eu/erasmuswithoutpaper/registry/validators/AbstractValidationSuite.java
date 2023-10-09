@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.net.SocketTimeoutException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -69,7 +70,6 @@ import com.google.common.collect.Lists;
 import net.adamcin.httpsig.api.Algorithm;
 import net.adamcin.httpsig.api.Challenge;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.http.client.utils.URIBuilder;
 import org.joox.Match;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1917,21 +1917,22 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
 
     @Override
     public String getPostBody() {
-      return parameters.stream().map(param -> param.getEscaped()).collect(Collectors.joining("&"));
+      return getEscapedParameters();
     }
 
     @Override
     public String getGetUrl(String url) {
-      URIBuilder builder;
       try {
-        builder = new URIBuilder(url);
+        new URI(url);
       } catch (URISyntaxException e) {
         throw new RuntimeException("Invalid URI syntax, shouldn't happen.");
       }
-      for (Parameter parameter : this.parameters) {
-        builder.addParameter(parameter.name, parameter.value);
-      }
-      return builder.toString();
+      String params = getEscapedParameters();
+      return params.isEmpty() ? url : url + '?' + params;
+    }
+
+    private String getEscapedParameters() {
+      return parameters.stream().map(param -> param.getEscaped()).collect(Collectors.joining("&"));
     }
 
     @Override
