@@ -119,9 +119,9 @@ public class ApiForHeiImplementationMapping {
     ApiForHeiImplementationMapping apiForHeiImplementationMapping
         = new ApiForHeiImplementationMapping();
     for (ManifestOverviewInfo info : infos) {
-      String manifestUrl = info.url;
+      String manifestUrl = info.getUrl();
       int hostId = 0;
-      for (HostOverviewInfo host : info.hosts) {
+      for (HostOverviewInfo host : info.getHosts()) {
         hostId++;
 
         for (String heiId : host.coveredHeiIds) {

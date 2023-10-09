@@ -23,8 +23,8 @@ public class ImplementedApisCount {
     for (ManifestOverviewInfo manifest : overviewInfos) {
       int hostId = 1;
 
-      for (HostOverviewInfo host : manifest.hosts) {
-        String hostName = manifest.url + hostId;
+      for (HostOverviewInfo host : manifest.getHosts()) {
+        String hostName = manifest.getUrl() + hostId;
         hostId++;
 
         for (ImplementedApiInfo api : host.apisImplemented) {

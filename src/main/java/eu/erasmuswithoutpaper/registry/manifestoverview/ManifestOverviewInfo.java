@@ -12,16 +12,15 @@ import javax.xml.parsers.DocumentBuilder;
 import eu.erasmuswithoutpaper.registry.common.Utils;
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.joox.Match;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
-@SuppressFBWarnings("URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD")
 public class ManifestOverviewInfo {
-  public String url;
-  public List<HostOverviewInfo> hosts = new ArrayList<>();
+
+  private final String url;
+  private final List<HostOverviewInfo> hosts = new ArrayList<>();
 
   /**
    * Builds ManifestOverviewInfo.
@@ -33,11 +32,7 @@ public class ManifestOverviewInfo {
    * @return ManifestOverviewInfo containing basic information about that manifest
    *     or null if it cannot be parsed.
    */
-  public static ManifestOverviewInfo generateFromManifest(String url,
-      String manifest) {
-    ManifestOverviewInfo result = new ManifestOverviewInfo();
-    result.url = url;
-
+  public static ManifestOverviewInfo generateFromManifest(String url, String manifest) {
     DocumentBuilder docBuilder = Utils.newSecureDocumentBuilder();
     Document doc;
     try {
@@ -50,6 +45,8 @@ public class ManifestOverviewInfo {
     Match matcher = $(doc.getDocumentElement()).namespaces(KnownNamespace.prefixMap());
     final String endsWithUrlXPath =
         "substring(local-name(), string-length(local-name()) - string-length('url') + 1) = 'url'";
+
+    ManifestOverviewInfo result = new ManifestOverviewInfo(url);
 
     Match hosts = matcher.xpath("/mf6:manifest/mf6:host");
     for (Element host : hosts) {
@@ -69,13 +66,8 @@ public class ManifestOverviewInfo {
         String elementVersionTag = elem.getAttribute("version");
         ApiVersion apiVersion = new ApiVersion(elementVersionTag);
 
-        hostOverviewInfo.apisImplemented.add(
-            new ImplementedApiInfo(
-                elem.getLocalName(),
-                apiVersion,
-                apiUrls
-            )
-        );
+        hostOverviewInfo.apisImplemented
+            .add(new ImplementedApiInfo(elem.getLocalName(), apiVersion, apiUrls));
       }
       for (Element elem : hostMatch.xpath("mf6:institutions-covered/r:hei")) {
         hostOverviewInfo.coveredHeiIds.add(elem.getAttribute("id"));
@@ -84,4 +76,17 @@ public class ManifestOverviewInfo {
     }
     return result;
   }
+
+  public List<HostOverviewInfo> getHosts() {
+    return hosts;
+  }
+
+  public String getUrl() {
+    return url;
+  }
+
+  private ManifestOverviewInfo(String url) {
+    this.url = url;
+  }
+
 }

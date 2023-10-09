@@ -35,9 +35,9 @@ public class CoveredInstitutionsCounters {
       Collection<ManifestOverviewInfo> infos) {
     CoveredInstitutionsCounters coveredInstitutionsCounters = new CoveredInstitutionsCounters();
     for (ManifestOverviewInfo info : infos) {
-      String manifestUrl = info.url;
+      String manifestUrl = info.getUrl();
       int hostId = 0;
-      for (HostOverviewInfo host : info.hosts) {
+      for (HostOverviewInfo host : info.getHosts()) {
         hostId++;
         ManifestAndHostIndex manifestAndHostIndex = new ManifestAndHostIndex(
             manifestUrl, hostId);
