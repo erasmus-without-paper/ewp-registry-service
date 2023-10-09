@@ -2,12 +2,9 @@ package eu.erasmuswithoutpaper.registry.manifestoverview;
 
 import java.util.Objects;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
-@SuppressFBWarnings("URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD")
 class ManifestAndHostIndex {
-  public final String manifestUrl;
-  public final int hostId;
+  private final String manifestUrl;
+  private final int hostId;
 
   public ManifestAndHostIndex(String manifestUrl, int hostId) {
     this.manifestUrl = manifestUrl;
