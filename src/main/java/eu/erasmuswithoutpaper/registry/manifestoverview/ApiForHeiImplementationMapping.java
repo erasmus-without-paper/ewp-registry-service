@@ -129,9 +129,9 @@ public class ApiForHeiImplementationMapping {
             ManifestAndHostIndex manifestAndHostIndex =
                 new ManifestAndHostIndex(manifestUrl, hostId);
             ApiHeiAndMajorVersionTuple key = new ApiHeiAndMajorVersionTuple(
-                heiId, implementedApiInfo.name, implementedApiInfo.version);
+                heiId, implementedApiInfo.getName(), implementedApiInfo.getVersion());
             apiForHeiImplementationMapping.addEntry(
-                key, manifestAndHostIndex, implementedApiInfo.version);
+                key, manifestAndHostIndex, implementedApiInfo.getVersion());
           }
         }
       }
