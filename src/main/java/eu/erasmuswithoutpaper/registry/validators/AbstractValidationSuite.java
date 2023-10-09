@@ -1882,8 +1882,8 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
 
 
   protected static class Parameter {
-    public final String name;
-    public final String value;
+    private final String name;
+    private final String value;
 
     public Parameter(String name, String value) {
       this.name = name;
