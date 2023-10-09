@@ -22,7 +22,7 @@ Release notes
 * Speed up updates by removing XPath calls
 * Many, many fixes of concurrency issues and api versions compatibility
 * Add info about APIs that lack stats endpoint implementation
-* #28 Corrected RFC 2616 date format in validator
+* Corrected RFC 2616 date format in validator (fixes [#28](/erasmus-without-paper/ewp-registry-service/issues/28))
 * Add "How to join" and contact emails to status page
 * Update registry's manifest to version 6.0.0
 * Check public key uniqueness in manifests
