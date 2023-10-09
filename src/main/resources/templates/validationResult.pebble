@@ -5,9 +5,7 @@
 {% block main %}
     <section class='ewp-section ewp-section-validation-results'>
         <h1 class='ewp-section-title'>
-            Result: <code class='ewpst__bordered'>
-                {{ status }}
-            </code>
+            Result: <code class='ewpst__bordered'>{{ status }}</code>
         </h1>
 
         <h2 class='ewp-section-title'>Basic info</h2>
@@ -150,27 +148,27 @@
     {% endfor %}
 
     {% for notice in message.processingNoticesHtml %}
-        <p class="ewpsrc__test_processing-notice"> {{ notice }} </p>
+        <p class="ewpsrc__test_processing-notice">{{ notice }}</p>
     {% endfor %}
 {% endmacro %}
 
 {% macro printResponseBody(message) %}
     {% if message.developerMessage is not null %}
-        <p class="ewpsrc__test_developer-message"> Developer message:<br>{{ message.developerMessage }} </p>
+        <p class="ewpsrc__test_developer-message">Developer message:<br>{{ message.developerMessage }}</p>
     {% endif %}
     {% if message.rawBodyBase64 is null %}
         <pre class="ewpsrc__test_message-body">(empty body)</pre>
     {% elseif message.prettyXml is not null %}
-        <pre class="ewpsrc__test_message-body"> {{ message.prettyXml }} </pre>
+        <pre class="ewpsrc__test_message-body">{{ message.prettyXml }}</pre>
     {% else %}
-        <pre class="ewpsrc__test_message-body"> {{ message.rawBodyBase64 }} </pre>
+        <pre class="ewpsrc__test_message-body">{{ message.rawBodyBase64 }}</pre>
     {% endif %}
 {% endmacro %}
 
 {% macro printRequestBody(message) %}
     {% if message.body is not null and message.body is not empty %}
-        <pre class="ewpsrc__test_message-body"> {{ message.body }} </pre>
+        <pre class="ewpsrc__test_message-body">{{ message.body }}</pre>
     {% elseif message.rawBodyBase64 is not null and message.rawBodyBase64 is not empty %}
-        <pre class="ewpsrc__test_message-body"> {{ message.rawBodyBase64 }} </pre>
+        <pre class="ewpsrc__test_message-body">{{ message.rawBodyBase64 }}</pre>
     {% endif %}
 {% endmacro %}
