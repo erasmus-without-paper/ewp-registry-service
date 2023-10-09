@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.security.KeyPair;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +21,6 @@ import eu.erasmuswithoutpaper.registry.web.UiController;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import org.apache.xerces.impl.dv.util.Base64;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 
@@ -158,14 +158,15 @@ public abstract class AbstractApiTest<StateType extends SuiteState> extends WRTe
       if (this.getValidator().getValidatorKeyStoreSet().getSecondaryKeyStore() != null) {
         apiManifest = apiManifest.replace(
             "SERVER-KEY-PLACEHOLDER-SECONDARY",
-            Base64.encode(
+            Base64.getEncoder()
+                .encodeToString(
                 this.serviceKeyStore.getTlsKeyPairInUse().getPublic().getEncoded()
             )
         );
       }
       apiManifest = apiManifest.replace(
           "SERVER-KEY-PLACEHOLDER",
-          Base64.encode(myKeyPair.getPublic().getEncoded())
+          Base64.getEncoder().encodeToString(myKeyPair.getPublic().getEncoded())
       );
       this.internet.putURL(apiManifestUrl, apiManifest);
       this.sourceProvider

@@ -4,10 +4,9 @@ import java.nio.charset.StandardCharsets;
 import java.security.PublicKey;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
+import java.util.Base64;
 
 import eu.erasmuswithoutpaper.registry.validators.ValidatorKeyStore;
-
-import org.apache.commons.codec.binary.Base64;
 
 public class EncodedCertificateAndKeys {
   private final String certificateEncoded;
@@ -68,7 +67,7 @@ public class EncodedCertificateAndKeys {
 
   private static String encodeAsBase64(byte[] bytes) {
     return new String(
-        Base64.encodeBase64(bytes),
+        Base64.getEncoder().encode(bytes),
         StandardCharsets.US_ASCII
     );
   }

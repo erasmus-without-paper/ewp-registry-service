@@ -11,6 +11,7 @@ import java.security.cert.CertificateEncodingException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -25,7 +26,6 @@ import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.bouncycastle.util.encoders.Base64;
 import org.joox.Match;
 
 public class HtmlValidationReportFormatter {
@@ -278,7 +278,7 @@ public class HtmlValidationReportFormatter {
   }
 
   private String getRawBodyBase64(byte[] body) {
-    return new String(Base64.encode(body), StandardCharsets.UTF_8);
+    return Base64.getEncoder().encodeToString(body);
   }
 
 }
