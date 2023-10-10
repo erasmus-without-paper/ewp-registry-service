@@ -1,4 +1,4 @@
-FROM eclipse-temurin:11-jre-jammy
+FROM eclipse-temurin:17-jre-jammy
 
 RUN \
     apt-get update && \
