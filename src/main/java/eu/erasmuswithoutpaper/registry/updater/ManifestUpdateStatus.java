@@ -1,7 +1,6 @@
 package eu.erasmuswithoutpaper.registry.updater;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -71,7 +70,7 @@ public class ManifestUpdateStatus {
   public ManifestUpdateStatus(String url) {
     this.url = url;
     this.setLastAccessFlagStatus(Severity.UNDETERMINED);
-    this.setLastAccessNotices(Collections.emptyList());
+    this.setLastAccessNotices(new ArrayList<>());
   }
 
   /**
