@@ -17,7 +17,6 @@ import javax.net.ssl.HttpsURLConnection;
 
 import eu.erasmuswithoutpaper.registry.common.Severity;
 import eu.erasmuswithoutpaper.registry.notifier.NotifierFlag;
-import eu.erasmuswithoutpaper.registry.notifier.NotifierService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -246,12 +245,9 @@ public class RealInternet implements Internet {
     }
   }
 
-  /**
-   * @param notifier needed to register local error flags.
-   */
-  @Autowired(required = false)
-  @SuppressFBWarnings("UPM_UNCALLED_PRIVATE_METHOD")
-  private void setNotifierServer(NotifierService notifier) { // NOPMD
-    notifier.addWatchedFlag(this.emailSendingStatus);
+  @Override
+  public NotifierFlag getEmailSendingStatus() {
+    return emailSendingStatus;
   }
+
 }

@@ -14,7 +14,6 @@ import eu.erasmuswithoutpaper.registry.internet.Internet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import org.slf4j.Logger;
@@ -26,9 +25,6 @@ import org.slf4j.LoggerFactory;
  * {@link #sendNotifications()} is called, it notifies the recipients if there are any issues which
  * need their attention.
  */
-// FIXME @Lazy is for preventing cycle in dependencies with RealInternet i production profile. This
-// should be unraveled.
-@Lazy
 @Component
 @ConditionalOnWebApplication
 public class NotifierService {
@@ -53,6 +49,10 @@ public class NotifierService {
     this.internet = internet;
     this.instanceName = instanceName;
 
+    NotifierFlag emailSendingStatus = internet.getEmailSendingStatus();
+    if (emailSendingStatus != null) {
+      addWatchedFlag(emailSendingStatus);
+    }
     // sanity check for looking into a correctness of the configuration from logs
     logger.info("NotifierService has bean initialized");
   }

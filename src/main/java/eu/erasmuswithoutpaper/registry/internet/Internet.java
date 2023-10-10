@@ -3,6 +3,8 @@ package eu.erasmuswithoutpaper.registry.internet;
 import java.io.IOException;
 import java.util.List;
 
+import eu.erasmuswithoutpaper.registry.notifier.NotifierFlag;
+
 /**
  * This interface will be used by all the other services for accessing resources over the Internet.
  * This allows to easily replace the Internet for tests.
@@ -47,4 +49,9 @@ public interface Internet {
    * @param contents The contents of the email. Plain-text.
    */
   void queueEmail(List<String> recipients, String subject, String contents);
+
+  default NotifierFlag getEmailSendingStatus() {
+    return null;
+  }
+
 }
