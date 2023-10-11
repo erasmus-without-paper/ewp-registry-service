@@ -28,11 +28,10 @@ import org.springframework.util.MultiValueMap;
 
 import org.junit.jupiter.api.Test;
 
-
 /**
  * Check if the URLs served by our {@link ApiController} are actually served.
  */
-@TestPropertySource(properties = {"app.use-flag-to-notify-about-exceptions=true"})
+@TestPropertySource(properties = { "app.use-flag-to-notify-about-exceptions=true" })
 public class ApiControllerIntegrationTest extends WRIntegrationTest {
 
   @Autowired
@@ -70,8 +69,7 @@ public class ApiControllerIntegrationTest extends WRIntegrationTest {
    */
   @Test
   public void respondsValid404() {
-    ResponseEntity<String> response =
-        this.template.getForEntity(this.baseURL + "/nonexistent", String.class);
+    ResponseEntity<String> response = this.template.getForEntity("/nonexistent", String.class);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     BuildParams params = new BuildParams(response.getBody());
     params.setExpectedKnownElement(KnownElement.COMMON_ERROR_RESPONSE);
@@ -89,8 +87,7 @@ public class ApiControllerIntegrationTest extends WRIntegrationTest {
      * there should be no errors.
      */
     int size = this.notifier.getAllErroredFlags().size();
-    ResponseEntity<String> response =
-        this.template.getForEntity(this.baseURL + "/throw-exception", String.class);
+    ResponseEntity<String> response = this.template.getForEntity("/throw-exception", String.class);
     assertThat(this.notifier.getAllErroredFlags()).hasSize(size + 1);
     assertThat(this.notifier.getAllErroredFlags().get(0).getName())
         .contains("Recently recorded runtime errors");
@@ -108,8 +105,7 @@ public class ApiControllerIntegrationTest extends WRIntegrationTest {
   @Test
   public void servesTheCatalogue() {
     this.repo.putCatalogue("<xml/>", client);
-    ResponseEntity<String> response =
-        this.template.getForEntity(this.baseURL + "/catalogue-v1.xml", String.class);
+    ResponseEntity<String> response = this.template.getForEntity("/catalogue-v1.xml", String.class);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(response.getBody()).isEqualTo("<xml/>");
   }
@@ -123,8 +119,8 @@ public class ApiControllerIntegrationTest extends WRIntegrationTest {
     Map<String, String> manifests = this.selfManifestProvider.getManifests();
 
     for (String manifestName : manifests.keySet()) {
-        ResponseEntity<String> response =
-            this.template.getForEntity(this.baseURL + "/manifest-" + manifestName + ".xml", String.class);
+      ResponseEntity<String> response = this.template
+          .getForEntity("/manifest-" + manifestName + ".xml", String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(manifests.get(manifestName));
     }
@@ -272,8 +268,7 @@ public class ApiControllerIntegrationTest extends WRIntegrationTest {
   private int forceReload(String manifestUrl) {
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     params.add("url", manifestUrl);
-    ResponseEntity<String> response =
-        this.template.postForEntity(this.baseURL + "/reload", params, String.class);
+    ResponseEntity<String> response = this.template.postForEntity("/reload", params, String.class);
     return response.getStatusCodeValue();
   }
 
@@ -295,13 +290,11 @@ public class ApiControllerIntegrationTest extends WRIntegrationTest {
    * URL.
    */
   private String status(String url) {
-    ResponseEntity<String> response =
-        this.template.getForEntity(this.baseURL + "/status?url=" + url, String.class);
+    ResponseEntity<String> response = this.template.getForEntity("/status?url=" + url,
+        String.class);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(response.getBody()).contains("<body>");
     return response.getBody();
   }
 
 }
-
-
