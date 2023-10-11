@@ -1,8 +1,12 @@
 package eu.erasmuswithoutpaper.registry.validators.imobilitytorsvalidator;
 
+import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 
 import eu.erasmuswithoutpaper.registry.internet.InternetTestHelpers;
 import eu.erasmuswithoutpaper.registry.internet.Request;
@@ -19,9 +23,22 @@ public abstract class IMobilityTorsServiceValidCommon extends AbstractIMobilityT
    * @param getUrl         The endpoint at which to listen for requests.
    * @param registryClient Initialized and refreshed {@link RegistryClient} instance.
    */
-  public IMobilityTorsServiceValidCommon(String indexUrl, String getUrl, RegistryClient registryClient,
-      ResourceLoader resourceLoader) {
+  public IMobilityTorsServiceValidCommon(String indexUrl, String getUrl, RegistryClient registryClient) {
     super(indexUrl, getUrl, registryClient);
+  }
+
+  @SuppressWarnings("unchecked")
+  protected static <T> T readFromFile(String filename, Class<T> clazz,
+      ResourceLoader resourceLoader) {
+    try {
+      JAXBContext jc = JAXBContext.newInstance(clazz);
+      T parsedRespone = (T) jc.createUnmarshaller()
+          .unmarshal(
+              resourceLoader.getResource("classpath:test-files/" + filename).getInputStream());
+      return parsedRespone;
+    } catch (JAXBException | IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   protected int getMaxOmobilityIds() {

@@ -1,15 +1,11 @@
 package eu.erasmuswithoutpaper.registry.validators.imobilitytorsvalidator;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
@@ -32,21 +28,8 @@ public class IMobilityTorsServiceV1Valid extends IMobilityTorsServiceValidCommon
    */
   public IMobilityTorsServiceV1Valid(String indexUrl, String getUrl, RegistryClient registryClient,
       ResourceLoader resourceLoader) {
-    super(indexUrl, getUrl, registryClient, resourceLoader);
+    super(indexUrl, getUrl, registryClient);
     fillDataBase(resourceLoader);
-  }
-
-  private List<ImobilityTorsGetResponse.Tor> readTorFromFile(ResourceLoader resourceLoader) {
-    String filename = "imobilitytorsvalidator/tor-v1.xml";
-    try {
-      JAXBContext jc = JAXBContext.newInstance(ImobilityTorsGetResponse.class);
-      ImobilityTorsGetResponse parsedRespone = (ImobilityTorsGetResponse) jc.createUnmarshaller()
-          .unmarshal(
-              resourceLoader.getResource("classpath:test-files/" + filename).getInputStream());
-      return parsedRespone.getTor();
-    } catch (JAXBException | IOException e) {
-      throw new RuntimeException(e);
-    }
   }
 
   private void fillDataBase(ResourceLoader resourceLoader) {
@@ -54,7 +37,10 @@ public class IMobilityTorsServiceV1Valid extends IMobilityTorsServiceValidCommon
     final String SENDING_HEI_ID_1 = "validator-hei01.developers.erasmuswithoutpaper.eu";
     final String SENDING_HEI_ID_2 = "uw.edu.pl";
 
-    List<ImobilityTorsGetResponse.Tor> tor = readTorFromFile(resourceLoader);
+    String filename = "imobilitytorsvalidator/tor-v1.xml";
+    ImobilityTorsGetResponse torsGetResponse = readFromFile(filename,
+        ImobilityTorsGetResponse.class, resourceLoader);
+    List<ImobilityTorsGetResponse.Tor> tor = torsGetResponse.getTor();
     tors.add(new IMobilityTorEntry(tor.get(0), RECEIVING_HEI_ID, SENDING_HEI_ID_1));
     tors.add(new IMobilityTorEntry(tor.get(1), RECEIVING_HEI_ID, SENDING_HEI_ID_2));
   }
