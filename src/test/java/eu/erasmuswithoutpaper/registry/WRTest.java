@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.context.ActiveProfiles;
@@ -20,12 +19,6 @@ public abstract class WRTest {
 
   @Autowired
   private ResourceLoader resourceLoader;
-
-  @Value("${app.registry-repo-base-url}")
-  protected String registryRepoBaseUrl;
-
-  @Value("${app.ewp-documentation-url}")
-  protected String documentationUrl;
 
   /**
    * Quick way of fetching files from resources.

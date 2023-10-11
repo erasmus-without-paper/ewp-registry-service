@@ -29,6 +29,7 @@ import eu.erasmuswithoutpaper.registryclient.ApiSearchConditions;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import org.joox.Match;
 import org.junit.jupiter.api.BeforeAll;
@@ -55,6 +56,9 @@ public class RegistryUpdaterTest extends WRTest {
 
   @Autowired
   private ManifestRepositoryImpl repo;
+
+  @Value("${app.registry-repo-base-url}")
+  protected String registryRepoBaseUrl;
 
   @Autowired
   private RegistryClient regClient;
