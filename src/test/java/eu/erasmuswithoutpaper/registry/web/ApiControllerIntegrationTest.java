@@ -82,10 +82,8 @@ public class ApiControllerIntegrationTest extends WRIntegrationTest {
    */
   @Test
   public void respondsValid500() {
-    /*
-     * At the same time, we will check if the notifier picks it up. Before exception is called,
-     * there should be no errors.
-     */
+    /* At the same time, we will check if the notifier picks it up. Before exception is called,
+     * there should be no errors. */
     int size = this.notifier.getAllErroredFlags().size();
     ResponseEntity<String> response = this.template.getForEntity("/throw-exception", String.class);
     assertThat(this.notifier.getAllErroredFlags()).hasSize(size + 1);
@@ -121,8 +119,8 @@ public class ApiControllerIntegrationTest extends WRIntegrationTest {
     for (String manifestName : manifests.keySet()) {
       ResponseEntity<String> response = this.template
           .getForEntity("/manifest-" + manifestName + ".xml", String.class);
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isEqualTo(manifests.get(manifestName));
+      assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+      assertThat(response.getBody()).isEqualTo(manifests.get(manifestName));
     }
   }
 
@@ -164,11 +162,8 @@ public class ApiControllerIntegrationTest extends WRIntegrationTest {
     status = this.forceReload("non-existing");
     assertThat(status).isEqualTo(400);
 
-    /*
-     * Since we are SyncTaskExecutor in tests, we may assume that the refresh is already completed.
-     *
-     * [Test A] At first, the catalogue should be empty, because none of the URLs was reachable.
-     */
+    /* Since we are SyncTaskExecutor in tests, we may assume that the refresh is already completed.
+     * [Test A] At first, the catalogue should be empty, because none of the URLs was reachable. */
 
     assertThat(this.getCatalogueBodyWithoutBinaries())
         .isEqualTo(this.getFileAsString("demo1/A-out.xml"));
@@ -222,11 +217,9 @@ public class ApiControllerIntegrationTest extends WRIntegrationTest {
     assertThat(this.status(urlSE)).contains(
         "Institution <code>uw.edu.pl</code> didn't match the <code>^.+\\.se$</code> filter pattern");
 
-    /*
-     * [Test I] Add a second manifest source for uw.edu.pl. Define some alternative PIC and Erasmus
+    /* [Test I] Add a second manifest source for uw.edu.pl. Define some alternative PIC and Erasmus
      * codes, along with some alternative names. Expect all of them to be imported, but each unique
-     * value should be present exactly once.
-     */
+     * value should be present exactly once. */
 
     this.internet.putURL(urlSE, this.getFile("demo1/E-inSE.xml"));
     this.forceReload(urlSE);
@@ -240,10 +233,8 @@ public class ApiControllerIntegrationTest extends WRIntegrationTest {
     assertThat(this.getCatalogueBodyWithoutBinaries())
         .isEqualTo(this.getFileAsString("demo1/I-out.xml"));
 
-    /*
-     * [Test J] Add the <hack-attempt> element to the manifest source. Expect the hack to be
-     * detected and neutralized.
-     */
+    /* [Test J] Add the <hack-attempt> element to the manifest source. Expect the hack to be
+     * detected and neutralized. */
 
     this.internet.putURL(urlPL2, this.getFile("demo1/J-inPL2.xml"));
     this.forceReload(urlPL2);
@@ -252,10 +243,8 @@ public class ApiControllerIntegrationTest extends WRIntegrationTest {
     assertThat(this.getCatalogueBodyWithoutBinaries())
         .isEqualTo(this.getFileAsString("demo1/J-out.xml"));
 
-    /*
-     * [Test K] Replace with manifest file with multiple hosts. Expect this raise error
-     * and to ignore extra hosts.
-     */
+    /* [Test K] Replace with manifest file with multiple hosts. Expect this raise error and to
+     * ignore extra hosts. */
 
     this.internet.putURL(urlPL2, this.getFile("demo1/K-inPL2.xml"));
     this.forceReload(urlPL2);
