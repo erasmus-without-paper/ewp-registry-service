@@ -12,7 +12,6 @@ import java.util.Map;
 
 import eu.erasmuswithoutpaper.registry.WRTest;
 import eu.erasmuswithoutpaper.registry.common.Severity;
-import eu.erasmuswithoutpaper.registry.common.Utils;
 import eu.erasmuswithoutpaper.registry.constraints.RestrictInstitutionsCovered;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildParams;
 import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
@@ -538,14 +537,16 @@ public class RegistryUpdaterTest extends WRTest {
    */
   private String getMinimalManifest(String email) {
     StringBuilder sb = new StringBuilder();
-    sb.append("<manifest xmlns='");
-    sb.append(registryRepoBaseUrl + "/ewp-specs-api-discovery/tree/stable-v6");
-    sb.append("' xmlns:ewp='");
-    sb.append(
-        registryRepoBaseUrl + "/ewp-specs-architecture/blob/stable-v1/common-types.xsd");
-    sb.append("'><host><ewp:admin-email>");
-    sb.append(Utils.escapeXml(email));
-    sb.append("</ewp:admin-email><ewp:admin-provider>Provider</ewp:admin-provider></host></manifest>");
+    sb.append("<manifest xmlns='")
+        .append(registryRepoBaseUrl)
+        .append("/ewp-specs-api-discovery/tree/stable-v6")
+        .append("' xmlns:ewp='")
+        .append(registryRepoBaseUrl)
+        .append("/ewp-specs-architecture/blob/stable-v1/common-types.xsd")
+        .append("'><host><ewp:admin-email>")
+        .append(email)
+        .append(
+            "</ewp:admin-email><ewp:admin-provider>Provider</ewp:admin-provider></host></manifest>");
     return sb.toString();
   }
 
