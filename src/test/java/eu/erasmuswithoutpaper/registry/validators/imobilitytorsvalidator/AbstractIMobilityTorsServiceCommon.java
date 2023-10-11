@@ -9,7 +9,6 @@ import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 
 public abstract class AbstractIMobilityTorsServiceCommon extends AbstractApiService {
-  protected final RegistryClient registryClient;
   private final String myIndexUrl;
   private final String myGetUrl;
 
@@ -25,7 +24,6 @@ public abstract class AbstractIMobilityTorsServiceCommon extends AbstractApiServ
     super(registryClient);
     this.myIndexUrl = indexUrl;
     this.myGetUrl = getUrl;
-    this.registryClient = registryClient;
   }
 
   @Override
