@@ -1,21 +1,16 @@
 package eu.erasmuswithoutpaper.registry.validators.imobilitytorsvalidator;
 
-import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 
 import eu.erasmuswithoutpaper.registry.internet.InternetTestHelpers;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.sec.EwpClientWithRsaKey;
 import eu.erasmuswithoutpaper.registry.validators.ParameterInfo;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
-
-import org.springframework.core.io.ResourceLoader;
-
 
 public abstract class IMobilityTorsServiceValidCommon extends AbstractIMobilityTorsServiceCommon {
   /**
@@ -28,15 +23,13 @@ public abstract class IMobilityTorsServiceValidCommon extends AbstractIMobilityT
   }
 
   @SuppressWarnings("unchecked")
-  protected static <T> T readFromFile(String filename, Class<T> clazz,
-      ResourceLoader resourceLoader) {
+  protected <T> T readFromFile(String filename, Class<T> clazz) {
     try {
       JAXBContext jc = JAXBContext.newInstance(clazz);
       T parsedRespone = (T) jc.createUnmarshaller()
-          .unmarshal(
-              resourceLoader.getResource("classpath:test-files/" + filename).getInputStream());
+          .unmarshal(getClass().getClassLoader().getResourceAsStream("test-files/" + filename));
       return parsedRespone;
-    } catch (JAXBException | IOException e) {
+    } catch (Exception e) {
       throw new RuntimeException(e);
     }
   }

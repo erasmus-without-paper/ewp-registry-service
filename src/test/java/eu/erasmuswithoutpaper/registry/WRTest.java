@@ -19,7 +19,7 @@ import org.apache.commons.io.IOUtils;
 public abstract class WRTest {
 
   @Autowired
-  protected ResourceLoader resourceLoader;
+  private ResourceLoader resourceLoader;
 
   @Value("${app.registry-repo-base-url}")
   protected String registryRepoBaseUrl;

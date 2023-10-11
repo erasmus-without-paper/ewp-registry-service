@@ -12,8 +12,6 @@ import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registry.internet.sec.EwpClientWithRsaKey;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
-import org.springframework.core.io.ResourceLoader;
-
 import https.github_com.erasmus_without_paper.ewp_specs_api_imobility_tors.blob.stable_v2.endpoints.get_response.ImobilityTorsGetResponse;
 import https.github_com.erasmus_without_paper.ewp_specs_api_imobility_tors.blob.stable_v2.endpoints.index_response.ImobilityTorsIndexResponse;
 
@@ -26,20 +24,20 @@ public class IMobilityTorsServiceV2Valid extends IMobilityTorsServiceValidCommon
    * @param getUrl         The endpoint at which to listen for requests.
    * @param registryClient Initialized and refreshed {@link RegistryClient} instance.
    */
-  public IMobilityTorsServiceV2Valid(String indexUrl, String getUrl, RegistryClient registryClient,
-      ResourceLoader resourceLoader) {
+  public IMobilityTorsServiceV2Valid(String indexUrl, String getUrl,
+      RegistryClient registryClient) {
     super(indexUrl, getUrl, registryClient);
-    fillDataBase(resourceLoader);
+    fillDataBase();
   }
 
-  private void fillDataBase(ResourceLoader resourceLoader) {
+  private void fillDataBase() {
     final String RECEIVING_HEI_ID = "test.hei01.uw.edu.pl";
     final String SENDING_HEI_ID_1 = "validator-hei01.developers.erasmuswithoutpaper.eu";
     final String SENDING_HEI_ID_2 = "uw.edu.pl";
 
     String filename = "imobilitytorsvalidator/tor-v2.xml";
     ImobilityTorsGetResponse torsGetResponse = readFromFile(filename,
-        ImobilityTorsGetResponse.class, resourceLoader);
+        ImobilityTorsGetResponse.class);
     List<ImobilityTorsGetResponse.Tor> tor = torsGetResponse.getTor();
     tors.add(new IMobilityTorEntry(tor.get(0), RECEIVING_HEI_ID, SENDING_HEI_ID_1));
     tors.add(new IMobilityTorEntry(tor.get(1), RECEIVING_HEI_ID, SENDING_HEI_ID_2));

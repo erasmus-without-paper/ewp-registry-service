@@ -29,7 +29,7 @@ public class IMobilityTorsGetValidatorV2Test extends IMobilityTorsValidatorTestB
   @Test
   public void testValidationOnValidServiceIsSuccessful() {
     IMobilityTorsServiceV2Valid service = new IMobilityTorsServiceV2Valid(omobilityTorsIndexUrl,
-        omobilityTorsGetUrl, this.client, this.resourceLoader);
+        omobilityTorsGetUrl, this.client);
     TestValidationReport report = this.getRawReport(service);
     assertThat(report).isCorrect();
   }
@@ -37,7 +37,7 @@ public class IMobilityTorsGetValidatorV2Test extends IMobilityTorsValidatorTestB
   @Test
   public void testNotValidatingIMobilityTorsIdListIsDetected() {
     IMobilityTorsServiceV2Valid service = new IMobilityTorsServiceV2Valid(omobilityTorsIndexUrl,
-        omobilityTorsGetUrl, this.client, this.resourceLoader) {
+        omobilityTorsGetUrl, this.client) {
       @Override
       protected void errorMaxOMobilityIdsExceeded(RequestData requestData)
           throws ErrorResponseException {
@@ -52,7 +52,7 @@ public class IMobilityTorsGetValidatorV2Test extends IMobilityTorsValidatorTestB
   @Test
   public void testNotReportingMissingRequiredParametersAsAnErrorIsDetected() {
     IMobilityTorsServiceV2Valid service = new IMobilityTorsServiceV2Valid(omobilityTorsIndexUrl,
-        omobilityTorsGetUrl, this.client, this.resourceLoader) {
+        omobilityTorsGetUrl, this.client) {
       @Override
       protected void errorNoParams(RequestData requestData)
           throws ErrorResponseException {
@@ -67,7 +67,7 @@ public class IMobilityTorsGetValidatorV2Test extends IMobilityTorsValidatorTestB
   @Test
   public void testNotReportingMissingHeiIdParameterAsAnErrorIsDetected() {
     IMobilityTorsServiceV2Valid service = new IMobilityTorsServiceV2Valid(omobilityTorsIndexUrl,
-        omobilityTorsGetUrl, this.client, this.resourceLoader) {
+        omobilityTorsGetUrl, this.client) {
       @Override
       protected void errorNoReceivingHeiId(RequestData requestData) throws ErrorResponseException {
         throw new ErrorResponseException(
@@ -83,7 +83,7 @@ public class IMobilityTorsGetValidatorV2Test extends IMobilityTorsValidatorTestB
   @Test
   public void testIgnoringAdditionalHeiIdsIsDetected() {
     IMobilityTorsServiceV2Valid service = new IMobilityTorsServiceV2Valid(omobilityTorsIndexUrl,
-        omobilityTorsGetUrl, this.client, this.resourceLoader) {
+        omobilityTorsGetUrl, this.client) {
       @Override
       protected void errorMultipleReceivingHeiIds(
           RequestData requestData) throws ErrorResponseException {
@@ -98,7 +98,7 @@ public class IMobilityTorsGetValidatorV2Test extends IMobilityTorsValidatorTestB
   @Test
   public void testReturningCorrectDataWhenNoHeiIdIsPassedIsDetected() {
     IMobilityTorsServiceV2Valid service = new IMobilityTorsServiceV2Valid(omobilityTorsIndexUrl,
-        omobilityTorsGetUrl, this.client, this.resourceLoader) {
+        omobilityTorsGetUrl, this.client) {
       @Override
       protected void errorNoReceivingHeiId(RequestData requestData) throws ErrorResponseException {
         requestData.receivingHeiId = this.tors.get(0).receiving_hei_id;
@@ -112,7 +112,7 @@ public class IMobilityTorsGetValidatorV2Test extends IMobilityTorsValidatorTestB
   @Test
   public void testReportingErrorWhenUnknownHeiIdIsPassedIsDetected() {
     IMobilityTorsServiceV2Valid service = new IMobilityTorsServiceV2Valid(omobilityTorsIndexUrl,
-        omobilityTorsGetUrl, this.client, this.resourceLoader) {
+        omobilityTorsGetUrl, this.client) {
       @Override
       protected void handleUnknownReceivingHeiId(
           RequestData requestData) throws ErrorResponseException {
@@ -130,7 +130,7 @@ public class IMobilityTorsGetValidatorV2Test extends IMobilityTorsValidatorTestB
   @Test
   public void testNonEmptyResponseWhenUnknownReceivingHeiIdIsPassedIsDetected() {
     IMobilityTorsServiceV2Valid service = new IMobilityTorsServiceV2Valid(omobilityTorsIndexUrl,
-        omobilityTorsGetUrl, this.client, this.resourceLoader) {
+        omobilityTorsGetUrl, this.client) {
       @Override
       protected void handleUnknownReceivingHeiId(
           RequestData requestData) throws ErrorResponseException {
@@ -146,7 +146,7 @@ public class IMobilityTorsGetValidatorV2Test extends IMobilityTorsValidatorTestB
   @Test
   public void testReturningWrongIMobilityTorIsDetected() {
     IMobilityTorsServiceV2Valid service = new IMobilityTorsServiceV2Valid(omobilityTorsIndexUrl,
-        omobilityTorsGetUrl, this.client, this.resourceLoader) {
+        omobilityTorsGetUrl, this.client) {
       @Override
       protected boolean filterIMoblityTorForGet(IMobilityTorEntry tor, RequestData requestData) {
         return requestData.receivingHeiId.equals(tor.receiving_hei_id)
@@ -162,7 +162,7 @@ public class IMobilityTorsGetValidatorV2Test extends IMobilityTorsValidatorTestB
   @Test
   public void testReturningDataForUnknownOMobilityIdIsDetected() {
     IMobilityTorsServiceV2Valid service = new IMobilityTorsServiceV2Valid(omobilityTorsIndexUrl,
-        omobilityTorsGetUrl, this.client, this.resourceLoader) {
+        omobilityTorsGetUrl, this.client) {
       @Override
       protected boolean filterIMoblityTorForGet(IMobilityTorEntry tor, RequestData requestData) {
         return requestData.receivingHeiId.equals(tor.receiving_hei_id);
@@ -176,7 +176,7 @@ public class IMobilityTorsGetValidatorV2Test extends IMobilityTorsValidatorTestB
   @Test
   public void testTooLargeMaxIMobilityTorsIdsInManifestIsDetected() {
     IMobilityTorsServiceV2Valid service = new IMobilityTorsServiceV2Valid(omobilityTorsIndexUrl,
-        omobilityTorsGetUrl, this.client, this.resourceLoader) {
+        omobilityTorsGetUrl, this.client) {
       @Override
       protected int getMaxOmobilityIds() {
         return super.getMaxOmobilityIds() - 1;
