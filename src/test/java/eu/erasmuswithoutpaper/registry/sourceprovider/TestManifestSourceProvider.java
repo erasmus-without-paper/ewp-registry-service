@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @Profile("test")
-public class TestManifestSourceProvider extends ManifestSourceProvider {
+public class TestManifestSourceProvider implements ManifestSourceProvider {
 
   private final List<ManifestSource> sources = new ArrayList<>();
   private RegistryUpdaterImpl updater;

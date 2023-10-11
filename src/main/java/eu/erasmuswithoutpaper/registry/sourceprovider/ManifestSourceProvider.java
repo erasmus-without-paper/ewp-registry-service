@@ -11,12 +11,12 @@ import java.util.Optional;
  * ManifestSources} which should be used for generating the catalogue.
  * </p>
  */
-public abstract class ManifestSourceProvider {
+public interface ManifestSourceProvider {
 
   /**
    * @return A full list of all {@link ManifestSource ManifestSources} to be used.
    */
-  public abstract List<ManifestSource> getAll();
+  List<ManifestSource> getAll();
 
   /**
    * Return a {@link ManifestSource} for given URL.
@@ -24,17 +24,13 @@ public abstract class ManifestSourceProvider {
    * @param url A value which should match one of our {@link ManifestSource#getUrl()} values.
    * @return An optional with {@link ManifestSource}, if found.
    */
-  public Optional<ManifestSource> getOne(String url) {
-    for (ManifestSource source : this.getAll()) {
-      if (source.getUrl().equals(url)) {
-        return Optional.of(source);
-      }
-    }
-    return Optional.empty();
+  default Optional<ManifestSource> getOne(String url) {
+    return getAll().stream().filter(source -> source.getUrl().equals(url)).findFirst();
   }
 
   /**
    * Update the list of {@link ManifestSource ManifestSources}.
    */
-  public abstract void update();
+  void update();
+
 }

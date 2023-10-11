@@ -38,7 +38,7 @@ import org.xml.sax.SAXException;
 @Service
 @Profile({"production", "development"})
 @ConditionalOnWebApplication
-public class ProductionManifestSourceProvider extends ManifestSourceProvider {
+public class ProductionManifestSourceProvider implements ManifestSourceProvider {
 
   private static final Logger logger =
       LoggerFactory.getLogger(ProductionManifestSourceProvider.class);
