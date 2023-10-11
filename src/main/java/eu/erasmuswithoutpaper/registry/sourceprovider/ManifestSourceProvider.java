@@ -4,17 +4,17 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Provides a list of {@link ManifestSource}s.
+ * Provides a list of {@link ManifestSource ManifestSources}.
  *
  * <p>
- * This component is used to feed the Registry Service with the list of {@link ManifestSource}s
- * which should be used for generating the catalogue.
+ * This component is used to feed the Registry Service with the list of {@link ManifestSource
+ * ManifestSources} which should be used for generating the catalogue.
  * </p>
  */
 public abstract class ManifestSourceProvider {
 
   /**
-   * @return A full list of all {@link ManifestSource}s to be used.
+   * @return A full list of all {@link ManifestSource ManifestSources} to be used.
    */
   public abstract List<ManifestSource> getAll();
 
@@ -34,7 +34,7 @@ public abstract class ManifestSourceProvider {
   }
 
   /**
-   * Update the list of {@link ManifestSource}s.
+   * Update the list of {@link ManifestSource ManifestSources}.
    */
   public abstract void update();
 }
