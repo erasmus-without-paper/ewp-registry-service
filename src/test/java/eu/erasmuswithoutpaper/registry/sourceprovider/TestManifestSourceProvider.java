@@ -6,6 +6,7 @@ import java.util.List;
 import eu.erasmuswithoutpaper.registry.updater.RegistryUpdaterImpl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
@@ -22,15 +23,17 @@ import org.springframework.stereotype.Service;
 @Profile("test")
 public class TestManifestSourceProvider implements ManifestSourceProvider {
 
+  @Autowired
+  private ApplicationContext applicationContext;
+
   private final List<ManifestSource> sources = new ArrayList<>();
-  private RegistryUpdaterImpl updater;
 
   /**
    * @param source {@link ManifestSource} to be added to the list.
    */
   public void addSource(ManifestSource source) {
     this.sources.add(source);
-    this.updater.onSourcesUpdated();
+    getRegistryUpdater().onSourcesUpdated();
   }
 
   /**
@@ -38,7 +41,7 @@ public class TestManifestSourceProvider implements ManifestSourceProvider {
    */
   public void clearSources() {
     this.sources.clear();
-    this.updater.onSourcesUpdated();
+    getRegistryUpdater().onSourcesUpdated();
   }
 
   @Override
@@ -58,13 +61,14 @@ public class TestManifestSourceProvider implements ManifestSourceProvider {
   public boolean removeSource(ManifestSource source) {
     boolean sourceExisted = this.sources.remove(source);
     if (sourceExisted) {
-      this.updater.onSourcesUpdated();
+      getRegistryUpdater().onSourcesUpdated();
     }
     return sourceExisted;
   }
 
-  @Autowired
-  private void setRegistryUpdater(RegistryUpdaterImpl updater) {
-    this.updater = updater;
+  // We're preventing a dependency cycle: RegistryUpdater is using ManifestSourceProvider
+  private RegistryUpdaterImpl getRegistryUpdater() {
+    return applicationContext.getBean(RegistryUpdaterImpl.class);
   }
+
 }
