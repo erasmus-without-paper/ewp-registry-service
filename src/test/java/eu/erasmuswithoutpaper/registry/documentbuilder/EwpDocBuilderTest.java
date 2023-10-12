@@ -77,7 +77,6 @@ public class EwpDocBuilderTest extends WRTest {
     assertThat(result.getErrors().get(0).getMessage()).contains("DOCTYPE is disallowed");
   }
 
-
   @Test
   public void checkIfAcceptsInvalidAPIentries() {
     BuildParams params = new BuildParams(
@@ -102,7 +101,6 @@ public class EwpDocBuilderTest extends WRTest {
     assertThat(result.getRootLocalName()).isEqualTo("hei");
     assertThat(result.getErrors()).hasSize(0);
   }
-
 
   /**
    * Builder should reject elements from outside of our known schemas, even if they're valid. We do
@@ -129,18 +127,14 @@ public class EwpDocBuilderTest extends WRTest {
    * <code>schemas</code> directory.
    */
   @Test
-  public void checkSchemasConsistentency() {
+  public void checkSchemasConsistentency() throws SAXException, IOException {
 
     // Scan the classpath for all XSD files.
 
     List<String> localPaths = new ArrayList<>();
     PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-    try {
-      for (Resource resource : resolver.getResources("classpath:schemas/**/*.xsd")) {
-        localPaths.add(resource.getURI().toString());
-      }
-    } catch (IOException e) {
-      throw new RuntimeException(e);
+    for (Resource resource : resolver.getResources("classpath:schemas/**/*.xsd")) {
+      localPaths.add(resource.getURI().toString());
     }
 
     // Fetch the same XSD paths from the catalog.
@@ -149,14 +143,8 @@ public class EwpDocBuilderTest extends WRTest {
     InputStream xmlCatalogStream = this.getClass()
         .getClassLoader()
         .getResourceAsStream("schemas/__index__.xml");
-    try {
-      for (Element element : $(xmlCatalogStream).find("uri")) {
-        catalogPaths.add($(element).attr("uri"));
-      }
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    } catch (SAXException e) {
-      throw new RuntimeException(e);
+    for (Element element : $(xmlCatalogStream).find("uri")) {
+      catalogPaths.add($(element).attr("uri"));
     }
 
     // Compare the two.
@@ -184,69 +172,59 @@ public class EwpDocBuilderTest extends WRTest {
    * set to avoid accidental errors.
    */
   @Test
-  public void checkSchemasStyle() {
+  public void checkSchemasStyle() throws IOException, SAXException {
     List<Resource> schemaResources = new ArrayList<>();
     PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-    try {
-      for (Resource resource : resolver.getResources("classpath:schemas/**/*.xsd")) {
-        schemaResources.add(resource);
-      }
-    } catch (IOException e) {
-      throw new RuntimeException(e);
+    for (Resource resource : resolver.getResources("classpath:schemas/**/*.xsd")) {
+      schemaResources.add(resource);
     }
+
     for (Resource xsdres : schemaResources) {
-      try (InputStream input = xsdres.getInputStream()) {
+      InputStream input = xsdres.getInputStream();
 
-        /*
-         * First of, let's ignore all warnings in the EMREX ELMO files. These are not part of the
-         * EWP project, and we cannot force EMREX to fix those.
-         */
+      /* First of, let's ignore all warnings in the EMREX ELMO files. These are not part of the EWP
+       * project, and we cannot force EMREX to fix those. */
+      if (xsdres.getURI().toString().contains("elmo-schemas-")) {
+        continue;
+      }
 
-        if (xsdres.getURI().toString().contains("elmo-schemas-")) {
-          continue;
-        }
+      DocumentBuilder docBuilder = Utils.newSecureDocumentBuilder();
+      Document doc = docBuilder.parse(input);
+      Match root = $(doc).namespace("xs", "http://www.w3.org/2001/XMLSchema");
+      for (Element element : root.xpath("//xs:element|//xs:group")) {
+        String type = element.getAttribute("type");
+        String ref = element.getAttribute("ref");
+        String minOccurs = element.getAttribute("minOccurs");
+        String maxOccurs = element.getAttribute("maxOccurs");
+        String parentName = $(element).parent().get(0).getLocalName();
 
-        DocumentBuilder docBuilder = Utils.newSecureDocumentBuilder();
-        Document doc = docBuilder.parse(input);
-        Match root = $(doc).namespace("xs", "http://www.w3.org/2001/XMLSchema");
-        for (Element element : root.xpath("//xs:element|//xs:group")) {
-          String type = element.getAttribute("type");
-          String ref = element.getAttribute("ref");
-          String minOccurs = element.getAttribute("minOccurs");
-          String maxOccurs = element.getAttribute("maxOccurs");
-          String parentName = $(element).parent().get(0).getLocalName();
+        try {
 
-          try {
+          if (parentName.equals("schema") || parentName.equals("choice")) {
+            /* We skip checks for direct descendants of schema and choice elements. */
+          } else {
+            /* Verify if all elements with optional xml:lang attribute are repeatable. */
 
-            if (parentName.equals("schema") || parentName.equals("choice")) {
-              /* We skip checks for direct descendants of schema and choice elements. */
-            } else {
-              /* Verify if all elements with optional xml:lang attribute are repeatable. */
-
-              if (type.contains("WithOptionalLang") && (!maxOccurs.equals("unbounded"))) {
-                fail("This element should probably have maxOccurs=\"unbounded\".");
-              }
-
-              if (ref.equals("ewp:success-user-message")) {
-                if (minOccurs.equals("0") && maxOccurs.equals("unbounded")) {
-                  /* Correct. */
-                } else {
-                  fail("This element should probably have minOccurs=\"0\" "
-                      + "and maxOccurs=\"unbounded\".");
-                }
-              }
+            if (type.contains("WithOptionalLang") && (!maxOccurs.equals("unbounded"))) {
+              fail("This element should probably have maxOccurs=\"unbounded\".");
             }
 
-          } catch (AssertionError e) {
-            String message = "Bad style in " + xsdres.getURI().toString() + "\n" + "Element path: "
-                + this.getHumanReadableSchemaElementPath(element) + "\nCause: " + e.getMessage()
-                + "\n";
-            throw new AssertionError(message, e);
+            if (ref.equals("ewp:success-user-message")) {
+              if (minOccurs.equals("0") && maxOccurs.equals("unbounded")) {
+                /* Correct. */
+              } else {
+                fail("This element should probably have minOccurs=\"0\" "
+                    + "and maxOccurs=\"unbounded\".");
+              }
+            }
           }
-        }
 
-      } catch (IOException | SAXException e) {
-        throw new RuntimeException(e);
+        } catch (AssertionError e) {
+          String message = "Bad style in " + xsdres.getURI().toString() + "\n" + "Element path: "
+              + this.getHumanReadableSchemaElementPath(element) + "\nCause: " + e.getMessage()
+              + "\n";
+          throw new AssertionError(message, e);
+        }
       }
     }
   }
@@ -256,22 +234,17 @@ public class EwpDocBuilderTest extends WRTest {
    * XSDs.
    */
   @Test
-  public void testAllLatestExamples() {
+  public void testAllLatestExamples() throws IOException {
     List<String> exampleNames = new ArrayList<>();
     PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-    try {
-      for (Resource resource : resolver
-          .getResources("classpath:test-files/latest-examples/*.xml")) {
-        String path = resource.getURI().toString();
-        exampleNames.add("latest-examples/" + path.substring(path.lastIndexOf("/") + 1));
-      }
-      for (Resource resource : resolver
-          .getResources("classpath:test-files/obsolete-examples/*.xml")) {
-        String path = resource.getURI().toString();
-        exampleNames.add("obsolete-examples/" + path.substring(path.lastIndexOf("/") + 1));
-      }
-    } catch (IOException e) {
-      throw new RuntimeException(e);
+    for (Resource resource : resolver.getResources("classpath:test-files/latest-examples/*.xml")) {
+      String path = resource.getURI().toString();
+      exampleNames.add("latest-examples/" + path.substring(path.lastIndexOf("/") + 1));
+    }
+    for (Resource resource : resolver
+        .getResources("classpath:test-files/obsolete-examples/*.xml")) {
+      String path = resource.getURI().toString();
+      exampleNames.add("obsolete-examples/" + path.substring(path.lastIndexOf("/") + 1));
     }
     for (String name : exampleNames) {
       BuildParams params = new BuildParams(this.getFile(name));
@@ -357,8 +330,7 @@ public class EwpDocBuilderTest extends WRTest {
 
   @Test
   public void testInvalidApiEntryIsIgnoredV5() {
-    BuildParams params = new BuildParams(
-        this.getFile("docbuilder/invalid-api-entry-manifest.xml"));
+    BuildParams params = new BuildParams(this.getFile("docbuilder/invalid-api-entry-manifest.xml"));
     params.setExpectedKnownElement(KnownElement.RESPONSE_MANIFEST_V6);
     BuildResult result = this.builder.buildManifest(params);
     assertThat(result.isValid()).isTrue();
