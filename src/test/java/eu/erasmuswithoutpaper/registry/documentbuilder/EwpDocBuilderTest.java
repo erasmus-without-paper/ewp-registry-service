@@ -16,7 +16,6 @@ import eu.erasmuswithoutpaper.registry.common.Utils;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 import org.joox.Match;
@@ -30,9 +29,6 @@ import org.xml.sax.SAXException;
  * Tests for {@link EwpDocBuilder}.
  */
 public class EwpDocBuilderTest extends WRTest {
-
-  @Autowired
-  private ResourceLoader resLoader;
 
   @Autowired
   private EwpDocBuilder builder;
@@ -150,9 +146,11 @@ public class EwpDocBuilderTest extends WRTest {
     // Fetch the same XSD paths from the catalog.
 
     List<String> catalogPaths = new ArrayList<>();
-    Resource xmlCatalog = this.resLoader.getResource("classpath:schemas/__index__.xml");
+    InputStream xmlCatalogStream = this.getClass()
+        .getClassLoader()
+        .getResourceAsStream("schemas/__index__.xml");
     try {
-      for (Element element : $(xmlCatalog.getInputStream()).find("uri")) {
+      for (Element element : $(xmlCatalogStream).find("uri")) {
         catalogPaths.add($(element).attr("uri"));
       }
     } catch (IOException e) {
