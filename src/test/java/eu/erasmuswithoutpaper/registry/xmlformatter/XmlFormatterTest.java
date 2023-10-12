@@ -6,10 +6,8 @@ import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import javax.xml.parsers.DocumentBuilder;
 
-import eu.erasmuswithoutpaper.registry.WRTest;
+import eu.erasmuswithoutpaper.registry.TestFiles;
 import eu.erasmuswithoutpaper.registry.common.Utils;
-
-import org.springframework.beans.factory.annotation.Autowired;
 
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
@@ -17,10 +15,9 @@ import org.w3c.dom.Document;
 /**
  * Tests for {@link XmlFormatter}.
  */
-public class XmlFormatterTest extends WRTest {
+public class XmlFormatterTest {
 
-  @Autowired
-  private XmlFormatter xmlFormatter;
+  private XmlFormatter xmlFormatter = new XmlFormatter();
 
   @Test
   public void test1() throws Exception {
@@ -40,8 +37,8 @@ public class XmlFormatterTest extends WRTest {
 
   @Test
   public void testA() throws Exception {
-    this.checkEquality(this.getFileAsString("formatter-tests/A-input.xml"),
-        this.getFileAsString("formatter-tests/A-output.xml"));
+    this.checkEquality(TestFiles.getFileAsUtf8String("formatter-tests/A-input.xml"),
+        TestFiles.getFileAsUtf8String("formatter-tests/A-output.xml"));
   }
 
   private void checkEquality(String input, String expectedOutput) throws Exception {
