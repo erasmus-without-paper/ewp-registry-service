@@ -4,7 +4,6 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import javax.annotation.PostConstruct;
 
 import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
 import eu.erasmuswithoutpaper.registry.internet.Internet;
@@ -15,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.MultimapBuilder;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 
 

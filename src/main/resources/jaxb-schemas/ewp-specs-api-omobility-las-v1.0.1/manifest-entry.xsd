@@ -4,8 +4,8 @@
     xmlns:xml="http://www.w3.org/XML/1998/namespace"
     xmlns:ewp="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
     xmlns:sec="https://github.com/erasmus-without-paper/ewp-specs-sec-intro/tree/stable-v2"
-    xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
-    jaxb:version="2.1"
+    xmlns:jaxb="https://jakarta.ee/xml/ns/jaxb"
+    jaxb:version="3.0"
     elementFormDefault="qualified"
 
     targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-api-omobility-las/blob/stable-v1/manifest-entry.xsd"

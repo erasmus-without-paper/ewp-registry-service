@@ -1,7 +1,6 @@
 package eu.erasmuswithoutpaper.registry.configuration;
 
 import java.util.List;
-import javax.servlet.Filter;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -9,6 +8,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.web.filter.ShallowEtagHeaderFilter;
+
+import jakarta.servlet.Filter;
 
 /**
  * Spring beans to be used when running both the actual application server AND unit tests.

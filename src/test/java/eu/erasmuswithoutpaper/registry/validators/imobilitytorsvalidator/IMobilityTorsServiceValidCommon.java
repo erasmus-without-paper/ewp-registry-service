@@ -4,14 +4,14 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.bind.JAXBContext;
-
 import eu.erasmuswithoutpaper.registry.TestFiles;
 import eu.erasmuswithoutpaper.registry.internet.InternetTestHelpers;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.sec.EwpClientWithRsaKey;
 import eu.erasmuswithoutpaper.registry.validators.ParameterInfo;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
+
+import jakarta.xml.bind.JAXBContext;
 
 public abstract class IMobilityTorsServiceValidCommon extends AbstractIMobilityTorsServiceCommon {
   /**

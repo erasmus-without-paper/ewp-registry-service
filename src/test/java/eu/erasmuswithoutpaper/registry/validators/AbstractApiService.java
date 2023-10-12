@@ -8,12 +8,6 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import javax.xml.bind.DatatypeConverter;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-
 import eu.erasmuswithoutpaper.registry.common.Utils;
 import eu.erasmuswithoutpaper.registry.internet.FakeInternetService;
 import eu.erasmuswithoutpaper.registry.internet.Request;
@@ -25,6 +19,11 @@ import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 import https.github_com.erasmus_without_paper.ewp_specs_architecture.blob.stable_v1.common_types.ErrorResponse;
 import https.github_com.erasmus_without_paper.ewp_specs_architecture.blob.stable_v1.common_types.MultilineString;
+import jakarta.xml.bind.DatatypeConverter;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.Unmarshaller;
 import org.w3c.dom.Element;
 
 public abstract class AbstractApiService implements FakeInternetService {

@@ -1,7 +1,6 @@
 package eu.erasmuswithoutpaper.registry.documentbuilder;
 
-import javax.xml.bind.ValidationEvent;
-
+import jakarta.xml.bind.ValidationEvent;
 import org.xml.sax.SAXParseException;
 
 /**

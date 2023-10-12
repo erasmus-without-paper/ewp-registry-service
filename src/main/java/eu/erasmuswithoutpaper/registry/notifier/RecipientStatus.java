@@ -1,13 +1,12 @@
 package eu.erasmuswithoutpaper.registry.notifier;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
 import eu.erasmuswithoutpaper.registry.common.Severity;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 /**
  * This entity is used by the {@link NotifierService} to store status information on the recipients

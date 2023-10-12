@@ -13,7 +13,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import javax.xml.bind.JAXBException;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -32,6 +31,7 @@ import https.github_com.erasmus_without_paper.ewp_specs_api_omobility_las.blob.s
 import https.github_com.erasmus_without_paper.ewp_specs_api_omobility_las.blob.stable_v1.endpoints.get_response.MobilityInstitution;
 import https.github_com.erasmus_without_paper.ewp_specs_api_omobility_las.blob.stable_v1.endpoints.get_response.Signature;
 import https.github_com.erasmus_without_paper.ewp_specs_api_omobility_las.blob.stable_v1.endpoints.get_response.Student;
+import jakarta.xml.bind.JAXBException;
 
 public class OMobilityLAsServiceV1Valid extends AbstractOMobilityLAsService {
   protected List<LearningAgreement> learningAgreements = new ArrayList<>();
