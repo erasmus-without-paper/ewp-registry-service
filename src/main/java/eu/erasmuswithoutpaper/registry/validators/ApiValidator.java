@@ -196,6 +196,8 @@ public abstract class ApiValidator<S extends SuiteState> {
   }
 
   @PostConstruct
+  // Probably Spotbugs bug, there was no error in Java 11, but there is in 17
+  @SuppressFBWarnings("UPM_UNCALLED_PRIVATE_METHOD")
   private void registerApiName() { //NOPMD
     this.apiValidatorsManager.registerApiValidator(this.validatedApiName, this.endpoint, this);
   }

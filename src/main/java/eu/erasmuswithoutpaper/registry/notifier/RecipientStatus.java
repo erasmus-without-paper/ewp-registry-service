@@ -7,6 +7,8 @@ import javax.persistence.Table;
 
 import eu.erasmuswithoutpaper.registry.common.Severity;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * This entity is used by the {@link NotifierService} to store status information on the recipients
  * being notified.
@@ -32,6 +34,8 @@ class RecipientStatus {
    *
    * @param email Email address of the recipient, used as a key.
    */
+  // Probably Spotbugs bug, there was no error in Java 11, but there is in 17
+  @SuppressFBWarnings("URF_UNREAD_FIELD")
   public RecipientStatus(String email) {
     this.email = email;
     this.setCurrentlyReportedFlagStatus(Severity.OK);

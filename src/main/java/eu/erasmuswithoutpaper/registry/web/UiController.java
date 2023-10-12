@@ -82,6 +82,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -181,6 +182,8 @@ public class UiController {
   }
 
   @PostConstruct
+  // Probably Spotbugs bug, there was no error in Java 11, but there is in 17
+  @SuppressFBWarnings("UPM_UNCALLED_PRIVATE_METHOD")
   private void postContruct() { // NOPMD
     logger.info("Application is starting with version {}, as build: {}", gitBuildVersion,
         gitBuildInfo);
