@@ -17,13 +17,10 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 
-import eu.erasmuswithoutpaper.registry.WRTest;
 import eu.erasmuswithoutpaper.registry.internet.FakeInternet.MultipleHandlersConflict;
 import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigRequestSigner;
 import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigResponseSigner;
 import eu.erasmuswithoutpaper.registry.internet.sec.Http4xx;
-
-import org.springframework.beans.factory.annotation.Autowired;
 
 import org.assertj.core.util.Maps;
 import org.junit.jupiter.api.BeforeAll;
@@ -32,7 +29,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests for {@link FakeInternet}.
  */
-public class FakeInternetTest extends WRTest {
+public class FakeInternetTest {
 
   private static class TestRequestSigner extends EwpHttpSigRequestSigner {
 
@@ -92,9 +89,8 @@ public class FakeInternetTest extends WRTest {
     url1 = "https://example.com/url1.xml";
     url2 = "https://example.com/url2.xml";
   }
+  private FakeInternet internet = new FakeInternet();
 
-  @Autowired
-  private FakeInternet internet;
 
   @Test
   public void testFakeServices() {
@@ -187,6 +183,7 @@ public class FakeInternetTest extends WRTest {
 
   @Test
   public void testHttpsigBackend() {
+    java.security.Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
 
     // These tests are taken from HTTPSIG specs, draft 8.
 
