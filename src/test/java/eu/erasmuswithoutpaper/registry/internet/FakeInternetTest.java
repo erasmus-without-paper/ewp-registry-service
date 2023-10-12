@@ -23,7 +23,6 @@ import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigResponseSigner;
 import eu.erasmuswithoutpaper.registry.internet.sec.Http4xx;
 
 import org.assertj.core.util.Maps;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -81,14 +80,9 @@ public class FakeInternetTest {
     }
   }
 
-  private static String url1;
-  private static String url2;
+  private static final String url1 = "https://example.com/url1.xml";
+  private static final String url2 = "https://example.com/url2.xml";
 
-  @BeforeAll
-  public static void setUpClass() {
-    url1 = "https://example.com/url1.xml";
-    url2 = "https://example.com/url2.xml";
-  }
   private FakeInternet internet = new FakeInternet();
 
 
