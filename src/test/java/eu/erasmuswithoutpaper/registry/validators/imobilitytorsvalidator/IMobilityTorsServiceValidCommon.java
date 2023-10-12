@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
 
+import eu.erasmuswithoutpaper.registry.TestFiles;
 import eu.erasmuswithoutpaper.registry.internet.InternetTestHelpers;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.sec.EwpClientWithRsaKey;
@@ -25,10 +26,9 @@ public abstract class IMobilityTorsServiceValidCommon extends AbstractIMobilityT
   @SuppressWarnings("unchecked")
   protected <T> T readFromFile(String filename, Class<T> clazz) {
     try {
-      JAXBContext jc = JAXBContext.newInstance(clazz);
-      T parsedRespone = (T) jc.createUnmarshaller()
-          .unmarshal(getClass().getClassLoader().getResourceAsStream("test-files/" + filename));
-      return parsedRespone;
+      return (T) JAXBContext.newInstance(clazz)
+          .createUnmarshaller()
+          .unmarshal(TestFiles.getFileAsStream(filename));
     } catch (Exception e) {
       throw new RuntimeException(e);
     }

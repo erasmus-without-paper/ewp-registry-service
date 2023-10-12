@@ -1,14 +1,9 @@
 package eu.erasmuswithoutpaper.registry;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.context.ActiveProfiles;
-
-import org.apache.commons.io.IOUtils;
 
 /**
  * A common test class to extend. Should be used for all unit tests.
@@ -16,9 +11,6 @@ import org.apache.commons.io.IOUtils;
 @SpringBootTest(classes = Application.class)
 @ActiveProfiles("test")
 public abstract class WRTest {
-
-  @Autowired
-  private ResourceLoader resourceLoader;
 
   /**
    * Quick way of fetching files from resources.
@@ -28,9 +20,7 @@ public abstract class WRTest {
    */
   protected byte[] getFile(String filename) {
     try {
-      return IOUtils.toByteArray(
-          this.resourceLoader.getResource("classpath:test-files/" + filename).getInputStream()
-      );
+      return TestFiles.getFile(filename);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
@@ -43,8 +33,11 @@ public abstract class WRTest {
    * @return Contents transformed to a string (with UTF-8 encoding).
    */
   protected String getFileAsString(String filename) {
-    byte[] bytes = this.getFile(filename);
-    return new String(bytes, StandardCharsets.UTF_8);
+    try {
+      return TestFiles.getFileAsUtf8String(filename);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 
 }
