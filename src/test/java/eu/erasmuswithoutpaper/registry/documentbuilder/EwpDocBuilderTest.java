@@ -221,7 +221,7 @@ public class EwpDocBuilderTest extends WRTest {
 
         } catch (AssertionError e) {
           String message = "Bad style in " + xsdres.getURI().toString() + "\n" + "Element path: "
-              + this.getHumanReadableSchemaElementPath(element) + "\nCause: " + e.getMessage()
+              + getHumanReadableSchemaElementPath(element) + "\nCause: " + e.getMessage()
               + "\n";
           throw new AssertionError(message, e);
         }
@@ -351,13 +351,13 @@ public class EwpDocBuilderTest extends WRTest {
    * @return A human-readable path of this element (with most of the ancestry skipped to make it
    *         shorter).
    */
-  private String getHumanReadableSchemaElementPath(Element element) {
+  private static String getHumanReadableSchemaElementPath(Element element) {
     String path;
     Node parent = element.getParentNode();
     if ((parent == null) || (!(parent instanceof Element))) {
       path = "";
     } else {
-      path = this.getHumanReadableSchemaElementPath((Element) parent);
+      path = getHumanReadableSchemaElementPath((Element) parent);
     }
     if (element.hasAttribute("name")) {
       return path + "/" + element.getAttribute("name");
