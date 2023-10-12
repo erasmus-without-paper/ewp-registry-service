@@ -17,7 +17,6 @@ import eu.erasmuswithoutpaper.registry.sourceprovider.ManifestSourceFactory;
 import eu.erasmuswithoutpaper.registry.sourceprovider.TestManifestSourceProvider;
 import eu.erasmuswithoutpaper.registry.updater.RegistryUpdater;
 import eu.erasmuswithoutpaper.registry.web.SelfManifestProvider;
-import eu.erasmuswithoutpaper.registry.web.UiController;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -25,8 +24,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 
 public abstract class AbstractApiTest<StateType extends SuiteState> extends WRTest {
-  @Autowired
-  protected UiController uiController;
 
   @Autowired
   protected FakeInternet internet;
