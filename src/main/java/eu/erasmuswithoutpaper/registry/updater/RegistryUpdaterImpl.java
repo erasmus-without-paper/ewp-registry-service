@@ -118,9 +118,9 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
    */
   public final void onSourcesUpdated() {
 
-    /**
-     * Lock the manifest repository for exclusive read access as it will be acquired by
-     * {@link ManifestOverviewManager}. We must be sure to always take repository lock first!
+    /*
+     * Lock the manifest repository for exclusive read access as it will be acquired by {@link
+     * ManifestOverviewManager}. We must be sure to always take repository lock first!
      */
 
     this.repo.acquireReadLock();
