@@ -243,12 +243,12 @@
 
     <build>
         <resources>
-          <resource>
-            <directory>${project.basedir}/src/main/resources</directory>
-          </resource>
-          <resource>
-            <directory>${project.build.directory}/generated-resources</directory>
-          </resource>
+            <resource>
+                <directory>${project.basedir}/src/main/resources</directory>
+            </resource>
+            <resource>
+                <directory>${project.build.directory}/generated-resources</directory>
+            </resource>
         </resources>
         <plugins>
             <plugin>
@@ -440,19 +440,25 @@
                 <executions>
                     <execution>
                         <id>install-node-and-npm</id>
-                        <goals><goal>install-node-and-npm</goal></goals>
+                        <goals>
+                            <goal>install-node-and-npm</goal>
+                        </goals>
                         <phase>generate-resources</phase>
                     </execution>
                     <execution>
                         <id>npm-install</id>
-                        <goals><goal>npm</goal></goals>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
                         <configuration>
                             <arguments>install</arguments>
                         </configuration>
                     </execution>
                     <execution>
                         <id>webpack-build</id>
-                        <goals><goal>npm</goal></goals>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
                         <configuration>
                             <arguments>run build-${vueBuildProfile}</arguments>
                         </configuration>
@@ -505,14 +511,14 @@
     </build>
 
     <profiles>
-          <profile>
-               <id>skipValidation</id>
-               <properties>
-                    <maven.test.skip>true</maven.test.skip>
-                    <maven.javadoc.skip>true</maven.javadoc.skip>
-                    <checkstyle.skip>true</checkstyle.skip>
-                    <spotbugs.skip>true</spotbugs.skip>
-               </properties>
-          </profile>
-     </profiles>
+        <profile>
+            <id>skipValidation</id>
+            <properties>
+                <maven.test.skip>true</maven.test.skip>
+                <maven.javadoc.skip>true</maven.javadoc.skip>
+                <checkstyle.skip>true</checkstyle.skip>
+                <spotbugs.skip>true</spotbugs.skip>
+            </properties>
+        </profile>
+    </profiles>
 </project>
