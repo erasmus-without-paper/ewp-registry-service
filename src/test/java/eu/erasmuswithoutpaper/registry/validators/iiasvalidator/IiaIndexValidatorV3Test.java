@@ -1,13 +1,14 @@
 package eu.erasmuswithoutpaper.registry.validators.iiasvalidator;
 
+import static eu.erasmuswithoutpaper.registry.validators.TestValidationReportAsset.assertThat;
+
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.SemanticVersion;
 import eu.erasmuswithoutpaper.registry.validators.TestValidationReport;
-import eu.erasmuswithoutpaper.registry.validators.iiavalidator.IiaSuiteState;
 import eu.erasmuswithoutpaper.registry.validators.iiavalidator.IiaIndexValidator;
-
+import eu.erasmuswithoutpaper.registry.validators.iiavalidator.IiaSuiteState;
 import org.springframework.beans.factory.annotation.Autowired;
-import static eu.erasmuswithoutpaper.registry.validators.TestValidationReportAsset.assertThat;
+
 import org.junit.jupiter.api.Test;
 
 public class IiaIndexValidatorV3Test extends IiaValidatorTestBase {
@@ -35,7 +36,7 @@ public class IiaIndexValidatorV3Test extends IiaValidatorTestBase {
   }
 
   @Test
-  public void testValidationOnValidServiceIsSuccessful() {
+  public void testValidationOnValidServiceIsSuccessful() throws Exception {
     IiasServiceValidV3 service = new IiasServiceValidV3(iiaIndexUrl, iiaGetUrl, this.client);
     TestValidationReport report = this.getRawReport(service);
     assertThat(report).isCorrect();

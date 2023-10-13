@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 
 import eu.erasmuswithoutpaper.registry.internet.InternetTestHelpers;
@@ -40,15 +39,13 @@ public class IiasServiceValidV3 extends AbstractIiasService {
    * @param registryClient
    *     Initialized and refreshed {@link RegistryClient} instance.
    */
-  public IiasServiceValidV3(String indexUrl, String getUrl, RegistryClient registryClient) {
+  public IiasServiceValidV3(String indexUrl, String getUrl, RegistryClient registryClient)
+      throws Exception {
     super(indexUrl, getUrl, registryClient);
-    try {
-      fillDataBase();
-    } catch (DatatypeConfigurationException ignored) {
-    }
+    fillDataBase();
   }
 
-  protected void fillDataBase() throws DatatypeConfigurationException {
+  protected void fillDataBase() throws Exception {
     final String THIS_SERVICE_HEI_ID = "test.hei01.uw.edu.pl";
     final String VALIDATOR_HEI_ID = "validator-hei01.developers.erasmuswithoutpaper.eu";
 
