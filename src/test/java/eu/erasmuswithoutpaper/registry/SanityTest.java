@@ -18,7 +18,7 @@ import org.xml.sax.SAXException;
 /**
  * A couple of sanity checks, unrelated to any of the Registry components.
  */
-public class SanityChecks extends WRTest {
+public class SanityTest extends WRTest {
 
   @Autowired
   private Environment environment;
