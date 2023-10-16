@@ -1,6 +1,28 @@
 Release notes
 =============
 
+1.11.1
+-----
+
+*Released on 2023-10-17*
+
+* Change java's runtime in docker (11 -> 17)
+* Spring Boot update (2.1.18 -> 2.7.16)
+* Pretty XML won't end with empty line
+* Disable spring.jpa.open-in-view
+* Stop using Apache HttpClient outside tests
+* Use Maven Enforcer Plugin (require Maven >= 6.3.0)
+* Tests not only extends one class
+
+* Updated other dependencies:
+    * Pebble (3.1.0 -> 3.1.5)
+    * text-io (3.3.0 -> 3.4.1)
+    * commons-io (2.13.0 -> 2.14.0)
+    * PrettyTime (4.0.6 -> 5.0.7)
+    * Postcss (8.4.29 -> 8.4.31)
+    * Frontend Maven Plugin (1.13.4 -> 1.14.0)
+    * Spotbugs Maven Plugin (4.7.3.5 -> 4.7.3.6)
+
 1.11.0
 -----
 
