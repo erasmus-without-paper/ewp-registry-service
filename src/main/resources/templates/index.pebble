@@ -108,22 +108,44 @@
                         </div>
                     </div>
                 </div>
-                <div class='ewp-header__version'>v{{ artifactVersion }}<br/>{{ gitVersion }}</div>
             </div>
 
             <div class='ewp-header__footer ewp-footer'>
-                <p class='ewp-para' style='float: left'>
-                    <a href="https://esci-sd.atlassian.net/wiki/spaces/EWP/pages/10879608/How+to+join">
+                <div>
+                    <a href='https://esci-sd.atlassian.net/wiki/spaces/EWP/pages/10879608/How+to+join'>
                         How to join EWP Network?
                     </a>
-                </p>
+                </div>
 
-                {% if adminEmails != null %}
-                    Contact:
-                    {% for adminEmail in adminEmails %}
-                    <a href="mailto:{{ adminEmail }}">{{ adminEmail}}</a>
-                    {% endfor %}
-                {% endif %}
+                <div>
+                    <a href='https://commission.europa.eu/index_en' target='_blank' style='opacity:1'>
+                        <img alt='European Commission' src='/logo-ec.png' style='width: 128px;'>
+                    </a>
+                </div>
+
+                <div>
+                    {% if adminEmails != null %}
+                        <div style='display: flex;'>
+                            <svg viewBox='0 0 24 24' role='img' aria-label='Contact'>
+                                <title>Contact</title>
+                                <path d='M20,8L12,13L4,8V6L12,11L20,6M20,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V6C22,4.89 21.1,4 20,4Z'></path>
+                            </svg>
+
+                            {% for adminEmail in adminEmails %}
+                                {% if loop.first %}
+                                    <a href='mailto:{{ adminEmail }}'>{{ adminEmail}}</a>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    <div style='display: flex;'>
+                        <svg viewBox='0 0 24 24' role='img' aria-label='Version'>
+                            <title>Version</title>
+                            <path d='M13,14C9.64,14 8.54,15.35 8.18,16.24C9.25,16.7 10,17.76 10,19A3,3 0 0,1 7,22A3,3 0 0,1 4,19C4,17.69 4.83,16.58 6,16.17V7.83C4.83,7.42 4,6.31 4,5A3,3 0 0,1 7,2A3,3 0 0,1 10,5C10,6.31 9.17,7.42 8,7.83V13.12C8.88,12.47 10.16,12 12,12C14.67,12 15.56,10.66 15.85,9.77C14.77,9.32 14,8.25 14,7A3,3 0 0,1 17,4A3,3 0 0,1 20,7C20,8.34 19.12,9.5 17.91,9.86C17.65,11.29 16.68,14 13,14M7,18A1,1 0 0,0 6,19A1,1 0 0,0 7,20A1,1 0 0,0 8,19A1,1 0 0,0 7,18M7,4A1,1 0 0,0 6,5A1,1 0 0,0 7,6A1,1 0 0,0 8,5A1,1 0 0,0 7,4M17,6A1,1 0 0,0 16,7A1,1 0 0,0 17,8A1,1 0 0,0 18,7A1,1 0 0,0 17,6Z'></path>
+                        </svg>
+                        <code>{{ artifactVersion }} {{ gitVersion }}</code>
+                    </div>
+                </div>
             </div>
         </div>
         <div class='ewp-header__margin ewp-header__margin--bottom'></div>

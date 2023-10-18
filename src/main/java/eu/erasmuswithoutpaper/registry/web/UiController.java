@@ -131,6 +131,7 @@ public class UiController {
   private byte[] cachedUiJs;
   private String cachedUiJsFingerprint;
   private byte[] cachedLogo;
+  private byte[] cachedEcLogo;
 
   /**
    * @param taskExecutor needed for running background tasks.
@@ -272,6 +273,25 @@ public class UiController {
       }
     }
     return this.cachedLogo;
+  }
+
+  /**
+   * @param response Needed to add some custom headers.
+   * @return EC logo image.
+   */
+  @ResponseBody
+  @RequestMapping(value = "/logo-ec.png", method = RequestMethod.GET, produces = "image/png")
+  public byte[] getEcLogo(HttpServletResponse response) {
+    response.addHeader("Cache-Control", "public, max-age=86400, stale-while-revalidate=604800");
+    if (this.cachedEcLogo == null) {
+      try {
+        this.cachedEcLogo = IOUtils
+            .toByteArray(this.resLoader.getResource("classpath:logo-ec.png").getInputStream());
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
+    return this.cachedEcLogo;
   }
 
   /**

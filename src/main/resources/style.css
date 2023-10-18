@@ -152,7 +152,7 @@ a:hover {
 }
 .ewp-header__details {
     grid-area: details;
-    padding: 19px 32px 24px 15px;
+    padding: 0 32px 24px 15px;
 }
 .ewp-header__details p {
     opacity: 0.75;
@@ -210,14 +210,6 @@ a:hover {
     grid-area: uptime;
     padding: 0 24px 0 37px;
 }
-.ewp-header__version {
-    margin-top: 20px;
-    font-size: 12px;
-    font-style: italic;
-    opacity: 0.3;
-    text-align: center;
-    text-shadow: 1px 2px 0 rgba(0, 0, 0, 0.29);
-}
 .ewp-uptime {
     background: linear-gradient(to bottom, rgba(51,63,85,0.53) 0%,rgba(37,49,70,0.53) 100%);
     padding: 20px 24px 26px 24px;
@@ -260,10 +252,22 @@ a:hover {
     grid-area: footer;
 }
 .ewp-footer {
-    opacity: 0.5;
+    display: flex;
+    gap: 3em;
     font-style: italic;
-    margin-right: 20px;
-    text-align: right;
+    align-items: center;
+    margin: 2em auto 0 auto;
+}
+.ewp-footer a {
+    opacity: 0.75;
+}
+.ewp-footer svg, .ewp-footer code {
+    opacity: 0.5;
+}
+.ewp-footer svg {
+    width: 20px;
+    fill: currentColor;
+    margin-right: 8px;
 }
 
 
