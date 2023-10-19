@@ -65,7 +65,6 @@ import eu.erasmuswithoutpaper.registry.validators.verifiers.Verifier;
 import eu.erasmuswithoutpaper.registry.validators.verifiers.VerifierFactory;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
-import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import net.adamcin.httpsig.api.Algorithm;
 import net.adamcin.httpsig.api.Challenge;
@@ -423,16 +422,17 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
         throw new RuntimeException();
       }
       RSAPublicKey key =
-          this.pickRandom(this.regClient.getServerKeysCoveringApi(combination.getApiEntry()));
+          pickRandom(this.regClient.getServerKeysCoveringApi(combination.getApiEntry()));
       return new EwpRsaAesRequestEncoder(key);
     } else {
       throw new RuntimeException("Not supported");
     }
   }
 
-  private RSAPublicKey pickRandom(Collection<RSAPublicKey> keys) {
-    int randomIndex = RANDOM.nextInt(keys.size());
-    return Iterators.get(keys.iterator(), randomIndex);
+  private static RSAPublicKey pickRandom(Collection<RSAPublicKey> keys) {
+    List<RSAPublicKey> list =
+        keys instanceof List<RSAPublicKey> keysList ? keysList : new ArrayList<>(keys);
+    return list.get(RANDOM.nextInt(keys.size()));
   }
 
   protected RequestSigner getRequestSignerForCombination(InlineValidationStep step, Request request,
