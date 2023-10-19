@@ -1,6 +1,7 @@
 package eu.erasmuswithoutpaper.registry.validators.githubtags;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +11,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
-import com.google.common.base.Charsets;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -42,7 +42,8 @@ public class GitHubTagsGetterProd implements GitHubTagsGetter {
     try {
       byte[] data = internet.getUrl(url);
       Gson gson = new Gson();
-      JsonArray jsonArray = gson.fromJson(new String(data, Charsets.UTF_8), JsonArray.class);
+      JsonArray jsonArray = gson.fromJson(new String(data, StandardCharsets.UTF_8),
+          JsonArray.class);
       for (JsonElement jsonElement : jsonArray) {
         JsonObject jsonObject = jsonElement.getAsJsonObject();
         SemanticVersion version = new SemanticVersion(jsonObject.get("name").getAsString());
