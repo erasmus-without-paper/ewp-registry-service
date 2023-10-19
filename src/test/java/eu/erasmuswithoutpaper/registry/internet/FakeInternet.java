@@ -9,11 +9,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.stream.Collectors;
 
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
-
-import com.google.common.base.Joiner;
 
 /**
  * Implementation of {@link Internet} for unit tests.
@@ -188,7 +187,7 @@ public class FakeInternet implements Internet {
   public void queueEmail(List<String> recipients, String subject, String contents) {
     StringBuilder sb = new StringBuilder();
     sb.append("To: ");
-    sb.append(Joiner.on(", ").join(recipients));
+    sb.append(recipients.stream().collect(Collectors.joining(", ")));
     sb.append("\n");
     sb.append("Subject: " + subject + "\n\n");
     sb.append(contents);

@@ -1,6 +1,7 @@
 package eu.erasmuswithoutpaper.registry.validators;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -15,8 +16,6 @@ import eu.erasmuswithoutpaper.registry.internet.sec.InvalidResponseError;
 import eu.erasmuswithoutpaper.registry.internet.sec.ResponseCodingDecoder;
 import eu.erasmuswithoutpaper.registry.validators.InlineValidationStep.Failure;
 import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus.Status;
-
-import com.google.common.collect.Lists;
 
 public class DecodingHelper {
 
@@ -36,7 +35,9 @@ public class DecodingHelper {
   }
 
   private List<String> getOrderedCodings(Response response) {
-    return Lists.reverse(Utils.commaSeparatedTokens(response.getHeader("Content-Encoding")));
+    List<String> list = Utils.commaSeparatedTokens(response.getHeader("Content-Encoding"));
+    Collections.reverse(list);
+    return list;
   }
 
   void addDecoder(ResponseCodingDecoder decoder) {

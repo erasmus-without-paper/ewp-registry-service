@@ -1,13 +1,12 @@
 package eu.erasmuswithoutpaper.registry.internet.sec;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 import eu.erasmuswithoutpaper.registry.common.Utils;
 import eu.erasmuswithoutpaper.registry.internet.Request;
-
-import com.google.common.collect.Lists;
 
 /**
  * This {@link RequestDecoder} keeps a map of a set of {@link RequestCodingDecoder}s (each of which
@@ -61,6 +60,9 @@ public class MultipleCodingsRequestDecoder implements RequestDecoder {
    *         reversed list, the last used Content-Encoding will be the first returned).
    */
   protected List<String> getReversedContentEncodings(Request request) {
-    return Lists.reverse(Utils.commaSeparatedTokens(request.getHeader("Content-Encoding")));
+    List<String> list = Utils.commaSeparatedTokens(request.getHeader("Content-Encoding"));
+    Collections.reverse(list);
+    return list;
   }
+
 }

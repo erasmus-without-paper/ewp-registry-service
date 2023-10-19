@@ -3,6 +3,7 @@ package eu.erasmuswithoutpaper.registry.cmatrix;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,8 +13,6 @@ import eu.erasmuswithoutpaper.registryclient.ApiSearchConditions;
 import eu.erasmuswithoutpaper.registryclient.HeiEntry;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 import org.springframework.stereotype.Service;
-
-import com.google.common.collect.Lists;
 
 /**
  * This service allows you generate HEI/API coverage reports.
@@ -40,7 +39,9 @@ public class CoverageMatrixGenerator {
     }
 
     private List<String> extractSlug(HeiEntry hei) {
-      return Lists.reverse((Arrays.asList(hei.getId().split("\\."))));
+      List<String> heiIds = Arrays.asList(hei.getId().split("\\."));
+      Collections.reverse(heiIds);
+      return heiIds;
     }
   }
 
