@@ -20,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -169,7 +168,7 @@ public class SelfManifestProvider {
     // Create registry manifest
 
     SelfManifestBuilder registryBuilder = new SelfManifestBuilder();
-    registryBuilder.addAdminEmails(Lists.reverse(this.adminEmails))
+    registryBuilder.addAdminEmails(this.adminEmails)
         .setAdminNotes("This host handles the EWP Registry Service.")
         .addApi("discovery", "6.0.0",
             registryRepoBaseUrl + "/ewp-specs-api-discovery/tree/stable-v6/manifest-entry.xsd",
