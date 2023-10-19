@@ -7,7 +7,6 @@ import java.util.Optional;
 
 import eu.erasmuswithoutpaper.registry.common.Severity;
 
-import com.google.common.collect.ImmutableList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,7 +60,7 @@ public abstract class NotifierFlag {
    * @return A list of email addresses.
    */
   public final synchronized List<String> getRecipientEmails() {
-    return ImmutableList.<String>builder().addAll(this.rcptEmails).build();
+    return List.copyOf(rcptEmails);
   }
 
   /**
