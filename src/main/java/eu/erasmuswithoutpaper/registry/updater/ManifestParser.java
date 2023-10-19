@@ -1,5 +1,6 @@
 package eu.erasmuswithoutpaper.registry.updater;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -11,7 +12,6 @@ import eu.erasmuswithoutpaper.registry.documentbuilder.KnownElement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.common.collect.Lists;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -69,8 +69,8 @@ public class ManifestParser {
 
     @Override
     public List<String> getErrorList() {
-      return Lists.newArrayList("This is a valid {" + this.namespaceUri + "}" + this.localName
-          + " document, but we are expecting a manifest.");
+      return Collections.singletonList("This is a valid {" + this.namespaceUri + "}"
+          + this.localName + " document, but we are expecting a manifest.");
     }
   }
 
