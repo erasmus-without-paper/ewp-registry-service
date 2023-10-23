@@ -55,7 +55,7 @@ class InstitutionsValidationSuite
   @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
   protected void validateCombinationAny(Combination combination)
       throws SuiteBroken {
-    String fakeHeiId = AbstractValidationSuite.fakeId;
+    String fakeHeiId = AbstractValidationSuite.FAKE_ID;
 
     testParameters200(combination, "Request for one of known hei_ids, expect 200 OK.",
         new ParameterList(new Parameter("hei_id", currentState.selectedHeiId)),

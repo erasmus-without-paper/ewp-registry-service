@@ -91,7 +91,7 @@ class MtProjectsValidationSuite extends AbstractValidationSuite<MtProjectsSuiteS
     testParametersError(
         combination,
         "Request with single incorrect parameter, expect 400.",
-        new ParameterList(new Parameter("pic_param", fakeId)),
+        new ParameterList(new Parameter("pic_param", FAKE_ID)),
         400
     );
 
@@ -124,7 +124,7 @@ class MtProjectsValidationSuite extends AbstractValidationSuite<MtProjectsSuiteS
         combination,
         "Request with unknown pic parameter, expect 400.",
         new ParameterList(
-            new Parameter("pic", fakeId),
+            new Parameter("pic", FAKE_ID),
             new Parameter("call_year", this.currentState.selectedCallYear)
         ),
         400

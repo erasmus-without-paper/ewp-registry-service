@@ -91,7 +91,7 @@ class MtDictionariesValidationSuite extends AbstractValidationSuite<MtDictionari
     testParametersError(
         combination,
         "Request with single incorrect parameter, expect 400.",
-        new ParameterList(new Parameter("dictionary_param", fakeId)),
+        new ParameterList(new Parameter("dictionary_param", FAKE_ID)),
         400
     );
 
@@ -124,7 +124,7 @@ class MtDictionariesValidationSuite extends AbstractValidationSuite<MtDictionari
         combination,
         "Request with unknown dictionary parameter, expect 400.",
         new ParameterList(
-            new Parameter("dictionary", fakeId),
+            new Parameter("dictionary", FAKE_ID),
             new Parameter("call_year", this.currentState.selectedCallYear)
         ),
         400

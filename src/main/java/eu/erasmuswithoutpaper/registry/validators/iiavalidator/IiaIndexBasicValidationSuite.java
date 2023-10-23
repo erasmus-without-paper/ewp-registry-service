@@ -60,7 +60,7 @@ public class IiaIndexBasicValidationSuite extends AbstractValidationSuite<IiaSui
         "Request with known hei_id and unknown hei_id, expect 400.",
         new ParameterList(
             new Parameter("hei_id", this.currentState.selectedHeiId),
-            new Parameter("hei_id", fakeId)
+            new Parameter("hei_id", FAKE_ID)
         ),
         400
     );
@@ -69,7 +69,7 @@ public class IiaIndexBasicValidationSuite extends AbstractValidationSuite<IiaSui
         combination,
         "Request with unknown hei_id, expect 400.",
         new ParameterList(
-            new Parameter("hei_id", fakeId)
+            new Parameter("hei_id", FAKE_ID)
         ),
         400
     );
@@ -123,7 +123,7 @@ public class IiaIndexBasicValidationSuite extends AbstractValidationSuite<IiaSui
         "Request with known hei_id and unknown partner_hei_id, expect 200 OK and empty list.",
         new ParameterList(
             new Parameter("hei_id", this.currentState.selectedHeiId),
-            new Parameter("partner_hei_id", fakeId)
+            new Parameter("partner_hei_id", FAKE_ID)
         ),
         iiaIdVerifierFactory.expectResponseToBeEmpty()
     );

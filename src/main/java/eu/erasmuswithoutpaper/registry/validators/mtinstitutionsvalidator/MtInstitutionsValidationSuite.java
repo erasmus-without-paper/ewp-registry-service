@@ -89,7 +89,7 @@ class MtInstitutionsValidationSuite extends AbstractValidationSuite<MtInstitutio
     testParametersError(
         combination,
         "Request with single incorrect parameter, expect 400.",
-        new ParameterList(new Parameter("pic_param", fakeId)),
+        new ParameterList(new Parameter("pic_param", FAKE_ID)),
         400
     );
 
@@ -115,7 +115,7 @@ class MtInstitutionsValidationSuite extends AbstractValidationSuite<MtInstitutio
         "Request with invalid value of eche_at_date, expect 400.",
         new ParameterList(
             new Parameter("pic", this.currentState.selectedPic),
-            new Parameter("eche_at_date", fakeId)
+            new Parameter("eche_at_date", FAKE_ID)
         ),
         400
     );

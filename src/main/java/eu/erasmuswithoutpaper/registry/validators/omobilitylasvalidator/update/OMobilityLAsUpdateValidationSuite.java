@@ -285,7 +285,7 @@ class OMobilityLAsUpdateValidationSuite
         ),
         requestToXmlParameters(requestFactory.createRequest(
             this.currentState.sendingHeiId,
-            fakeId,
+            FAKE_ID,
             this.currentState.changesProposalId
         )),
         400
@@ -299,7 +299,7 @@ class OMobilityLAsUpdateValidationSuite
         requestToXmlParameters(requestFactory.createRequest(
             this.currentState.sendingHeiId,
             this.currentState.omobilityId,
-            fakeId
+            FAKE_ID
         )),
         409
     );

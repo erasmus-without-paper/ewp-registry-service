@@ -49,7 +49,7 @@ class FactsheetValidationSuite
   @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
   protected void validateCombinationAny(Combination combination)
       throws SuiteBroken {
-    String fakeHeiId = fakeId;
+    String fakeHeiId = FAKE_ID;
     final VerifierFactory verfierFactory =
         new VerifierFactory(Arrays.asList("factsheet", "hei-id"));
 

@@ -78,7 +78,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 public abstract class AbstractValidationSuite<S extends SuiteState> {
-  protected static final String fakeId = "this-is-some-unknown-and-unexpected-id";
+  protected static final String FAKE_ID = "this-is-some-unknown-and-unexpected-id";
   private static final Random RANDOM = new Random();
 
   protected final List<ValidationStepWithStatus> steps;
@@ -1137,7 +1137,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
         "Request one unknown " + secondParameterNamePrefix + "_id, expect 200 and empty response.",
         new ParameterList(
             new Parameter(heiParameterName, heiId),
-            new Parameter(secondParameterNamePrefix + "_id", fakeId)
+            new Parameter(secondParameterNamePrefix + "_id", FAKE_ID)
         ),
         verifierFactory.expectResponseToBeEmpty()
     );
@@ -1149,7 +1149,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
         new ParameterList(
             new Parameter(heiParameterName, heiId),
             new Parameter(secondParameterNamePrefix + "_id", id),
-            new Parameter(secondParameterNamePrefix + "_id", fakeId)
+            new Parameter(secondParameterNamePrefix + "_id", FAKE_ID)
         ),
         verifierFactory.expectResponseToContainExactly(Collections.singletonList(id)),
         maxIds == 1,
@@ -1165,7 +1165,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
           new ParameterList(
               new Parameter(heiParameterName, heiId),
               new Parameter(secondParameterNamePrefix + "_code", code),
-              new Parameter(secondParameterNamePrefix + "_code", fakeId)
+              new Parameter(secondParameterNamePrefix + "_code", FAKE_ID)
           ),
           verifierFactory.expectResponseToContainExactly(Collections.singletonList(id)),
           maxCodes == 1 || code == null,
@@ -1204,7 +1204,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
           "Request for one of known " + secondParameterNamePrefix + "_ids with unknown "
               + heiParameterName + ", expect 400.",
           new ParameterList(
-              new Parameter(heiParameterName, fakeId),
+              new Parameter(heiParameterName, FAKE_ID),
               new Parameter(secondParameterNamePrefix + "_id", id)
           ),
           400
@@ -1215,7 +1215,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
           "Request for one of known " + secondParameterNamePrefix + "_ids with unknown "
               + heiParameterName + ", expect 200 and empty response.",
           new ParameterList(
-              new Parameter(heiParameterName, fakeId),
+              new Parameter(heiParameterName, FAKE_ID),
               new Parameter(secondParameterNamePrefix + "_id", id)
           ),
           verifierFactory.expectResponseToBeEmpty()
@@ -1228,7 +1228,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
           "Request for one of known " + secondParameterNamePrefix + "_codes with unknown "
               + heiParameterName + ", expect 400.",
           new ParameterList(
-              new Parameter(heiParameterName, fakeId),
+              new Parameter(heiParameterName, FAKE_ID),
               new Parameter(secondParameterNamePrefix + "_code", code)
           ),
           400,
@@ -1280,7 +1280,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
             concatArrays(
               Arrays.asList(new Parameter(heiParameterName, heiId)),
               Collections.nCopies(
-                  maxIds + 1, new Parameter(secondParameterNamePrefix + "_id", fakeId)
+                  maxIds + 1, new Parameter(secondParameterNamePrefix + "_id", FAKE_ID)
               )
             )
         ),
@@ -1296,7 +1296,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
               concatArrays(
                   Arrays.asList(new Parameter(heiParameterName, heiId)),
                   Collections.nCopies(
-                      maxCodes + 1, new Parameter(secondParameterNamePrefix + "_code", fakeId)
+                      maxCodes + 1, new Parameter(secondParameterNamePrefix + "_code", FAKE_ID)
                   )
               )
           ),
@@ -1383,7 +1383,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
         ),
         new ParameterList(
             new Parameter(heiParameterName, heiId),
-            new Parameter(heiParameterName, fakeId),
+            new Parameter(heiParameterName, FAKE_ID),
             new Parameter(secondParameterNamePrefix + "_id", id)
         ),
         400
@@ -1395,7 +1395,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
     final String skipErrorTestsReason;
     final boolean skipNoErrorTests;
     final String skipNoErrorTestsReason;
-    static final String modifiedSinceNotSupportedSkipReason =
+    static final String MODIFIED_SINCE_NOT_SUPPORTED_SKIP_REASON =
         "modified_since parameter not supported.";
 
     public ModifiedSinceTestsSkipInfo(
@@ -1404,9 +1404,9 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
     ) {
       if (!modifiedSinceSupported) {
         skipErrorTests = true;
-        skipErrorTestsReason = modifiedSinceNotSupportedSkipReason;
+        skipErrorTestsReason = MODIFIED_SINCE_NOT_SUPPORTED_SKIP_REASON;
         skipNoErrorTests = true;
-        skipNoErrorTestsReason = modifiedSinceNotSupportedSkipReason;
+        skipNoErrorTestsReason = MODIFIED_SINCE_NOT_SUPPORTED_SKIP_REASON;
       } else {
         skipErrorTests = false;
         skipErrorTestsReason = null;
@@ -1495,7 +1495,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
         "Request with invalid value of modified_since, expect 400.",
         new ParameterList(
             new Parameter(heiIdParameterName, knownHeiId),
-            new Parameter("modified_since", fakeId)
+            new Parameter("modified_since", FAKE_ID)
         ),
         400
     );
@@ -1680,7 +1680,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
         ),
         new ParameterList(
             new Parameter(respondingHeiIdParameterName, knownRespondingHeiIdParameter),
-            new Parameter(respondingHeiIdParameterName, fakeId)
+            new Parameter(respondingHeiIdParameterName, FAKE_ID)
         ),
         400
     );
@@ -1700,7 +1700,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
         ),
         new ParameterList(
             new Parameter(respondingHeiIdParameterName, knownRespondingHeiIdParameter),
-            new Parameter(requestingHeiIdParameterName, fakeId)
+            new Parameter(requestingHeiIdParameterName, FAKE_ID)
         ),
         verifierFactory.expectResponseToBeEmpty(),
         shouldSkip,
@@ -1729,7 +1729,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
               respondingHeiIdParameterName
           ),
           new ParameterList(
-              new Parameter(respondingHeiIdParameterName, fakeId)
+              new Parameter(respondingHeiIdParameterName, FAKE_ID)
           ),
           400,
           shouldSkip,
@@ -1743,7 +1743,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
               respondingHeiIdParameterName
           ),
           new ParameterList(
-              new Parameter(respondingHeiIdParameterName, fakeId)
+              new Parameter(respondingHeiIdParameterName, FAKE_ID)
           ),
           verifierFactory.expectResponseToBeEmpty(),
           shouldSkip,
@@ -1760,7 +1760,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
         new ParameterList(
             new Parameter(respondingHeiIdParameterName, knownRespondingHeiIdParameter),
             new Parameter(requestingHeiIdParameterName, knownRequestingHeiIdParameter),
-            new Parameter(requestingHeiIdParameterName, fakeId)
+            new Parameter(requestingHeiIdParameterName, FAKE_ID)
         ),
         verifierFactory.expectResponseToBeNotEmpty(),
         shouldSkip,
@@ -1775,8 +1775,8 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
         ),
         new ParameterList(
             new Parameter(respondingHeiIdParameterName, knownRespondingHeiIdParameter),
-            new Parameter(requestingHeiIdParameterName, fakeId),
-            new Parameter(requestingHeiIdParameterName, fakeId)
+            new Parameter(requestingHeiIdParameterName, FAKE_ID),
+            new Parameter(requestingHeiIdParameterName, FAKE_ID)
         ),
         verifierFactory.expectResponseToBeEmpty(),
         shouldSkip,

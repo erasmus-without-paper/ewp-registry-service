@@ -83,14 +83,14 @@ class CourseReplicationValidationSuite
     testParametersError(
         combination,
         "Request with single incorrect parameter, expect 400.",
-        new ParameterList(new Parameter("hei_id_param", fakeId)),
+        new ParameterList(new Parameter("hei_id_param", FAKE_ID)),
         400
     );
 
     testParametersError(
         combination,
         "Request with unknown hei_id parameter, expect 400.",
-        new ParameterList(new Parameter("hei_id", fakeId)),
+        new ParameterList(new Parameter("hei_id", FAKE_ID)),
         400
     );
 
@@ -136,7 +136,7 @@ class CourseReplicationValidationSuite
           "Request with invalid value of modified_since, expect 400.",
           new ParameterList(
               new Parameter("hei_id", this.currentState.selectedHeiId),
-              new Parameter("modified_since", fakeId)
+              new Parameter("modified_since", FAKE_ID)
           ),
           400
       );
