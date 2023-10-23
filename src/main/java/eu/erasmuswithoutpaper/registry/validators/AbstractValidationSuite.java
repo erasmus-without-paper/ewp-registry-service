@@ -304,7 +304,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
   protected Request createValidRequestForCombination(InlineValidationStep step,
       Combination combination) {
     return this.createValidRequestForCombination(step, combination,
-        ContentType.ApplicationWwwFormUrlencoded);
+        ContentType.APPLICATION_WWW_FORM_URLENCODED);
   }
 
   protected Request createValidRequestForCombination(InlineValidationStep step,
@@ -382,7 +382,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
   protected Request createValidRequestForCombination(InlineValidationStep step,
       Combination combination, String body) {
     return createValidRequestForCombination(step, combination, body,
-        ContentType.ApplicationWwwFormUrlencoded);
+        ContentType.APPLICATION_WWW_FORM_URLENCODED);
   }
 
   /**
@@ -1937,7 +1937,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
 
     @Override
     public ContentType getPostContentType() {
-      return ContentType.ApplicationWwwFormUrlencoded;
+      return ContentType.APPLICATION_WWW_FORM_URLENCODED;
     }
   }
 
@@ -1976,7 +1976,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
 
     @Override
     public ContentType getPostContentType() {
-      return ContentType.TextXml;
+      return ContentType.TEXT_XML;
     }
   }
 }

@@ -1,8 +1,8 @@
 package eu.erasmuswithoutpaper.registry.validators;
 
 public enum ContentType {
-  ApplicationWwwFormUrlencoded("application/x-www-form-urlencoded"),
-  TextXml("text/xml");
+  APPLICATION_WWW_FORM_URLENCODED("application/x-www-form-urlencoded"),
+  TEXT_XML("text/xml");
 
   private final String contentType;
 
