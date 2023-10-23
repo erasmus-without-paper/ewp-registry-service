@@ -25,7 +25,7 @@ public class IMobilityTorsGetValidator extends ApiValidator<IMobilityTorsSuiteSt
   public IMobilityTorsGetValidator(EwpDocBuilder docBuilder, Internet internet,
       RegistryClient client, ValidatorKeyStoreSet validatorKeyStoreSet) {
     super(docBuilder, internet, client, validatorKeyStoreSet, "imobility-tors",
-        ApiEndpoint.Get);
+        ApiEndpoint.GET);
   }
 
   @ValidatorTestStep

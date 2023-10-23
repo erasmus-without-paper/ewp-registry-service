@@ -51,7 +51,7 @@ class CoursesValidationSuite
       CoursesSuiteState state, ValidationSuiteConfig config, int version) {
     super(validator, state, config);
 
-    this.apiInfo = new CoursesValidatedApiInfo(Math.max(1, version), ApiEndpoint.NoEndpoint);
+    this.apiInfo = new CoursesValidatedApiInfo(Math.max(1, version), ApiEndpoint.NO_ENDPOINT);
   }
 
   static class RequestFields {

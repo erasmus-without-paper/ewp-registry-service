@@ -46,7 +46,7 @@ class MtProjectsSetupValidationSuite
       MtProjectsSuiteState state, ValidationSuiteConfig config, int version) {
     super(validator, state, config);
 
-    this.apiInfo = new MtProjectsValidatedApiInfo(version, ApiEndpoint.NoEndpoint);
+    this.apiInfo = new MtProjectsValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
   }
 
   //FindBugs is not smart enough to infer that actual type of this.currentState

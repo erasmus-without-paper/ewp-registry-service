@@ -42,7 +42,7 @@ public class IiaIndexComplexValidationSuite extends AbstractValidationSuite<IiaS
       IiaSuiteState state, ValidationSuiteConfig config, int version) {
     super(validator, state, config);
 
-    this.apiInfo = new IiaValidatedApiInfo(version, ApiEndpoint.Index);
+    this.apiInfo = new IiaValidatedApiInfo(version, ApiEndpoint.INDEX);
   }
 
   @Override

@@ -45,7 +45,7 @@ public class IiaGetValidationSuite
       IiaSuiteState state, ValidationSuiteConfig config, int version) {
     super(validator, state, config);
 
-    this.apiInfo = new IiaValidatedApiInfo(version, ApiEndpoint.Get);
+    this.apiInfo = new IiaValidatedApiInfo(version, ApiEndpoint.GET);
   }
 
   @Override

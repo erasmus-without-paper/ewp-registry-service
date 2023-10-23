@@ -41,7 +41,7 @@ class IMobilityTorsIndexValidationSuite
       IMobilityTorsSuiteState state, ValidationSuiteConfig config, int version) {
     super(validator, state, config);
 
-    this.apiInfo = new IMobilityTorsValidatedApiInfo(version, ApiEndpoint.Index);
+    this.apiInfo = new IMobilityTorsValidatedApiInfo(version, ApiEndpoint.INDEX);
   }
 
   @Override

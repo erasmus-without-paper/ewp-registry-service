@@ -52,7 +52,7 @@ class OMobilityLAsUpdateValidationSuite
                                       int version) {
     super(validator, state, config);
 
-    this.apiInfo = new OMobilityLAsGetValidatedApiInfo(version, ApiEndpoint.Update);
+    this.apiInfo = new OMobilityLAsGetValidatedApiInfo(version, ApiEndpoint.UPDATE);
   }
 
   @Override

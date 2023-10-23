@@ -44,7 +44,7 @@ class FactsheetSetupValidationSuite
       FactsheetSuiteState state, ValidationSuiteConfig config, int version) {
     super(validator, state, config);
 
-    this.apiInfo = new FactsheetValidatedApiInfo(version, ApiEndpoint.NoEndpoint);
+    this.apiInfo = new FactsheetValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
   }
 
   private int getMaxHeiIds() {

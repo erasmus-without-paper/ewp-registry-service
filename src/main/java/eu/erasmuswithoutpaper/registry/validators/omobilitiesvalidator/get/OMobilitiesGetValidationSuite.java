@@ -43,7 +43,7 @@ class OMobilitiesGetValidationSuite
       OMobilitiesSuiteState state, ValidationSuiteConfig config, int version) {
     super(validator, state, config);
 
-    this.apiInfo = new OMobilitiesValidatedApiInfo(version, ApiEndpoint.Get);
+    this.apiInfo = new OMobilitiesValidatedApiInfo(version, ApiEndpoint.GET);
   }
 
   @Override

@@ -78,7 +78,7 @@ public class IiaIndexComplexSetupValidationSuiteV2
       int version) {
     super(validator, state, config);
 
-    this.apiInfo = new IiaValidatedApiInfo(version, ApiEndpoint.Index);
+    this.apiInfo = new IiaValidatedApiInfo(version, ApiEndpoint.INDEX);
   }
 
   // Overriding runTests to skip checking url, api version etc.
@@ -111,7 +111,7 @@ public class IiaIndexComplexSetupValidationSuiteV2
     this.currentState.selectedIiaId = getParameterValue(IIA_ID_PARAMETER,
         () -> getIiaIdParameter(securityDescription));
     String getUrl = getApiUrlForHei(
-        this.currentState.selectedHeiId, this.getApiInfo().getApiName(), ApiEndpoint.Get,
+        this.currentState.selectedHeiId, this.getApiInfo().getApiName(), ApiEndpoint.GET,
         "Retrieving 'get' endpoint url from catalogue.",
         "Couldn't find 'get' endpoint url in the catalogue. Is manifest correct?");
 
@@ -142,7 +142,7 @@ public class IiaIndexComplexSetupValidationSuiteV2
             new HeiIdAndUrl(
                 this.currentState.selectedHeiId,
                 this.currentState.url,
-                ApiEndpoint.Index
+                ApiEndpoint.INDEX
             )
         ),
         securityDescription
@@ -166,7 +166,7 @@ public class IiaIndexComplexSetupValidationSuiteV2
       protected Optional<Response> innerRun() throws Failure {
         Request request = makeApiRequestWithPreferredSecurity(
             this,
-            url, ApiEndpoint.Get, securityDescription,
+            url, ApiEndpoint.GET, securityDescription,
             new ParameterList(
                 new Parameter("hei_id", heiId),
                 new Parameter("iia_id", iiaId)

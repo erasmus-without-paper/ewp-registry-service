@@ -35,7 +35,7 @@ class IMobilitiesGetSetupValidationSuite
       IMobilitiesSuiteState state, ValidationSuiteConfig config, int version) {
     super(validator, state, config);
 
-    this.apiInfo = new IMobilitiesGetValidatedApiInfo(version, ApiEndpoint.Get);
+    this.apiInfo = new IMobilitiesGetValidatedApiInfo(version, ApiEndpoint.GET);
   }
 
   public static List<ValidationParameter> getParameters() {

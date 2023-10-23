@@ -9,7 +9,7 @@ public abstract class ValidatedApiInfo {
    *     a name that should be used in creation of a KnownElement.
    */
   public String getElementName() {
-    if (getEndpoint() != ApiEndpoint.NoEndpoint) {
+    if (getEndpoint() != ApiEndpoint.NO_ENDPOINT) {
       return getApiName() + "-" + getEndpoint().getName() + "-response";
     } else {
       return getApiName() + "-response";
@@ -38,7 +38,7 @@ public abstract class ValidatedApiInfo {
     String uriEnding = getNamespaceApiName() + "/tree/stable-v" + getVersion();
 
     // If endpoint is defined, the strings follow different patterns.
-    if (getEndpoint() != ApiEndpoint.NoEndpoint) {
+    if (getEndpoint() != ApiEndpoint.NO_ENDPOINT) {
       endpoint = getEndpoint().getName().substring(0, 1);
       responseXsd = getEndpoint().getName() + "-response.xsd";
       uriEnding =

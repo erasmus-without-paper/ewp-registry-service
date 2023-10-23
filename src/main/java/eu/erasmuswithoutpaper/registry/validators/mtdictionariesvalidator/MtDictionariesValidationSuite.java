@@ -36,7 +36,7 @@ class MtDictionariesValidationSuite extends AbstractValidationSuite<MtDictionari
       MtDictionariesSuiteState state, ValidationSuiteConfig config, int version) {
     super(validator, state, config);
 
-    this.apiInfo = new MtDictionariesValidatedApiInfo(version, ApiEndpoint.NoEndpoint);
+    this.apiInfo = new MtDictionariesValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
   }
 
   @Override

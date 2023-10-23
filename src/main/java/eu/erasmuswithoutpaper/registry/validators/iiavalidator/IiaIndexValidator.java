@@ -22,7 +22,7 @@ public class IiaIndexValidator extends ApiValidator<IiaSuiteState> {
 
   public IiaIndexValidator(EwpDocBuilder docBuilder, Internet internet, RegistryClient client,
       ValidatorKeyStoreSet validatorKeyStoreSet) {
-    super(docBuilder, internet, client, validatorKeyStoreSet, "iias", ApiEndpoint.Index);
+    super(docBuilder, internet, client, validatorKeyStoreSet, "iias", ApiEndpoint.INDEX);
   }
 
   @ValidatorTestStep

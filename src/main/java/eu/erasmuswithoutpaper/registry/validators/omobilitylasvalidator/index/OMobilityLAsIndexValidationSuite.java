@@ -44,7 +44,7 @@ class OMobilityLAsIndexValidationSuite
                                      int version) {
     super(validator, state, config);
 
-    this.apiInfo = new OMobilityLAsGetValidatedApiInfo(version, ApiEndpoint.Index);
+    this.apiInfo = new OMobilityLAsGetValidatedApiInfo(version, ApiEndpoint.INDEX);
   }
 
   @Override

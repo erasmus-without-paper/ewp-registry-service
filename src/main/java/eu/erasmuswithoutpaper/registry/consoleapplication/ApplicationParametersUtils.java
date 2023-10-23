@@ -47,7 +47,7 @@ public class ApplicationParametersUtils {
 
   static String buildApiNameParameter(String name, ApiEndpoint endpoint) {
     String apiName;
-    if (endpoint != ApiEndpoint.NoEndpoint) {
+    if (endpoint != ApiEndpoint.NO_ENDPOINT) {
       apiName = String.format("%s-%s", name, endpoint);
     } else {
       apiName = String.format("%s", name);

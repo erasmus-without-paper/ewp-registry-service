@@ -25,7 +25,7 @@ public class IMobilitiesGetValidator extends ApiValidator<IMobilitiesSuiteState>
   public IMobilitiesGetValidator(EwpDocBuilder docBuilder, Internet internet,
       RegistryClient client, ValidatorKeyStoreSet validatorKeyStoreSet) {
     super(docBuilder, internet, client, validatorKeyStoreSet, "imobilities",
-        ApiEndpoint.Get);
+        ApiEndpoint.GET);
   }
 
   @ValidatorTestStep

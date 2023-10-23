@@ -35,7 +35,7 @@ class OMobilityLAsUpdateSetupValidationSuite
       OMobilityLAsSuiteState state, ValidationSuiteConfig config, int version) {
     super(validator, state, config);
 
-    this.apiInfo = new OMobilityLAsGetValidatedApiInfo(version, ApiEndpoint.Update);
+    this.apiInfo = new OMobilityLAsGetValidatedApiInfo(version, ApiEndpoint.UPDATE);
   }
 
   public static List<ValidationParameter> getParameters() {
@@ -81,7 +81,7 @@ class OMobilityLAsUpdateSetupValidationSuite
   private String getChangesProposalId(String omobilityId, String sendingHeiId,
       HttpSecurityDescription securityDescription) throws SuiteBroken {
     final String getUrl = getApiUrlForHei(
-        sendingHeiId, this.getApiInfo().getApiName(), ApiEndpoint.Get,
+        sendingHeiId, this.getApiInfo().getApiName(), ApiEndpoint.GET,
         "Retrieving 'get' endpoint url from catalogue.",
         "Couldn't find 'get' endpoint url in the catalogue. Is manifest correct?");
 
@@ -100,7 +100,7 @@ class OMobilityLAsUpdateSetupValidationSuite
         try {
           Response response = OMobilityLAsUpdateSetupValidationSuite.this.makeRequest(
               this,
-              makeApiRequestWithPreferredSecurity(this, getUrl, ApiEndpoint.Get,
+              makeApiRequestWithPreferredSecurity(this, getUrl, ApiEndpoint.GET,
                   securityDescription,
                   new ParameterList(
                       new Parameter(
@@ -150,7 +150,7 @@ class OMobilityLAsUpdateSetupValidationSuite
       HttpSecurityDescription securityDescription) throws SuiteBroken {
 
     String indexUrl = getApiUrlForHei(
-        this.currentState.sendingHeiId, this.getApiInfo().getApiName(), ApiEndpoint.Index,
+        this.currentState.sendingHeiId, this.getApiInfo().getApiName(), ApiEndpoint.INDEX,
         "Retrieving 'index' endpoint url from catalogue.",
         "Couldn't find 'index' endpoint url in the catalogue. Is manifest correct?");
 
@@ -160,7 +160,7 @@ class OMobilityLAsUpdateSetupValidationSuite
                 "sending_hei_id",
                 this.currentState.sendingHeiId,
                 indexUrl,
-                ApiEndpoint.Index
+                ApiEndpoint.INDEX
             )
         ),
         securityDescription

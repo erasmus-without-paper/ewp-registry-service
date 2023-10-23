@@ -26,7 +26,7 @@ public class OMobilityLAsIndexValidator extends ApiValidator<OMobilityLAsSuiteSt
   public OMobilityLAsIndexValidator(EwpDocBuilder docBuilder, Internet internet,
       RegistryClient client, ValidatorKeyStoreSet validatorKeyStoreSet) {
     super(docBuilder, internet, client, validatorKeyStoreSet, "omobility-las",
-        ApiEndpoint.Index);
+        ApiEndpoint.INDEX);
   }
 
   @ValidatorTestStep

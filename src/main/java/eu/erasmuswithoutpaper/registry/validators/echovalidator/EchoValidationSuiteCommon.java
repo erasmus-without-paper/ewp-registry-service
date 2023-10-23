@@ -59,7 +59,7 @@ public class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSuite
       EchoSuiteState state, ValidationSuiteConfig config, int version) {
     super(echoValidator, state, config);
 
-    this.apiInfo = new EchoValidatedApiInfo(version, ApiEndpoint.NoEndpoint);
+    this.apiInfo = new EchoValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
   }
 
   @Override

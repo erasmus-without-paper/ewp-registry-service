@@ -49,7 +49,7 @@ class OUnitsSetupValidationSuite
       int version) {
     super(validator, state, config);
 
-    this.apiInfo = new OUnitsValidatedApiInfo(version, ApiEndpoint.NoEndpoint);
+    this.apiInfo = new OUnitsValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
   }
 
   private int getMaxOunitIds() {
@@ -78,7 +78,7 @@ class OUnitsSetupValidationSuite
     return getApiUrlsForHeis(
         heiIds,
         "institutions",
-        ApiEndpoint.NoEndpoint,
+        ApiEndpoint.NO_ENDPOINT,
         "Find Institutions API for any of covered HEIs.",
         "To perform tests we need any ounit-id. We have to use Institutions API for that, "
             + "but the Catalogue doesn't contain entries for this API for any of hei-ids that we "

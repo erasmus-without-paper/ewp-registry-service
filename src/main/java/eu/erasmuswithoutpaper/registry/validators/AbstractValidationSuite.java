@@ -1785,7 +1785,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
   }
 
   String getUrlElementName(ApiEndpoint endpoint) {
-    if (endpoint == ApiEndpoint.NoEndpoint) {
+    if (endpoint == ApiEndpoint.NO_ENDPOINT) {
       return "url";
     }
     return endpoint.getName() + "-url";

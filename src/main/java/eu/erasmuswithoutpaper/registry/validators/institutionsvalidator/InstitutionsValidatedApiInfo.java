@@ -37,6 +37,6 @@ class InstitutionsValidatedApiInfo extends ValidatedApiInfo {
 
   @Override
   public ApiEndpoint getEndpoint() {
-    return ApiEndpoint.NoEndpoint;
+    return ApiEndpoint.NO_ENDPOINT;
   }
 }

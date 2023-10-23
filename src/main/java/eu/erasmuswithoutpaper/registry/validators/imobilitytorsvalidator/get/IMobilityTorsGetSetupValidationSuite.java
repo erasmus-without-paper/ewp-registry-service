@@ -55,7 +55,7 @@ class IMobilityTorsGetSetupValidationSuite
       IMobilityTorsSuiteState state, ValidationSuiteConfig config, int version) {
     super(validator, state, config);
 
-    this.apiInfo = new IMobilityTorsValidatedApiInfo(version, ApiEndpoint.Get);
+    this.apiInfo = new IMobilityTorsValidatedApiInfo(version, ApiEndpoint.GET);
   }
 
   @Override
@@ -86,7 +86,7 @@ class IMobilityTorsGetSetupValidationSuite
       HttpSecurityDescription securityDescription) throws SuiteBroken {
 
     String indexUrl = getApiUrlForHei(
-        this.currentState.receivingHeiId, this.getApiInfo().getApiName(), ApiEndpoint.Index,
+        this.currentState.receivingHeiId, this.getApiInfo().getApiName(), ApiEndpoint.INDEX,
         "Retrieving 'index' endpoint url from catalogue.",
         "Couldn't find 'index' endpoint url in the catalogue. Is manifest correct?");
 
@@ -96,7 +96,7 @@ class IMobilityTorsGetSetupValidationSuite
                 "receiving_hei_id",
                 this.currentState.receivingHeiId,
                 indexUrl,
-                ApiEndpoint.Index
+                ApiEndpoint.INDEX
             )
         ),
         securityDescription

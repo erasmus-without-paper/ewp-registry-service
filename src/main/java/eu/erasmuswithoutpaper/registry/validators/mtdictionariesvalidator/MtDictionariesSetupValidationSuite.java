@@ -46,7 +46,7 @@ class MtDictionariesSetupValidationSuite
       MtDictionariesSuiteState state, ValidationSuiteConfig config, int version) {
     super(validator, state, config);
 
-    this.apiInfo = new MtDictionariesValidatedApiInfo(version, ApiEndpoint.NoEndpoint);
+    this.apiInfo = new MtDictionariesValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
   }
 
   //FindBugs is not smart enough to infer that actual type of this.currentState

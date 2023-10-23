@@ -69,7 +69,7 @@ public class OMobilityLAsIndexComplexSetupValidationSuite
       int version) {
     super(validator, state, config);
 
-    this.apiInfo = new OMobilityLAsGetValidatedApiInfo(version, ApiEndpoint.Index);
+    this.apiInfo = new OMobilityLAsGetValidatedApiInfo(version, ApiEndpoint.INDEX);
   }
 
   // Overriding runTests to skip checking url, api version etc.
@@ -92,7 +92,7 @@ public class OMobilityLAsIndexComplexSetupValidationSuite
     this.currentState.omobilityId = getParameterValue(OMOBILITY_ID_PARAMETER,
         () -> getOMobilitiesIdParameter(securityDescription));
     String getUrl = getApiUrlForHei(
-        this.currentState.sendingHeiId, this.getApiInfo().getApiName(), ApiEndpoint.Get,
+        this.currentState.sendingHeiId, this.getApiInfo().getApiName(), ApiEndpoint.GET,
         "Retrieving 'get' endpoint url from catalogue.",
         "Couldn't find 'get' endpoint url in the catalogue. Is manifest correct?");
 
@@ -113,7 +113,7 @@ public class OMobilityLAsIndexComplexSetupValidationSuite
                 "sending_hei_id",
                 this.currentState.sendingHeiId,
                 this.currentState.url,
-                ApiEndpoint.Index
+                ApiEndpoint.INDEX
             )
         ),
         securityDescription
@@ -137,7 +137,7 @@ public class OMobilityLAsIndexComplexSetupValidationSuite
       protected Optional<Response> innerRun() throws Failure {
         Request request = makeApiRequestWithPreferredSecurity(
             this,
-            getEndpointUrl, ApiEndpoint.Get, securityDescription,
+            getEndpointUrl, ApiEndpoint.GET, securityDescription,
             new ParameterList(
                 new Parameter("sending_hei_id", heiId),
                 new Parameter("omobility_id", omobilityId)

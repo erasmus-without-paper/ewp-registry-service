@@ -25,7 +25,7 @@ public class OMobilitiesIndexValidator extends ApiValidator<OMobilitiesSuiteStat
   public OMobilitiesIndexValidator(EwpDocBuilder docBuilder, Internet internet,
       RegistryClient client, ValidatorKeyStoreSet validatorKeyStoreSet) {
     super(docBuilder, internet, client, validatorKeyStoreSet, "omobilities",
-        ApiEndpoint.Index);
+        ApiEndpoint.INDEX);
   }
 
   @ValidatorTestStep

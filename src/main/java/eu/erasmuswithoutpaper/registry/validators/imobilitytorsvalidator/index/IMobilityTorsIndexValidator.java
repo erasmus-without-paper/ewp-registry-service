@@ -25,7 +25,7 @@ public class IMobilityTorsIndexValidator extends ApiValidator<IMobilityTorsSuite
   public IMobilityTorsIndexValidator(EwpDocBuilder docBuilder, Internet internet,
       RegistryClient client, ValidatorKeyStoreSet validatorKeyStoreSet) {
     super(docBuilder, internet, client, validatorKeyStoreSet, "imobility-tors",
-        ApiEndpoint.Index);
+        ApiEndpoint.INDEX);
   }
 
   @ValidatorTestStep

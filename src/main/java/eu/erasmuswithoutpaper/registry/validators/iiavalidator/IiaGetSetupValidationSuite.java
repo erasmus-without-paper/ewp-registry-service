@@ -41,7 +41,7 @@ public class IiaGetSetupValidationSuite
       int version) {
     super(validator, state, config);
 
-    this.apiInfo = new IiaValidatedApiInfo(version, ApiEndpoint.Get);
+    this.apiInfo = new IiaValidatedApiInfo(version, ApiEndpoint.GET);
   }
 
   protected static final String HEI_ID_PARAMETER = "hei_id";
@@ -86,7 +86,7 @@ public class IiaGetSetupValidationSuite
   @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
   private String getIiaId(HttpSecurityDescription securityDescription) throws SuiteBroken {
     String indexUrl = getApiUrlForHei(
-        this.currentState.selectedHeiId, this.getApiInfo().getApiName(), ApiEndpoint.Index,
+        this.currentState.selectedHeiId, this.getApiInfo().getApiName(), ApiEndpoint.INDEX,
         "Retrieving 'index' endpoint url from catalogue.",
         "Couldn't find 'index' endpoint url in the catalogue. Is manifest correct?");
 
@@ -95,7 +95,7 @@ public class IiaGetSetupValidationSuite
             new HeiIdAndUrl(
                 this.currentState.selectedHeiId,
                 indexUrl,
-                ApiEndpoint.Index
+                ApiEndpoint.INDEX
             )
         ),
         securityDescription

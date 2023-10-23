@@ -48,7 +48,7 @@ class CoursesSetupValidationSuite
     super(validator, state, config);
 
     // Version 0 uses namespaces of version 1
-    this.apiInfo = new CoursesValidatedApiInfo(Math.max(1, version), ApiEndpoint.NoEndpoint);
+    this.apiInfo = new CoursesValidatedApiInfo(Math.max(1, version), ApiEndpoint.NO_ENDPOINT);
   }
 
   private int getMaxLosIds() {
@@ -64,7 +64,7 @@ class CoursesSetupValidationSuite
     return getApiUrlsForHeis(
         heiIds,
         "simple-course-replication",
-        ApiEndpoint.NoEndpoint,
+        ApiEndpoint.NO_ENDPOINT,
         "Find Courses Replication API for any of covered HEIs.",
         "To perform tests we need any los-id. We have to use Courses Replication API for that, "
             + "but the Catalogue doesn't contain entries for this API for any of hei-ids that we "

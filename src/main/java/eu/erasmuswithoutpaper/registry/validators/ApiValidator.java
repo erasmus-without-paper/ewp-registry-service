@@ -50,7 +50,7 @@ public abstract class ApiValidator<S extends SuiteState> {
   public ApiValidator(EwpDocBuilder docBuilder, Internet internet, RegistryClient client,
       ValidatorKeyStoreSet validatorKeyStoreSet, String validatedApiName) {
     this(docBuilder, internet, client, validatorKeyStoreSet, validatedApiName,
-        ApiEndpoint.NoEndpoint);
+        ApiEndpoint.NO_ENDPOINT);
   }
 
   public ValidatorKeyStoreSet getValidatorKeyStoreSet() {

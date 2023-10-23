@@ -36,7 +36,7 @@ class MtProjectsValidationSuite extends AbstractValidationSuite<MtProjectsSuiteS
       MtProjectsSuiteState state, ValidationSuiteConfig config, int version) {
     super(validator, state, config);
 
-    this.apiInfo = new MtProjectsValidatedApiInfo(version, ApiEndpoint.NoEndpoint);
+    this.apiInfo = new MtProjectsValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
   }
 
   @Override

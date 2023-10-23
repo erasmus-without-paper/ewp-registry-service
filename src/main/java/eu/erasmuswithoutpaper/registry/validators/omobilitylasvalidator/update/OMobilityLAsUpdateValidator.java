@@ -25,7 +25,7 @@ public class OMobilityLAsUpdateValidator extends ApiValidator<OMobilityLAsSuiteS
   public OMobilityLAsUpdateValidator(EwpDocBuilder docBuilder, Internet internet,
       RegistryClient client, ValidatorKeyStoreSet validatorKeyStoreSet) {
     super(docBuilder, internet, client, validatorKeyStoreSet, "omobility-las",
-        ApiEndpoint.Update);
+        ApiEndpoint.UPDATE);
   }
 
   @ValidatorTestStep

@@ -60,7 +60,7 @@ public class IiaIndexComplexSetupValidationSuiteV6 extends IiaIndexComplexSetupV
       protected Optional<Response> innerRun() throws Failure {
         Request request = makeApiRequestWithPreferredSecurity(
             this,
-            url, ApiEndpoint.Get, securityDescription,
+            url, ApiEndpoint.GET, securityDescription,
             new ParameterList(
                 new Parameter("hei_id", heiId),
                 new Parameter("iia_id", iiaId)

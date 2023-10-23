@@ -4,10 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum ApiEndpoint {
-  NoEndpoint(""),
-  Get("get"),
-  Index("index"),
-  Update("update"),
+  NO_ENDPOINT(""),
+  GET("get"),
+  INDEX("index"),
+  UPDATE("update"),
   ;
 
   private static Map<String, ApiEndpoint> namesToEndpoints = new HashMap<>();

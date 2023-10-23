@@ -41,7 +41,7 @@ class CourseReplicationValidationSuite
       CourseReplicationSuiteState state, ValidationSuiteConfig config, int version) {
     super(validator, state, config);
 
-    this.apiInfo = new CourseReplicationValidatedApiInfo(version, ApiEndpoint.NoEndpoint);
+    this.apiInfo = new CourseReplicationValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
   }
 
   @Override

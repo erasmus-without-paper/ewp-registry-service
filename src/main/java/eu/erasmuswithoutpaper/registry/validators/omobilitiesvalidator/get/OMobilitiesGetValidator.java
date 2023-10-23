@@ -24,7 +24,7 @@ public class OMobilitiesGetValidator extends ApiValidator<OMobilitiesSuiteState>
   public OMobilitiesGetValidator(EwpDocBuilder docBuilder, Internet internet,
       RegistryClient client, ValidatorKeyStoreSet validatorKeyStoreSet) {
     super(docBuilder, internet, client, validatorKeyStoreSet, "omobilities",
-        ApiEndpoint.Get);
+        ApiEndpoint.GET);
   }
 
   @ValidatorTestStep(minMajorVersion = "2")

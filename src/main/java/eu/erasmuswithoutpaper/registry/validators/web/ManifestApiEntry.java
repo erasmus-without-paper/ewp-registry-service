@@ -92,7 +92,7 @@ public class ManifestApiEntry {
   }
 
   private static String getEndpointXmlElementName(ApiEndpoint endpoint) {
-    if (endpoint == ApiEndpoint.NoEndpoint) {
+    if (endpoint == ApiEndpoint.NO_ENDPOINT) {
       return "url";
     }
     return endpoint.getName() + "-url";
