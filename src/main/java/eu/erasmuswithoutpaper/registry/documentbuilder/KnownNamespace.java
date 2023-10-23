@@ -748,19 +748,19 @@ public class KnownNamespace {
   private static final String COMMON_SCHEMA_LOCATION_PREFIX =
       Application.getEwpSchemaBaseUrl() + "/ewp-specs-";
 
-  private static final Map<String, KnownNamespace> map_uri2ns;
-  private static final Map<String, String> map_prefix2uri;
+  private static final Map<String, KnownNamespace> MAP_URI2NS;
+  private static final Map<String, String> MAP_PREFIX2URI;
 
   static {
     List<KnownNamespace> values = values();
-    map_uri2ns = new HashMap<>(values.size());
-    map_prefix2uri = new HashMap<>(values.size());
+    MAP_URI2NS = new HashMap<>(values.size());
+    MAP_PREFIX2URI = new HashMap<>(values.size());
     for (KnownNamespace ns : values) {
-      map_uri2ns.put(ns.getNamespaceUri(), ns);
-      if (map_prefix2uri.containsKey(ns.getPreferredPrefix())) {
+      MAP_URI2NS.put(ns.getNamespaceUri(), ns);
+      if (MAP_PREFIX2URI.containsKey(ns.getPreferredPrefix())) {
         throw new RuntimeException("Namespace prefix conflict: " + ns.getPreferredPrefix());
       }
-      map_prefix2uri.put(ns.getPreferredPrefix(), ns.getNamespaceUri());
+      MAP_PREFIX2URI.put(ns.getPreferredPrefix(), ns.getNamespaceUri());
     }
   }
 
@@ -773,7 +773,7 @@ public class KnownNamespace {
    *     {@link Optional#empty()} if not found.
    */
   public static Optional<KnownNamespace> findByNamespaceUri(String namespaceUri) {
-    return Optional.ofNullable(map_uri2ns.get(namespaceUri));
+    return Optional.ofNullable(MAP_URI2NS.get(namespaceUri));
   }
 
   /**
@@ -783,7 +783,7 @@ public class KnownNamespace {
    * @return a prefix-&gt;URI map
    */
   public static Map<String, String> prefixMap() {
-    return map_prefix2uri;
+    return MAP_PREFIX2URI;
   }
 
   /**
