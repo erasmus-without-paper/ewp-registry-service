@@ -70,17 +70,17 @@ public class CryptoParameters {
     );
   }
 
-  private static final String jksKeyFormatString = "JKS";
-  private static final String jksFileExtension = ".jks";
+  private static final String JKS_KEY_FORMAT = "JKS";
+  private static final String JKS_FILE_EXT = ".jks";
 
-  private static final String pkcs12KeyFormatString = "PKCS12";
-  private static final String pkcs12FileExtension = ".pkcs12";
-  private static final String p12FileExtension = ".p12";
-  private static final String pfxFileExtension = ".pfx";
+  private static final String PKCS12_KEY_FORMAT = "PKCS12";
+  private static final String PKCS12_FILE_EXT = ".pkcs12";
+  private static final String P12_FILE_EXT = ".p12";
+  private static final String PFX_FILE_EXT = ".pfx";
 
-  private static final List<String> availableKeyFormats = Arrays.asList(
-      jksKeyFormatString,
-      pkcs12KeyFormatString
+  private static final List<String> KEY_FORMATS = Arrays.asList(
+      JKS_KEY_FORMAT,
+      PKCS12_KEY_FORMAT
   );
 
   private static KeyPair readKeyPairFromKeyStoreParameters(
@@ -274,12 +274,12 @@ public class CryptoParameters {
 
     if (clientKeyStoreFormat == null) {
       String lowerCasePath = clientKeyStorePath.toLowerCase(Locale.getDefault());
-      if (lowerCasePath.endsWith(jksFileExtension)) {
-        return jksKeyFormatString;
-      } else if (lowerCasePath.endsWith(pkcs12FileExtension)
-          || lowerCasePath.endsWith(pfxFileExtension)
-          || lowerCasePath.endsWith(p12FileExtension)) {
-        return pkcs12KeyFormatString;
+      if (lowerCasePath.endsWith(JKS_FILE_EXT)) {
+        return JKS_KEY_FORMAT;
+      } else if (lowerCasePath.endsWith(PKCS12_FILE_EXT)
+          || lowerCasePath.endsWith(PFX_FILE_EXT)
+          || lowerCasePath.endsWith(P12_FILE_EXT)) {
+        return PKCS12_KEY_FORMAT;
       } else {
         throw new ApplicationArgumentException(
             "Cannot infer KeyStore format from filename, please provide " + parameter
@@ -287,9 +287,9 @@ public class CryptoParameters {
       }
     }
 
-    if (!availableKeyFormats.contains(clientKeyStoreFormat)) {
+    if (!KEY_FORMATS.contains(clientKeyStoreFormat)) {
       throw new ApplicationArgumentException(
-          "Invalid key format, available key formats are " + availableKeyFormats.toString());
+          "Invalid key format, available key formats are " + KEY_FORMATS.toString());
     }
     return clientKeyStoreFormat;
   }
