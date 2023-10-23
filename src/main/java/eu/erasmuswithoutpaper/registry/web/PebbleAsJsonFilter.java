@@ -33,8 +33,8 @@ public class PebbleAsJsonFilter extends AbstractExtension {
   }
 
   public static class JsonWriterPebbleFunction implements Filter {
-    private static final ObjectWriter writer = new ObjectMapper().writer();
-    private static final Logger logger = LoggerFactory.getLogger(PebbleAsJsonFilter.class);
+    private static final ObjectWriter WRITER = new ObjectMapper().writer();
+    private static final Logger LOGGER = LoggerFactory.getLogger(PebbleAsJsonFilter.class);
 
     @Override
     public List<String> getArgumentNames() {
@@ -45,9 +45,9 @@ public class PebbleAsJsonFilter extends AbstractExtension {
     public Object apply(Object inputObject, Map<String, Object> args, PebbleTemplate self,
         EvaluationContext context, int lineNumber) throws PebbleException {
       try {
-        return writer.writeValueAsString(inputObject);
+        return WRITER.writeValueAsString(inputObject);
       } catch (JsonProcessingException e) {
-        logger.error("Exception raised while serializing object to JSON: " + inputObject, e);
+        LOGGER.error("Exception raised while serializing object to JSON: " + inputObject, e);
         return null;
       }
     }
