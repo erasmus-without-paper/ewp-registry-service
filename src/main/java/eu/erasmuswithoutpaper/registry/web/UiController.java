@@ -308,12 +308,12 @@ public class UiController {
     mav.setViewName("index");
     response.addHeader("Cache-Control", "public, max-age=300");
     mav.addObject("catalogueUrl", Application.getRootUrl() + "/catalogue-v1.xml");
-    mav.addObject("statusUrl", Application.getRootUrl() + "/status");
-    mav.addObject("coverageUrl", Application.getRootUrl() + "/coverage");
-    mav.addObject("schemaValidatorUrl", Application.getRootUrl() + "/schemaValidator");
-    mav.addObject("manifestOverviewUrl", Application.getRootUrl() + "/manifestsOverview");
-    mav.addObject("heiSearchUrl", Application.getRootUrl() + "/heiSearch?pattern=");
-    mav.addObject("iiaHashValidatorUrl", Application.getRootUrl() + "/iiaHashValidator");
+    mav.addObject("statusUrl", "/status");
+    mav.addObject("coverageUrl", "/coverage");
+    mav.addObject("schemaValidatorUrl", "/schemaValidator");
+    mav.addObject("manifestOverviewUrl", "/manifestsOverview");
+    mav.addObject("heiSearchUrl", "/heiSearch?pattern=");
+    mav.addObject("iiaHashValidatorUrl", "/iiaHashValidator");
     mav.addObject("uptime24", this.uptimeChecker.getLast24HoursUptimeRatio());
     mav.addObject("uptime7", this.uptimeChecker.getLast7DaysUptimeRatio());
     mav.addObject("uptime30", this.uptimeChecker.getLast30DaysUptimeRatio());
@@ -448,7 +448,7 @@ public class UiController {
       }
     }
     mav.addObject("manifestStatuses", statuses);
-    mav.addObject("manifestValidationUrl", Application.getRootUrl() + "/manifestValidation");
+    mav.addObject("manifestValidationUrl", "/manifestValidation");
     mav.addObject("isValidatorEnabled", Application.isValidationEnabled());
     mav.addObject("adminEmails", adminEmails);
 
