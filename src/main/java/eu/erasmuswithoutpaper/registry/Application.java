@@ -27,7 +27,6 @@ public class Application {
   private static volatile String rootUrl = null;
   private static volatile String productionUrl = null;
   private static final String registryRepoBaseUrl = removeSlash(Constans.REGISTRY_REPO_URL);//NOPMD
-  private static volatile String ewpSchemaBaseUrl = null;
 
   /**
    * Return the value of <code>app.root-url</code> property, without the trailing slash.
@@ -51,16 +50,6 @@ public class Application {
    */
   public static String getRegistryRepoBaseUrl() {
     return registryRepoBaseUrl;
-  }
-
-  /**
-   * Return the value of <code>app.ewp-schema-location-url</code> property, without the
-   * trailing slash.
-   *
-   * @return String or null.
-   */
-  public static String getEwpSchemaBaseUrl() {
-    return ewpSchemaBaseUrl;
   }
 
   /**
@@ -107,13 +96,6 @@ public class Application {
   private void setProductionUrl( // NOPMD
       @Value("${app.registry-production-url}") String newProductionUrl) {
     productionUrl = removeSlash(newProductionUrl);
-  }
-
-  @Autowired
-  @SuppressFBWarnings({ "ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD", "UPM_UNCALLED_PRIVATE_METHOD" })
-  private void setSchemaLocationUrl( // NOPMD
-      @Value("${app.ewp-schema-base-url}") String newSchemaBaseUrl) {
-    ewpSchemaBaseUrl = removeSlash(newSchemaBaseUrl);
   }
 
   private static String removeSlash(String str) {
