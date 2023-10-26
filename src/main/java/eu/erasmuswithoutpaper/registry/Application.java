@@ -3,7 +3,6 @@ package eu.erasmuswithoutpaper.registry;
 import java.util.Locale;
 import java.util.Objects;
 
-import eu.erasmuswithoutpaper.registry.configuration.Constans;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
@@ -26,7 +25,6 @@ public class Application {
 
   private static volatile String rootUrl = null;
   private static volatile String productionUrl = null;
-  private static final String registryRepoBaseUrl = removeSlash(Constans.REGISTRY_REPO_URL);//NOPMD
 
   /**
    * Return the value of <code>app.root-url</code> property, without the trailing slash.
@@ -41,15 +39,6 @@ public class Application {
    */
   public static String getRootUrl() {
     return rootUrl;
-  }
-
-  /**
-   * Return EWP Registry Service repository base URL, without the trailing slash.
-   *
-   * @return String or null.
-   */
-  public static String getRegistryRepoBaseUrl() {
-    return registryRepoBaseUrl;
   }
 
   /**

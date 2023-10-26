@@ -13,8 +13,8 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-import eu.erasmuswithoutpaper.registry.Application;
 import eu.erasmuswithoutpaper.registry.common.Utils;
+import eu.erasmuswithoutpaper.registry.configuration.Constans;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
@@ -38,7 +38,7 @@ public class EwpHttpSigRequestAuthorizer implements RequestAuthorizer {
    */
   protected final RegistryClient registryClient;
 
-  private static String registryRepoBaseUrl = Application.getRegistryRepoBaseUrl();
+  private static String registryRepoBaseUrl = Constans.REGISTRY_REPO_URL;
 
   /**
    * @param registryClient Needed to verify if the signers' keys were published in the EWP Registry

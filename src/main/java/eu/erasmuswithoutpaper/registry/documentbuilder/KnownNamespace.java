@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import eu.erasmuswithoutpaper.registry.Application;
 import eu.erasmuswithoutpaper.registry.configuration.Constans;
 
 import org.joox.Match;
@@ -300,7 +299,7 @@ public class KnownNamespace {
       "api-omobilities/blob/stable-v2/endpoints/get-response.xsd",
       "api-omobilities/stable-v2/endpoints/get-response.xsd", false);
   // TODO false -> true
-  
+
   /**
    * As described <a href=
    * 'https://github.com/erasmus-without-paper/ewp-specs-api-omobility-las/blob/master/manifest-entry.xsd'>
@@ -745,7 +744,7 @@ public class KnownNamespace {
   // TODO: false->true
 
   private static final String COMMON_URI_PREFIX =
-      Application.getRegistryRepoBaseUrl() + "/ewp-specs-";
+      Constans.REGISTRY_REPO_URL + "/ewp-specs-";
   private static final String COMMON_SCHEMA_LOCATION_PREFIX =
       Constans.SCHEMA_BASE_URL + "/ewp-specs-";
 
