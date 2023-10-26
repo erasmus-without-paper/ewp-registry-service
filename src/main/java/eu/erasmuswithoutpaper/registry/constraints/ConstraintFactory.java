@@ -1,12 +1,13 @@
 package eu.erasmuswithoutpaper.registry.constraints;
 
+import eu.erasmuswithoutpaper.registry.configuration.Constans;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ConstraintFactory {
-  @Value("${app.registry-repo-base-url}")
-  private String registryRepoBaseUrl;
+
+  private String registryRepoBaseUrl = Constans.REGISTRY_REPO_URL;
 
   @Value("${app.registry-production-url}")
   private String productionUrl;

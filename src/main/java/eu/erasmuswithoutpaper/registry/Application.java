@@ -3,6 +3,7 @@ package eu.erasmuswithoutpaper.registry;
 import java.util.Locale;
 import java.util.Objects;
 
+import eu.erasmuswithoutpaper.registry.configuration.Constans;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
@@ -25,7 +26,7 @@ public class Application {
 
   private static volatile String rootUrl = null;
   private static volatile String productionUrl = null;
-  private static volatile String registryRepoBaseUrl = null;
+  private static final String registryRepoBaseUrl = removeSlash(Constans.REGISTRY_REPO_URL);//NOPMD
   private static volatile String ewpSchemaBaseUrl = null;
 
   /**
@@ -44,8 +45,7 @@ public class Application {
   }
 
   /**
-   * Return the value of <code>app.registry-repo-base-url</code> property, without the trailing
-   * slash.
+   * Return EWP Registry Service repository base URL, without the trailing slash.
    *
    * @return String or null.
    */
@@ -111,18 +111,12 @@ public class Application {
 
   @Autowired
   @SuppressFBWarnings({ "ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD", "UPM_UNCALLED_PRIVATE_METHOD" })
-  private void setRepoUrl(@Value("${app.registry-repo-base-url}") String newRepoBaseUrl) { // NOPMD
-    registryRepoBaseUrl = removeSlash(newRepoBaseUrl);
-  }
-
-  @Autowired
-  @SuppressFBWarnings({ "ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD", "UPM_UNCALLED_PRIVATE_METHOD" })
   private void setSchemaLocationUrl( // NOPMD
       @Value("${app.ewp-schema-base-url}") String newSchemaBaseUrl) {
     ewpSchemaBaseUrl = removeSlash(newSchemaBaseUrl);
   }
 
-  private String removeSlash(String str) {
+  private static String removeSlash(String str) {
     if (str.endsWith("/")) {
       return str.substring(0, str.length() - 1);
     }

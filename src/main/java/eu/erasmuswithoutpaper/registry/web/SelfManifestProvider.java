@@ -14,6 +14,7 @@ import eu.erasmuswithoutpaper.registry.common.EncodedCertificateAndKeys;
 import eu.erasmuswithoutpaper.registry.common.KeyPairAndCertificate;
 import eu.erasmuswithoutpaper.registry.common.KeyStoreUtils;
 import eu.erasmuswithoutpaper.registry.common.KeyStoreUtilsException;
+import eu.erasmuswithoutpaper.registry.configuration.Constans;
 import eu.erasmuswithoutpaper.registry.validators.ValidatorKeyStore;
 import eu.erasmuswithoutpaper.registry.validators.ValidatorKeyStoreSet;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +42,7 @@ public class SelfManifestProvider {
   private final List<String> adminEmails;
   private final List<String> validatorHostCoveredHeiIds;
 
-  private final String registryRepoBaseUrl;
+  private final String registryRepoBaseUrl = Constans.REGISTRY_REPO_URL;
 
   /*
    * i-th element is a list of certificates and keys that should be included in
@@ -69,8 +70,6 @@ public class SelfManifestProvider {
    *     List of aliases which should be read from `additionalKeysKeystorePath` keystore.
    * @param password
    *     Password to `additionalKeysKeystorePath` keystore.
-   * @param registryRepoBaseUrl
-   *     Base URL of the GitHub repositories.
    * @throws KeyStoreUtilsException
    *     When there was a problem with reading keys from `additionalKeysKeystorePath`.
    * @throws CertificateEncodingException
@@ -80,13 +79,11 @@ public class SelfManifestProvider {
   public SelfManifestProvider(
       @Value("${app.admin-emails}") List<String> adminEmails,
       ValidatorKeyStoreSet validatorKeyStoreSet,
-      @Value("${app.registry-repo-base-url}") String registryRepoBaseUrl,
       @Value("${app.additional-keys-keystore.path:#{null}}") String additionalKeysKeystorePath,
       @Value("${app.additional-keys-keystore.aliases:#{null}}") List<String> aliases,
       @Value("${app.additional-keys-keystore.password:#{null}}") String password)
       throws KeyStoreUtilsException, CertificateEncodingException {
     this.adminEmails = adminEmails;
-    this.registryRepoBaseUrl = registryRepoBaseUrl;
 
     List<EncodedCertificateAndKeys> additionalCertificateAndKeys = null;
     if (additionalKeysKeystorePath != null && aliases != null && password != null) {

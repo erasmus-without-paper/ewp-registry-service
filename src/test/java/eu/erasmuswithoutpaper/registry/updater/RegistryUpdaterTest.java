@@ -12,6 +12,7 @@ import java.util.Map;
 
 import eu.erasmuswithoutpaper.registry.WRTest;
 import eu.erasmuswithoutpaper.registry.common.Severity;
+import eu.erasmuswithoutpaper.registry.configuration.Constans;
 import eu.erasmuswithoutpaper.registry.constraints.RestrictInstitutionsCovered;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildParams;
 import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
@@ -28,7 +29,6 @@ import eu.erasmuswithoutpaper.registryclient.ApiSearchConditions;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 
 import org.joox.Match;
 import org.junit.jupiter.api.BeforeAll;
@@ -56,8 +56,7 @@ public class RegistryUpdaterTest extends WRTest {
   @Autowired
   private ManifestRepositoryImpl repo;
 
-  @Value("${app.registry-repo-base-url}")
-  protected String registryRepoBaseUrl;
+  protected String registryRepoBaseUrl = Constans.REGISTRY_REPO_URL;
 
   @Autowired
   private RegistryClient regClient;

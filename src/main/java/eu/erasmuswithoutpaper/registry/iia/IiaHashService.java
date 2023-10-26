@@ -16,7 +16,7 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import org.springframework.beans.factory.annotation.Value;
+import eu.erasmuswithoutpaper.registry.configuration.Constans;
 import org.springframework.stereotype.Service;
 
 import org.apache.commons.codec.digest.DigestUtils;
@@ -38,9 +38,8 @@ public class IiaHashService {
 
   private final String iiasNs;
 
-  IiaHashService(@Value("${app.registry-repo-base-url}") String registryRepoBaseUrl)
-      throws XPathExpressionException {
-    this.iiasNs = registryRepoBaseUrl
+  IiaHashService() throws XPathExpressionException {
+    this.iiasNs = Constans.REGISTRY_REPO_URL
         + "/ewp-specs-api-iias/blob/stable-v6/endpoints/get-response.xsd";
 
     XPathFactory xpathFactory = XPathFactory.newInstance();
