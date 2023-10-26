@@ -19,6 +19,7 @@ import eu.erasmuswithoutpaper.registry.Application;
 import eu.erasmuswithoutpaper.registry.cmatrix.CoverageMatrixGenerator;
 import eu.erasmuswithoutpaper.registry.cmatrix.CoverageMatrixGenerator.HeiComparator;
 import eu.erasmuswithoutpaper.registry.common.Utils;
+import eu.erasmuswithoutpaper.registry.configuration.Constans;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildError;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildParams;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildResult;
@@ -117,7 +118,6 @@ public class UiController {
   private final RegistryErrorController errorController;
   private final ManifestOverviewManager manifestOverviewManager;
   private final IiaHashService iiaHashService;
-  private final String documentationUrl;
 
   @Value("${git.build.version}")
   private String gitBuildVersion;
@@ -160,8 +160,7 @@ public class UiController {
       CoverageMatrixGenerator matrixGenerator, RegistryClient regClient,
       CatalogueDependantCache catcache, ApiValidatorsManager apiValidatorsManager,
       ValidatorKeyStoreSet validatorKeyStoreSet, RegistryErrorController errorController,
-      ManifestOverviewManager manifestOverviewManager, IiaHashService iiaHashService,
-      @Value("${app.ewp-documentation-url}") String documentationUrl) {
+      ManifestOverviewManager manifestOverviewManager, IiaHashService iiaHashService) {
     this.taskExecutor = taskExecutor;
     this.manifestStatusRepo = manifestUpdateStatuses;
     this.manifestRepository = manifestRepository;
@@ -179,7 +178,6 @@ public class UiController {
     this.errorController = errorController;
     this.manifestOverviewManager = manifestOverviewManager;
     this.iiaHashService = iiaHashService;
-    this.documentationUrl = documentationUrl;
   }
 
   @PostConstruct
@@ -509,7 +507,7 @@ public class UiController {
     headers.setContentType(MediaType.APPLICATION_JSON);
     headers.setCacheControl("max-age=0, must-revalidate");
     headers.setExpires(0);
-    headers.setAccessControlAllowOrigin(documentationUrl);
+    headers.setAccessControlAllowOrigin(Constans.DOCUMENTATION_URL);
 
     BuildParams params = new BuildParams(xml);
     params.setMakingPretty(true);

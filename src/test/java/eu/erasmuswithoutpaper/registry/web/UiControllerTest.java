@@ -3,11 +3,11 @@ package eu.erasmuswithoutpaper.registry.web;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import eu.erasmuswithoutpaper.registry.WRTest;
+import eu.erasmuswithoutpaper.registry.configuration.Constans;
 import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,9 +20,6 @@ import org.junit.jupiter.api.Test;
  * Tests for {@link ApiController}.
  */
 public class UiControllerTest extends WRTest {
-
-  @Value("${app.ewp-documentation-url}")
-  protected String documentationUrl;
 
   @Autowired
   private UiController uiController;
@@ -43,7 +40,7 @@ public class UiControllerTest extends WRTest {
     assertThat(result.getHeaders().getContentType())
         .isEqualByComparingTo(MediaType.APPLICATION_JSON);
     assertThat(result.getHeaders().getAccessControlAllowOrigin())
-        .isEqualTo(documentationUrl);
+        .isEqualTo(Constans.DOCUMENTATION_URL);
     String body = result.getBody();
     JsonElement aRoot = JsonParser.parseString(body);
     assertThat(aRoot.isJsonObject()).isTrue();
