@@ -21,6 +21,7 @@ import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.util.LinkedMultiValueMap;
@@ -154,13 +155,13 @@ public class ApiControllerIntegrationTest extends WRIntegrationTest {
 
     /* Call the refresh URL and verify its response status. */
 
-    int status;
+    HttpStatusCode status;
     status = this.forceReload(urlPL);
-    assertThat(status).isEqualTo(200);
+    assertThat(status).isEqualTo(HttpStatusCode.valueOf(200));
     status = this.forceReload(urlSE);
-    assertThat(status).isEqualTo(200);
+    assertThat(status).isEqualTo(HttpStatusCode.valueOf(200));
     status = this.forceReload("non-existing");
-    assertThat(status).isEqualTo(400);
+    assertThat(status).isEqualTo(HttpStatusCode.valueOf(400));
 
     /* Since we are SyncTaskExecutor in tests, we may assume that the refresh is already completed.
      * [Test A] At first, the catalogue should be empty, because none of the URLs was reachable. */
@@ -254,11 +255,11 @@ public class ApiControllerIntegrationTest extends WRIntegrationTest {
         .isEqualTo(this.getFileAsString("demo1/J-out.xml"));
   }
 
-  private int forceReload(String manifestUrl) {
+  private HttpStatusCode forceReload(String manifestUrl) {
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     params.add("url", manifestUrl);
     ResponseEntity<String> response = this.template.postForEntity("/reload", params, String.class);
-    return response.getStatusCodeValue();
+    return response.getStatusCode();
   }
 
   /**
