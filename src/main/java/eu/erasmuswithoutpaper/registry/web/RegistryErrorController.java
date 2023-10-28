@@ -2,14 +2,9 @@ package eu.erasmuswithoutpaper.registry.web;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 
-import eu.erasmuswithoutpaper.registry.common.Severity;
-import eu.erasmuswithoutpaper.registry.notifier.NotifierFlag;
-import eu.erasmuswithoutpaper.registry.notifier.NotifierService;
 import eu.erasmuswithoutpaper.registry.web.ApiController.ManifestNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.core.io.ResourceLoader;
@@ -22,7 +17,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.io.IOUtils;
 
@@ -35,37 +29,14 @@ import org.apache.commons.io.IOUtils;
 public class RegistryErrorController implements ErrorController {
 
   private final ResourceLoader resLoader;
-  private final NotifierFlag http500errorFlag;
 
   /**
    * @param resLoader
    *     needed to fetch the error XML template from the resources.
-   * @param notifier
-   *     needed to send error notifications.
-   * @param adminEmails
-   *     email address to notify on HTTP 500 errors.
-   * @param useFlagToNotifyAboutExceptions
-   *     is true then NotifierFlag will be used to inform admins
-   *     about exceptions.
    */
   @Autowired
-  @SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
-  public RegistryErrorController(ResourceLoader resLoader, NotifierService notifier,
-      @Value("${app.admin-emails}") List<String> adminEmails,
-      @Value("${app.use-flag-to-notify-about-exceptions}") boolean useFlagToNotifyAboutExceptions) {
+  public RegistryErrorController(ResourceLoader resLoader) {
     this.resLoader = resLoader;
-    if (useFlagToNotifyAboutExceptions) {
-      this.http500errorFlag = new NotifierFlag(adminEmails) {
-        @Override
-        public String getName() {
-          return "Recently recorded runtime errors.";
-        }
-      };
-      this.http500errorFlag.setStatus(Severity.OK);
-      notifier.addWatchedFlag(this.http500errorFlag);
-    } else {
-      this.http500errorFlag = null;
-    }
   }
 
   /**
@@ -77,9 +48,6 @@ public class RegistryErrorController implements ErrorController {
    */
   @RequestMapping("/error")
   public ResponseEntity<String> error(HttpServletRequest request) {
-    if (this.http500errorFlag != null) {
-      this.http500errorFlag.setStatus(Severity.WARNING);
-    }
     HttpHeaders headers = new HttpHeaders();
     String xml;
     try {

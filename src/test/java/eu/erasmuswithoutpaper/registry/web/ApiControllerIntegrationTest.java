@@ -23,7 +23,6 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -32,7 +31,6 @@ import org.junit.jupiter.api.Test;
 /**
  * Check if the URLs served by our {@link ApiController} are actually served.
  */
-@TestPropertySource(properties = { "app.use-flag-to-notify-about-exceptions=true" })
 public class ApiControllerIntegrationTest extends WRIntegrationTest {
 
   @Autowired
@@ -49,9 +47,6 @@ public class ApiControllerIntegrationTest extends WRIntegrationTest {
 
   @Autowired
   private SelfManifestProvider selfManifestProvider;
-
-  @Autowired
-  private NotifierService notifier;
 
   @Autowired
   private ApiController apiController;
@@ -85,11 +80,7 @@ public class ApiControllerIntegrationTest extends WRIntegrationTest {
   public void respondsValid500() {
     /* At the same time, we will check if the notifier picks it up. Before exception is called,
      * there should be no errors. */
-    int size = this.notifier.getAllErroredFlags().size();
     ResponseEntity<String> response = this.template.getForEntity("/throw-exception", String.class);
-    assertThat(this.notifier.getAllErroredFlags()).hasSize(size + 1);
-    assertThat(this.notifier.getAllErroredFlags().get(0).getName())
-        .contains("Recently recorded runtime errors");
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
     BuildParams params = new BuildParams(response.getBody());
     params.setExpectedKnownElement(KnownElement.COMMON_ERROR_RESPONSE);
