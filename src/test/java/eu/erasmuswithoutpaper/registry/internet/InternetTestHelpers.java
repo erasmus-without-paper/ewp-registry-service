@@ -6,12 +6,13 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.hc.core5.http.NameValuePair;
-import org.apache.hc.core5.net.URLEncodedUtils;
+import org.apache.hc.core5.net.WWWFormCodec;
 
 public class InternetTestHelpers {
 
@@ -36,9 +37,13 @@ public class InternetTestHelpers {
   }
 
   public static Map<String, List<String>> extractAllParams(Request request) {
-    List<NameValuePair> params = URLEncodedUtils.parse(getQuery(request), StandardCharsets.UTF_8);
+    String query = getQuery(request);
+    if (query == null) {
+      return Collections.emptyMap();
+    }
+
     Map<String, List<String>> result = new HashMap<>();
-    for (NameValuePair nvp : params) {
+    for (NameValuePair nvp : WWWFormCodec.parse(query, StandardCharsets.UTF_8)) {
       if (!result.containsKey(nvp.getName())) {
         result.put(nvp.getName(), new ArrayList<>());
       }
