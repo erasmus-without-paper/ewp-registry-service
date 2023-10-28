@@ -18,7 +18,7 @@ public class RegistryDomainProvider {
    */
   @Autowired
   public RegistryDomainProvider(
-      @Value("${app.registry-domain}") String registryDomain) {
+      @Value("${app.registry-domain:dev-registry.erasmuswithoutpaper.eu}") String registryDomain) {
     this.registryDomain = registryDomain;
   }
 
