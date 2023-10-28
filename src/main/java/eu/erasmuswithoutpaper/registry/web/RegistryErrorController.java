@@ -99,7 +99,7 @@ public class RegistryErrorController implements ErrorController {
    *
    * @return a HTTP 404 response (with EWP error XML).
    */
-  @RequestMapping("*")
+  @RequestMapping("/**")
   public ResponseEntity<String> get404() {
     String xml;
     try {
