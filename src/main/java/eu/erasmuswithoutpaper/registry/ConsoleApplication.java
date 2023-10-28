@@ -73,7 +73,6 @@ public class ConsoleApplication implements ApplicationRunner {
     Locale.setDefault(Locale.US);
     System.setProperty("spring.profiles.active", "console");
     System.setProperty("logging.level.", "ERROR"); // Set logging level in all packages to ERROR
-    SpringApplication app = new SpringApplication(ConsoleApplication.class);
 
     // --registry-domain is a convenience wrapper around setting environment variable for Spring.
     for (String arg : args) {
@@ -83,6 +82,7 @@ public class ConsoleApplication implements ApplicationRunner {
       }
     }
 
+    SpringApplication app = new SpringApplication(ConsoleApplication.class);
     app.setWebApplicationType(WebApplicationType.NONE);
     app.setBannerMode(Banner.Mode.OFF);
     app.setLogStartupInfo(false);
