@@ -69,6 +69,12 @@
     name="https://github.com/erasmus-without-paper/ewp-specs-api-iia-cnr/blob/stable-v2/manifest-entry.xsd"
     uri="ewp-specs-api-iia-cnr-v2.0.3/manifest-entry.xsd" />
 <uri
+    name="https://github.com/erasmus-without-paper/ewp-specs-api-iia-cnr/tree/stable-v3"
+    uri="ewp-specs-api-iia-cnr-v3.0.0/response.xsd" />
+<uri
+    name="https://github.com/erasmus-without-paper/ewp-specs-api-iia-cnr/blob/stable-v3/manifest-entry.xsd"
+    uri="ewp-specs-api-iia-cnr-v3.0.0/manifest-entry.xsd" />
+<uri
     name="https://github.com/erasmus-without-paper/ewp-specs-api-iias/blob/stable-v1/endpoints/get-response.xsd"
     uri="ewp-specs-api-iias-v1.0.1/endpoints/get-response.xsd" />
 <uri
