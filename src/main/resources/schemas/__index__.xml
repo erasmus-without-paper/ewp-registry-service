@@ -144,6 +144,12 @@
     name="https://github.com/erasmus-without-paper/ewp-specs-api-iias-approval/blob/stable-v1/manifest-entry.xsd"
     uri="ewp-specs-api-iias-approval-v1.1.0/manifest-entry.xsd" />
 <uri
+    name="https://github.com/erasmus-without-paper/ewp-specs-api-iias-approval/tree/stable-v2"
+    uri="ewp-specs-api-iias-approval-v2.0.0/response.xsd" />
+<uri
+    name="https://github.com/erasmus-without-paper/ewp-specs-api-iias-approval/blob/stable-v2/manifest-entry.xsd"
+    uri="ewp-specs-api-iias-approval-v2.0.0/manifest-entry.xsd" />
+<uri
     name="https://github.com/erasmus-without-paper/ewp-specs-api-imobilities/blob/stable-v1/endpoints/get-response.xsd"
     uri="ewp-specs-api-imobilities-v1.0.0/endpoints/get-response.xsd" />
 <uri

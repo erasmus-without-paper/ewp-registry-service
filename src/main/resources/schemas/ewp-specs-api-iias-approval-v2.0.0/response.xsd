@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:ewp="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
+    elementFormDefault="qualified"
+
+    targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-api-iias-approval/tree/stable-v2"
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-iias-approval/tree/stable-v2"
+>
+    <xs:import
+        schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-architecture/stable-v1/common-types.xsd"
+        namespace="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd" />
+
+    <xs:annotation>
+        <xs:documentation>
+            This schema is a part of the Erasmus Without Paper project. Before you start
+            using it, make sure you have read the general rules described here:
+
+            http://developers.erasmuswithoutpaper.eu/
+        </xs:documentation>
+    </xs:annotation>
+
+    <xs:element name="iias-approval-response">
+        <xs:annotation>
+            <xs:documentation>
+                This describes the format of the response returned by the 
+                EWP Interinstitutional Agreements Approval API.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="approval" minOccurs="0" maxOccurs="unbounded">
+                    <xs:annotation>
+                        <xs:documentation>
+                            This element represents a single IIA approval. 
+                            For each of the `iia_id` values passed in the API call, server will produce one such
+                            element if and only if the corresponding agreement
+                            (more precisely: partner's copy of the agreement) is approved by him.
+                        </xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="iia-id" type="ewp:AsciiPrintableIdentifier">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        IIA identifier, as assigned by the calling partner.
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                            <xs:element name="iia-hash" type="ewp:Sha256Hex">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        The SHA-256 digest of the `text-to-hash` element content that is obtained
+                                        by using the appropriate XSLT transformation mentioned in the API specification.
+
+                                        The digest is present in the IIAs API get response, but MUST be verified by the server
+                                        before sending the approval. For this purpose, the server has to call the IIAs get API
+                                        and compare the hash received in the response with the hash independently calculated
+                                        from that response. If both hashes are identical,
+                                        the agreement can be approved.
+
+                                        Note: Server does not perform above mentioned hash verification as a result of
+                                        IIAs Approval get request. It MUST be done before and stored locally on the server
+                                        (and announced with CNR).
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                            <xs:element name="pdf-file" type="xs:string" minOccurs="0" maxOccurs="1">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        Identifier of the file containing the PDF version of the agreement.
+                                        This SHOULD be the PDF that was fetched from the partner via the IIA API,
+                                        additionally signed by the approving partner.
+
+                                        The file MUST be accessible to the receiving HEI through the EWP File API.
+
+                                        Notes for client implementers:
+
+                                        For security reasons, you may consider checking the content type of the file
+                                        before displaying it in the browser.
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
