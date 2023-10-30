@@ -126,6 +126,7 @@ public class UiController {
 
   private byte[] cachedCss;
   private String cachedCssFingerprint;
+  private byte[] cachedFavicon;
   private byte[] cachedJs;
   private String cachedJsFingerprint;
   private byte[] cachedUiJs;
@@ -247,6 +248,27 @@ public class UiController {
       this.cacheUiJs();
     }
     return this.cachedUiJs;
+  }
+
+  /**
+   * @param response
+   *          Needed to add some custom headers.
+   * @return EWP favicon.
+   */
+  // TODO this should work automaticaly in Spring Boot, but it doesn't
+  @ResponseBody
+  @RequestMapping(value = "/favicon.ico", method = RequestMethod.GET, produces = "image/x-icon")
+  public byte[] getFavi(HttpServletResponse response) {
+    response.addHeader("Cache-Control", "public, max-age=86400, stale-while-revalidate=604800");
+    if (this.cachedFavicon == null) {
+      try {
+        this.cachedFavicon = IOUtils
+            .toByteArray(this.resLoader.getResource("classpath:favicon.ico").getInputStream());
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
+    return this.cachedFavicon;
   }
 
   /**
