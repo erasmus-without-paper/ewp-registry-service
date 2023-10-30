@@ -7,7 +7,7 @@
     xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-iias/blob/stable-v4/endpoints/index-response.xsd"
 >
     <xs:import
-        schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-architecture/stable-v1/common-types.xsd"
+        schemaLocation="../../ewp-specs-architecture-v1.13.0/common-types.xsd"
         namespace="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
     />
 

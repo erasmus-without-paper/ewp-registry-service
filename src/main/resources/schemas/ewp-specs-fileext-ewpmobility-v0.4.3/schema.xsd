@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
-    xmlns:xml="http://www.w3.org/XML/1998/namespace"
     xmlns:omobility="https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/blob/stable-v1/endpoints/get-response.xsd"
     xmlns:imobility="https://github.com/erasmus-without-paper/ewp-specs-api-imobilities/blob/stable-v1/endpoints/get-response.xsd"
     elementFormDefault="qualified"
@@ -13,12 +12,12 @@
     <!-- WRTODO: Once released, fix all schemaLocations pointing to its master branch. -->
 
     <xs:import
-        schemaLocation="../ewp-specs-api-omobilities/endpoints/get-response.xsd"
+        schemaLocation="../ewp-specs-api-omobilities-v1.0.1/endpoints/get-response.xsd"
         namespace="https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/blob/stable-v1/endpoints/get-response.xsd"
     />
 
     <xs:import
-        schemaLocation="../ewp-specs-api-imobilities/endpoints/get-response.xsd"
+        schemaLocation="../ewp-specs-api-imobilities-v1.0.0/endpoints/get-response.xsd"
         namespace="https://github.com/erasmus-without-paper/ewp-specs-api-imobilities/blob/stable-v1/endpoints/get-response.xsd"
     />
 

@@ -23,10 +23,10 @@ import eu.erasmuswithoutpaper.registry.validators.omobilitylasvalidator.OMobilit
 import eu.erasmuswithoutpaper.registry.validators.types.ApproveProposalV1;
 import eu.erasmuswithoutpaper.registry.validators.types.CommentProposalV1;
 import eu.erasmuswithoutpaper.registry.validators.types.OmobilityLasUpdateRequest;
+import eu.erasmuswithoutpaper.registry.validators.types.Signature;
 import eu.erasmuswithoutpaper.registry.validators.verifiers.VerifierFactory;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import https.github_com.erasmus_without_paper.ewp_specs_api_omobility_las.blob.stable_v1.endpoints.get_response.Signature;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;

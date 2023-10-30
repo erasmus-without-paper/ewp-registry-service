@@ -24,13 +24,13 @@ import eu.erasmuswithoutpaper.registry.internet.sec.EwpClientWithRsaKey;
 import eu.erasmuswithoutpaper.registry.validators.ParameterInfo;
 import eu.erasmuswithoutpaper.registry.validators.types.ApproveProposalV1;
 import eu.erasmuswithoutpaper.registry.validators.types.CommentProposalV1;
+import eu.erasmuswithoutpaper.registry.validators.types.LearningAgreement;
+import eu.erasmuswithoutpaper.registry.validators.types.MobilityInstitution;
 import eu.erasmuswithoutpaper.registry.validators.types.OmobilityLasUpdateRequest;
+import eu.erasmuswithoutpaper.registry.validators.types.Signature;
+import eu.erasmuswithoutpaper.registry.validators.types.Student;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
-import https.github_com.erasmus_without_paper.ewp_specs_api_omobility_las.blob.stable_v1.endpoints.get_response.LearningAgreement;
-import https.github_com.erasmus_without_paper.ewp_specs_api_omobility_las.blob.stable_v1.endpoints.get_response.MobilityInstitution;
-import https.github_com.erasmus_without_paper.ewp_specs_api_omobility_las.blob.stable_v1.endpoints.get_response.Signature;
-import https.github_com.erasmus_without_paper.ewp_specs_api_omobility_las.blob.stable_v1.endpoints.get_response.Student;
 import jakarta.xml.bind.JAXBException;
 
 public class OMobilityLAsServiceV1Valid extends AbstractOMobilityLAsService {

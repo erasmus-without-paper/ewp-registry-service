@@ -10,7 +10,7 @@
     xmlns="https://github.com/emrex-eu/elmo-schemas/tree/v1"
 >
     <xs:import
-        schemaLocation="http://www.w3.org/2001/03/xml.xsd"
+        schemaLocation="../../../../schemas/xml.xsd"
         namespace="http://www.w3.org/XML/1998/namespace"
     />
 

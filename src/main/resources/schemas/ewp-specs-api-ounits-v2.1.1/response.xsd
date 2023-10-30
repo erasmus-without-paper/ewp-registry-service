@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
-    xmlns:xml="http://www.w3.org/XML/1998/namespace"
     xmlns:a="https://github.com/erasmus-without-paper/ewp-specs-types-address/tree/stable-v1"
     xmlns:c="https://github.com/erasmus-without-paper/ewp-specs-types-contact/tree/stable-v1"
     xmlns:p="https://github.com/erasmus-without-paper/ewp-specs-types-phonenumber/tree/stable-v1"
@@ -12,22 +11,22 @@
     xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-ounits/tree/stable-v2"
 >
     <xs:import
-        schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-architecture/stable-v1/common-types.xsd"
+        schemaLocation="../ewp-specs-architecture-v1.13.0/common-types.xsd"
         namespace="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
     />
 
     <xs:import
-        schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-types-address/stable-v1/schema.xsd"
+        schemaLocation="../ewp-specs-types-address-v1.0.1/schema.xsd"
         namespace="https://github.com/erasmus-without-paper/ewp-specs-types-address/tree/stable-v1"
     />
 
     <xs:import
-        schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-types-contact/stable-v1/schema.xsd"
+        schemaLocation="../ewp-specs-types-contact-v1.1.0/schema.xsd"
         namespace="https://github.com/erasmus-without-paper/ewp-specs-types-contact/tree/stable-v1"
     />
 
     <xs:import
-        schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-types-phonenumber/stable-v1/schema.xsd"
+        schemaLocation="../ewp-specs-types-phonenumber-v1.0.1/schema.xsd"
         namespace="https://github.com/erasmus-without-paper/ewp-specs-types-phonenumber/tree/stable-v1"
     />
 

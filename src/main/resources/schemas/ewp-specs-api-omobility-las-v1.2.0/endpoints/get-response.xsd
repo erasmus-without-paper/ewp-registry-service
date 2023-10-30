@@ -4,7 +4,6 @@
     xmlns:p="https://github.com/erasmus-without-paper/ewp-specs-types-phonenumber/tree/stable-v1"
     xmlns:course="https://github.com/erasmus-without-paper/ewp-specs-api-courses/tree/stable-v1"
     xmlns:trm="https://github.com/erasmus-without-paper/ewp-specs-types-academic-term/tree/stable-v2"
-    xmlns:xml="http://www.w3.org/XML/1998/namespace"
     xmlns:ewp="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
     elementFormDefault="qualified"
 
@@ -13,22 +12,22 @@
 >
 
     <xs:import
-        schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-architecture/stable-v1/common-types.xsd"
+        schemaLocation="../../ewp-specs-architecture-v1.13.0/common-types.xsd"
         namespace="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
     />
 
     <xs:import
-        schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-types-phonenumber/stable-v1/schema.xsd"
+        schemaLocation="../../ewp-specs-types-phonenumber-v1.0.1/schema.xsd"
         namespace="https://github.com/erasmus-without-paper/ewp-specs-types-phonenumber/tree/stable-v1"
     />
 
     <xs:import
-        schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-courses/master/response.xsd"
+        schemaLocation="../../ewp-specs-api-courses-v0.7.1/response.xsd"
         namespace="https://github.com/erasmus-without-paper/ewp-specs-api-courses/tree/stable-v1"
     />
 
     <xs:import
-        schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-types-academic-term/stable-v2/schema.xsd"
+        schemaLocation="../../ewp-specs-types-academic-term-v2.0.0/schema.xsd"
         namespace="https://github.com/erasmus-without-paper/ewp-specs-types-academic-term/tree/stable-v2"
     />
 

@@ -8,7 +8,7 @@
     xmlns="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
 >
     <xs:import
-        schemaLocation="http://www.w3.org/2001/03/xml.xsd"
+        schemaLocation="../xml.xsd"
         namespace="http://www.w3.org/XML/1998/namespace"
     />
 

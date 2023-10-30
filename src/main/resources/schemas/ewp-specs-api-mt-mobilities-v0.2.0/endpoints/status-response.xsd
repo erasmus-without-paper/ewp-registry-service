@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xml="http://www.w3.org/XML/1998/namespace"
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
     xmlns:ewp="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
     elementFormDefault="qualified"
 
@@ -7,7 +7,7 @@
     xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-mt-mobilities/blob/stable-v1/endpoints/status-response.xsd">
 
     <xs:import
-        schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-architecture/stable-v1/common-types.xsd"
+        schemaLocation="../../ewp-specs-architecture-v1.13.0/common-types.xsd"
         namespace="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd" />
 
     <xs:annotation>

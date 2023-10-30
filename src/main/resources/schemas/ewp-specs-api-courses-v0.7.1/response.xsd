@@ -1,6 +1,5 @@
 <xs:schema
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
-    xmlns:xml="http://www.w3.org/XML/1998/namespace"
     xmlns:ewp="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
     xmlns:trm="https://github.com/erasmus-without-paper/ewp-specs-types-academic-term/tree/stable-v1"
     elementFormDefault="qualified"
@@ -9,18 +8,13 @@
     xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-courses/tree/stable-v1"
 >
     <xs:import
-        schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-architecture/stable-v1/common-types.xsd"
+        schemaLocation="../ewp-specs-architecture-v1.13.0/common-types.xsd"
         namespace="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
     />
 
     <xs:import
-        schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-types-academic-term/stable-v1/schema.xsd"
+        schemaLocation="../ewp-specs-types-academic-term-v1.1.0/schema.xsd"
         namespace="https://github.com/erasmus-without-paper/ewp-specs-types-academic-term/tree/stable-v1"
-    />
-
-    <xs:import
-        schemaLocation="http://www.w3.org/2001/03/xml.xsd"
-        namespace="http://www.w3.org/XML/1998/namespace"
     />
 
     <xs:annotation>

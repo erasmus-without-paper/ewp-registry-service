@@ -9,17 +9,17 @@
     xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/tree/stable-v6"
 >
     <xs:import
-        schemaLocation="http://www.w3.org/2001/03/xml.xsd"
+        schemaLocation="../xml.xsd"
         namespace="http://www.w3.org/XML/1998/namespace"
     />
 
     <xs:import
-        schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-architecture/stable-v1/common-types.xsd"
+        schemaLocation="../ewp-specs-architecture-v1.13.0/common-types.xsd"
         namespace="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
     />
 
     <xs:import
-        schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-registry/stable-v1/catalogue.xsd"
+        schemaLocation="../ewp-specs-api-registry-v1.5.0/catalogue.xsd"
         namespace="https://github.com/erasmus-without-paper/ewp-specs-api-registry/tree/stable-v1"
     />
 

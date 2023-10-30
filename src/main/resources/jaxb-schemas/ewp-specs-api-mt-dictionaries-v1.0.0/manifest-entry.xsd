@@ -8,11 +8,11 @@
     xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-mt-dictionaries/blob/stable-v1/manifest-entry.xsd">
 
     <xs:import
-        schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-architecture/stable-v1/common-types.xsd"
+        schemaLocation="../../schemas/ewp-specs-architecture-v1.13.0/common-types.xsd"
         namespace="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd" />
 
     <xs:import
-        schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-sec-intro/stable-v2/schema.xsd"
+        schemaLocation="../../schemas/ewp-specs-sec-intro-v2.0.2/schema.xsd"
         namespace="https://github.com/erasmus-without-paper/ewp-specs-sec-intro/tree/stable-v2" />
 
     <xs:annotation>

@@ -2,7 +2,6 @@
 <xs:schema
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
     xmlns:course="https://github.com/erasmus-without-paper/ewp-specs-api-courses/tree/stable-v1"
-    xmlns:xml="http://www.w3.org/XML/1998/namespace"
     elementFormDefault="qualified"
 
     targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-api-course-replication/tree/stable-v1"
@@ -11,7 +10,7 @@
     <!-- WRTODO: Do not release until dependants are released: Courses API -->
 
     <xs:import
-        schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-courses/master/response.xsd"
+        schemaLocation="../../schemas/ewp-specs-api-courses-v0.7.1/response.xsd"
         namespace="https://github.com/erasmus-without-paper/ewp-specs-api-courses/tree/stable-v1"
     />
 

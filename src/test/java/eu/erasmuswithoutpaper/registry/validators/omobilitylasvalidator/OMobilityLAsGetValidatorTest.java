@@ -8,10 +8,10 @@ import java.util.ArrayList;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.TestValidationReport;
 import eu.erasmuswithoutpaper.registry.validators.omobilitylasvalidator.get.OMobilityLAsGetValidator;
+import eu.erasmuswithoutpaper.registry.validators.types.LearningAgreement;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import https.github_com.erasmus_without_paper.ewp_specs_api_omobility_las.blob.stable_v1.endpoints.get_response.LearningAgreement;
 import org.junit.jupiter.api.Test;
 
 public class OMobilityLAsGetValidatorTest extends OMobilityLAsValidatorTestBase {

@@ -1,4 +1,4 @@
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xml="http://www.w3.org/XML/1998/namespace"
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
     xmlns:ewp="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
     xmlns:p="https://github.com/erasmus-without-paper/ewp-specs-types-phonenumber/tree/stable-v1"
     elementFormDefault="qualified"
@@ -6,11 +6,11 @@
     xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-factsheet/tree/stable-v1">
 
     <xs:import
-        schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-architecture/stable-v1/common-types.xsd"
+        schemaLocation="../ewp-specs-architecture-v1.13.0/common-types.xsd"
         namespace="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd" />
 
     <xs:import
-        schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-types-phonenumber/stable-v1/schema.xsd"
+        schemaLocation="../ewp-specs-types-phonenumber-v1.0.1/schema.xsd"
         namespace="https://github.com/erasmus-without-paper/ewp-specs-types-phonenumber/tree/stable-v1" />
 
     <xs:annotation>

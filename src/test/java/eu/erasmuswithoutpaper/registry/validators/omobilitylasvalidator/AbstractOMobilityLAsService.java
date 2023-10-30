@@ -6,12 +6,12 @@ import java.util.List;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registry.validators.AbstractApiService;
+import eu.erasmuswithoutpaper.registry.validators.types.LearningAgreement;
+import eu.erasmuswithoutpaper.registry.validators.types.OmobilityLasGetResponse;
 import eu.erasmuswithoutpaper.registry.validators.types.OmobilityLasIndexResponse;
 import eu.erasmuswithoutpaper.registry.validators.types.OmobilityLasUpdateResponse;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
-import https.github_com.erasmus_without_paper.ewp_specs_api_omobility_las.blob.stable_v1.endpoints.get_response.LearningAgreement;
-import https.github_com.erasmus_without_paper.ewp_specs_api_omobility_las.blob.stable_v1.endpoints.get_response.OmobilityLasGetResponse;
 import https.github_com.erasmus_without_paper.ewp_specs_architecture.blob.stable_v1.common_types.MultilineStringWithOptionalLang;
 
 public abstract class AbstractOMobilityLAsService extends AbstractApiService {

@@ -10,17 +10,17 @@
     xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-iias/blob/stable-v4/endpoints/get-response.xsd"
 >
     <xs:import
-        schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-architecture/stable-v1/common-types.xsd"
+        schemaLocation="../../ewp-specs-architecture-v1.13.0/common-types.xsd"
         namespace="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
     />
 
     <xs:import
-        schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-types-contact/stable-v1/schema.xsd"
+        schemaLocation="../../ewp-specs-types-contact-v1.1.0/schema.xsd"
         namespace="https://github.com/erasmus-without-paper/ewp-specs-types-contact/tree/stable-v1"
     />
 
     <xs:import
-        schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-types-academic-term/stable-v1/schema.xsd"
+        schemaLocation="../../ewp-specs-types-academic-term-v1.1.0/schema.xsd"
         namespace="https://github.com/erasmus-without-paper/ewp-specs-types-academic-term/tree/stable-v1"
     />
 
