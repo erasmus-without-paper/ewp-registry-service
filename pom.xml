@@ -436,6 +436,9 @@
                         <source>src/main/resources/jaxb-schemas/ewp-specs-api-omobility-las-v1.0.1/endpoints/update-response.xsd</source>
                         <source>src/main/resources/jaxb-schemas/ewp-specs-api-omobility-las-v1.0.1/endpoints/update-request.xsd</source>
                     </sources>
+                    <accessExternalSchema>file</accessExternalSchema>
+                    <accessExternalDTD>file</accessExternalDTD>
+                    <arguments>-npa</arguments>
                 </configuration>
             </plugin>
             <plugin>
