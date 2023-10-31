@@ -13,7 +13,7 @@
         <span class='ewp-status ewp-status-latest-release'>RELEASED</span>,
         <span class='ewp-status ewp-status-deprecated'>DEPRECATED</span> and
         <span class='ewp-status ewp-status-obsolete'>OBSOLETE</span> specifications listed
-        on <a href="https://developers.erasmuswithoutpaper.eu/" target="_blank">Developers Hub</a> website (plus,
+        on <a href="https://esci-sd.atlassian.net/wiki/spaces/ITSC/pages/134184973/Documents+and+specifications" target="_blank">EWP Developers Guide</a> website (plus,
         perhaps, some of the <span class='ewp-status ewp-status-draft'>DRAFT</span> ones).</p>
 
         <p class="ewp-para">Note, that this tool will validate <b>against the schema only</b>! Even if such validation succeeds,
