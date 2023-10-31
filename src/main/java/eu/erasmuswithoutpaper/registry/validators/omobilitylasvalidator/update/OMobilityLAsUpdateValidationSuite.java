@@ -1,9 +1,8 @@
 package eu.erasmuswithoutpaper.registry.validators.omobilitylasvalidator.update;
 
 import java.util.Arrays;
+import java.util.GregorianCalendar;
 import java.util.stream.Collectors;
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -136,14 +135,7 @@ class OMobilityLAsUpdateValidationSuite
     signature.setSignerName("Paweł Tomasz Kowalski");
     signature.setSignerPosition("Mobility coordinator");
     signature.setSignerEmail("pawel.kowalski@example.com");
-    try {
-      signature.setTimestamp(DatatypeFactory.newInstance()
-          .newXMLGregorianCalendar(2000, 1, 1, 0, 0, 0, 0, 0));
-    } catch (DatatypeConfigurationException e) {
-      // Shouldn't happen
-      assert false;
-      return null;
-    }
+    signature.setTimestamp(new GregorianCalendar(2000, 0, 1));
     signature.setSignerApp("USOS");
     return signature;
   }

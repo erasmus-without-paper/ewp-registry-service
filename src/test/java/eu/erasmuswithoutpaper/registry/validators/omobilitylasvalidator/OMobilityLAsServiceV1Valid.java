@@ -7,6 +7,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -177,14 +178,7 @@ public class OMobilityLAsServiceV1Valid extends AbstractOMobilityLAsService {
     signature.setSignerName("Paweł Tomasz Kowalski");
     signature.setSignerPosition("Mobility coordinator");
     signature.setSignerEmail("pawel.kowalski@example.com");
-    try {
-      signature.setTimestamp(DatatypeFactory.newInstance()
-          .newXMLGregorianCalendar(2000, 1, 1, 0, 0, 0, 0, 0));
-    } catch (DatatypeConfigurationException e) {
-      // Shouldn't happen
-      assert false;
-      return null;
-    }
+    signature.setTimestamp(new GregorianCalendar(2000, 0, 1));
     signature.setSignerApp("USOS");
     return signature;
   }

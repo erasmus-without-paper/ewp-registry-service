@@ -404,6 +404,9 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <xjbSources>
+                        <xjbSource>src/main/resources/global.xjb</xjbSource>
+                    </xjbSources>
                     <sources>
                         <source>src/main/resources/jaxb-schemas/ewp-specs-api-institutions-v2.2.0/response.xsd</source>
                         <source>src/main/resources/jaxb-schemas/ewp-specs-api-ounits-v2.1.0/response.xsd</source>
