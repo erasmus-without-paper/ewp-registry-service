@@ -477,7 +477,7 @@
                 </executions>
                 <configuration>
                     <workingDirectory>src/main/webapp</workingDirectory>
-                    <nodeVersion>v20.6.1</nodeVersion>
+                    <nodeVersion>v20.9.0</nodeVersion>
                 </configuration>
             </plugin>
 
