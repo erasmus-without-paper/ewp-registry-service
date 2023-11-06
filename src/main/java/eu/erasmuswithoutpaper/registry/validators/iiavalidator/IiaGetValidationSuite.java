@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPathExpressionException;
 
 import eu.erasmuswithoutpaper.registry.iia.ElementHashException;
@@ -122,7 +123,7 @@ public class IiaGetValidationSuite
       protected Optional<Response> innerRun() throws Failure {
         try {
           List<HashComparisonResult> hashComparisonResults =
-              iiaHashService.checkCooperationConditionsHash(
+              iiaHashService.checkHash(
                   new InputSource(new ByteArrayInputStream(response)));
           for (HashComparisonResult comparisonResult : hashComparisonResults) {
             if (!comparisonResult.isCorrect()) {
@@ -133,8 +134,8 @@ public class IiaGetValidationSuite
             }
           }
         } catch (ElementHashException | ParserConfigurationException | IOException | SAXException
-            | XPathExpressionException e) {
-          throw new Failure("Cannot read conditions-hash: " + e.getMessage(), Status.ERROR, false);
+            | XPathExpressionException | TransformerException e) {
+          throw new Failure("Error validating hash: " + e.getMessage(), Status.ERROR, false);
         }
 
         return Optional.empty();

@@ -126,8 +126,8 @@ public class UtilsTest extends WRTest {
     inp.append("<x:root other=\"n\" xmlns:x=\"" + r + "\" xmlns:y=\"urn:y\" xmlns:z=\"urn:z\">");
     inp.append("<y:child z:other=\"z\"/>");
     inp.append("</x:root>");
-    exp.append("<r:root other=\"n\" xmlns:r=\"" + r + "\">");
-    exp.append("<child xmlns:z=\"urn:z\" z:other=\"z\" xmlns=\"urn:y\"/>");
+    exp.append("<r:root xmlns:r=\"" + r + "\" other=\"n\">");
+    exp.append("<child xmlns=\"urn:y\" xmlns:z=\"urn:z\" z:other=\"z\"/>");
     exp.append("</r:root>");
     chk.run();
   }

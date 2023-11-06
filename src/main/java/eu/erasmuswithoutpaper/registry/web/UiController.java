@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPathExpressionException;
 
 import eu.erasmuswithoutpaper.registry.Application;
@@ -799,13 +800,13 @@ public class UiController {
 
     try (Reader reader = new StringReader(xml)) {
       List<HashComparisonResult> hashComparisonResults =
-          iiaHashService.checkCooperationConditionsHash(new InputSource(reader));
+          iiaHashService.checkHash(new InputSource(reader));
       mav.addObject("hashComparisonResults", hashComparisonResults);
       mav.addObject("errorMessage", null);
       mav.addObject("allResultsCorrect", !hashComparisonResults.isEmpty()
           && hashComparisonResults.stream().allMatch(HashComparisonResult::isCorrect));
     } catch (ElementHashException | ParserConfigurationException | IOException | SAXException
-        | XPathExpressionException exception) {
+        | XPathExpressionException | TransformerException exception) {
       mav.addObject("hashComparisonResults", null);
       mav.addObject("errorMessage", exception.getMessage());
     }
