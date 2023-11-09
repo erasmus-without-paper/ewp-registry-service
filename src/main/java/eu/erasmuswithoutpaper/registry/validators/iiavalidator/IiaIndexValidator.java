@@ -31,24 +31,6 @@ public class IiaIndexValidator extends ApiValidator<IiaSuiteState> {
       IiaIndexBasicSetupValidationSuite.getParameters(),
       IiaIndexBasicValidationSuite::new);
 
-  @ValidatorTestStep(maxMajorVersion = "2")
-  public ValidationSuiteInfo<IiaSuiteState> complexTestsV2 = new ValidationSuiteInfo<>(
-      IiaIndexComplexSetupValidationSuiteV2::new,
-      IiaIndexComplexSetupValidationSuiteV2.getParameters(),
-      IiaIndexComplexValidationSuite::new);
-
-  @ValidatorTestStep(minMajorVersion = "3", maxMajorVersion = "3")
-  public ValidationSuiteInfo<IiaSuiteState> complexTestsV3 = new ValidationSuiteInfo<>(
-      IiaIndexComplexSetupValidationSuiteV3::new,
-      IiaIndexComplexSetupValidationSuiteV3.getParameters(),
-      IiaIndexComplexValidationSuite::new);
-
-  @ValidatorTestStep(minMajorVersion = "4", maxMajorVersion = "4")
-  public ValidationSuiteInfo<IiaSuiteState> complexTestsV4 = new ValidationSuiteInfo<>(
-      IiaIndexComplexSetupValidationSuiteV4::new,
-      IiaIndexComplexSetupValidationSuiteV4.getParameters(),
-      IiaIndexComplexValidationSuite::new);
-
   @ValidatorTestStep(minMajorVersion = "6")
   public ValidationSuiteInfo<IiaSuiteState> complexTestsV6 = new ValidationSuiteInfo<>(
       IiaIndexComplexSetupValidationSuiteV6::new,
