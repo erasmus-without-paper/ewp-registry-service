@@ -2,7 +2,6 @@ package eu.erasmuswithoutpaper.registry.validators.iiavalidator;
 
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -11,13 +10,9 @@ import eu.erasmuswithoutpaper.registry.iia.HashComparisonResult;
 import eu.erasmuswithoutpaper.registry.iia.IiaHashService;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
-import eu.erasmuswithoutpaper.registry.validators.AbstractValidationSuite;
-import eu.erasmuswithoutpaper.registry.validators.ApiEndpoint;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.Combination;
 import eu.erasmuswithoutpaper.registry.validators.InlineValidationStep;
-import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
-import eu.erasmuswithoutpaper.registry.validators.verifiers.VerifierFactory;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.slf4j.Logger;
@@ -28,32 +23,18 @@ import org.xml.sax.InputSource;
  * Describes the set of test/steps to be run on an IIAs API GET endpoint implementation in order to
  * properly validate it.
  */
-public class IiaGetValidationSuite
-    extends AbstractValidationSuite<IiaSuiteState> {
+public class IiaGetValidationSuiteV7 extends IiaGetValidationSuiteV6 {
 
-  private static final Logger logger = LoggerFactory.getLogger(IiaGetValidationSuite.class);
-
-  private final ValidatedApiInfo apiInfo;
-  private final IiaHashService iiaHashService;
-  private final VerifierFactory partnerIiaIdVerifierFactory = new VerifierFactory(
-      Arrays.asList("iia", "partner[1]", "iia-id"));
+  private static final Logger logger = LoggerFactory.getLogger(IiaGetValidationSuiteV7.class);
 
   @Override
   protected Logger getLogger() {
     return logger;
   }
 
-  @Override
-  public ValidatedApiInfo getApiInfo() {
-    return apiInfo;
-  }
-
-  IiaGetValidationSuite(ApiValidator<IiaSuiteState> validator, IiaSuiteState state,
+  IiaGetValidationSuiteV7(ApiValidator<IiaSuiteState> validator, IiaSuiteState state,
       ValidationSuiteConfig config, int version, IiaHashService iiaHashService) {
-    super(validator, state, config);
-
-    this.apiInfo = new IiaValidatedApiInfo(version, ApiEndpoint.GET);
-    this.iiaHashService = iiaHashService;
+    super(validator, state, config, version, iiaHashService);
   }
 
   @Override
@@ -63,7 +44,6 @@ public class IiaGetValidationSuite
   protected void validateCombinationAny(Combination combination)
       throws SuiteBroken {
     final ArrayList<byte[]> responses = new ArrayList<>();
-    //Success is required here, we need to fetch iia-codes using this method
     this.addAndRun(true, new InlineValidationStep() {
       @Override
       public String getName() {
@@ -91,20 +71,10 @@ public class IiaGetValidationSuite
     });
 
     byte[] response = responses.get(0);
-    List<String> iiaCodes = selectFromDocument(makeXmlFromBytes(response),
-        "/iias-get-response/iia/partner/iia-id[text()=\""
-            + currentState.selectedIiaId + "\"]/../iia-code"
-    );
 
-    if (!iiaCodes.isEmpty()) {
-      generalTestsIdsAndCodes(combination, this.currentState.selectedHeiId, "iia",
-          this.currentState.selectedIiaId, this.currentState.maxIiaIds, iiaCodes.get(0),
-          this.currentState.maxIiaCodes, partnerIiaIdVerifierFactory);
-    } else {
-      generalTestsIds(combination, "hei_id", this.currentState.selectedHeiId, "iia",
-          this.currentState.selectedIiaId, this.currentState.maxIiaIds, true,
-          partnerIiaIdVerifierFactory);
-    }
+    generalTestsIds(combination, "hei_id", this.currentState.selectedHeiId, "iia",
+        this.currentState.selectedIiaId, this.currentState.maxIiaIds, true,
+        partnerIiaIdVerifierFactory);
 
     this.addAndRun(false, new InlineValidationStep() {
       @Override

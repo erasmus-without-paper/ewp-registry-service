@@ -17,8 +17,10 @@ import eu.erasmuswithoutpaper.registry.validators.ApiEndpoint;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.HttpSecurityDescription;
 import eu.erasmuswithoutpaper.registry.validators.InlineValidationStep;
+import eu.erasmuswithoutpaper.registry.validators.InlineValidationStep.Failure;
 import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
 import eu.erasmuswithoutpaper.registry.validators.ValidationParameter;
+import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import https.github_com.erasmus_without_paper.ewp_specs_api_iias.blob.stable_v6.endpoints.get_response.IiasGetResponse;
@@ -37,6 +39,15 @@ public class IiaIndexComplexSetupValidationSuiteV6
       LoggerFactory.getLogger(IiaIndexComplexSetupValidationSuiteV6.class);
 
   private final ValidatedApiInfo apiInfo;
+
+  @SuppressWarnings("unchecked")
+  protected static <T> T getIiasGetResponse(Response response, Class<T> iiasGetResponseClass)
+      throws JAXBException {
+    JAXBContext jaxbContext = JAXBContext.newInstance(iiasGetResponseClass);
+    Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+    Element xml = makeXmlFromBytes(response.getBody(), true);
+    return (T) unmarshaller.unmarshal(xml);
+  }
 
   @Override
   protected Logger getLogger() {
@@ -180,8 +191,7 @@ public class IiaIndexComplexSetupValidationSuiteV6
 
         Response response;
         try {
-          response = IiaIndexComplexSetupValidationSuiteV6.this.internet.makeRequest(request,
-              IiaIndexComplexSetupValidationSuiteV6.this.timeoutMillis);
+          response = internet.makeRequest(request, timeoutMillis);
         } catch (SocketTimeoutException e) {
           throw new Failure("Request to 'get' endpoint timed out.",
               Status.ERROR, true);
@@ -191,12 +201,8 @@ public class IiaIndexComplexSetupValidationSuiteV6
         }
         expect200(response);
 
-        IiasGetResponse getResponse;
         try {
-          JAXBContext jaxbContext = JAXBContext.newInstance(IiasGetResponse.class);
-          Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-          Element xml = makeXmlFromBytes(response.getBody(), true);
-          getResponse = (IiasGetResponse) unmarshaller.unmarshal(xml);
+          setIiaInfo(iiaInfo, response);
         } catch (JAXBException e) {
           throw new Failure(
               "Received 200 OK but the response was empty or didn't contain correct "
@@ -205,41 +211,49 @@ public class IiaIndexComplexSetupValidationSuiteV6
               Status.NOTICE, response);
         }
 
-        if (getResponse.getIia().isEmpty()) {
-          throw new Failure(
-              "Received 200 OK but the response did not contain any IIA, but we requested one. "
-                  + "Consult tests for 'get' endpoint.",
-              Status.NOTICE, response);
-        }
-
-        IiasGetResponse.Iia iia = getResponse.getIia().get(0);
-
-        // Schema ensures that there are at least two partners in every iia element.
-        iiaInfo.heiId = iia.getPartner().get(0).getHeiId();
-
-        if (!Objects.equals(iiaInfo.heiId, currentState.selectedHeiId)) {
+          if (!Objects.equals(iiaInfo.heiId, currentState.selectedHeiId)) {
           throw new Failure(
               "Received 200 OK but <hei-id> of first <partner> was different than we requested."
                   + "Consult tests for 'get' endpoint.",
               Status.NOTICE, response);
         }
 
-        iiaInfo.partnerHeiId = iia.getPartner().get(1).getHeiId();
-        ArrayList<MobilitySpecification> specs = new ArrayList<>();
-        specs.addAll(iia.getCooperationConditions().getStudentStudiesMobilitySpec());
-        specs.addAll(iia.getCooperationConditions().getStudentTraineeshipMobilitySpec());
-        specs.addAll(iia.getCooperationConditions().getStaffTeacherMobilitySpec());
-        specs.addAll(iia.getCooperationConditions().getStaffTrainingMobilitySpec());
-
-        iiaInfo.receivingAcademicYears = specs.stream()
-            .flatMap(ms -> ms.getReceivingAcademicYearId().stream()).distinct()
-            .collect(Collectors.toList());
-
         return Optional.empty();
       }
     });
 
     return iiaInfo;
+  }
+
+  protected void setIiaInfo(IiaSuiteState.IiaInfo iiaInfo, Response response)
+      throws JAXBException, Failure {
+    IiasGetResponse getResponse = getIiasGetResponse(response, IiasGetResponse.class);
+
+    if (getResponse.getIia().isEmpty()) {
+      handleIiaMissing(response);
+    }
+
+    IiasGetResponse.Iia iia = getResponse.getIia().get(0);
+
+    iiaInfo.heiId = iia.getPartner().get(0).getHeiId();
+
+    iiaInfo.partnerHeiId = iia.getPartner().get(1).getHeiId();
+    ArrayList<MobilitySpecification> specs = new ArrayList<>();
+    specs.addAll(iia.getCooperationConditions().getStudentStudiesMobilitySpec());
+    specs.addAll(iia.getCooperationConditions().getStudentTraineeshipMobilitySpec());
+    specs.addAll(iia.getCooperationConditions().getStaffTeacherMobilitySpec());
+    specs.addAll(iia.getCooperationConditions().getStaffTrainingMobilitySpec());
+
+    iiaInfo.receivingAcademicYears =
+        specs.stream().flatMap(ms -> ms.getReceivingAcademicYearId().stream()).distinct()
+            .collect(Collectors.toList());
+  }
+
+  protected void handleIiaMissing(Response response) throws Failure {
+    throw new Failure(
+        "Received 200 OK but the response did not contain any IIA, but we requested one. "
+            + "Consult tests for 'get' endpoint.",
+        ValidationStepWithStatus.Status.NOTICE, response);
   }
 
   private HeiIdAndString getCoveredIiaIds(
@@ -255,4 +269,5 @@ public class IiaIndexComplexSetupValidationSuiteV6
             + "any iia-id, cannot continue tests."
     );
   }
+
 }

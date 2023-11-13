@@ -13,21 +13,22 @@ import java.util.stream.Collectors;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 
+import eu.erasmuswithoutpaper.registry.common.AcademicYearUtils;
 import eu.erasmuswithoutpaper.registry.internet.InternetTestHelpers;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registry.validators.ParameterInfo;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
-import https.github_com.erasmus_without_paper.ewp_specs_api_iias.blob.stable_v6.endpoints.get_response.IiasGetResponse;
-import https.github_com.erasmus_without_paper.ewp_specs_api_iias.blob.stable_v6.endpoints.get_response.IiasGetResponse.Iia;
-import https.github_com.erasmus_without_paper.ewp_specs_api_iias.blob.stable_v6.endpoints.get_response.MobilitySpecification;
-import https.github_com.erasmus_without_paper.ewp_specs_api_iias.blob.stable_v6.endpoints.get_response.StudentTraineeshipMobilitySpec;
-import https.github_com.erasmus_without_paper.ewp_specs_api_iias.blob.stable_v6.endpoints.index_response.IiasIndexResponse;
+import https.github_com.erasmus_without_paper.ewp_specs_api_iias.blob.stable_v7.endpoints.get_response.IiasGetResponse;
+import https.github_com.erasmus_without_paper.ewp_specs_api_iias.blob.stable_v7.endpoints.get_response.IiasGetResponse.Iia;
+import https.github_com.erasmus_without_paper.ewp_specs_api_iias.blob.stable_v7.endpoints.get_response.MobilitySpecification;
+import https.github_com.erasmus_without_paper.ewp_specs_api_iias.blob.stable_v7.endpoints.get_response.StudentTraineeshipMobilitySpec;
+import https.github_com.erasmus_without_paper.ewp_specs_api_iias.blob.stable_v7.endpoints.index_response.IiasIndexResponse;
 import https.github_com.erasmus_without_paper.ewp_specs_architecture.blob.stable_v1.common_types.StringWithOptionalLang;
 import https.github_com.erasmus_without_paper.ewp_specs_types_contact.tree.stable_v1.Contact;
 
-public class IiasServiceValidV6 extends AbstractIiasService {
+public class IiasServiceValidV7 extends AbstractIiasService {
   protected List<String> coveredHeiIds = new ArrayList<>();
   protected List<String> partnersHeiIds = new ArrayList<>();
   protected List<Iia> iias = new ArrayList<>();
@@ -40,7 +41,7 @@ public class IiasServiceValidV6 extends AbstractIiasService {
    * @param registryClient
    *     Initialized and refreshed {@link RegistryClient} instance.
    */
-  public IiasServiceValidV6(String indexUrl, String getUrl, RegistryClient registryClient) {
+  public IiasServiceValidV7(String indexUrl, String getUrl, RegistryClient registryClient) {
     super(indexUrl, getUrl, registryClient);
     try {
       fillDataBase();
@@ -51,6 +52,8 @@ public class IiasServiceValidV6 extends AbstractIiasService {
   protected void fillDataBase() throws DatatypeConfigurationException {
     final String THIS_SERVICE_HEI_ID = "test.hei01.uw.edu.pl";
     final String VALIDATOR_HEI_ID = "validator-hei01.developers.erasmuswithoutpaper.eu";
+    final MobilitySpecification.MobilitiesPerYear mobilitiesPerYear = new MobilitySpecification.MobilitiesPerYear();
+    mobilitiesPerYear.setValue(BigInteger.valueOf(10));
 
     Iia iia1 = new Iia();
     Iia.Partner iia1Partner1 = new Iia.Partner();
@@ -89,15 +92,15 @@ public class IiasServiceValidV6 extends AbstractIiasService {
     StudentTraineeshipMobilitySpec studentTraineeshipMobilitySpec =
         new StudentTraineeshipMobilitySpec();
     studentTraineeshipMobilitySpec.setTotalMonthsPerYear(new BigDecimal(6));
-    studentTraineeshipMobilitySpec.setMobilitiesPerYear(BigInteger.valueOf(10));
+    studentTraineeshipMobilitySpec.setMobilitiesPerYear(mobilitiesPerYear);
     studentTraineeshipMobilitySpec.setSendingHeiId(THIS_SERVICE_HEI_ID);
     studentTraineeshipMobilitySpec.setSendingOunitId("ounit-test-1");
     studentTraineeshipMobilitySpec.setReceivingHeiId(VALIDATOR_HEI_ID);
-    studentTraineeshipMobilitySpec.getReceivingAcademicYearId().add("2018/2019");
-    studentTraineeshipMobilitySpec.getReceivingAcademicYearId().add("2019/2020");
+    studentTraineeshipMobilitySpec.setReceivingFirstAcademicYearId("2018/2019");
+    studentTraineeshipMobilitySpec.setReceivingLastAcademicYearId("2019/2020");
     cooperationConditions.getStudentTraineeshipMobilitySpec().add(studentTraineeshipMobilitySpec);
     iia1.setCooperationConditions(cooperationConditions);
-    iia1.setConditionsHash("830765a4a0ab87b4f243692e76138ee18d39760b1ad32a0228410485ec1a7e76");
+    iia1.setIiaHash("0fa09d911e23f9eea2721362ff27b1ca197235a174eed543a709278ed039c2b2");
 
     iias.add(iia1);
 
@@ -137,12 +140,12 @@ public class IiasServiceValidV6 extends AbstractIiasService {
     cooperationConditions = new Iia.CooperationConditions();
     studentTraineeshipMobilitySpec = new StudentTraineeshipMobilitySpec();
     studentTraineeshipMobilitySpec.setTotalMonthsPerYear(new BigDecimal(6));
-    studentTraineeshipMobilitySpec.setMobilitiesPerYear(BigInteger.valueOf(10));
+    studentTraineeshipMobilitySpec.setMobilitiesPerYear(mobilitiesPerYear);
     studentTraineeshipMobilitySpec.setSendingHeiId(THIS_SERVICE_HEI_ID);
     studentTraineeshipMobilitySpec.setSendingOunitId("ounit-test-1");
     studentTraineeshipMobilitySpec.setReceivingHeiId(VALIDATOR_HEI_ID);
-    studentTraineeshipMobilitySpec.getReceivingAcademicYearId().add("2018/2019");
-    studentTraineeshipMobilitySpec.getReceivingAcademicYearId().add("2019/2020");
+    studentTraineeshipMobilitySpec.setReceivingFirstAcademicYearId("2018/2019");
+    studentTraineeshipMobilitySpec.setReceivingLastAcademicYearId("2019/2020");
     cooperationConditions.getStudentTraineeshipMobilitySpec().add(studentTraineeshipMobilitySpec);
     iia2.setCooperationConditions(cooperationConditions);
 
@@ -186,30 +189,14 @@ public class IiasServiceValidV6 extends AbstractIiasService {
     }
   }
 
-  protected int getMaxIiaCodes() {
-    return 3;
-  }
-
   protected int getMaxIiaIds() {
     return 3;
-  }
-
-  private void checkCodes(RequestData requestData) throws ErrorResponseException {
-    if (requestData.iiaCodes.size() > getMaxIiaCodes()) {
-      errorMaxCodesExceeded(requestData);
-    }
   }
 
   private void checkIds(RequestData requestData) throws ErrorResponseException {
     if (requestData.iiaIds.size() > getMaxIiaIds()) {
       errorMaxIdsExceeded(requestData);
     }
-  }
-
-  protected void errorMaxCodesExceeded(RequestData requestData) throws ErrorResponseException {
-    throw new ErrorResponseException(
-        createErrorResponse(requestData.request, 400, "max-iia-codes exceeded")
-    );
   }
 
   protected void errorMaxIdsExceeded(RequestData requestData) throws ErrorResponseException {
@@ -225,14 +212,11 @@ public class IiasServiceValidV6 extends AbstractIiasService {
       checkRequestMethod(requestData.request);
       extractGetParams(requestData);
       checkHei(requestData);
-      checkCodes(requestData);
       checkIds(requestData);
       List<Iia> selectedIias = filterIiasByHeiId(iias, requestData);
       List<Iia> selectedIds = filterIiasById(selectedIias, requestData);
-      List<Iia> selectedCodes = filterIiasByCode(selectedIias, requestData);
       List<Iia> result = new ArrayList<>();
       result.addAll(selectedIds);
-      result.addAll(selectedCodes);
       return createIiasGetResponse(result);
     } catch (ErrorResponseException e) {
       return e.response;
@@ -269,38 +253,6 @@ public class IiasServiceValidV6 extends AbstractIiasService {
 
   protected String handleUnknownIiaId(String iiaId, List<Iia> selectedIias) {
     return null;
-  }
-
-  protected String handleKnownIiaCode(String iiaCode) {
-    return iiaCode;
-  }
-
-  protected String handleUnknownIiaCode(String iiaCode, List<Iia> selectedIias) {
-    return null;
-  }
-
-  protected List<Iia> filterIiasByCode(List<Iia> selectedIias, RequestData requestData) {
-    List<String> selectedIiaCodes = selectedIias.stream()
-        .map(i -> i.getPartner().get(0).getIiaCode())
-        .collect(Collectors.toList());
-
-    List<Iia> result = new ArrayList<>();
-    for (String iiaCode : requestData.iiaCodes) {
-      String handledIiaCode = null;
-      if (selectedIiaCodes.contains(iiaCode)) {
-        handledIiaCode = handleKnownIiaCode(iiaCode);
-      } else {
-        handledIiaCode = handleUnknownIiaCode(iiaCode, selectedIias);
-      }
-      if (handledIiaCode != null) {
-        final String finalHandledIiaCode = handledIiaCode;
-        result.add(selectedIias.stream()
-            .filter(i -> i.getPartner().get(0).getIiaCode().equals(finalHandledIiaCode))
-            .findFirst().get());
-      }
-    }
-
-    return result;
   }
 
   private List<String> mapToIds(List<Iia> selectedIias) {
@@ -345,7 +297,10 @@ public class IiasServiceValidV6 extends AbstractIiasService {
       specs.addAll(iia.getCooperationConditions().getStudentTraineeshipMobilitySpec());
       specs.addAll(iia.getCooperationConditions().getStaffTeacherMobilitySpec());
       specs.addAll(iia.getCooperationConditions().getStaffTrainingMobilitySpec());
-      boolean include = specs.stream().flatMap(m -> m.getReceivingAcademicYearId().stream())
+      boolean include =
+          specs.stream()
+              .flatMap(m -> AcademicYearUtils.getAcademicYearsBetween(
+                  m.getReceivingFirstAcademicYearId(), m.getReceivingLastAcademicYearId()).stream())
           .anyMatch(ay -> this.filterAcademicYear(ay, requestData.receivingAcademicYearIds));
       if (include) {
         result.add(iia);
@@ -369,11 +324,9 @@ public class IiasServiceValidV6 extends AbstractIiasService {
 
     ParameterInfo heiId = ParameterInfo.readParam(params, "hei_id");
     ParameterInfo iiaId = ParameterInfo.readParam(params, "iia_id");
-    ParameterInfo iiaCode = ParameterInfo.readParam(params, "iia_code");
 
     requestData.heiId = heiId.firstValueOrNull;
     requestData.iiaIds = iiaId.allValues;
-    requestData.iiaCodes = iiaCode.allValues;
 
     if (params.size() == 0) {
       errorNoParams(requestData);
@@ -384,29 +337,19 @@ public class IiasServiceValidV6 extends AbstractIiasService {
     if (heiId.hasMultiple) {
       errorMultipleHeiIds(requestData);
     }
-    if (!iiaId.hasAny && !iiaCode.hasAny) {
-      errorNoIdsNorCodes(requestData);
-    }
-    if (iiaId.hasAny && iiaCode.hasAny) {
-      errorIdsAndCodes(requestData);
+    if (!iiaId.hasAny) {
+      errorNoIds(requestData);
     }
 
-    if (requestData.heiId == null
-        || (requestData.iiaIds.isEmpty() && requestData.iiaCodes.isEmpty())) {
+    if (requestData.heiId == null || requestData.iiaIds.isEmpty()) {
       //We expect all of above members to have any value even in invalid scenarios.
       throw new NullPointerException();
     }
   }
 
-  protected void errorNoIdsNorCodes(RequestData requestData) throws ErrorResponseException {
+  protected void errorNoIds(RequestData requestData) throws ErrorResponseException {
     throw new ErrorResponseException(
-        createErrorResponse(requestData.request, 400, "Neither iia_id nor iia_code provided")
-    );
-  }
-
-  protected void errorIdsAndCodes(RequestData requestData) throws ErrorResponseException {
-    throw new ErrorResponseException(
-        createErrorResponse(requestData.request, 400, "Both iia_id and iia_code provided")
+        createErrorResponse(requestData.request, 400, "No iia_id provided")
     );
   }
 
@@ -489,7 +432,6 @@ public class IiasServiceValidV6 extends AbstractIiasService {
     public List<String> receivingAcademicYearIds;
     public ZonedDateTime modifiedSince;
     public List<String> iiaIds;
-    public List<String> iiaCodes;
     Request request;
     String heiId;
 

@@ -15,10 +15,10 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class IiaGetSetupValidationSuite
+public class IiaGetSetupValidationSuiteV6
     extends AbstractSetupValidationSuite<IiaSuiteState> {
 
-  private static final Logger logger = LoggerFactory.getLogger(IiaGetSetupValidationSuite.class);
+  private static final Logger logger = LoggerFactory.getLogger(IiaGetSetupValidationSuiteV6.class);
   private final ValidatedApiInfo apiInfo;
 
   @Override
@@ -35,7 +35,7 @@ public class IiaGetSetupValidationSuite
   /**
    * Creates a validation suite for IIAs v2 Get endpoint.
    */
-  public IiaGetSetupValidationSuite(ApiValidator<IiaSuiteState> validator,
+  public IiaGetSetupValidationSuiteV6(ApiValidator<IiaSuiteState> validator,
       IiaSuiteState state,
       ValidationSuiteConfig config,
       int version) {
@@ -45,10 +45,10 @@ public class IiaGetSetupValidationSuite
   }
 
   protected static final String HEI_ID_PARAMETER = "hei_id";
-  private static final String IIA_ID_PARAMETER = "iia_id";
+  protected static final String IIA_ID_PARAMETER = "iia_id";
 
   /**
-   * Returns parameters used for validating IIAs v2 Get.
+   * Returns parameters used for validating IIAs v6 Get.
    */
   public static List<ValidationParameter> getParameters() {
     return Arrays.asList(
@@ -57,7 +57,7 @@ public class IiaGetSetupValidationSuite
     );
   }
 
-  private int getMaxIiaIds() {
+  protected int getMaxIiaIds() {
     return getMaxIds("iia-ids");
   }
 
@@ -79,12 +79,12 @@ public class IiaGetSetupValidationSuite
   }
 
   @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
-  private String getSelectedHeiId() throws SuiteBroken {
+  protected String getSelectedHeiId() throws SuiteBroken {
     return getCoveredHeiIds(this.currentState.url).get(0);
   }
 
   @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
-  private String getIiaId(HttpSecurityDescription securityDescription) throws SuiteBroken {
+  protected String getIiaId(HttpSecurityDescription securityDescription) throws SuiteBroken {
     String indexUrl = getApiUrlForHei(
         this.currentState.selectedHeiId, this.getApiInfo().getApiName(), ApiEndpoint.INDEX,
         "Retrieving 'index' endpoint url from catalogue.",
