@@ -15,6 +15,10 @@ class ManifestAndHostIndex {
     return manifestUrl;
   }
 
+  public int getHostId() {
+    return hostId;
+  }
+
   @Override
   public boolean equals(Object other) {
     if (this == other) {
