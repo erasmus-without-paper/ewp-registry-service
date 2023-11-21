@@ -204,7 +204,6 @@ public class EwpDocBuilder {
     List<String> prettyLines = null;
     if (input.isMakingPretty()) {
       prettyXml = this.xmlFormatter.format(doc);
-      xml = prettyXml.getBytes(StandardCharsets.UTF_8);
       prettyLines = Arrays.asList(prettyXml.split("\n"));
     }
 

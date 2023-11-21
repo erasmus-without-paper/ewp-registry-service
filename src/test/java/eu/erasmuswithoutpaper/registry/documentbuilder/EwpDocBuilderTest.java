@@ -319,7 +319,7 @@ public class EwpDocBuilderTest extends WRTest {
     BuildError error = result.getErrors().get(0);
     assertThat(error.getMessage())
         .isEqualTo("cvc-complex-type.4: Attribute 'id' must appear on element 'rrrr:hei'.");
-    assertThat(error.getLineNumber()).isEqualTo(14);
+    assertThat(error.getLineNumber()).isEqualTo(19);
     assertThat(result.getDocument().get()).isInstanceOf(Document.class);
     assertThat(result.getPrettyXml()).isPresent();
     assertThat(result.getPrettyXml().get())
