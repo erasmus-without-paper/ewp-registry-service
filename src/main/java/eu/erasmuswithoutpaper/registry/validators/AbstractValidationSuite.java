@@ -403,10 +403,8 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
 
       @Override
       protected Optional<Response> innerRun() throws Failure {
-        Request request =
-            AbstractValidationSuite.this.createValidRequestForCombination(this, combination);
-        return Optional.of(AbstractValidationSuite.this
-            .makeRequestAndExpectError(this, combination, request, 405));
+        Request request = createValidRequestForCombination(this, combination);
+        return Optional.of(makeRequestAndExpectError(this, combination, request, 405));
       }
     };
   }

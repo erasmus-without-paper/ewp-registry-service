@@ -78,16 +78,16 @@ class CoursesValidationSuite
       @Override
       @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
       protected Optional<Response> innerRun() throws Failure {
-        String losId = CoursesValidationSuite.this.currentState.selectedLosId;
+        String losId = currentState.selectedLosId;
         Request request = createRequestWithParameters(this, combination,
             new ParameterList(
-                new Parameter("hei_id", CoursesValidationSuite.this.currentState.selectedHeiId),
+                new Parameter("hei_id", currentState.selectedHeiId),
                 new Parameter("los_id", losId)
             )
         );
 
         List<String> expectedIDs =
-            Collections.singletonList(CoursesValidationSuite.this.currentState.selectedLosId);
+            Collections.singletonList(currentState.selectedLosId);
         Response response = makeRequestAndVerifyResponse(
             this, combination, request,
             losIdVerifierFactory.expectResponseToContainExactly(expectedIDs)

@@ -151,8 +151,7 @@ public class OMobilityLAsIndexComplexSetupValidationSuite
 
         Response response;
         try {
-          response = OMobilityLAsIndexComplexSetupValidationSuite.this.internet.makeRequest(
-              request, OMobilityLAsIndexComplexSetupValidationSuite.this.timeoutMillis);
+          response = internet.makeRequest(request, timeoutMillis);
         } catch (SocketTimeoutException e) {
           throw new Failure("Request to 'get' endpoint timed out.",
               Status.ERROR, true);

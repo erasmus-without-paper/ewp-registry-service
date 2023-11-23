@@ -59,11 +59,8 @@ class IMobilitiesGetValidationSuite
         combination,
         "Request for one of known omobility_ids, expect 200 OK.",
         new ParameterList(
-            new Parameter("receiving_hei_id",
-                IMobilitiesGetValidationSuite.this.currentState.receivingHeiId),
-            new Parameter(
-                "omobility_id",
-                IMobilitiesGetValidationSuite.this.currentState.omobilityId)
+            new Parameter("receiving_hei_id", currentState.receivingHeiId),
+            new Parameter("omobility_id", currentState.omobilityId)
         ),
         new CorrectResponseVerifier()
     );

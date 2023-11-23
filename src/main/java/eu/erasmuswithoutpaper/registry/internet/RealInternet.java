@@ -185,7 +185,7 @@ public class RealInternet implements Internet {
     this.taskExecutor.execute(new Runnable() {
       @Override
       public void run() {
-        RealInternet.this.sendEmail(recipients, subject, contents);
+        sendEmail(recipients, subject, contents);
       }
     });
   }

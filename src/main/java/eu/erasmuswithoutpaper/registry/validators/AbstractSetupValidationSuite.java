@@ -99,8 +99,7 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
       @Override
       @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
       protected Optional<Response> innerRun() throws Failure {
-        List<String> coveredHeiIds =
-            AbstractSetupValidationSuite.this.fetchHeiIdsCoveredByApiByUrl(url);
+        List<String> coveredHeiIds = fetchHeiIdsCoveredByApiByUrl(url);
         if (coveredHeiIds.isEmpty()) {
           throw new InlineValidationStep.Failure(
               "Manifest file doesn't contain any <hei-id> field covered by this URL. We cannot "
@@ -139,7 +138,7 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
       protected Optional<Response> innerRun() throws Failure {
         if (!isCorrect) {
           throw new Failure(
-              "API version " + AbstractSetupValidationSuite.this.currentState.version.toString()
+              "API version " + currentState.version.toString()
                   + " is not valid. It's not listed as a tag in GitHub.",
               Status.FAILURE, null
           );
@@ -167,8 +166,7 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
 
       @Override
       protected Optional<Response> innerRun() throws Failure {
-        Date credentialsGenerationDate = AbstractSetupValidationSuite.this.validatorKeyStore
-            .getCredentialsGenerationDate();
+        Date credentialsGenerationDate = validatorKeyStore.getCredentialsGenerationDate();
         if (credentialsGenerationDate == null) {
           return Optional.empty();
         }
@@ -196,11 +194,11 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
 
       @Override
       protected Optional<Response> innerRun() throws Failure {
-        if (!AbstractSetupValidationSuite.this.currentState.url.startsWith("https://")) {
+        if (!currentState.url.startsWith("https://")) {
           throw new Failure("It needs to be HTTPS.", Status.FAILURE, null);
         }
         try {
-          new URL(AbstractSetupValidationSuite.this.currentState.url);
+          new URL(currentState.url);
         } catch (MalformedURLException e) {
           throw new Failure("Exception while parsing URL format: " + e, Status.FAILURE, null);
         }
@@ -259,12 +257,12 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
             }
             if (supportsGetRequests) {
               this.currentState.combinations.add(
-                  new Combination("GET", AbstractSetupValidationSuite.this.currentState.url,
+                  new Combination("GET", currentState.url,
                       getMatchedApiEntry(), cliauth, srvauth, reqencr, resencr
                   ));
             }
             this.currentState.combinations.add(
-                new Combination("POST", AbstractSetupValidationSuite.this.currentState.url,
+                new Combination("POST", currentState.url,
                     getMatchedApiEntry(), cliauth, srvauth, reqencr, resencr
                 ));
           }
@@ -285,11 +283,11 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
       protected Optional<Response> innerRun() throws Failure {
         ApiSearchConditions apiSearchConditions = new ApiSearchConditions();
         apiSearchConditions.setApiClassRequired(
-            AbstractSetupValidationSuite.this.getApiInfo().getApiNamespace(),
-            AbstractSetupValidationSuite.this.getApiInfo().getApiName(),
-            AbstractSetupValidationSuite.this.currentState.version.toString()
+            getApiInfo().getApiNamespace(),
+            getApiInfo().getApiName(),
+            currentState.version.toString()
         );
-        AbstractSetupValidationSuite.this.currentState.apiSearchConditions = apiSearchConditions;
+        currentState.apiSearchConditions = apiSearchConditions;
 
         try {
           getMatchedApiEntry();
@@ -299,9 +297,8 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
             throw new Failure("Could not find this URL and version in the Registry Catalogue. "
                     + "Make sure that it is properly registered "
                     + "(as declared in API's `manifest-entry.xsd` file): "
-                    + AbstractSetupValidationSuite.this.getUrlElementName()
-                    + " " + AbstractSetupValidationSuite.this.currentState.url
-                    + ", v" + AbstractSetupValidationSuite.this.currentState.version.toString(),
+                    + getUrlElementName() + " " + currentState.url + ", v"
+                    + currentState.version.toString(),
                     Status.FAILURE, null);
           }
 
@@ -449,8 +446,7 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
       @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
       protected Optional<Response> innerRun() throws Failure {
         for (String hei : heiIds) {
-          List<String> urls = AbstractSetupValidationSuite.this
-              .selectApiUrlForHeiFromCatalogue(api, endpoint, hei);
+          List<String> urls = selectApiUrlForHeiFromCatalogue(api, endpoint, hei);
           if (urls != null && !urls.isEmpty()) {
             heiIdAndUrls.add(new HeiIdAndUrl(hei, urls.get(0), endpoint));
           }
@@ -471,8 +467,7 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
       InlineValidationStep step, String url, ApiEndpoint endpoint,
       HttpSecurityDescription preferredSecurityDescription,
       Parameters parameters) {
-    Element apiEntry = AbstractSetupValidationSuite.this
-        .getApiEntryFromUrlFormCatalogue(url, endpoint);
+    Element apiEntry = getApiEntryFromUrlFormCatalogue(url, endpoint);
     if (apiEntry == null) {
       return null;
     }
@@ -540,8 +535,7 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
           }
 
           try {
-            Response response = AbstractSetupValidationSuite.this.makeRequest(
-                this,
+            Response response = makeRequest(this,
                 makeApiRequestWithPreferredSecurity(this, heiIdAndUrl, securityDescription)
             );
             expect200(response);

@@ -217,8 +217,7 @@ public class IiaIndexComplexSetupValidationSuiteV6
         // Schema ensures that there are at least two partners in every iia element.
         iiaInfo.heiId = iia.getPartner().get(0).getHeiId();
 
-        if (!Objects.equals(iiaInfo.heiId,
-            IiaIndexComplexSetupValidationSuiteV6.this.currentState.selectedHeiId)) {
+        if (!Objects.equals(iiaInfo.heiId, currentState.selectedHeiId)) {
           throw new Failure(
               "Received 200 OK but <hei-id> of first <partner> was different than we requested."
                   + "Consult tests for 'get' endpoint.",

@@ -80,13 +80,11 @@ public class IiaGetValidationSuite
       protected Optional<Response> innerRun() throws Failure {
         Request request = createRequestWithParameters(this, combination,
             new ParameterList(
-                new Parameter("hei_id", IiaGetValidationSuite.this.currentState.selectedHeiId),
-                new Parameter(
-                    "iia_id", IiaGetValidationSuite.this.currentState.selectedIiaId)
+                new Parameter("hei_id", currentState.selectedHeiId),
+                new Parameter("iia_id", currentState.selectedIiaId)
             )
         );
-        List<String> expectedIDs =
-            Collections.singletonList(IiaGetValidationSuite.this.currentState.selectedIiaId);
+        List<String> expectedIDs = Collections.singletonList(currentState.selectedIiaId);
         Response response = makeRequestAndVerifyResponse(
             this, combination, request,
             partnerIiaIdVerifierFactory.expectResponseToContainExactly(expectedIDs)
@@ -100,8 +98,7 @@ public class IiaGetValidationSuite
     byte[] response = responses.get(0);
     List<String> iiaCodes = selectFromDocument(makeXmlFromBytes(response),
         "/iias-get-response/iia/partner/iia-id[text()=\""
-            + IiaGetValidationSuite.this.currentState.selectedIiaId
-            + "\"]/../iia-code"
+            + currentState.selectedIiaId + "\"]/../iia-code"
     );
 
     if (!iiaCodes.isEmpty()) {

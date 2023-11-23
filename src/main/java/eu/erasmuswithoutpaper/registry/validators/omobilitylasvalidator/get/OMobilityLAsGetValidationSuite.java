@@ -58,11 +58,8 @@ class OMobilityLAsGetValidationSuite
         combination,
         "Request for one of known omobility_ids, expect 200 OK.",
         new ParameterList(
-            new Parameter("sending_hei_id",
-                OMobilityLAsGetValidationSuite.this.currentState.sendingHeiId),
-            new Parameter(
-                "omobility_id",
-                OMobilityLAsGetValidationSuite.this.currentState.omobilityId)
+            new Parameter("sending_hei_id", currentState.sendingHeiId),
+            new Parameter("omobility_id", currentState.omobilityId)
         ),
         new CorrectResponseVerifier()
     );

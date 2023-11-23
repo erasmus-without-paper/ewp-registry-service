@@ -439,7 +439,7 @@ public class UiController {
     Optional<ManifestSource> source = this.sourceProvider.getOne(url);
 
     if (source.isPresent()) {
-      this.taskExecutor.execute(() -> UiController.this.updater.reloadManifestSource(source.get()));
+      this.taskExecutor.execute(() -> updater.reloadManifestSource(source.get()));
       return new ResponseEntity<>("", headers, HttpStatus.OK);
     } else {
       return new ResponseEntity<>("", headers, HttpStatus.BAD_REQUEST);

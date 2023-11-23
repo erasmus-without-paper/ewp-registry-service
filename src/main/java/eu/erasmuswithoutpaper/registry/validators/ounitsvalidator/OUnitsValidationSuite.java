@@ -70,20 +70,19 @@ class OUnitsValidationSuite
       protected Optional<Response> innerRun() throws Failure {
         Request request = createRequestWithParameters(this, combination,
             new ParameterList(
-                new Parameter("hei_id", OUnitsValidationSuite.this.currentState.selectedHeiId),
-                new Parameter(
-                    "ounit_id", OUnitsValidationSuite.this.currentState.selectedOunitId)
+                new Parameter("hei_id", currentState.selectedHeiId),
+                new Parameter("ounit_id", currentState.selectedOunitId)
             )
         );
         List<String> expectedIDs =
-            Collections.singletonList(OUnitsValidationSuite.this.currentState.selectedOunitId);
+            Collections.singletonList(currentState.selectedOunitId);
         Response response = makeRequestAndVerifyResponse(
             this, combination, request, ounitIdVerifier.expectResponseToContainExactly(expectedIDs)
         );
         List<String> codes = selectFromDocument(
             makeXmlFromBytes(response.getBody()),
             "/ounits-response/ounit/ounit-id[text()=\""
-                + OUnitsValidationSuite.this.currentState.selectedOunitId
+                + currentState.selectedOunitId
                 + "\"]/../ounit-code"
         );
         ounitCodes.add(codes.get(0));

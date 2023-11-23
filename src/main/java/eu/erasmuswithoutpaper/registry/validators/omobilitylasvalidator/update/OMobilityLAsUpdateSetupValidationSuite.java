@@ -98,7 +98,7 @@ class OMobilityLAsUpdateSetupValidationSuite
       @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
       protected Optional<Response> innerRun() throws Failure {
         try {
-          Response response = OMobilityLAsUpdateSetupValidationSuite.this.makeRequest(
+          Response response = makeRequest(
               this,
               makeApiRequestWithPreferredSecurity(this, getUrl, ApiEndpoint.GET,
                   securityDescription,

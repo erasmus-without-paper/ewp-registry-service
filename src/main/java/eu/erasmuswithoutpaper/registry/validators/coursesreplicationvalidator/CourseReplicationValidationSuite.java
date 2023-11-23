@@ -110,7 +110,7 @@ class CourseReplicationValidationSuite
       @Override
       @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
       protected Optional<Response> innerRun() throws Failure {
-        if (CourseReplicationValidationSuite.this.currentState.supportsModifiedSince) {
+        if (currentState.supportsModifiedSince) {
           return Optional.empty();
         } else {
           throw new Failure("modified_since is not supported, some tests won't be performed.",

@@ -85,7 +85,7 @@ class IMobilitiesGetSetupValidationSuite
       @Override
       @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
       protected Optional<Response> innerRun() throws Failure {
-        if (IMobilitiesGetSetupValidationSuite.this.currentState.omobilityId == null) {
+        if (currentState.omobilityId == null) {
           throw new Failure(
               "The Validator cannot determine what omobility-id should be used, please provide "
                   + "one as a parameter.",
