@@ -421,6 +421,8 @@
                         <source>src/main/resources/jaxb-schemas/ewp-specs-api-imobility-tors-v2.0.0/endpoints/get-response.xsd</source>
                         <source>src/main/resources/jaxb-schemas/ewp-specs-api-iias-v6.0.1/endpoints/index-response.xsd</source>
                         <source>src/main/resources/jaxb-schemas/ewp-specs-api-iias-v6.0.1/endpoints/get-response.xsd</source>
+                        <source>src/main/resources/jaxb-schemas/ewp-specs-api-iias-v7.0.0/endpoints/index-response.xsd</source>
+                        <source>src/main/resources/jaxb-schemas/ewp-specs-api-iias-v7.0.0/endpoints/get-response.xsd</source>
                         <source>src/main/resources/jaxb-schemas/ewp-specs-api-factsheet-v1.0.0/response.xsd</source>
                         <source>src/main/resources/jaxb-schemas/ewp-specs-api-imobilities-v1.0.0/endpoints/get-response.xsd</source>
                         <source>src/main/resources/jaxb-schemas/ewp-specs-api-omobilities-v1.0.0/endpoints/index-response.xsd</source>
