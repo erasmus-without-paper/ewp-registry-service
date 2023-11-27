@@ -1,17 +1,12 @@
 package eu.erasmuswithoutpaper.registry.validators.iiavalidator;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.xpath.XPathExpressionException;
 
-import eu.erasmuswithoutpaper.registry.iia.ElementHashException;
 import eu.erasmuswithoutpaper.registry.iia.HashComparisonResult;
 import eu.erasmuswithoutpaper.registry.iia.IiaHashService;
 import eu.erasmuswithoutpaper.registry.internet.Request;
@@ -28,7 +23,6 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 /**
  * Describes the set of test/steps to be run on an IIAs API GET endpoint implementation in order to
@@ -133,8 +127,7 @@ public class IiaGetValidationSuite
                   comparisonResult.getHashedString()), Status.FAILURE, false);
             }
           }
-        } catch (ElementHashException | ParserConfigurationException | IOException | SAXException
-            | XPathExpressionException | TransformerException e) {
+        } catch (Exception e) {
           throw new Failure("Error validating hash: " + e.getMessage(), Status.ERROR, false);
         }
 

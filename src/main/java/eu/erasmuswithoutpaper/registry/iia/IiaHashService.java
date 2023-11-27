@@ -15,7 +15,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
@@ -122,11 +121,9 @@ public class IiaHashService {
    *
    * @param iiaXml XML containing IIA get response
    * @return list of hash comparison results (one for every IIA)
-   * @throws ElementHashException when hash cannot be calculated
+   * @throws Exception when hash cannot be calculated
    */
-  public List<HashComparisonResult> checkHash(InputSource iiaXml)
-      throws ElementHashException, ParserConfigurationException, IOException, SAXException,
-      XPathExpressionException, TransformerException {
+  public List<HashComparisonResult> checkHash(InputSource iiaXml) throws Exception {
     Document document = getDocument(iiaXml);
 
     NodeList iiasV6 = (NodeList) xpathIiasV6Expr.evaluate(document, XPathConstants.NODESET);
@@ -143,8 +140,7 @@ public class IiaHashService {
   }
 
   private List<HashComparisonResult> getHashComparisonResultsV7(Document document, NodeList iiasV7)
-      throws IOException, TransformerException, ParserConfigurationException, SAXException,
-      XPathExpressionException {
+      throws Exception {
 
     Document result;
     try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {

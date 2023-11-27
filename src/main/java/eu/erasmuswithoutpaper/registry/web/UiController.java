@@ -12,9 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.xpath.XPathExpressionException;
 
 import eu.erasmuswithoutpaper.registry.Application;
 import eu.erasmuswithoutpaper.registry.cmatrix.CoverageMatrixGenerator;
@@ -25,7 +22,6 @@ import eu.erasmuswithoutpaper.registry.documentbuilder.BuildError;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildParams;
 import eu.erasmuswithoutpaper.registry.documentbuilder.BuildResult;
 import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
-import eu.erasmuswithoutpaper.registry.iia.ElementHashException;
 import eu.erasmuswithoutpaper.registry.iia.HashComparisonResult;
 import eu.erasmuswithoutpaper.registry.iia.IiaHashService;
 import eu.erasmuswithoutpaper.registry.manifestoverview.ApiForHeiImplementationMapping;
@@ -90,7 +86,6 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 /**
  * Handles UI requests.
@@ -805,8 +800,7 @@ public class UiController {
       mav.addObject("errorMessage", null);
       mav.addObject("allResultsCorrect", !hashComparisonResults.isEmpty()
           && hashComparisonResults.stream().allMatch(HashComparisonResult::isCorrect));
-    } catch (ElementHashException | ParserConfigurationException | IOException | SAXException
-        | XPathExpressionException | TransformerException exception) {
+    } catch (Exception exception) {
       mav.addObject("hashComparisonResults", null);
       mav.addObject("errorMessage", exception.getMessage());
     }
