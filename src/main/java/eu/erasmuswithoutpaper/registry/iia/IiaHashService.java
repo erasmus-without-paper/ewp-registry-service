@@ -72,18 +72,13 @@ public class IiaHashService {
     xpathResultIiaTextToHashExpr = xpath.compile("text-to-hash/text()");
   }
 
-  private static byte[] getDataToHash(Node element) throws ElementHashException {
-    try {
-      Init.init();
-      Canonicalizer canon =
-          Canonicalizer.getInstance(Canonicalizer.ALGO_ID_C14N_EXCL_OMIT_COMMENTS);
-      ByteArrayOutputStream canonicalWriter = new ByteArrayOutputStream();
-      canon.canonicalizeSubtree(element, canonicalWriter);
+  private static byte[] getDataToHash(Node element) throws XMLSecurityException {
+    Init.init();
+    Canonicalizer canon = Canonicalizer.getInstance(Canonicalizer.ALGO_ID_C14N_EXCL_OMIT_COMMENTS);
+    ByteArrayOutputStream canonicalWriter = new ByteArrayOutputStream();
+    canon.canonicalizeSubtree(element, canonicalWriter);
 
-      return canonicalWriter.toByteArray();
-    } catch (XMLSecurityException cause) {
-      throw new ElementHashException(cause);
-    }
+    return canonicalWriter.toByteArray();
   }
 
   private Document getDocument(InputSource xml)
@@ -168,7 +163,7 @@ public class IiaHashService {
   }
 
   private List<HashComparisonResult> getHashComparisonResultsV6(NodeList iiasV6)
-      throws XPathExpressionException, ElementHashException {
+      throws XPathExpressionException, XMLSecurityException {
     List<HashComparisonResult> hashComparisonResults;
     hashComparisonResults = new ArrayList<>(iiasV6.getLength());
     for (int i = 0; i < iiasV6.getLength(); i++) {
@@ -178,7 +173,7 @@ public class IiaHashService {
   }
 
   private HashComparisonResult getV6HashComparisonResult(Node iia)
-      throws XPathExpressionException, ElementHashException {
+      throws XPathExpressionException, XMLSecurityException {
     String hashExtracted = xpathCooperationConditionsHashExpr.evaluate(iia);
     Node cooperationConditions =
         (Node) xpathCooperationConditionsExpr.evaluate(iia, XPathConstants.NODE);
