@@ -195,29 +195,14 @@ public class IiasServiceValidV7 extends AbstractIiasService {
 
     List<Iia> result = new ArrayList<>();
     for (String iiaId : requestData.iiaIds) {
-      String handledIiaId = null;
       if (selectedIiaIds.contains(iiaId)) {
-        handledIiaId = handleKnownIiaId(iiaId);
-      } else {
-        handledIiaId = handleUnknownIiaId(iiaId, selectedIias);
-      }
-      if (handledIiaId != null) {
-        final String finalHandledIiaId = handledIiaId;
         result.add(selectedIias.stream()
-            .filter(i -> i.getPartner().get(0).getIiaId().equals(finalHandledIiaId))
+            .filter(i -> i.getPartner().get(0).getIiaId().equals(iiaId))
             .findFirst().get());
       }
     }
 
     return result;
-  }
-
-  protected String handleKnownIiaId(String iiaId) {
-    return iiaId;
-  }
-
-  protected String handleUnknownIiaId(String iiaId, List<Iia> selectedIias) {
-    return null;
   }
 
   private List<String> mapToIds(List<Iia> selectedIias) {
