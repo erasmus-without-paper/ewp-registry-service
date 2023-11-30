@@ -91,20 +91,7 @@ public class IiaGetValidationSuiteV6
     });
 
     byte[] response = responses.get(0);
-    List<String> iiaCodes = selectFromDocument(makeXmlFromBytes(response),
-        "/iias-get-response/iia/partner/iia-id[text()=\""
-            + currentState.selectedIiaId + "\"]/../iia-code"
-    );
-
-    if (!iiaCodes.isEmpty()) {
-      generalTestsIdsAndCodes(combination, this.currentState.selectedHeiId, "iia",
-          this.currentState.selectedIiaId, this.currentState.maxIiaIds, iiaCodes.get(0),
-          this.currentState.maxIiaCodes, partnerIiaIdVerifierFactory);
-    } else {
-      generalTestsIds(combination, "hei_id", this.currentState.selectedHeiId, "iia",
-          this.currentState.selectedIiaId, this.currentState.maxIiaIds, true,
-          partnerIiaIdVerifierFactory);
-    }
+    testIds(combination, response);
 
     this.addAndRun(false, new InlineValidationStep() {
       @Override
@@ -134,5 +121,25 @@ public class IiaGetValidationSuiteV6
         return Optional.empty();
       }
     });
+  }
+
+  // FindBugs is not smart enough to infer that actual type of this.currentState
+  // is IiaSuiteState not just SuiteState
+  @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
+  protected void testIds(Combination combination, byte[] response) throws SuiteBroken {
+    List<String> iiaCodes = selectFromDocument(makeXmlFromBytes(response),
+        "/iias-get-response/iia/partner/iia-id[text()=\""
+            + currentState.selectedIiaId + "\"]/../iia-code"
+    );
+
+    if (!iiaCodes.isEmpty()) {
+      generalTestsIdsAndCodes(combination, this.currentState.selectedHeiId, "iia",
+          this.currentState.selectedIiaId, this.currentState.maxIiaIds, iiaCodes.get(0),
+          this.currentState.maxIiaCodes, partnerIiaIdVerifierFactory);
+    } else {
+      generalTestsIds(combination, "hei_id", this.currentState.selectedHeiId, "iia",
+          this.currentState.selectedIiaId, this.currentState.maxIiaIds, true,
+          partnerIiaIdVerifierFactory);
+    }
   }
 }
