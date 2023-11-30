@@ -1,6 +1,8 @@
 package eu.erasmuswithoutpaper.registry.validators.iiasvalidator;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -106,6 +108,21 @@ public abstract class AbstractIiasService extends AbstractApiService {
     }
   }
 
+  protected <T> List<T> filterIiasByModifiedSince(List<T> selectedIias, RequestData requestData) {
+    if (requestData.modifiedSince == null) {
+      return selectedIias;
+    }
+    Instant modifiedAt = Instant.from(ZonedDateTime.of(2019, 6, 10, 18, 52, 32, 0, ZoneId.of("Z")));
+    if (requestData.modifiedSince.toInstant().isAfter(modifiedAt)) {
+      return new ArrayList<>();
+    } else {
+      return selectedIias;
+    }
+  }
+
+  protected int getMaxIiaIds() {
+    return 3;
+  }
 
   protected abstract Response handleIiasIndexRequest(Request request)
       throws IOException, ErrorResponseException;
@@ -156,6 +173,17 @@ public abstract class AbstractIiasService extends AbstractApiService {
   protected void errorInvalidAcademicYearId(RequestData requestData) throws ErrorResponseException {
     throw new ErrorResponseException(createErrorResponse(requestData.request, 400,
         "receiving_academic_year_id has incorrect format"));
+  }
+
+  protected void errorMaxIdsExceeded(RequestData requestData) throws ErrorResponseException {
+    throw new ErrorResponseException(
+        createErrorResponse(requestData.request, 400, "max-iia-ids exceeded"));
+  }
+
+  protected void checkIds(RequestData requestData) throws ErrorResponseException {
+    if (requestData.iiaIds.size() > getMaxIiaIds()) {
+      errorMaxIdsExceeded(requestData);
+    }
   }
 
   protected void checkPartnerHei(RequestData requestData) throws ErrorResponseException {

@@ -2,9 +2,6 @@ package eu.erasmuswithoutpaper.registry.validators.iiasvalidator;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -178,25 +175,7 @@ public class IiasServiceValidV6 extends AbstractIiasService {
     }
   }
 
-  protected List<Iia> filterIiasByModifiedSince(List<Iia> selectedIias, RequestData requestData) {
-    if (requestData.modifiedSince == null) {
-      return selectedIias;
-    }
-    Instant modifiedAt = Instant.from(
-        ZonedDateTime.of(2019, 6, 10, 18, 52, 32, 0, ZoneId.of("Z"))
-    );
-    if (requestData.modifiedSince.toInstant().isAfter(modifiedAt)) {
-      return new ArrayList<>();
-    } else {
-      return selectedIias;
-    }
-  }
-
   protected int getMaxIiaCodes() {
-    return 3;
-  }
-
-  protected int getMaxIiaIds() {
     return 3;
   }
 
@@ -206,21 +185,9 @@ public class IiasServiceValidV6 extends AbstractIiasService {
     }
   }
 
-  private void checkIds(RequestData requestData) throws ErrorResponseException {
-    if (requestData.iiaIds.size() > getMaxIiaIds()) {
-      errorMaxIdsExceeded(requestData);
-    }
-  }
-
   protected void errorMaxCodesExceeded(RequestData requestData) throws ErrorResponseException {
     throw new ErrorResponseException(
         createErrorResponse(requestData.request, 400, "max-iia-codes exceeded")
-    );
-  }
-
-  protected void errorMaxIdsExceeded(RequestData requestData) throws ErrorResponseException {
-    throw new ErrorResponseException(
-        createErrorResponse(requestData.request, 400, "max-iia-ids exceeded")
     );
   }
 
