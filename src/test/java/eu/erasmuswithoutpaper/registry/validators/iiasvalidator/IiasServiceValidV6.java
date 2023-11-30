@@ -25,7 +25,7 @@ import https.github_com.erasmus_without_paper.ewp_specs_architecture.blob.stable
 import https.github_com.erasmus_without_paper.ewp_specs_types_contact.tree.stable_v1.Contact;
 
 public class IiasServiceValidV6 extends AbstractIiasService {
-  protected List<Iia> iias = new ArrayList<>();
+  private List<Iia> iias = new ArrayList<>();
 
   static class RequestData extends AbstractIiasService.RequestData {
     public List<String> iiaCodes;
@@ -51,7 +51,7 @@ public class IiasServiceValidV6 extends AbstractIiasService {
     }
   }
 
-  protected void fillDataBase() throws DatatypeConfigurationException {
+  private void fillDataBase() throws DatatypeConfigurationException {
     final String THIS_SERVICE_HEI_ID = "test.hei01.uw.edu.pl";
     final String VALIDATOR_HEI_ID = "validator-hei01.developers.erasmuswithoutpaper.eu";
 
@@ -175,7 +175,7 @@ public class IiasServiceValidV6 extends AbstractIiasService {
     }
   }
 
-  protected int getMaxIiaCodes() {
+  private int getMaxIiaCodes() {
     return 3;
   }
 
@@ -185,7 +185,7 @@ public class IiasServiceValidV6 extends AbstractIiasService {
     }
   }
 
-  protected void errorMaxCodesExceeded(RequestData requestData) throws ErrorResponseException {
+  private void errorMaxCodesExceeded(RequestData requestData) throws ErrorResponseException {
     throw new ErrorResponseException(
         createErrorResponse(requestData.request, 400, "max-iia-codes exceeded")
     );
@@ -229,15 +229,15 @@ public class IiasServiceValidV6 extends AbstractIiasService {
     return result;
   }
 
-  protected String handleKnownIiaCode(String iiaCode) {
+  private String handleKnownIiaCode(String iiaCode) {
     return iiaCode;
   }
 
-  protected String handleUnknownIiaCode(String iiaCode, List<Iia> selectedIias) {
+  private String handleUnknownIiaCode(String iiaCode, List<Iia> selectedIias) {
     return null;
   }
 
-  protected List<Iia> filterIiasByCode(List<Iia> selectedIias, RequestData requestData) {
+  private List<Iia> filterIiasByCode(List<Iia> selectedIias, RequestData requestData) {
     List<String> selectedIiaCodes = selectedIias.stream()
         .map(i -> i.getPartner().get(0).getIiaCode())
         .collect(Collectors.toList());
@@ -266,11 +266,11 @@ public class IiasServiceValidV6 extends AbstractIiasService {
         .collect(Collectors.toList());
   }
 
-  protected boolean filterPartnerHeiId(Iia.Partner partner, String hei_id) {
+  private boolean filterPartnerHeiId(Iia.Partner partner, String hei_id) {
     return partner.getHeiId().equals(hei_id);
   }
 
-  protected List<Iia> filterIiasByPartnerHeiId(List<Iia> iias, RequestData requestData) {
+  private List<Iia> filterIiasByPartnerHeiId(List<Iia> iias, RequestData requestData) {
     if (requestData.partnerHeiId == null) {
       return iias;
     }
@@ -281,17 +281,17 @@ public class IiasServiceValidV6 extends AbstractIiasService {
         .collect(Collectors.toList());
   }
 
-  protected List<Iia> filterIiasByHeiId(List<Iia> iias, RequestData requestData) {
+  private List<Iia> filterIiasByHeiId(List<Iia> iias, RequestData requestData) {
     return iias.stream()
         .filter(iia -> iia.getPartner().get(0).getHeiId().equals(requestData.heiId))
         .collect(Collectors.toList());
   }
 
-  protected boolean filterAcademicYear(String academicYear, List<String> requestedAcademicYears) {
+  private boolean filterAcademicYear(String academicYear, List<String> requestedAcademicYears) {
     return requestedAcademicYears.contains(academicYear);
   }
 
-  protected List<Iia> filterIiasByAcademicYear(List<Iia> iias, RequestData requestData) {
+  private List<Iia> filterIiasByAcademicYear(List<Iia> iias, RequestData requestData) {
     if (requestData.receivingAcademicYearIds.isEmpty()) {
       return iias;
     }
@@ -347,25 +347,25 @@ public class IiasServiceValidV6 extends AbstractIiasService {
     }
   }
 
-  protected void errorNoIdsNorCodes(RequestData requestData) throws ErrorResponseException {
+  private void errorNoIdsNorCodes(RequestData requestData) throws ErrorResponseException {
     throw new ErrorResponseException(
         createErrorResponse(requestData.request, 400, "Neither iia_id nor iia_code provided")
     );
   }
 
-  protected void errorIdsAndCodes(RequestData requestData) throws ErrorResponseException {
+  private void errorIdsAndCodes(RequestData requestData) throws ErrorResponseException {
     throw new ErrorResponseException(
         createErrorResponse(requestData.request, 400, "Both iia_id and iia_code provided")
     );
   }
 
-  protected Response createIiasGetResponse(List<Iia> data) {
+  private Response createIiasGetResponse(List<Iia> data) {
     IiasGetResponse response = new IiasGetResponse();
     response.getIia().addAll(data);
     return marshallResponse(200, response);
   }
 
-  protected Response createIiasIndexResponse(List<String> data) {
+  private Response createIiasIndexResponse(List<String> data) {
     IiasIndexResponse response = new IiasIndexResponse();
     response.getIiaId().addAll(data);
     return marshallResponse(200, response);

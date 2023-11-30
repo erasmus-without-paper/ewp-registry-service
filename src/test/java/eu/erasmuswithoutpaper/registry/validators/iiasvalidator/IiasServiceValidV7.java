@@ -26,7 +26,7 @@ import https.github_com.erasmus_without_paper.ewp_specs_architecture.blob.stable
 import https.github_com.erasmus_without_paper.ewp_specs_types_contact.tree.stable_v1.Contact;
 
 public class IiasServiceValidV7 extends AbstractIiasService {
-  protected List<Iia> iias = new ArrayList<>();
+  private List<Iia> iias = new ArrayList<>();
 
   /**
    * @param indexUrl
@@ -44,7 +44,7 @@ public class IiasServiceValidV7 extends AbstractIiasService {
     }
   }
 
-  protected void fillDataBase() throws DatatypeConfigurationException {
+  private void fillDataBase() throws DatatypeConfigurationException {
     final String THIS_SERVICE_HEI_ID = "test.hei01.uw.edu.pl";
     final String VALIDATOR_HEI_ID = "validator-hei01.developers.erasmuswithoutpaper.eu";
     final MobilitySpecification.MobilitiesPerYear mobilitiesPerYear = new MobilitySpecification.MobilitiesPerYear();
@@ -210,11 +210,11 @@ public class IiasServiceValidV7 extends AbstractIiasService {
         .collect(Collectors.toList());
   }
 
-  protected boolean filterPartnerHeiId(Iia.Partner partner, String hei_id) {
+  private boolean filterPartnerHeiId(Iia.Partner partner, String hei_id) {
     return partner.getHeiId().equals(hei_id);
   }
 
-  protected List<Iia> filterIiasByPartnerHeiId(List<Iia> iias, RequestData requestData) {
+  private List<Iia> filterIiasByPartnerHeiId(List<Iia> iias, RequestData requestData) {
     if (requestData.partnerHeiId == null) {
       return iias;
     }
@@ -225,17 +225,17 @@ public class IiasServiceValidV7 extends AbstractIiasService {
         .collect(Collectors.toList());
   }
 
-  protected List<Iia> filterIiasByHeiId(List<Iia> iias, RequestData requestData) {
+  private List<Iia> filterIiasByHeiId(List<Iia> iias, RequestData requestData) {
     return iias.stream()
         .filter(iia -> iia.getPartner().get(0).getHeiId().equals(requestData.heiId))
         .collect(Collectors.toList());
   }
 
-  protected boolean filterAcademicYear(String academicYear, List<String> requestedAcademicYears) {
+  private boolean filterAcademicYear(String academicYear, List<String> requestedAcademicYears) {
     return requestedAcademicYears.contains(academicYear);
   }
 
-  protected List<Iia> filterIiasByAcademicYear(List<Iia> iias, RequestData requestData) {
+  private List<Iia> filterIiasByAcademicYear(List<Iia> iias, RequestData requestData) {
     if (requestData.receivingAcademicYearIds.isEmpty()) {
       return iias;
     }
@@ -288,19 +288,19 @@ public class IiasServiceValidV7 extends AbstractIiasService {
     }
   }
 
-  protected void errorNoIds(RequestData requestData) throws ErrorResponseException {
+  private void errorNoIds(RequestData requestData) throws ErrorResponseException {
     throw new ErrorResponseException(
         createErrorResponse(requestData.request, 400, "No iia_id provided")
     );
   }
 
-  protected Response createIiasGetResponse(List<Iia> data) {
+  private Response createIiasGetResponse(List<Iia> data) {
     IiasGetResponse response = new IiasGetResponse();
     response.getIia().addAll(data);
     return marshallResponse(200, response);
   }
 
-  protected Response createIiasIndexResponse(List<String> data) {
+  private Response createIiasIndexResponse(List<String> data) {
     IiasIndexResponse response = new IiasIndexResponse();
     response.getIiaId().addAll(data);
     return marshallResponse(200, response);
