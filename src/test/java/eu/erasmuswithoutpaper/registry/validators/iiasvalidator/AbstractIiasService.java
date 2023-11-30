@@ -2,6 +2,7 @@ package eu.erasmuswithoutpaper.registry.validators.iiasvalidator;
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -26,6 +27,9 @@ public abstract class AbstractIiasService extends AbstractApiService {
       this.request = request;
     }
   }
+
+  protected final List<String> coveredHeiIds = new ArrayList<>();
+  protected final List<String> partnersHeiIds = new ArrayList<>();
 
   private final String myIndexUrl;
   private final String myGetUrl;
@@ -157,6 +161,21 @@ public abstract class AbstractIiasService extends AbstractApiService {
   protected void checkPartnerHei(RequestData requestData) throws ErrorResponseException {
     if (requestData.heiId.equals(requestData.partnerHeiId)) {
       errorHeiIdsEqual(requestData);
+    }
+  }
+
+  protected void checkHei(RequestData requestData) throws ErrorResponseException {
+    if (!coveredHeiIds.contains(requestData.heiId)) {
+      errorUnknownHeiId(requestData);
+    }
+  }
+
+  protected void checkReceivingAcademicYearIds(RequestData requestData)
+      throws ErrorResponseException {
+    for (String receivingAcademicYear : requestData.receivingAcademicYearIds) {
+      if (!checkReceivingAcademicYearId(receivingAcademicYear)) {
+        errorInvalidAcademicYearId(requestData);
+      }
     }
   }
 

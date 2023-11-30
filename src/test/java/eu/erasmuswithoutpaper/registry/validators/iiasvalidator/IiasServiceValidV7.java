@@ -29,8 +29,6 @@ import https.github_com.erasmus_without_paper.ewp_specs_architecture.blob.stable
 import https.github_com.erasmus_without_paper.ewp_specs_types_contact.tree.stable_v1.Contact;
 
 public class IiasServiceValidV7 extends AbstractIiasService {
-  protected List<String> coveredHeiIds = new ArrayList<>();
-  protected List<String> partnersHeiIds = new ArrayList<>();
   protected List<Iia> iias = new ArrayList<>();
 
   /**
@@ -309,15 +307,6 @@ public class IiasServiceValidV7 extends AbstractIiasService {
     return result;
   }
 
-  private void checkReceivingAcademicYearIds(
-      RequestData requestData) throws ErrorResponseException {
-    for (String receivingAcademicYear : requestData.receivingAcademicYearIds) {
-      if (!checkReceivingAcademicYearId(receivingAcademicYear)) {
-        errorInvalidAcademicYearId(requestData);
-      }
-    }
-  }
-
   private void extractGetParams(RequestData requestData) throws ErrorResponseException {
     checkParamsEncoding(requestData.request);
     Map<String, List<String>> params = InternetTestHelpers.extractAllParams(requestData.request);
@@ -351,12 +340,6 @@ public class IiasServiceValidV7 extends AbstractIiasService {
     throw new ErrorResponseException(
         createErrorResponse(requestData.request, 400, "No iia_id provided")
     );
-  }
-
-  private void checkHei(RequestData requestData) throws ErrorResponseException {
-    if (!coveredHeiIds.contains(requestData.heiId)) {
-      errorUnknownHeiId(requestData);
-    }
   }
 
   protected Response createIiasGetResponse(List<Iia> data) {
