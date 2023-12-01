@@ -115,19 +115,17 @@ public class SelfManifestBuilder {
   public SelfManifestBuilder addApi(String name, String version, String xmlns,
       Map<String, String> additionalTags) {
 
-    Element api = this.document.createElement(name);
+    Element api = this.document.createElementNS(xmlns, name);
 
     if (version != null) {
       api.setAttribute("version", version);
     }
 
-    api.setAttribute("xmlns", xmlns);
-
     for (Map.Entry<String, String> entry : additionalTags.entrySet()) {
       String tagName = entry.getKey();
       String tagValue = entry.getValue();
 
-      Element element = this.document.createElement(tagName);
+      Element element = this.document.createElementNS(xmlns, tagName);
       element.setTextContent(tagValue);
       api.appendChild(element);
     }
