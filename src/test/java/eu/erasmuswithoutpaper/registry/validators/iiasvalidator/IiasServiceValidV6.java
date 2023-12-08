@@ -28,6 +28,7 @@ public class IiasServiceValidV6 extends AbstractIiasService {
   private List<Iia> iias = new ArrayList<>();
 
   static class RequestData extends AbstractIiasService.RequestData {
+    public String partnerHeiId;
     public List<String> iiaCodes;
 
     RequestData(Request request) {
@@ -172,6 +173,50 @@ public class IiasServiceValidV6 extends AbstractIiasService {
       return createIiasIndexResponse(selectedIiaIds);
     } catch (ErrorResponseException e) {
       return e.response;
+    }
+  }
+
+  private void extractIndexParams(RequestData requestData) throws ErrorResponseException {
+    checkParamsEncoding(requestData.request);
+    Map<String, List<String>> params = InternetTestHelpers.extractAllParams(requestData.request);
+
+    ParameterInfo heiId = ParameterInfo.readParam(params, "hei_id");
+    ParameterInfo partnerHeiId = ParameterInfo.readParam(params, "partner_hei_id");
+    ParameterInfo receivingAcademicYearId =
+            ParameterInfo.readParam(params, "receiving_academic_year_id");
+    ParameterInfo modifiedSince = ParameterInfo.readParam(params, "modified_since");
+
+    requestData.heiId = heiId.firstValueOrNull;
+
+    if (params.size() == 0) {
+      errorNoParams(requestData);
+    }
+    if (!heiId.hasAny) {
+      errorNoHeiId(requestData);
+    }
+    if (heiId.hasMultiple) {
+      errorMultipleHeiIds(requestData);
+    }
+    if (partnerHeiId.hasMultiple) {
+      errorMultiplePartnerHeiId(requestData);
+    }
+    if (modifiedSince.hasMultiple) {
+      errorMultipleModifiedSince(requestData);
+    }
+
+    requestData.partnerHeiId = partnerHeiId.firstValueOrNull;
+    requestData.receivingAcademicYearIds = receivingAcademicYearId.allValues;
+
+    if (modifiedSince.firstValueOrNull != null) {
+      requestData.modifiedSince = parseModifiedSince(modifiedSince.firstValueOrNull);
+      if (requestData.modifiedSince == null) {
+        errorInvalidModifiedSince(requestData);
+      }
+    }
+
+    if (requestData.heiId == null) {
+      // We expect all of above members to have any value even in invalid scenarios.
+      throw new NullPointerException();
     }
   }
 
@@ -369,5 +414,42 @@ public class IiasServiceValidV6 extends AbstractIiasService {
     IiasIndexResponse response = new IiasIndexResponse();
     response.getIiaId().addAll(data);
     return marshallResponse(200, response);
+  }
+
+  protected void errorNoHeiId(RequestData requestData) throws ErrorResponseException {
+    throw new ErrorResponseException(
+            createErrorResponse(requestData.request, 400, "No hei_id parameter"));
+  }
+
+  protected void errorMultipleHeiIds(RequestData requestData) throws ErrorResponseException {
+    throw new ErrorResponseException(
+            createErrorResponse(requestData.request, 400, "More that one hei_id provided."));
+  }
+
+  protected void errorMultiplePartnerHeiId(RequestData requestData) throws ErrorResponseException {
+    throw new ErrorResponseException(
+            createErrorResponse(requestData.request, 400, "More that one partner_hei_id provided."));
+  }
+
+  protected void errorUnknownHeiId(RequestData requestData) throws ErrorResponseException {
+    throw new ErrorResponseException(
+            createErrorResponse(requestData.request, 400, "Unknown hei_id"));
+  }
+
+  protected void errorHeiIdsEqual(RequestData requestData) throws ErrorResponseException {
+    throw new ErrorResponseException(
+            createErrorResponse(requestData.request, 400, "hei_id and partner_hei_id are equal"));
+  }
+
+  protected void checkPartnerHei(RequestData requestData) throws ErrorResponseException {
+    if (requestData.heiId.equals(requestData.partnerHeiId)) {
+      errorHeiIdsEqual(requestData);
+    }
+  }
+
+  protected void checkHei(RequestData requestData) throws ErrorResponseException {
+    if (!coveredHeiIds.contains(requestData.heiId)) {
+      errorUnknownHeiId(requestData);
+    }
   }
 }

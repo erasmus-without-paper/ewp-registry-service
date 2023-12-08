@@ -26,7 +26,7 @@ import https.github_com.erasmus_without_paper.ewp_specs_architecture.blob.stable
 import https.github_com.erasmus_without_paper.ewp_specs_types_contact.tree.stable_v1.Contact;
 
 public class IiasServiceValidV7 extends AbstractIiasService {
-  private List<Iia> iias = new ArrayList<>();
+  private final List<Iia> iias = new ArrayList<>();
 
   /**
    * @param indexUrl
@@ -151,17 +151,13 @@ public class IiasServiceValidV7 extends AbstractIiasService {
   }
 
   @Override
-  protected Response handleIiasIndexRequest(Request request) throws ErrorResponseException {
+  protected Response handleIiasIndexRequest(Request request) {
     try {
       RequestData requestData = new RequestData(request);
       checkRequestMethod(requestData.request);
       extractIndexParams(requestData);
-      checkHei(requestData);
-      checkPartnerHei(requestData);
       checkReceivingAcademicYearIds(requestData);
-      List<Iia> selectedIias = filterIiasByHeiId(iias, requestData);
-      selectedIias = filterIiasByPartnerHeiId(selectedIias, requestData);
-      selectedIias = filterIiasByAcademicYear(selectedIias, requestData);
+      List<Iia> selectedIias = filterIiasByAcademicYear(iias, requestData);
       selectedIias = filterIiasByModifiedSince(selectedIias, requestData);
       List<String> selectedIiaIds = mapToIds(selectedIias);
       return createIiasIndexResponse(selectedIiaIds);
@@ -170,18 +166,37 @@ public class IiasServiceValidV7 extends AbstractIiasService {
     }
   }
 
+  private void extractIndexParams(AbstractIiasService.RequestData requestData) throws ErrorResponseException {
+    checkParamsEncoding(requestData.request);
+    Map<String, List<String>> params = InternetTestHelpers.extractAllParams(requestData.request);
+
+    ParameterInfo receivingAcademicYearId =
+            ParameterInfo.readParam(params, "receiving_academic_year_id");
+    ParameterInfo modifiedSince = ParameterInfo.readParam(params, "modified_since");
+
+    if (modifiedSince.hasMultiple) {
+      errorMultipleModifiedSince(requestData);
+    }
+
+    requestData.receivingAcademicYearIds = receivingAcademicYearId.allValues;
+
+    if (modifiedSince.firstValueOrNull != null) {
+      requestData.modifiedSince = parseModifiedSince(modifiedSince.firstValueOrNull);
+      if (requestData.modifiedSince == null) {
+        errorInvalidModifiedSince(requestData);
+      }
+    }
+  }
+
   @Override
-  protected Response handleIiasGetRequest(Request request) throws ErrorResponseException {
+  protected Response handleIiasGetRequest(Request request) {
     try {
       RequestData requestData = new RequestData(request);
       checkRequestMethod(requestData.request);
       extractGetParams(requestData);
-      checkHei(requestData);
       checkIds(requestData);
-      List<Iia> selectedIias = filterIiasByHeiId(iias, requestData);
-      List<Iia> selectedIds = filterIiasById(selectedIias, requestData);
-      List<Iia> result = new ArrayList<>();
-      result.addAll(selectedIds);
+      List<Iia> selectedIds = filterIiasById(iias, requestData);
+      List<Iia> result = new ArrayList<>(selectedIds);
       return createIiasGetResponse(result);
     } catch (ErrorResponseException e) {
       return e.response;
@@ -191,7 +206,7 @@ public class IiasServiceValidV7 extends AbstractIiasService {
   private List<Iia> filterIiasById(List<Iia> selectedIias, RequestData requestData) {
     List<String> selectedIiaIds = selectedIias.stream()
         .map(i -> i.getPartner().get(0).getIiaId())
-        .collect(Collectors.toList());
+        .toList();
 
     List<Iia> result = new ArrayList<>();
     for (String iiaId : requestData.iiaIds) {
@@ -207,27 +222,6 @@ public class IiasServiceValidV7 extends AbstractIiasService {
 
   private List<String> mapToIds(List<Iia> selectedIias) {
     return selectedIias.stream().map(i -> i.getPartner().get(0).getIiaId())
-        .collect(Collectors.toList());
-  }
-
-  private boolean filterPartnerHeiId(Iia.Partner partner, String hei_id) {
-    return partner.getHeiId().equals(hei_id);
-  }
-
-  private List<Iia> filterIiasByPartnerHeiId(List<Iia> iias, RequestData requestData) {
-    if (requestData.partnerHeiId == null) {
-      return iias;
-    }
-
-    return iias.stream().filter(
-        iia -> iia.getPartner().stream()
-            .anyMatch(p -> this.filterPartnerHeiId(p, requestData.partnerHeiId)))
-        .collect(Collectors.toList());
-  }
-
-  private List<Iia> filterIiasByHeiId(List<Iia> iias, RequestData requestData) {
-    return iias.stream()
-        .filter(iia -> iia.getPartner().get(0).getHeiId().equals(requestData.heiId))
         .collect(Collectors.toList());
   }
 
@@ -263,26 +257,18 @@ public class IiasServiceValidV7 extends AbstractIiasService {
     checkParamsEncoding(requestData.request);
     Map<String, List<String>> params = InternetTestHelpers.extractAllParams(requestData.request);
 
-    ParameterInfo heiId = ParameterInfo.readParam(params, "hei_id");
     ParameterInfo iiaId = ParameterInfo.readParam(params, "iia_id");
 
-    requestData.heiId = heiId.firstValueOrNull;
     requestData.iiaIds = iiaId.allValues;
 
-    if (params.size() == 0) {
+    if (params.isEmpty()) {
       errorNoParams(requestData);
-    }
-    if (!heiId.hasAny) {
-      errorNoHeiId(requestData);
-    }
-    if (heiId.hasMultiple) {
-      errorMultipleHeiIds(requestData);
     }
     if (!iiaId.hasAny) {
       errorNoIds(requestData);
     }
 
-    if (requestData.heiId == null || requestData.iiaIds.isEmpty()) {
+    if (requestData.iiaIds.isEmpty()) {
       //We expect all of above members to have any value even in invalid scenarios.
       throw new NullPointerException();
     }

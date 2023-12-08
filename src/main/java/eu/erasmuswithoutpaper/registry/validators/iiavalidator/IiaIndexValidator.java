@@ -1,5 +1,6 @@
 package eu.erasmuswithoutpaper.registry.validators.iiavalidator;
 
+import java.util.Collections;
 import java.util.List;
 
 import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
@@ -25,23 +26,29 @@ public class IiaIndexValidator extends ApiValidator<IiaSuiteState> {
     super(docBuilder, internet, client, validatorKeyStoreSet, "iias", ApiEndpoint.INDEX);
   }
 
-  @ValidatorTestStep
-  public ValidationSuiteInfo<IiaSuiteState> basicTests = new ValidationSuiteInfo<>(
-      IiaIndexBasicSetupValidationSuite::new,
-      IiaIndexBasicSetupValidationSuite.getParameters(),
-      IiaIndexBasicValidationSuite::new);
+  @ValidatorTestStep(minMajorVersion = "6", maxMajorVersion = "6")
+  public ValidationSuiteInfo<IiaSuiteState> basicTestsV6 = new ValidationSuiteInfo<>(
+      IiaIndexBasicSetupValidationSuiteV6::new,
+      IiaIndexBasicSetupValidationSuiteV6.getParameters(),
+      IiaIndexBasicValidationSuiteV6::new);
 
   @ValidatorTestStep(minMajorVersion = "6", maxMajorVersion = "6")
   public ValidationSuiteInfo<IiaSuiteState> complexTestsV6 = new ValidationSuiteInfo<>(
       IiaIndexComplexSetupValidationSuiteV6::new,
       IiaIndexComplexSetupValidationSuiteV6.getParameters(),
-      IiaIndexComplexValidationSuite::new);
+      IiaIndexComplexValidationSuiteV6::new);
+
+  @ValidatorTestStep(minMajorVersion = "7")
+  public ValidationSuiteInfo<IiaSuiteState> basicTestsV7 = new ValidationSuiteInfo<>(
+          IiaIndexBasicSetupValidationSuiteV7::new,
+          Collections.emptyList(),
+          IiaIndexBasicValidationSuiteV7::new);
 
   @ValidatorTestStep(minMajorVersion = "7")
   public ValidationSuiteInfo<IiaSuiteState> complexTestsV7 = new ValidationSuiteInfo<>(
       IiaIndexComplexSetupValidationSuiteV7::new,
       IiaIndexComplexSetupValidationSuiteV7.getParameters(),
-      IiaIndexComplexValidationSuite::new);
+      IiaIndexComplexValidationSuiteV7::new);
 
   @Override
   public Logger getLogger() {

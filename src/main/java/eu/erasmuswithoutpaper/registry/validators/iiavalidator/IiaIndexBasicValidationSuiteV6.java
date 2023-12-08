@@ -17,10 +17,10 @@ import org.slf4j.LoggerFactory;
  * Describes the set of test/steps to be run on an IIAs API index endpoint implementation in order
  * to properly validate it.
  */
-public class IiaIndexBasicValidationSuite extends AbstractValidationSuite<IiaSuiteState> {
+public class IiaIndexBasicValidationSuiteV6 extends AbstractValidationSuite<IiaSuiteState> {
 
   private static final Logger logger =
-      LoggerFactory.getLogger(IiaIndexBasicValidationSuite.class);
+      LoggerFactory.getLogger(IiaIndexBasicValidationSuiteV6.class);
   private final ValidatedApiInfo apiInfo;
 
   @Override
@@ -33,8 +33,8 @@ public class IiaIndexBasicValidationSuite extends AbstractValidationSuite<IiaSui
     return apiInfo;
   }
 
-  IiaIndexBasicValidationSuite(ApiValidator<IiaSuiteState> validator,
-      IiaSuiteState state, ValidationSuiteConfig config, int version) {
+  IiaIndexBasicValidationSuiteV6(ApiValidator<IiaSuiteState> validator, IiaSuiteState state,
+      ValidationSuiteConfig config, int version) {
     super(validator, state, config);
 
     this.apiInfo = new IiaValidatedApiInfo(version, ApiEndpoint.INDEX);

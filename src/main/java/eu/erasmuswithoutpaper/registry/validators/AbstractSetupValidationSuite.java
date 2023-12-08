@@ -446,7 +446,8 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
       @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
       protected Optional<Response> innerRun() throws Failure {
         for (String hei : heiIds) {
-          List<String> urls = selectApiUrlForHeiFromCatalogue(api, endpoint, hei);
+          List<String> urls =
+              selectApiUrlForHeiFromCatalogue(api, endpoint, getApiInfo().getVersion(), hei);
           if (urls != null && !urls.isEmpty()) {
             heiIdAndUrls.add(new HeiIdAndUrl(hei, urls.get(0), endpoint));
           }
@@ -481,7 +482,7 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
     );
   }
 
-  private Request makeApiRequestWithPreferredSecurity(
+  protected Request makeApiRequestWithPreferredSecurity(
       InlineValidationStep step, HeiIdAndUrl heiIdAndUrl,
       HttpSecurityDescription preferredSecurityDescription) {
     return makeApiRequestWithPreferredSecurity(

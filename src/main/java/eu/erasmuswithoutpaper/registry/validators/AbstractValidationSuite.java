@@ -724,11 +724,12 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
   }
 
   protected List<String> selectApiUrlForHeiFromCatalogue(String api, ApiEndpoint endpoint,
-      String hei) {
+      int version, String hei) {
     Match apis = getCatalogueMatcher().xpath(
         "/r:catalogue/r:host/r:institutions-covered/" + "r:hei-id[normalize-space(text())='" + hei
             + "']" + "/../../r:apis-implemented/*[local-name()='" + api
-            + "']/*[local-name()='" + getUrlElementName(endpoint) + "']");
+            + "'][starts-with(@version, '" + version
+            + "')]/*[local-name()='" + getUrlElementName(endpoint) + "']");
     if (apis.isEmpty()) {
       return null;
     }

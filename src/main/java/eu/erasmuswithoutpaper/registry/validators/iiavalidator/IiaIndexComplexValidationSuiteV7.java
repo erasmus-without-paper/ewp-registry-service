@@ -21,10 +21,10 @@ import org.slf4j.LoggerFactory;
  * Describes the set of test/steps to be run on an IIAs API index endpoint implementation in order
  * to properly validate it.
  */
-public class IiaIndexComplexValidationSuite extends AbstractValidationSuite<IiaSuiteState> {
+public class IiaIndexComplexValidationSuiteV7 extends AbstractValidationSuite<IiaSuiteState> {
 
   private static final Logger logger =
-      LoggerFactory.getLogger(IiaIndexComplexValidationSuite.class);
+      LoggerFactory.getLogger(IiaIndexComplexValidationSuiteV7.class);
 
   private final ValidatedApiInfo apiInfo;
 
@@ -38,8 +38,8 @@ public class IiaIndexComplexValidationSuite extends AbstractValidationSuite<IiaS
     return apiInfo;
   }
 
-  IiaIndexComplexValidationSuite(ApiValidator<IiaSuiteState> validator,
-      IiaSuiteState state, ValidationSuiteConfig config, int version) {
+  IiaIndexComplexValidationSuiteV7(ApiValidator<IiaSuiteState> validator, IiaSuiteState state,
+      ValidationSuiteConfig config, int version) {
     super(validator, state, config);
 
     this.apiInfo = new IiaValidatedApiInfo(version, ApiEndpoint.INDEX);
@@ -58,12 +58,8 @@ public class IiaIndexComplexValidationSuite extends AbstractValidationSuite<IiaS
 
     testParameters200(
         combination,
-        "Request known hei_id and known partner_hei_id, expect 200 OK and "
-            + "non-empty response.",
-        new ParameterList(
-            new Parameter("hei_id", this.currentState.selectedHeiId),
-            new Parameter("partner_hei_id", this.currentState.selectedIiaInfo.partnerHeiId)
-        ),
+        "Correct request, expect 200 OK and non-empty response.",
+        new ParameterList(),
         iiaIdVerifierFactory.expectResponseToContain(selectedIiaIdList)
     );
 
@@ -71,10 +67,9 @@ public class IiaIndexComplexValidationSuite extends AbstractValidationSuite<IiaS
       String knownAcademicYear = this.currentState.selectedIiaInfo.receivingAcademicYears.get(0);
       testParameters200(
           combination,
-          "Request with known hei_id and known receiving_academic_year_id parameter, "
+          "Request with known receiving_academic_year_id parameter, "
               + "expect 200 OK and non-empty response.",
           new ParameterList(
-              new Parameter("hei_id", this.currentState.selectedHeiId),
               new Parameter("receiving_academic_year_id", knownAcademicYear)
           ),
           iiaIdVerifierFactory
@@ -88,10 +83,9 @@ public class IiaIndexComplexValidationSuite extends AbstractValidationSuite<IiaS
         String.format("%04d/%04d", unknownAcademicYear, unknownAcademicYear + 1);
     testParameters200(
         combination,
-        "Request with known hei_id and unknown receiving_academic_year_id parameter, "
+        "Request with unknown receiving_academic_year_id parameter, "
             + "expect 200 OK and empty response.",
         new ParameterList(
-            new Parameter("hei_id", this.currentState.selectedHeiId),
             new Parameter("receiving_academic_year_id", unknownAcademicYearString)
         ),
         iiaIdVerifierFactory.expectResponseToBeEmpty()
@@ -101,10 +95,8 @@ public class IiaIndexComplexValidationSuite extends AbstractValidationSuite<IiaS
 
     testParameters200(
         combination,
-        "Request with known hei_id and modified_since in the future, "
-            + "expect 200 OK and empty response.",
+        "Request with modified_since in the future, expect 200 OK and empty response.",
         new ParameterList(
-            new Parameter("hei_id", this.currentState.selectedHeiId),
             new Parameter("modified_since",
                 yearInFuture + "-02-12T15:19:21+01:00")
         ),
@@ -114,10 +106,9 @@ public class IiaIndexComplexValidationSuite extends AbstractValidationSuite<IiaS
 
     testParameters200(
         combination,
-        "Request with known hei_id and modified_since far in the past, "
+        "Request with modified_since far in the past, "
             + "expect 200 OK and non-empty response.",
         new ParameterList(
-            new Parameter("hei_id", this.currentState.selectedHeiId),
             new Parameter("modified_since", "2000-02-12T15:19:21+01:00")
         ),
         iiaIdVerifierFactory.expectResponseToContain(selectedIiaIdList)

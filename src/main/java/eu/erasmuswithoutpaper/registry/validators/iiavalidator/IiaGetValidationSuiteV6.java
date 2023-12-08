@@ -73,12 +73,7 @@ public class IiaGetValidationSuiteV6
       @Override
       @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
       protected Optional<Response> innerRun() throws Failure {
-        Request request = createRequestWithParameters(this, combination,
-            new ParameterList(
-                new Parameter("hei_id", currentState.selectedHeiId),
-                new Parameter("iia_id", currentState.selectedIiaId)
-            )
-        );
+        Request request = createRequestWithParameters(this, combination, getParameterList());
         List<String> expectedIDs = Collections.singletonList(currentState.selectedIiaId);
         Response response = makeRequestAndVerifyResponse(
             this, combination, request,
@@ -121,6 +116,14 @@ public class IiaGetValidationSuiteV6
         return Optional.empty();
       }
     });
+  }
+
+  @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
+  protected ParameterList getParameterList() {
+    return new ParameterList(
+            new Parameter("hei_id", currentState.selectedHeiId),
+            new Parameter("iia_id", currentState.selectedIiaId)
+    );
   }
 
   // FindBugs is not smart enough to infer that actual type of this.currentState
