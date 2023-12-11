@@ -74,19 +74,6 @@ public class IiaIndexBasicValidationSuite extends AbstractValidationSuite<IiaSui
         400
     );
 
-    /*
-    testParameters200(
-        combination,
-        "Request with known hei_id and receiving_academic_year_id in southern hemisphere "
-            + "format, expect 200 OK.",
-        new ParameterList(
-            new Parameter("hei_id", this.currentState.selectedHeiId),
-            new Parameter("receiving_academic_year_id", "2010/2010")
-        ),
-        iiaIdVerifierFactory.expectCorrectResponse()
-    );
-     */
-
     testParameters200(
         combination,
         "Request with known hei_id and receiving_academic_year_id in northern hemisphere "
