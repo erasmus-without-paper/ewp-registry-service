@@ -33,7 +33,7 @@ public class IiaGetSetupValidationSuiteV6
 
 
   /**
-   * Creates a validation suite for IIAs v2 Get endpoint.
+   * Creates a validation suite for IIAs v6 Get endpoint.
    */
   public IiaGetSetupValidationSuiteV6(ApiValidator<IiaSuiteState> validator,
       IiaSuiteState state,

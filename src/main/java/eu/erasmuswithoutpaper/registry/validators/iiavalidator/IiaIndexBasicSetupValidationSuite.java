@@ -36,7 +36,7 @@ public class IiaIndexBasicSetupValidationSuite
   public static final String HEI_ID_PARAMETER = "hei_id";
 
   /**
-   * Returns parameters used for validating IIAs v2 Index.
+   * Returns parameters used for validating IIAs v6 Index.
    */
   public static List<ValidationParameter> getParameters() {
     return Collections.singletonList(
@@ -45,7 +45,7 @@ public class IiaIndexBasicSetupValidationSuite
   }
 
   /**
-   * Creates a validation suite for IIAs v2 Index endpoint.
+   * Creates a validation suite for IIAs v6 Index endpoint.
    */
   public IiaIndexBasicSetupValidationSuite(ApiValidator<IiaSuiteState> validator,
       IiaSuiteState state, ValidationSuiteConfig config, int version) {
