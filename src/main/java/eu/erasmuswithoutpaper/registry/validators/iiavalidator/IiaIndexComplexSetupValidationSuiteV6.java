@@ -175,13 +175,7 @@ public class IiaIndexComplexSetupValidationSuiteV6
       @Override
       @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
       protected Optional<Response> innerRun() throws Failure {
-        Request request = makeApiRequestWithPreferredSecurity(
-            this,
-            url, ApiEndpoint.GET, securityDescription,
-            new ParameterList(
-                new Parameter("hei_id", heiId),
-                new Parameter("iia_id", iiaId)
-            ));
+        Request request = getGetRequest(this, heiId, url, securityDescription, iiaId);
 
         if (request == null) {
           throw new Failure(
@@ -223,6 +217,12 @@ public class IiaIndexComplexSetupValidationSuiteV6
     });
 
     return iiaInfo;
+  }
+
+  protected Request getGetRequest(InlineValidationStep step, String heiId, String url,
+      HttpSecurityDescription securityDescription, String iiaId) {
+    return makeApiRequestWithPreferredSecurity(step, url, ApiEndpoint.GET, securityDescription,
+        new ParameterList(new Parameter("hei_id", heiId), new Parameter("iia_id", iiaId)));
   }
 
   protected void setIiaInfo(IiaSuiteState.IiaInfo iiaInfo, Response response)
