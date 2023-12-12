@@ -4,8 +4,11 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 import eu.erasmuswithoutpaper.registry.common.AcademicYearUtils;
+import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
+import eu.erasmuswithoutpaper.registry.validators.HttpSecurityDescription;
+import eu.erasmuswithoutpaper.registry.validators.InlineValidationStep;
 import eu.erasmuswithoutpaper.registry.validators.InlineValidationStep.Failure;
 
 import https.github_com.erasmus_without_paper.ewp_specs_api_iias.blob.stable_v7.endpoints.get_response.IiasGetResponse;
@@ -54,5 +57,12 @@ public class IiaIndexComplexSetupValidationSuiteV7 extends IiaIndexComplexSetupV
             .flatMap(ms -> AcademicYearUtils.getAcademicYearsBetween(
                 ms.getReceivingFirstAcademicYearId(), ms.getReceivingLastAcademicYearId()).stream())
             .distinct().collect(Collectors.toList());
+  }
+
+  @Override
+  protected Request makeApiRequestWithPreferredSecurity(InlineValidationStep step,
+      HeiIdAndUrl heiIdAndUrl, HttpSecurityDescription preferredSecurityDescription) {
+    return makeApiRequestWithPreferredSecurity(step, heiIdAndUrl.url, heiIdAndUrl.endpoint,
+        preferredSecurityDescription, new ParameterList());
   }
 }
