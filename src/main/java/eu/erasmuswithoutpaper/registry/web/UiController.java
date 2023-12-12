@@ -475,11 +475,14 @@ public class UiController {
   /**
    * XML Schema Validator view.
    *
-   * @param response Needed to add some custom headers.
    * @return A page with a form to validate given schema.
    */
   @RequestMapping(value = "/schemaValidator", method = RequestMethod.GET)
-  public ModelAndView schemaValidator(HttpServletResponse response) {
+  public Object schemaValidator() {
+    if (!Application.isValidationEnabled()) {
+      return errorController.get404();
+    }
+
     ModelAndView mav = new ModelAndView();
     this.initializeMavCommons(mav);
     mav.setViewName("schemaValidator");
@@ -520,6 +523,9 @@ public class UiController {
    */
   @RequestMapping(path = "/validate", params = "xml", method = RequestMethod.POST)
   public ResponseEntity<String> validateXml(@RequestParam String xml) {
+    if (!Application.isValidationEnabled()) {
+      return errorController.get404();
+    }
 
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
@@ -770,7 +776,11 @@ public class UiController {
    * @return A page with a form to validate hash in a given IIA.
    */
   @RequestMapping(value = "/iiaHashValidator", method = RequestMethod.GET)
-  public ModelAndView iiaHashValidatorForm() {
+  public Object iiaHashValidatorForm() {
+    if (!Application.isValidationEnabled()) {
+      return errorController.get404();
+    }
+
     ModelAndView mav = new ModelAndView();
     this.initializeMavCommons(mav);
     mav.setViewName("iiaHashValidator");
@@ -787,7 +797,11 @@ public class UiController {
    * @return A page with the result of IIA hash validation.
    */
   @RequestMapping(value = "/iiaHashValidator", method = RequestMethod.POST)
-  public ModelAndView iiaHashValidatorResult(@RequestParam String xml) {
+  public Object iiaHashValidatorResult(@RequestParam String xml) {
+    if (!Application.isValidationEnabled()) {
+      return errorController.get404();
+    }
+
     ModelAndView mav = new ModelAndView();
     this.initializeMavCommons(mav);
     mav.setViewName("iiaHashValidator");

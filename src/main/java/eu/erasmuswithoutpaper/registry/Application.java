@@ -57,7 +57,7 @@ public class Application {
   }
 
   /**
-   * @return True, if validator should be available on this website.
+   * @return True, if validators should be available on this website.
    */
   public static boolean isValidationEnabled() {
     return !isProductionSite();

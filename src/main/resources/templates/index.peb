@@ -59,22 +59,24 @@
                 for useful tools and documents.</p>
 
                 <p class='ewp-header__links'>
-                    <a class='ewp-header__links-item ewp-header__link-item-left' href='{{ schemaValidatorUrl }}'>XML Schema Validator</a>
+                    <a class='ewp-header__links-item ewp-header__link-item-left' href='{{ manifestOverviewUrl  }}'>Manifests Overview</a>
                     <span class='ewp-header__links-item ewp-header__link-item-center'>|</span>
                     <a class='ewp-header__links-item ewp-header__link-item-right' href='{{ statusUrl }}'>Manifest Importer Status</a>
                 </p>
                 <p class='ewp-header__links'>
-                    <a class='ewp-header__links-item ewp-header__link-item-left' href='{{ iiaHashValidatorUrl }}'>IIA Hash Validator</a>
-                    <span class='ewp-header__links-item ewp-header__link-item-center'>|</span>
-                    <a class='ewp-header__links-item ewp-header__link-item-right' href='{{ manifestOverviewUrl  }}'>Manifests Overview</a>
-                </p>
-                <p class='ewp-header__links'>
-                    <a class='ewp-header__links-item ewp-header__link-item-left' href='https://{% if isUsingDevDesign %}dev-{% endif %}stats.erasmuswithoutpaper.eu'>EWP Stats Portal</a>
+                    <a class='ewp-header__links-item ewp-header__link-item-left' href='{{ heiSearchUrl }}'>HEI Search Page</a>
                     <span class='ewp-header__links-item ewp-header__link-item-center'>|</span>
                     <a class='ewp-header__links-item ewp-header__link-item-right' href='{{ coverageUrl }}'>HEI/API Coverage Matrix</a>
                 </p>
+                {% if isUsingDevDesign %}
+                    <p class='ewp-header__links'>
+                        <a class='ewp-header__links-item ewp-header__link-item-left' href='{{ schemaValidatorUrl }}'>XML Schema Validator</a>
+                        <span class='ewp-header__links-item ewp-header__link-item-center'>|</span>
+                        <a class='ewp-header__links-item ewp-header__link-item-right' href='{{ iiaHashValidatorUrl }}'>IIA Hash Validator</a>
+                    </p>
+                {% endif %}
                 <p class='ewp-header__links'>
-                    <a class='ewp-header__links-item' href='{{ heiSearchUrl }}'>HEI Search Page</a>
+                    <a class='ewp-header__links-item' href='https://{% if isUsingDevDesign %}dev-{% endif %}stats.erasmuswithoutpaper.eu'>EWP Stats Portal</a>
                 </p>
             </div>
             <div class='ewp-header__vertical-divider'></div>
