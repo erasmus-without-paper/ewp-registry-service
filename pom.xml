@@ -158,7 +158,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-text</artifactId>
-            <version>1.10.0</version>
+            <version>1.11.0</version>
         </dependency>
         <dependency>
             <groupId>org.jooq</groupId>
@@ -250,6 +250,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <vueBuildProfile>prod</vueBuildProfile>
         <start-class>eu.erasmuswithoutpaper.registry.Application</start-class>
+
+        <!-- TODO Temp workaround for commons-text 1.11, override Spring Boot version with newer-->
+        <commons-lang3.version>3.13.0</commons-lang3.version>
     </properties>
 
     <build>
