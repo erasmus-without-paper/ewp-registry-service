@@ -286,26 +286,17 @@ public abstract class ApiValidator<S extends SuiteState> {
         AbstractValidationSuite.ValidationSuiteConfig config, int version);
   }
 
-  public static class ValidationSuiteInfo<T extends SuiteState> {
-    ValidationSuiteFactory<T> setupFactory;
-    ValidationSuiteFactory<T> testFactory;
-    List<ValidationParameter> parameters;
-
-    /**
-     * Stores classes necessary to create a validator test step.
-     * @param setupFactory
-     *     a factory that creates a setup validation suite.
-     * @param parameters
-     *     parameters for the suite creation.
-     * @param testFactory
-     *     a factory that creates a validation suite.
-     */
-    public ValidationSuiteInfo(ValidationSuiteFactory<T> setupFactory,
-        List<ValidationParameter> parameters,
-        ValidationSuiteFactory<T> testFactory) {
-      this.setupFactory = setupFactory;
-      this.testFactory = testFactory;
-      this.parameters = parameters;
-    }
+  /**
+   * Stores classes necessary to create a validator test step.
+   * @param setupFactory
+   *     a factory that creates a setup validation suite.
+   * @param parameters
+   *     parameters for the suite creation.
+   * @param testFactory
+   *     a factory that creates a validation suite.
+   */
+  public record ValidationSuiteInfo<T extends SuiteState>(ValidationSuiteFactory<T> setupFactory,
+      List<ValidationParameter> parameters, ValidationSuiteFactory<T> testFactory) {
   }
+
 }
