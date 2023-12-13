@@ -134,12 +134,12 @@ public class ValidatorKeyStore {
    */
   public X509Certificate generateCertificate(KeyPair keyPair) {
     try {
-      X500Name issuer = new X500Name("CN=EchoTester, OU=None, O=None L=None, C=None");
+      X500Name issuer = new X500Name("CN=EchoTester, OU=None, O=None, L=None, C=None");
       BigInteger serial = BigInteger.valueOf(12_345);
       Date notBefore = new Date(System.currentTimeMillis() - 1000L * 60 * 60 * 24 * 30);
       Date notAfter = new Date(System.currentTimeMillis() + (1000L * 60 * 60 * 24 * 365 * 10));
       X500Name subject = new X500Name("CN=Dynamically Generated Certificate for testing APIs, "
-          + "OU=None, O=None L=None, C=None");
+          + "OU=None, O=None, L=None, C=None");
       SubjectPublicKeyInfo publicKeyInfo =
           SubjectPublicKeyInfo.getInstance(keyPair.getPublic().getEncoded());
       X509v3CertificateBuilder certBuilder =
