@@ -1927,7 +1927,11 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
         throw new RuntimeException("Invalid URI syntax, shouldn't happen.");
       }
       String params = getEscapedParameters();
-      return params.isEmpty() ? url : url + '?' + params;
+      if (params.isEmpty()) {
+        return url;
+      } else {
+        return url + (url.contains("?") ? '&' : '?') + params;
+      }
     }
 
     private String getEscapedParameters() {
