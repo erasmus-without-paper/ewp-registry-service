@@ -32,8 +32,8 @@ public class ClientKeyConstraint extends AbstractRsaKeySecurityConstraint {
     if (heiCovered != null) {
       Collection<String> heisCoveredByClientKey =
           registryClient.getHeisCoveredByClientKey(publicKey);
-      // heisCoveredByClientKey contains at most one element (see VerifySingleHost/Hei constraints)
-      if (!heisCoveredByClientKey.isEmpty() && !heisCoveredByClientKey.contains(heiCovered)) {
+      if (!heisCoveredByClientKey.isEmpty()
+          && (!heisCoveredByClientKey.contains(heiCovered) || heisCoveredByClientKey.size() > 1)) {
         return new FailedConstraintNotice(Severity.WARNING,
             "The " + this.getKeyName() + " is not unique. One of your keys (" + keyNumber
                 + ") is already registered in the network and covers " + heisCoveredByClientKey
