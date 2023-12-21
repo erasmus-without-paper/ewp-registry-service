@@ -104,6 +104,9 @@
         <institutions-covered>
             <hei-id>lu.se</hei-id>
         </institutions-covered>
+        <server-credentials-in-use>
+            <rsa-public-key sha-256="(SHA-256 fingerprint here)"/>
+        </server-credentials-in-use>
     </host>
     <host>
         <ewp:admin-email>admin@example.com</ewp:admin-email>
@@ -134,4 +137,9 @@
             <name xml:lang="pl">Uniwersytet Warszawski</name>
         </hei>
     </institutions>
+    <binaries>
+        <rsa-public-key sha-256="(SHA-256 fingerprint here)">
+            (Base64-encoded content here)
+        </rsa-public-key>
+    </binaries>
 </catalogue>

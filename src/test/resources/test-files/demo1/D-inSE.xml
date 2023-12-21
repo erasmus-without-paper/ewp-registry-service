@@ -16,5 +16,16 @@
                 <name xml:lang="en">Lund University</name>
             </hei>
         </mf:institutions-covered>
+        <mf:server-credentials-in-use>
+            <mf:rsa-public-key>
+                MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAkgqUSYpTewxyrpw37G6/
+                gWUUg/Whg0euSneCo/byH5d+FExR3DdmX4HQdgrTBcQHx0tRxxIz0LMK7pBbphct
+                0bSqPY4+CZNw2PtB4QXSpkKJI3EXF+miGE41ujKnIxJOFUc3eB3HM0Pb5B9rWDS+
+                AH/A2L8xbfCvEQNPcQnrE+0eCFyCBZoNGLpolClLZi4orR3rYqCH30lR6z99IE9g
+                qbhDaTwgQnajZqoBawX0ddifW10CTnJFEO7NpOzry9Ese7gnoZyIylNIDyJx/wbH
+                XHHvrt63YoKRwBq+cDNvZCO8ZqRDUFiRS2KUxHVQuBpXmWgBn//5wYNcIM6Dxj/M
+                zQIDAQAB
+            </mf:rsa-public-key>
+        </mf:server-credentials-in-use>
     </mf:host>
 </mf:manifest>

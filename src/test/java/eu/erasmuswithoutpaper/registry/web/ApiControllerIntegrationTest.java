@@ -163,11 +163,11 @@ public class ApiControllerIntegrationTest extends WRIntegrationTest {
     assertThat(this.status(urlPL)).contains("unable to fetch");
     assertThat(this.status(urlSE)).contains("unable to fetch");
 
-    /* [Test B] Let's add a simple, empty, valid manifest for Poland. */
+    /* [Test C] Let's add a simple, valid manifest for Poland. */
 
-    this.internet.putURL(urlPL, this.getFile("demo1/B-inPL.xml"));
+    this.internet.putURL(urlPL, this.getFile("demo1/C-inPL.xml"));
 
-    /* The calogue is not yet refreshed, because we didn't call refresh. */
+    /* The catalogue is not yet refreshed, because we didn't call refresh. */
 
     assertThat(this.getCatalogueBodyWithoutBinaries())
         .isEqualTo(this.getFileAsString("demo1/A-out.xml"));
@@ -176,17 +176,10 @@ public class ApiControllerIntegrationTest extends WRIntegrationTest {
 
     this.forceReload(urlPL);
     assertThat(this.getCatalogueBodyWithoutBinaries())
-        .isEqualTo(this.getFileAsString("demo1/B-out.xml"));
+        .isEqualTo(this.getFileAsString("demo1/C-out.xml"));
     assertThat(this.status(urlPL))
         .containsPattern("Last access status:[ \n]+<code class='ewpst__bordered-code'>OK</code>");
     assertThat(this.status(urlPL)).doesNotContain("unable to fetch");
-
-    /* [Test C] Define one HEI. */
-
-    this.internet.putURL(urlPL, this.getFile("demo1/C-inPL.xml"));
-    this.forceReload(urlPL);
-    assertThat(this.getCatalogueBodyWithoutBinaries())
-        .isEqualTo(this.getFileAsString("demo1/C-out.xml"));
 
     /* [Test D] Put a similar manifest into the Swedish URL. */
 

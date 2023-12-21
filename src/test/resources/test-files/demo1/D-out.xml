@@ -93,6 +93,9 @@
         <institutions-covered>
             <hei-id>lu.se</hei-id>
         </institutions-covered>
+        <server-credentials-in-use>
+            <rsa-public-key sha-256="(SHA-256 fingerprint here)"/>
+        </server-credentials-in-use>
     </host>
     <institutions>
         <hei id="lu.se">
@@ -104,4 +107,9 @@
             <name xml:lang="en">University of Warsaw</name>
         </hei>
     </institutions>
+    <binaries>
+        <rsa-public-key sha-256="(SHA-256 fingerprint here)">
+            (Base64-encoded content here)
+        </rsa-public-key>
+    </binaries>
 </catalogue>

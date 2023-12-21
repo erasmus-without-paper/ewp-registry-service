@@ -11,6 +11,11 @@
                 <url>https://example.com/manifest.xml</url>
             </discovery>
         </r:apis-implemented>
+        <institutions-covered>
+            <r:hei id="hei1.com">
+                <r:name>HEI 1</r:name>
+            </r:hei>
+        </institutions-covered>
         <client-credentials-in-use>
             <!-- This one contains an invalid key. -->
             <rsa-public-key>
