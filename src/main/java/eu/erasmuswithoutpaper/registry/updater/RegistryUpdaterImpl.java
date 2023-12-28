@@ -119,11 +119,12 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
   public final void onSourcesUpdated() {
 
     /*
-     * Lock the manifest repository for exclusive read access as it will be acquired by {@link
+     * Lock the manifest repository for exclusive write access as read will be acquired by {@link
      * ManifestOverviewManager}. We must be sure to always take repository lock first!
+     * Write lock is used in `updateTheCatalogue` method and that is why read is not enough!
      */
 
-    this.repo.acquireReadLock();
+    this.repo.acquireWriteLock();
     try {
 
       /*
@@ -202,8 +203,9 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
       }
 
       this.manifestOverviewManager.updateAllManifests();
+      this.updateTheCatalogue(true);
     } finally {
-      this.repo.releaseReadLock();
+      this.repo.releaseWriteLock();
     }
   }
 
