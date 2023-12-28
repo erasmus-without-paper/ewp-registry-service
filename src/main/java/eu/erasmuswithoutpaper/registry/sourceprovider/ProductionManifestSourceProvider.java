@@ -80,7 +80,7 @@ public class ProductionManifestSourceProvider implements ManifestSourceProvider 
   }
 
   @Override
-  public final void update() {
+  public final boolean update() {
     // The first manifest source is our own.
 
     ArrayList<ManifestSource> lst = new ArrayList<>();
@@ -125,6 +125,11 @@ public class ProductionManifestSourceProvider implements ManifestSourceProvider 
       }
     }
 
-    this.sources = Collections.unmodifiableList(lst);
+    boolean isUpdated = sources == null || !sources.equals(lst);
+    if (isUpdated) {
+      sources = Collections.unmodifiableList(lst);
+    }
+
+    return isUpdated;
   }
 }

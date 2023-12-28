@@ -30,7 +30,9 @@ public interface ManifestSourceProvider {
 
   /**
    * Update the list of {@link ManifestSource ManifestSources}.
+   *
+   * @return True if the manifest sources list has changed.
    */
-  void update();
+  boolean update();
 
 }

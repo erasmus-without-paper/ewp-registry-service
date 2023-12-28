@@ -50,8 +50,9 @@ public class TestManifestSourceProvider implements ManifestSourceProvider {
   }
 
   @Override
-  public void update() {
+  public boolean update() {
     // Updating manifest sources list is not possible in tests.
+    return false;
   }
 
   /**
