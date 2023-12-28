@@ -1,15 +1,9 @@
 ## How to run the Registry locally?
 We've created bash scripts to help you. You will need docker and git.
 
-You need to create an [GitHub][github] account, [generate access token][generate-github-access-token] with `read:packages` scopes, and then login to docker.pkg.github.com in docker.
+To pull image use:
 ```bash
-docker login docker.pkg.github.com --username <your username>
-<enter your GitHub access token when prompted for password>
-```
-
-Then, to pull image use:
-```bash
-docker pull docker.pkg.github.com/erasmus-without-paper/ewp-registry-service/ewp-registry-service:latest
+docker pull ghcr.io/erasmus-without-paper/ewp-registry-service/ewp-registry-service:latest
 ```
 Then, call `./setup.sh <https URL of your manifest file>` script, it will create required directories and files.
 Next, run `./run_local_docker.sh`. It will start local registry on `localhost:8080`.

@@ -20,12 +20,8 @@ Running from a Docker Image
 
 Currently, we are pushing out latest builds to a public Docker registry on GitHub.
 
-You need to create an [GitHub][github] account, [generate access token][generate-github-access-token] with `read:packages` scopes, and then login to docker.pkg.github.com in docker.
-
 ```sh
-docker login docker.pkg.github.com --username <your username>
-<enter your GitHub access token when prompted for password>
-docker pull docker.pkg.github.com/erasmus-without-paper/ewp-registry-service/ewp-registry-service:latest
+docker pull ghcr.io/erasmus-without-paper/ewp-registry-service/ewp-registry-service:latest
 ```
 
 (You will need to repeat this step whenever you want to upgrade too.)
