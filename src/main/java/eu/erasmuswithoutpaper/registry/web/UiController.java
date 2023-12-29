@@ -448,15 +448,20 @@ public class UiController {
    * @return A page with all manifest sources and their statuses.
    */
   @RequestMapping(value = "/status", method = RequestMethod.GET)
-  public ModelAndView serviceStatus(HttpServletResponse response,
+  public Object serviceStatus(HttpServletResponse response,
       @Value("${app.admin-emails}") List<String> adminEmails) {
+    List<ManifestSource> manifestSources = sourceProvider.getAll();
+    if (manifestSources == null) {
+      return errorController.get404();
+    }
+
     ModelAndView mav = new ModelAndView();
     this.initializeMavCommons(mav);
     mav.setViewName("status");
     response.addHeader("Cache-Control", "max-age=0, must-revalidate");
 
     List<ManifestUpdateStatus> statuses = new ArrayList<>();
-    for (ManifestSource source : this.sourceProvider.getAll()) {
+    for (ManifestSource source : manifestSources) {
       ManifestUpdateStatus status = this.manifestStatusRepo.findById(source.getUrl()).orElse(null);
       // Manifests that weren't loaded yet won't be displayed.
       if (status != null) {

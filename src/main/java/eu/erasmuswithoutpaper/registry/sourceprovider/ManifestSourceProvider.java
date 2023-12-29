@@ -15,6 +15,7 @@ public interface ManifestSourceProvider {
 
   /**
    * @return A full list of all {@link ManifestSource ManifestSources} to be used.
+   *     Null if the list could not be loaded on startup.
    */
   List<ManifestSource> getAll();
 
@@ -25,7 +26,12 @@ public interface ManifestSourceProvider {
    * @return An optional with {@link ManifestSource}, if found.
    */
   default Optional<ManifestSource> getOne(String url) {
-    return getAll().stream().filter(source -> source.getUrl().equals(url)).findFirst();
+    List<ManifestSource> all = getAll();
+    if (all == null) {
+      return Optional.ofNullable(null);
+    }
+
+    return all.stream().filter(source -> source.getUrl().equals(url)).findFirst();
   }
 
   /**

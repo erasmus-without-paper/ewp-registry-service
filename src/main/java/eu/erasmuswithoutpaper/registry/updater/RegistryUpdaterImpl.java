@@ -106,7 +106,9 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
     this.notifierFlags = new HashMap<>();
     this.parser = parser;
     this.cachedManifestsMap = new HashMap<>();
-    this.onSourcesUpdated();
+    if (this.manifestSourceProvider.getAll() != null) {
+      this.onSourcesUpdated();
+    }
   }
 
   private void onManifestAdminEmailsChanged(String manifestUrl, List<String> adminEmails) {
@@ -127,13 +129,16 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
     this.repo.acquireWriteLock();
     try {
 
+      List<ManifestSource> manifestSources = manifestSourceProvider.getAll();
+      if (manifestSources == null) {
+        return;
+      }
       /*
        * First, try to find flags which are no longer valid because our manifestSourceProvider
        * stopped
        * serving the ManifestSources related to these flags.
        */
-
-      Set<ManifestSource> sources = Sets.newLinkedHashSet(this.manifestSourceProvider.getAll());
+      Set<ManifestSource> sources = Sets.newLinkedHashSet(manifestSources);
       for (Iterator<Map.Entry<ManifestSource, ManifestUpdateStatusNotifierFlag>> iter =
            this.notifierFlags.entrySet().iterator(); iter.hasNext(); ) {
         Map.Entry<ManifestSource, ManifestUpdateStatusNotifierFlag> entry = iter.next();
@@ -214,7 +219,13 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
     if (this.manifestSourceProvider.update()) {
       this.onSourcesUpdated();
     }
-    for (ManifestSource source : this.manifestSourceProvider.getAll()) {
+
+    List<ManifestSource> manifestProviders = this.manifestSourceProvider.getAll();
+    if (manifestProviders == null) {
+      return;
+    }
+
+    for (ManifestSource source : manifestProviders) {
       this.reloadManifestSource(source);
     }
   }
@@ -399,9 +410,12 @@ public class RegistryUpdaterImpl implements RegistryUpdater {
     try {
       List<Document> manifests = new ArrayList<>();
 
-      // For each manifest source...
+      List<ManifestSource> manifestSources = manifestSourceProvider.getAll();
+      if (manifestSources == null) {
+        throw new UnsupportedOperationException("Manifest sources cannot be empty!");
+      }
 
-      for (ManifestSource src : this.manifestSourceProvider.getAll()) {
+      for (ManifestSource src : manifestSources) {
 
         // Get the filtered copy of the manifest XML from the repository.
 

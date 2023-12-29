@@ -21,6 +21,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
+import io.sentry.Sentry;
 import org.joox.Match;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,7 +72,12 @@ public class ProductionManifestSourceProvider implements ManifestSourceProvider 
     this.resourceLoader = resourceLoader;
     this.selfManifestProvider = selfManifestProvider;
     this.manifestFactory = manifestFactory;
-    this.update();
+    try {
+      this.update();
+    } catch (RuntimeException e) {
+      Sentry.captureException(e);
+      logger.error("RuntimeException loading manifests", e);
+    }
   }
 
   @Override

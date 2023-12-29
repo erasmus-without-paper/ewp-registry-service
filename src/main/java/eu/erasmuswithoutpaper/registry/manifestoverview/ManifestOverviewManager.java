@@ -103,7 +103,12 @@ public class ManifestOverviewManager {
   public void updateAllManifests() {
     this.writeLock.lock();
     try {
-      for (ManifestSource source : this.sourceProvider.getAll()) {
+      List<ManifestSource> all = sourceProvider.getAll();
+      if (all == null) {
+        return;
+      }
+
+      for (ManifestSource source : all) {
         this.updateManifestWithoutRecalculatingAggregates(source.getUrl());
       }
       this.recalculateAggregates();
