@@ -70,7 +70,7 @@ to work along with the JGit library we use in the app itself):
 
 ```sh
 docker run --rm -it --entrypoint=bash -v /var/ewp-registry-service:/root \
-    docker.usos.edu.pl:5000/ewp-registry-service
+    ghcr.io/erasmus-without-paper/ewp-registry-service/ewp-registry-service:latest
 ```
 
 You will need to either create an empty Git repository (`git init repo`), or
@@ -141,7 +141,7 @@ In development, you may start it directly:
 
 ```sh
 docker run --rm -it -v /var/ewp-registry-service:/root -p 80:8080 \
-    docker.usos.edu.pl:5000/ewp-registry-service
+    ghcr.io/erasmus-without-paper/ewp-registry-service/ewp-registry-service:latest
 ```
 
 

@@ -320,7 +320,7 @@
                 <artifactId>docker-maven-plugin</artifactId>
                 <version>1.2.2</version>
                 <configuration>
-                    <imageName>docker.usos.edu.pl:5000/ewp-registry-service</imageName>
+                    <imageName>ghcr.io/erasmus-without-paper/ewp-registry-service/ewp-registry-service</imageName>
                     <dockerDirectory>docker</dockerDirectory>
                     <resources>
                         <resource>
