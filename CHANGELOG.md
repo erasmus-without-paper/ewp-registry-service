@@ -1,6 +1,44 @@
 Release notes
 =============
 
+1.12.0
+------
+
+*Released on 2024-01-24*
+
+* Add IIA v7 support
+* Remove validation of IIA APIs older than v6
+* Add IIA CNR Approval v2 to XML schema validator
+* Add IIA CNR v3 to XML schema validator
+* Add IIA Approval v2 to XML schema validator
+* Add European Commission logo
+* Recognize if manifest sources list has changed
+* Do not report endpoint duplicates when server key changes
+* Handle duplicate client keys that are already in the catalogue
+* Disable XML validation on production site
+* Make validator properly handle "?" in API endpoint URL
+* Do not pretty-print before XML validation (fixes #65)
+* Remove 'additional elements' test of Omobility LA approval
+* Updated docs for Docker image (`ghcr.io`)
+* Replace Developers Hub with Developers Guide
+* Stop using online XSD on build resource
+* Fix RequestMapping on not found
+* Removed Guava from where it's not helping much
+
+* Updated dependencies:
+    * Spring Boot 3.2 and full Jakarta EE with Java 17
+    * Node (20.6.1 -> 20.9.0; the latest LTS)
+    * BouncyCastle (1.70 -> 1.77)
+    * Sentry (1.7.30 -> 7.0.2)
+    * JGit (6.7.0 -> 6.8.0)
+    * commons-text (1.10.0 -> 1.11.0)
+    * commons-io (2.14.0 -> 2.15.1)
+    * Guava (32.1.2 -> 33.0.0)
+    * Pebble (3.1.5 -> 3.2.2)
+    * Santuario XML Security (3.0.2 -> 3.0.3)
+    * JOOX (1.5.0 -> 2.0.0)
+    * Maven plugins: PMD, Checkstyle, Frontend, Surefire
+
 1.11.1
 -----
 
