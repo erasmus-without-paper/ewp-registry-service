@@ -118,6 +118,13 @@ public class KnownElement {
       KnownNamespace.APIENTRY_IIAS_V6, "iias", "API entry: Interinstitutional Agreements API v6");
 
   /**
+   * API entry for Interinstitutional Agreements API v7.
+   */
+  public static final KnownElement APIENTRY_IIAS_V7 = new KnownElement(
+      KnownNamespace.APIENTRY_IIAS_V7, "iias", "API entry: Interinstitutional Agreements API v7");
+
+
+  /**
    * API entry for Interinstitutional Agreement CNR API v1.
    */
   public static final KnownElement APIENTRY_IIA_CNR_V1 =
@@ -132,6 +139,12 @@ public class KnownElement {
           "API entry: Interinstitutional Agreement CNR API v2");
 
   /**
+   * API entry for Interinstitutional Agreement CNR API v3.
+   */
+  public static final KnownElement APIENTRY_IIA_CNR_V3 =
+      new KnownElement(KnownNamespace.APIENTRY_IIA_CNR_V3, "iia-cnr",
+          "API entry: Interinstitutional Agreement CNR API v3");
+  /**
    * API entry for Interinstitutional Agreements Approval API v1.
    */
   public static final KnownElement APIENTRY_IIAS_APPROVAL_V1 =
@@ -139,11 +152,25 @@ public class KnownElement {
           "API entry: Interinstitutional Agreements Approval API v1");
 
   /**
+   * API entry for Interinstitutional Agreements Approval API v2.
+   */
+  public static final KnownElement APIENTRY_IIAS_APPROVAL_V2 =
+      new KnownElement(KnownNamespace.APIENTRY_IIAS_APPROVAL_V2, "iias-approval",
+          "API entry: Interinstitutional Agreements Approval API v2");
+
+  /**
    * API entry for Interinstitutional Agreement Approval CNR API v1.
    */
   public static final KnownElement APIENTRY_IIA_APPROVAL_CNR_V1  =
       new KnownElement(KnownNamespace.APIENTRY_IIA_APPROVAL_CNR_V1, "iia-approval-cnr",
           "API entry: Interinstitutional Agreement Approval CNR API v1");
+
+  /**
+   * API entry for Interinstitutional Agreement Approval CNR API v2.
+   */
+  public static final KnownElement APIENTRY_IIA_APPROVAL_CNR_V2  =
+      new KnownElement(KnownNamespace.APIENTRY_IIA_APPROVAL_CNR_V2, "iia-approval-cnr",
+          "API entry: Interinstitutional Agreement Approval CNR API v2");
 
   /**
    * API entry for Outgoing Mobilities API v1.

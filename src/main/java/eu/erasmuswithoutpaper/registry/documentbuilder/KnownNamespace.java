@@ -517,6 +517,15 @@ public class KnownNamespace {
 
   /**
    * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-iia-cnr/blob/stable-v3/manifest-entry.xsd'>
+   * here</a>.
+   */
+  public static final KnownNamespace APIENTRY_IIA_CNR_V3 =
+      new KnownNamespace("iac3", "api-iia-cnr/blob/stable-v3/manifest-entry.xsd",
+          "api-iia-cnr/stable-v3/manifest-entry.xsd", true);
+
+  /**
+   * As described <a href=
    * 'https://github.com/erasmus-without-paper/ewp-specs-api-iias-approval/blob/master/manifest-entry.xsd'>
    * here</a>.
    */ // TODO: master->stable!
@@ -527,6 +536,16 @@ public class KnownNamespace {
 
   /**
    * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-iias-approval/blob/stable-v2/manifest-entry.xsd'>
+   * here</a>.
+   */
+  public static final KnownNamespace APIENTRY_IIAS_APPROVAL_V2 =
+      new KnownNamespace("iaa2", "api-iias-approval/blob/stable-v2/manifest-entry.xsd",
+          "api-iias-approval/stable-v2/manifest-entry.xsd", false);
+  // TODO: 2. false->true
+
+  /**
+   * As described <a href=
    * 'https://github.com/erasmus-without-paper/ewp-specs-api-iia-approval-cnr/blob/master/manifest-entry.xsd'>
    * here</a>.
    */ // TODO: master->stable!
@@ -534,6 +553,16 @@ public class KnownNamespace {
       new KnownNamespace("iaac1", "api-iia-approval-cnr/blob/stable-v1/manifest-entry.xsd",
           "api-iia-approval-cnr/master/manifest-entry.xsd", false);
   // TODO: 1. false->true 2. master->stable
+
+  /**
+   * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-iia-approval-cnr/blob/stable-v2/manifest-entry.xsd'>
+   * here</a>.
+   */
+  public static final KnownNamespace APIENTRY_IIA_APPROVAL_CNR_V2 =
+      new KnownNamespace("iaac2", "api-iia-approval-cnr/blob/stable-v2/manifest-entry.xsd",
+          "api-iia-approval-cnr/stable-v2/manifest-entry.xsd", false);
+  // TODO: 2. false->true
 
   /**
    * As described <a href=
