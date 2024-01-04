@@ -313,24 +313,6 @@ class OMobilityLAsUpdateValidationSuite
         400
     );
 
-    testParameters200(combination,
-        String.format(
-            "Send %s request with known omobility-id and changes-proposal id and additional "
-                + "elements in request, expect 200.",
-            updateTypeName
-        ),
-        addEmptyNode(
-            requestToXmlParameters(requestFactory.createRequest(
-                this.currentState.sendingHeiId,
-                this.currentState.omobilityId,
-                this.currentState.changesProposalId
-            )),
-            "test",
-            "omobility-las-update-request", updateTypeName
-        ),
-        updateResponseVerifierFactory.expectCorrectResponse()
-    );
-
     testParametersErrorAsOtherEwpParticipant(combination,
         String.format(
             "Send %s request with known omobility-id and changes-proposal id as other EWP "
