@@ -6,7 +6,7 @@ RUN apt-get update && \
 
 COPY ssh_config /etc/ssh/ssh_config
 
-COPY ewp-registry*.jar /app.jar
+COPY maven/ewp-registry*.jar /app.jar
 
 VOLUME /root
 WORKDIR /root

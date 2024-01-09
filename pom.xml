@@ -268,11 +268,6 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <image>
-                        <name>ghcr.io/erasmus-without-paper/ewp-registry-service/ewp-registry-service</name>
-                    </image>
-                </configuration>
                 <executions>
                     <execution>
                         <goals>
@@ -280,6 +275,28 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>0.43.4</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <images>
+                        <image>
+                            <name>ewp-registry-service</name>
+                            <build>
+                                <contextDir>${project.basedir}/docker</contextDir>
+                                <assemblies>
+                                    <assembly>
+                                        <descriptorRef>artifact</descriptorRef>
+                                        <targetDir>/docker</targetDir>
+                                    </assembly>
+                                </assemblies>
+                            </build>
+                        </image>
+                    </images>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
