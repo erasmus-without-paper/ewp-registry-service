@@ -59,7 +59,7 @@
 
 
   <xsl:template match="/">
-
+    <iias>
     <xsl:for-each select="//*[local-name()='iia']">
       <iia>
         <iia-id>
@@ -103,7 +103,6 @@
           </xsl:for-each>
         </text-to-hash>
 
-        <!-- If it is present at least an attribute not-yet-defined=true, the IIA is not valid for an approval -->
         <xsl:for-each select="//*[local-name()][@not-yet-defined='true' or @not-yet-defined='1'], //*[local-name()][@v6-value!='']">
           <xsl:choose>
             <xsl:when test="position() = 1">
@@ -114,5 +113,6 @@
 
       </iia>
     </xsl:for-each>
+    </iias>
   </xsl:template>
 </xsl:stylesheet>
