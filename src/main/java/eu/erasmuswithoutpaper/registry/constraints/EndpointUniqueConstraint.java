@@ -44,6 +44,10 @@ public class EndpointUniqueConstraint implements ManifestConstraint {
       for (Match match : root.xpath("mf6:host/r:apis-implemented/*")
           .each()) {
         String apiName = match.tag();
+        if ("echo".equals(apiName) || "discovery".equals(apiName)) {
+          // We don't handle Echo and Discovery APIs, as thisApis wouldn't need to be *this* API.
+          continue;
+        }
         String namespaceUri = match.namespaceURI();
         if (!namespaceUri.startsWith(registryRepoBaseUrl)) {
           /*
@@ -57,7 +61,7 @@ public class EndpointUniqueConstraint implements ManifestConstraint {
 
         Collection<Element> allApis = registryClient.findApis(conditions);
         conditions.setRequiredHei(heiCovered);
-        Optional<Element> thisApis = registryClient.findApis(conditions).stream().findAny();
+        Optional<Element> thisApis = registryClient.findApis(conditions).stream().findFirst();
 
         Collection<RSAPublicKey> serverKeys = null;
         if (thisApis.isPresent()) {
