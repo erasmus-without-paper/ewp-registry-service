@@ -39,7 +39,8 @@ class ApiVersionsCell extends ApiEntriesCell {
           line.addTooltipLine("Stats endpoint has not been implemented.");
         } else if (!this.lastClass.matches(apiEntry)) {
           line.addClass("obsolete");
-          line.addTooltipLine("This major version of this API is obsolete or deprecated.");
+          line.addTooltipLine(
+              "This major version of this API is obsolete, deprecated or discontinued.");
         }
       } else {
         line.addClass("error");
