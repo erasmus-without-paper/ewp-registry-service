@@ -8,7 +8,7 @@
         <ewp:admin-provider>Provider</ewp:admin-provider>
         <r:apis-implemented>
             <discovery version="6.0.0" xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/blob/stable-v6/manifest-entry.xsd">
-                <url>https://schowek.usos.edu.pl/w.rygielski/ewp/uw.edu.pl/manifest2.xml</url>
+                <url>https://ewp.node.com/ewp/uw.edu.pl/manifest2.xml</url>
             </discovery>
             <hack-attempt xmlns="urn:hacker">
                 <host xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-registry/tree/stable-v1">

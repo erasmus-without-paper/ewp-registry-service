@@ -8,7 +8,7 @@
         <ewp:admin-provider>Provider</ewp:admin-provider>
         <r:apis-implemented>
             <discovery version="6.0.0" xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/blob/stable-v6/manifest-entry.xsd">
-                <url>https://schowek.usos.edu.pl/w.rygielski/ewp/ladok.se/manifest.xml</url>
+                <url>https://ewp.node.com/ewp/ladok.se/manifest.xml</url>
             </discovery>
             <echo version="2.0.0" xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-echo/blob/stable-v2/manifest-entry.xsd">
                 <url>https://ladok.se/ewp/echo</url>

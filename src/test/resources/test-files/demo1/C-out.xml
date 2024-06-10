@@ -79,7 +79,7 @@
         <ewp:admin-provider>Provider</ewp:admin-provider>
         <apis-implemented>
             <d6:discovery version="6.0.0">
-                <d6:url>https://schowek.usos.edu.pl/w.rygielski/ewp/uw.edu.pl/manifest.xml</d6:url>
+                <d6:url>https://ewp.node.com/ewp/uw.edu.pl/manifest.xml</d6:url>
             </d6:discovery>
         </apis-implemented>
         <institutions-covered>

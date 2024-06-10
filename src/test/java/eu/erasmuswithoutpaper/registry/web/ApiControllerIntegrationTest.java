@@ -134,8 +134,8 @@ public class ApiControllerIntegrationTest extends WRIntegrationTest {
     this.manifestSourceProvider.clearSources();
     String urlPL, urlSE;
     // urlSelf = "https://registry.erasmuswithoutpaper.eu/manifest.xml";
-    urlPL = "https://schowek.usos.edu.pl/w.rygielski/ewp/uw.edu.pl/manifest.xml";
-    urlSE = "https://schowek.usos.edu.pl/w.rygielski/ewp/ladok.se/manifest.xml";
+    urlPL = "https://ewp.node.com/ewp/uw.edu.pl/manifest.xml";
+    urlSE = "https://ewp.node.com/ewp/ladok.se/manifest.xml";
     // this.manifestSourceProvider.addSource(manifestFactory.newTrustedSource(urlSelf));
     this.manifestSourceProvider.addSource(manifestFactory.newRegularSource(urlPL,
         Collections.singletonList(new RestrictInstitutionsCovered("^uw\\.edu\\.pl$"))));
@@ -208,7 +208,7 @@ public class ApiControllerIntegrationTest extends WRIntegrationTest {
 
     this.internet.putURL(urlSE, this.getFile("demo1/E-inSE.xml"));
     this.forceReload(urlSE);
-    String urlPL2 = "https://schowek.usos.edu.pl/w.rygielski/ewp/uw.edu.pl/manifest2.xml";
+    String urlPL2 = "https://ewp.node.com/ewp/uw.edu.pl/manifest2.xml";
     this.manifestSourceProvider.addSource(manifestFactory.newRegularSource(urlPL2, Collections
         .singletonList(new RestrictInstitutionsCovered("^(uw\\.edu\\.pl)|(university-a\\.edu)$"))));
     this.internet.putURL(urlPL2, this.getFile("demo1/I-inPL2.xml"));
