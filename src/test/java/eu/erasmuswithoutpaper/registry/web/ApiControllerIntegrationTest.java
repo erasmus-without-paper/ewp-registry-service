@@ -23,8 +23,10 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.context.request.ServletWebRequest;
 
 import org.junit.jupiter.api.Test;
 
@@ -250,7 +252,8 @@ public class ApiControllerIntegrationTest extends WRIntegrationTest {
    * @return Catalogue body with all binary content replaced with placeholders.
    */
   private String getCatalogueBodyWithoutBinaries() {
-    String body = this.apiController.getCatalogue().getBody();
+    MockHttpServletRequest servletRequest = new MockHttpServletRequest();
+    String body = this.apiController.getCatalogue(new ServletWebRequest(servletRequest)).getBody();
     // Replace fingerprints
     body = body.replaceAll("\"[0-9a-f]{64,64}\"", "\"(SHA-256 fingerprint here)\"");
     // Replace base64 values... (this one is hackish, but it's enough for tests).

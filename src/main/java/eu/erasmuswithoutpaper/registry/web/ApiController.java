@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.WebRequest;
 
 import org.apache.commons.io.IOUtils;
 
@@ -59,11 +60,16 @@ public class ApiController {
    * @return a HTTP response with the catalogue contents.
    */
   @RequestMapping("/catalogue-v1.xml")
-  public ResponseEntity<String> getCatalogue() {
+  public ResponseEntity<String> getCatalogue(WebRequest request) {
+    long catalogueLastModified = repo.getCatalogueLastModified();
+    if (request.checkNotModified(catalogueLastModified)) {
+      return null;
+    }
     try {
       HttpHeaders headers = new HttpHeaders();
       headers.setCacheControl("max-age=300, must-revalidate");
       headers.setContentType(MediaType.APPLICATION_XML);
+      headers.setLastModified(catalogueLastModified);
       headers.setExpires(System.currentTimeMillis() + 300_000);
       return new ResponseEntity<String>(this.repo.getCatalogue(), headers, HttpStatus.OK);
     } catch (CatalogueNotFound e) {

@@ -14,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -597,5 +598,22 @@ public class ManifestRepositoryImpl implements ManifestRepository {
 
     pathParts.add(DigestUtils.sha1Hex(urlString));
     return String.join("/", pathParts);
+  }
+
+  @Override
+  public long getCatalogueLastModified() {
+    if (this.cachedCatalogueContent == null) {
+      return 0;
+    }
+
+    this.lock.readLock().lock();
+    try {
+      FileTime lastModifiedTime = Files.getLastModifiedTime(getPathForCatalogue());
+      return lastModifiedTime.toMillis();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    } finally {
+      this.lock.readLock().unlock();
+    }
   }
 }

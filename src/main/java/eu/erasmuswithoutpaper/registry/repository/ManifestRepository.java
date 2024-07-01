@@ -192,4 +192,11 @@ public interface ManifestRepository extends DisposableBean {
    * Release the lock previously acquired with {@link #acquireWriteLock()}.
    */
   void releaseWriteLock();
+
+  /**
+   * Returns catalog's last modified time.
+   *
+   * @return timestamp in milliseconds the catalogue was last modified.
+   */
+  long getCatalogueLastModified();
 }
