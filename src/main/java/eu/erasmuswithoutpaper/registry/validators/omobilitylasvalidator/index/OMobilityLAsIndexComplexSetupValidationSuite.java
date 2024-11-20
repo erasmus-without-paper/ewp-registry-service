@@ -67,7 +67,7 @@ public class OMobilityLAsIndexComplexSetupValidationSuite
       OMobilityLAsSuiteState state,
       ValidationSuiteConfig config,
       int version) {
-    super(validator, state, config);
+    super(validator, state, config, false);
 
     this.apiInfo = new OMobilityLAsGetValidatedApiInfo(version, ApiEndpoint.INDEX);
   }

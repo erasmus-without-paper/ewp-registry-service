@@ -53,7 +53,7 @@ class IMobilityTorsGetSetupValidationSuite
 
   IMobilityTorsGetSetupValidationSuite(ApiValidator<IMobilityTorsSuiteState> validator,
       IMobilityTorsSuiteState state, ValidationSuiteConfig config, int version) {
-    super(validator, state, config);
+    super(validator, state, config, false);
 
     this.apiInfo = new IMobilityTorsValidatedApiInfo(version, ApiEndpoint.GET);
   }

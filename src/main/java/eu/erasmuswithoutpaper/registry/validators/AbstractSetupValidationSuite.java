@@ -23,14 +23,17 @@ import org.w3c.dom.Element;
 
 public abstract class AbstractSetupValidationSuite<S extends SuiteState>
     extends AbstractValidationSuite<S> {
-  private GitHubTagsGetter gitHubTagsGetter;
+  private final GitHubTagsGetter gitHubTagsGetter;
+  private final boolean getRequestsForbidden;
 
   protected AbstractSetupValidationSuite(
       ApiValidator<S> validator,
       S state,
-      ValidationSuiteConfig config) {
+      ValidationSuiteConfig config,
+      boolean getRequestsForbidden) {
     super(validator, state, config);
     this.gitHubTagsGetter = config.gitHubTagsGetter;
+    this.getRequestsForbidden = getRequestsForbidden;
   }
 
   protected static HttpSecurityDescription getDescriptionFromSecuritySettings(
@@ -255,7 +258,7 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
             if (reqencr.equals(CombEntry.REQENCR_EWP)) {
               supportsGetRequests = false;
             }
-            if (supportsGetRequests) {
+            if (supportsGetRequests && !getRequestsForbidden) {
               this.currentState.combinations.add(
                   new Combination("GET", currentState.url,
                       getMatchedApiEntry(), cliauth, srvauth, reqencr, resencr

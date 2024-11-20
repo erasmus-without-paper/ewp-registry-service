@@ -44,7 +44,7 @@ class MtDictionariesSetupValidationSuite
 
   MtDictionariesSetupValidationSuite(ApiValidator<MtDictionariesSuiteState> validator,
       MtDictionariesSuiteState state, ValidationSuiteConfig config, int version) {
-    super(validator, state, config);
+    super(validator, state, config, false);
 
     this.apiInfo = new MtDictionariesValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
   }

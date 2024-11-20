@@ -47,7 +47,7 @@ class OUnitsSetupValidationSuite
       OUnitsSuiteState state,
       ValidationSuiteConfig config,
       int version) {
-    super(validator, state, config);
+    super(validator, state, config, false);
 
     this.apiInfo = new OUnitsValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
   }

@@ -39,7 +39,7 @@ class InstitutionsSetupValidationSuite
 
   InstitutionsSetupValidationSuite(ApiValidator<InstitutionsSuiteState> validator,
       InstitutionsSuiteState state, ValidationSuiteConfig config, int version) {
-    super(validator, state, config);
+    super(validator, state, config, false);
 
     this.apiInfo = new InstitutionsValidatedApiInfo(version);
   }

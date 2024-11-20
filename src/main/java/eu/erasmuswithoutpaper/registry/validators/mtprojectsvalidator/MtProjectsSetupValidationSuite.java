@@ -44,7 +44,7 @@ class MtProjectsSetupValidationSuite
 
   MtProjectsSetupValidationSuite(ApiValidator<MtProjectsSuiteState> validator,
       MtProjectsSuiteState state, ValidationSuiteConfig config, int version) {
-    super(validator, state, config);
+    super(validator, state, config, false);
 
     this.apiInfo = new MtProjectsValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
   }

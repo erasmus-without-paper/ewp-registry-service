@@ -57,7 +57,7 @@ class OMobilitiesIndexSetupValidationSuite
 
   OMobilitiesIndexSetupValidationSuite(ApiValidator<OMobilitiesSuiteState> validator,
       OMobilitiesSuiteState state, ValidationSuiteConfig config, int version) {
-    super(validator, state, config);
+    super(validator, state, config, false);
 
     this.apiInfo = new OMobilitiesValidatedApiInfo(version, ApiEndpoint.INDEX);
   }

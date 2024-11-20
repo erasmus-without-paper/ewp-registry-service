@@ -34,7 +34,7 @@ public class IiaIndexBasicSetupValidationSuiteV7
    */
   public IiaIndexBasicSetupValidationSuiteV7(ApiValidator<IiaSuiteState> validator,
       IiaSuiteState state, ValidationSuiteConfig config, int version) {
-    super(validator, state, config);
+    super(validator, state, config, false);
 
     this.apiInfo = new IiaValidatedApiInfo(version, ApiEndpoint.INDEX);
   }

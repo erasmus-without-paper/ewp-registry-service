@@ -24,7 +24,7 @@ public class EchoSetupValidationSuite
       EchoSuiteState state,
       ValidationSuiteConfig config,
       int version) {
-    super(echoValidator, state, config);
+    super(echoValidator, state, config, false);
 
     this.apiInfo = new EchoValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
   }

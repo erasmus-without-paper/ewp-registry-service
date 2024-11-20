@@ -43,7 +43,7 @@ class CourseReplicationSetupValidationSuite
 
   CourseReplicationSetupValidationSuite(ApiValidator<CourseReplicationSuiteState> validator,
       CourseReplicationSuiteState state, ValidationSuiteConfig config, int version) {
-    super(validator, state, config);
+    super(validator, state, config, false);
 
     this.apiInfo = new CourseReplicationValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
   }

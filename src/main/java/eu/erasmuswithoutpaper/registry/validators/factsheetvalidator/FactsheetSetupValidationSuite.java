@@ -42,7 +42,7 @@ class FactsheetSetupValidationSuite
 
   FactsheetSetupValidationSuite(ApiValidator<FactsheetSuiteState> validator,
       FactsheetSuiteState state, ValidationSuiteConfig config, int version) {
-    super(validator, state, config);
+    super(validator, state, config, false);
 
     this.apiInfo = new FactsheetValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
   }

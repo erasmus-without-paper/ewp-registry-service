@@ -45,7 +45,7 @@ class CoursesSetupValidationSuite
 
   CoursesSetupValidationSuite(ApiValidator<CoursesSuiteState> validator,
       CoursesSuiteState state, ValidationSuiteConfig config, int version) {
-    super(validator, state, config);
+    super(validator, state, config, false);
 
     // Version 0 uses namespaces of version 1
     this.apiInfo = new CoursesValidatedApiInfo(Math.max(1, version), ApiEndpoint.NO_ENDPOINT);
