@@ -854,7 +854,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
       );
     }
     Match root = $(result.getDocument().get()).namespaces(KnownNamespace.prefixMap());
-    verifier.performVerificaion(this, root, response, failureStatus);
+    verifier.performVerification(this, root, response, failureStatus);
   }
 
   protected void testParameters200(Combination combination, String name, Parameters params,
