@@ -4,23 +4,22 @@ import eu.erasmuswithoutpaper.registry.validators.AbstractValidationSuite;
 import eu.erasmuswithoutpaper.registry.validators.ApiEndpoint;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.Combination;
-import eu.erasmuswithoutpaper.registry.validators.SuiteState;
 import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
 import eu.erasmuswithoutpaper.registry.validators.verifiers.CorrectResponseVerifier;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 class IiaCnrValidationSuite
-    extends AbstractValidationSuite<SuiteState> {
+    extends AbstractValidationSuite<IiaCnrSuiteState> {
 
   private static final Logger logger =
       LoggerFactory.getLogger(IiaCnrValidationSuite.class);
-  private static final String FAKE_IIA_ID = "1";
 
   private final ValidatedApiInfo apiInfo;
 
-  IiaCnrValidationSuite(ApiValidator<SuiteState> validator, SuiteState state,
+  IiaCnrValidationSuite(ApiValidator<IiaCnrSuiteState> validator, IiaCnrSuiteState state,
       ValidationSuiteConfig config, int version) {
     super(validator, state, config);
 
@@ -38,10 +37,11 @@ class IiaCnrValidationSuite
   }
 
   @Override
+  @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
   protected void validateCombinationAny(Combination combination)
       throws SuiteBroken {
     testParameters200(combination, "Correct request, expect 200 and empty response.",
-        new ParameterList(new Parameter("iia_id", FAKE_IIA_ID)),
+        new ParameterList(new Parameter("iia_id", currentState.iiaId)),
         new CorrectResponseVerifier()
     );
 

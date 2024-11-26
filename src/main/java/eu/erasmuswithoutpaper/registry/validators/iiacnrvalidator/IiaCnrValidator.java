@@ -6,7 +6,6 @@ import eu.erasmuswithoutpaper.registry.documentbuilder.EwpDocBuilder;
 import eu.erasmuswithoutpaper.registry.internet.Internet;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.SemanticVersion;
-import eu.erasmuswithoutpaper.registry.validators.SuiteState;
 import eu.erasmuswithoutpaper.registry.validators.ValidatorKeyStoreSet;
 import eu.erasmuswithoutpaper.registry.validators.ValidatorTestStep;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
@@ -16,7 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Service
-public class IiaCnrValidator extends ApiValidator<SuiteState> {
+public class IiaCnrValidator extends ApiValidator<IiaCnrSuiteState> {
   private static final Logger logger = LoggerFactory.getLogger(
       IiaCnrValidator.class);
 
@@ -27,7 +26,7 @@ public class IiaCnrValidator extends ApiValidator<SuiteState> {
   }
 
   @ValidatorTestStep
-  public ValidationSuiteInfo<SuiteState> apiTests = new ValidationSuiteInfo<>(
+  public ValidationSuiteInfo<IiaCnrSuiteState> apiTests = new ValidationSuiteInfo<>(
       IiaCnrSetupValidationSuite::new,
       IiaCnrSetupValidationSuite.getParameters(),
       IiaCnrValidationSuite::new);
@@ -38,13 +37,13 @@ public class IiaCnrValidator extends ApiValidator<SuiteState> {
   }
 
   @Override
-  protected List<ValidationSuiteInfoWithVersions<SuiteState>>
+  protected List<ValidationSuiteInfoWithVersions<IiaCnrSuiteState>>
       getValidationSuites() {
     return getValidationSuitesFromValidator(this);
   }
 
   @Override
-  protected SuiteState createState(String url, SemanticVersion version) {
-    return new SuiteState(url, version);
+  protected IiaCnrSuiteState createState(String url, SemanticVersion version) {
+    return new IiaCnrSuiteState(url, version);
   }
 }
