@@ -19,6 +19,7 @@ class OMobilityLaCnrSetupValidationSuite
   private static final Logger logger =
       LoggerFactory.getLogger(OMobilityLaCnrSetupValidationSuite.class);
   private static final String SENDING_HEI_ID_PARAMETER = "sending_hei_id";
+  private static final String SENDING_HEI_ID = "validator-hei01.developers.erasmuswithoutpaper.eu";
 
   private final ValidatedApiInfo apiInfo;
 
@@ -48,8 +49,8 @@ class OMobilityLaCnrSetupValidationSuite
   @Override
   @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
   protected void runApiSpecificTests(HttpSecurityDescription securityDescription)
-          throws SuiteBroken {
-    this.currentState.sendingHeiId = getParameterValue(SENDING_HEI_ID_PARAMETER,
-        () -> getCoveredHeiIds(this.currentState.url).get(0));
+      throws SuiteBroken {
+    this.currentState.sendingHeiId =
+        getParameterValue(SENDING_HEI_ID_PARAMETER, () -> SENDING_HEI_ID);
   }
 }
