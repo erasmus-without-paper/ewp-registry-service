@@ -20,6 +20,8 @@ class OMobilityLaCnrSetupValidationSuite
       LoggerFactory.getLogger(OMobilityLaCnrSetupValidationSuite.class);
   private static final String SENDING_HEI_ID_PARAMETER = "sending_hei_id";
   private static final String SENDING_HEI_ID = "validator-hei01.developers.erasmuswithoutpaper.eu";
+  private static final String OMOBILITY_ID_PARAMETER = "omobility_id";
+  private static final String OMOBILITY_ID = "1";
 
   private final ValidatedApiInfo apiInfo;
 
@@ -32,8 +34,6 @@ class OMobilityLaCnrSetupValidationSuite
   public ValidatedApiInfo getApiInfo() {
     return apiInfo;
   }
-
-  private static final String OMOBILITY_ID_PARAMETER = "omobility_id";
 
   public static List<ValidationParameter> getParameters() {
     return List.of(new ValidationParameter(OMOBILITY_ID_PARAMETER));
@@ -52,5 +52,6 @@ class OMobilityLaCnrSetupValidationSuite
       throws SuiteBroken {
     this.currentState.sendingHeiId =
         getParameterValue(SENDING_HEI_ID_PARAMETER, () -> SENDING_HEI_ID);
+    this.currentState.omobilityId = getParameterValue(OMOBILITY_ID_PARAMETER, () -> OMOBILITY_ID);
   }
 }

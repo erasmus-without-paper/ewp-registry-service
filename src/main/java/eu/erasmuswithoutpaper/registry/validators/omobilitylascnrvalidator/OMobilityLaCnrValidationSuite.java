@@ -16,7 +16,6 @@ class OMobilityLaCnrValidationSuite
 
   private static final Logger logger =
       LoggerFactory.getLogger(OMobilityLaCnrValidationSuite.class);
-  private static final String FAKE_OMOBILITY_ID = "1";
 
   private final ValidatedApiInfo apiInfo;
 
@@ -44,7 +43,7 @@ class OMobilityLaCnrValidationSuite
     testParameters200(combination, "Correct request, expect 200 and empty response.",
         new ParameterList(
             new Parameter("sending_hei_id", currentState.sendingHeiId),
-            new Parameter("omobility_id", FAKE_OMOBILITY_ID)
+            new Parameter("omobility_id", currentState.omobilityId)
         ),
         new CorrectResponseVerifier()
     );
