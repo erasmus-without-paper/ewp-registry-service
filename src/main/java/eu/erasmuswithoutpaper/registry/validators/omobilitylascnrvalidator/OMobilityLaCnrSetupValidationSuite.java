@@ -47,6 +47,11 @@ class OMobilityLaCnrSetupValidationSuite
   }
 
   @Override
+  protected boolean shouldAnonymousClientBeAllowedToAccessThisApi() {
+    return false;
+  }
+
+  @Override
   @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
   protected void runApiSpecificTests(HttpSecurityDescription securityDescription)
       throws SuiteBroken {
