@@ -1,0 +1,8 @@
+<institutions-response
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-institutions/tree/stable-v2"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        https://github.com/erasmus-without-paper/ewp-specs-api-institutions/tree/stable-v2
+        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-institutions/stable-v2/response.xsd
+    "
+/>

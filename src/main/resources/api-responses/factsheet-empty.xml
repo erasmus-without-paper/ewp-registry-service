@@ -1,0 +1,7 @@
+<factsheet-response
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-factsheet/tree/stable-v1"
+    xsi:schemaLocation="
+       https://github.com/erasmus-without-paper/ewp-specs-api-factsheet/tree/stable-v1
+       https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-factsheet/master/response.xsd
+     "
+/>
