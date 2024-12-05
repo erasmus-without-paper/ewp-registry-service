@@ -43,6 +43,7 @@ public class SelfManifestProvider {
   private final List<String> validatorHostCoveredHeiIds;
 
   private final String registryRepoBaseUrl = Constans.REGISTRY_REPO_URL;
+  private final String fakeApiXmlns = registryRepoBaseUrl + "/ewp-registry-service/issues/8";
 
   /*
    * i-th element is a list of certificates and keys that should be included in
@@ -203,15 +204,12 @@ public class SelfManifestProvider {
       List<List<EncodedCertificateAndKeys>> validatorHostCertificatesAndKeys) {
 
     Map<String, String> manifests = new HashMap<>();
-    String fakeApiXmlns = registryRepoBaseUrl + "/ewp-registry-service/issues/8";
 
     if (validatorHostCoveredHeiIds.size() == 0) {
       // Add necessary info and return if there are no HEIs.
 
       SelfManifestBuilder validatorBuilder = new SelfManifestBuilder();
-      validatorBuilder.addAdminEmails(this.adminEmails)
-          .setAdminNotes("This host is needed for the API Validator.")
-          .addApi("fake-api-without-a-version", null, fakeApiXmlns, new HashMap<>())
+      getSelfManifestBuilder(validatorBuilder)
           .addClientCertificates(validatorHostCertificatesAndKeys.get(0));
 
       manifests.put(baseName, validatorBuilder.buildXml());
@@ -223,9 +221,7 @@ public class SelfManifestProvider {
         String name = baseName + "Hei" + Integer.toString(i + 1);
         SelfManifestBuilder validatorBuilder = new SelfManifestBuilder();
 
-        validatorBuilder.addAdminEmails(this.adminEmails)
-            .setAdminNotes("This host is needed for the API Validator.")
-            .addApi("fake-api-without-a-version", null, fakeApiXmlns, new HashMap<>())
+        getSelfManifestBuilder(validatorBuilder)
             .setHei(hei, "Artificial HEI for testing APIs")
             .addClientCertificates(validatorHostCertificatesAndKeys.get(i));
 
@@ -234,5 +230,11 @@ public class SelfManifestProvider {
     }
 
     return manifests;
+  }
+
+  private SelfManifestBuilder getSelfManifestBuilder(SelfManifestBuilder validatorBuilder) {
+    return validatorBuilder.addAdminEmails(this.adminEmails)
+        .setAdminNotes("This host is needed for the API Validator.")
+        .addApi("fake-api-without-a-version", null, fakeApiXmlns, new HashMap<>());
   }
 }
