@@ -170,11 +170,10 @@ public class SelfManifestProvider {
         .setAdminNotes("This host handles the EWP Registry Service.")
         .addApi("discovery", "6.0.0",
             registryRepoBaseUrl + "/ewp-specs-api-discovery/tree/stable-v6/manifest-entry.xsd",
-            Collections.singletonMap("url", Application.getRootUrl() + "/manifest-registry.xml"))
+            List.of(Map.entry("url", Application.getRootUrl() + "/manifest-registry.xml")))
         .addApi("registry", "1.3.0",
             registryRepoBaseUrl + "/ewp-specs-api-registry/blob/stable-v1/manifest-entry.xsd",
-            Collections.singletonMap("catalogue-url",
-                Application.getRootUrl() + "/catalogue-v1.xml"));
+            List.of(Map.entry("catalogue-url", Application.getRootUrl() + "/catalogue-v1.xml")));
 
     Map<String, String> manifests = new HashMap<>();
     manifests.put("registry", registryBuilder.buildXml());
@@ -235,6 +234,26 @@ public class SelfManifestProvider {
   private SelfManifestBuilder getSelfManifestBuilder(SelfManifestBuilder validatorBuilder) {
     return validatorBuilder.addAdminEmails(this.adminEmails)
         .setAdminNotes("This host is needed for the API Validator.")
-        .addApi("fake-api-without-a-version", null, fakeApiXmlns, new HashMap<>());
+        .addApi("fake-api-without-a-version", null, fakeApiXmlns, Collections.emptyList())
+        .addApi("institutions", "2.2.0",
+            registryRepoBaseUrl + "/ewp-specs-api-institutions/blob/stable-v2/manifest-entry.xsd",
+            List.of(Map.entry("url", Application.getRootUrl() + "/institutions-empty.xml"),
+                Map.entry("max-hei-ids", "1")))
+        .addApi("ounits", "2.1.1",
+            registryRepoBaseUrl + "/ewp-specs-api-ounits/blob/stable-v2/manifest-entry.xsd",
+            List.of(Map.entry("url", Application.getRootUrl() + "/ounits-empty.xml"),
+                Map.entry("max-ounit-ids", "1"), Map.entry("max-ounit-codes", "1")))
+        .addApi("iias", "7.0.0",
+            registryRepoBaseUrl + "/ewp-specs-api-iias/blob/stable-v7/manifest-entry.xsd",
+            List.of(Map.entry("get-url", Application.getRootUrl() + "/iias-empty.xml"),
+                Map.entry("max-iia-ids", "1"), Map.entry("index-url", "https://mock-url")))
+        .addApi("factsheet", "1.2.0",
+            registryRepoBaseUrl + "/ewp-specs-api-factsheet/blob/stable-v1/manifest-entry.xsd",
+            List.of(Map.entry("url", Application.getRootUrl() + "/factsheet-empty.xml"),
+                Map.entry("max-hei-ids", "1")))
+        .addApi("omobility-las", "1.2.0",
+            registryRepoBaseUrl + "/ewp-specs-api-omobility-las/blob/stable-v1/manifest-entry.xsd",
+            List.of(Map.entry("get-url", Application.getRootUrl() + "/omobility-las-empty.xml"),
+                Map.entry("index-url", "https://mock-url"), Map.entry("max-omobility-ids", "1")));
   }
 }

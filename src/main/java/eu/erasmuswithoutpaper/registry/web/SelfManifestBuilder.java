@@ -107,13 +107,13 @@ public class SelfManifestBuilder {
    * @param xmlns
    *     xmlns attribute.
    * @param additionalTags
-   *     map of additional tag names and their values. They are appended as
+   *     list of additional tag names and their values. They are appended as
    *     child elements of the main API XML element.
    * @return
    *     self, to allow for method chaining.
    */
   public SelfManifestBuilder addApi(String name, String version, String xmlns,
-      Map<String, String> additionalTags) {
+      List<Map.Entry<String, String>> additionalTags) {
 
     Element api = this.document.createElementNS(xmlns, name);
 
@@ -121,7 +121,7 @@ public class SelfManifestBuilder {
       api.setAttribute("version", version);
     }
 
-    for (Map.Entry<String, String> entry : additionalTags.entrySet()) {
+    for (Map.Entry<String, String> entry : additionalTags) {
       String tagName = entry.getKey();
       String tagValue = entry.getValue();
 
