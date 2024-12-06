@@ -27,12 +27,9 @@ public class FactsheetServiceV1Valid extends AbstractFactsheetService {
   protected static final int maxHeiIds = 2;
   protected Map<String, FactsheetResponse.Factsheet> coveredHeis = new HashMap<>();
 
-  public FactsheetServiceV1Valid(String url, RegistryClient registryClient,
-      ValidatorKeyStore validatorKeyStore) {
+  public FactsheetServiceV1Valid(String url, RegistryClient registryClient, String heiId) {
     super(url, registryClient);
-    for (String heiId : validatorKeyStore.getCoveredHeiIDs()) {
-      addHei(createFactsheet(heiId));
-    }
+    addHei(createFactsheet(heiId));
   }
 
   private void addHei(FactsheetResponse.Factsheet data) {

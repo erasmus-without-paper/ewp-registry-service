@@ -33,7 +33,7 @@
             </factsheet>
         </r:apis-implemented>
         <institutions-covered>
-            <r:hei id="validator-hei01.developers.erasmuswithoutpaper.eu">
+            <r:hei id="test.hei01.uw.edu.pl">
                 <r:name xml:lang="en">University of Warsaw test 01</r:name>
             </r:hei>
         </institutions-covered>

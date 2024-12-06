@@ -2,6 +2,7 @@ package eu.erasmuswithoutpaper.registry.validators.institutionsvalidator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,7 +10,6 @@ import java.util.Map;
 import eu.erasmuswithoutpaper.registry.internet.InternetTestHelpers;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
-import eu.erasmuswithoutpaper.registry.validators.ValidatorKeyStore;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 import https.github_com.erasmus_without_paper.ewp_specs_api_institutions.tree.stable_v2.InstitutionsResponse;
@@ -92,29 +92,13 @@ public class InstitutionServiceV2Valid extends AbstractInstitutionService {
     return coveredHeiIds;
   }
 
-  public InstitutionServiceV2Valid(String url, RegistryClient registryClient,
-    ValidatorKeyStore validatorKeyStore1, ValidatorKeyStore validatorKeyStore2) {
+  public InstitutionServiceV2Valid(String url, RegistryClient registryClient, String heiId) {
     super(url, registryClient);
-    coveredHeiIds = new ArrayList<>();
-    coveredHeiIds.addAll(validatorKeyStore1.getCoveredHeiIDs());
-    coveredHeiIds.addAll(validatorKeyStore2.getCoveredHeiIDs());
+    coveredHeiIds = Collections.singletonList(heiId);
 
     //Create fake HEIs
-    InstitutionsResponse.Hei d1 = createFakeHeiData(coveredHeiIds.get(0));
+    InstitutionsResponse.Hei d1 = createFakeHeiData(heiId);
     addHei(d1);
-
-    InstitutionsResponse.Hei d2 = createFakeHeiData(coveredHeiIds.get(1));
-    d2.getMobilityFactsheetUrl().clear();
-
-    HTTPWithOptionalLang httpWithOptionalLang1 = new HTTPWithOptionalLang();
-    httpWithOptionalLang1.setValue("https://test.1");
-    d2.getMobilityFactsheetUrl().add(httpWithOptionalLang1);
-
-    HTTPWithOptionalLang httpWithOptionalLang2 = new HTTPWithOptionalLang();
-    httpWithOptionalLang2.setValue("https://test.1/en");
-    httpWithOptionalLang2.setLang("EN");
-    d2.getMobilityFactsheetUrl().add(httpWithOptionalLang2);
-    addHei(d2);
   }
 
   @Override

@@ -21,6 +21,8 @@ import org.junit.jupiter.api.Test;
 
 public class InstitutionValidatorTest extends AbstractApiTest<InstitutionsSuiteState> {
   private static String institutionsUrlHTTT = "https://university.example.com/institutions/HTTT/";
+  private static String heiId = "test.hei01.uw.edu.pl";
+
   @Autowired
   private InstitutionsValidator validator;
 
@@ -47,9 +49,7 @@ public class InstitutionValidatorTest extends AbstractApiTest<InstitutionsSuiteS
   @Test
   public void testValidationOnValidServiceIsSuccessful() {
     InstitutionServiceV2Valid service =
-        new InstitutionServiceV2Valid(institutionsUrlHTTT, this.client,
-            validatorKeyStoreSet.getPrimaryKeyStores().get(0),
-            validatorKeyStoreSet.getPrimaryKeyStores().get(1));
+        new InstitutionServiceV2Valid(institutionsUrlHTTT, this.client, heiId);
     TestValidationReport report = this.getRawReport(service);
     assertThat(report).isCorrect();
   }
@@ -57,9 +57,7 @@ public class InstitutionValidatorTest extends AbstractApiTest<InstitutionsSuiteS
   @Test
   public void testNotValidatingLengthOfHeiIdListIsDetected() {
     InstitutionServiceV2Valid service =
-        new InstitutionServiceV2Valid(institutionsUrlHTTT, this.client,
-            validatorKeyStoreSet.getPrimaryKeyStores().get(0),
-            validatorKeyStoreSet.getPrimaryKeyStores().get(1)) {
+        new InstitutionServiceV2Valid(institutionsUrlHTTT, this.client, heiId) {
           @Override
           protected void checkHeis(RequestData requestData) throws ErrorResponseException {
             //Do nothing.
@@ -74,9 +72,7 @@ public class InstitutionValidatorTest extends AbstractApiTest<InstitutionsSuiteS
   @Test
   public void testCountingUniqueHeiIdParametersIsDetected() {
     InstitutionServiceV2Valid service =
-        new InstitutionServiceV2Valid(institutionsUrlHTTT, this.client,
-            validatorKeyStoreSet.getPrimaryKeyStores().get(0),
-            validatorKeyStoreSet.getPrimaryKeyStores().get(1)) {
+        new InstitutionServiceV2Valid(institutionsUrlHTTT, this.client, heiId) {
           @Override
           protected void checkHeis(RequestData requestData) throws ErrorResponseException {
             ArrayList<String> uniqueHeis = new ArrayList<>(new HashSet<>(requestData.heiIds));
@@ -93,9 +89,7 @@ public class InstitutionValidatorTest extends AbstractApiTest<InstitutionsSuiteS
   @Test
   public void testWrongMaxHeiIdInManifestIsDetected() {
     InstitutionServiceV2Valid service =
-        new InstitutionServiceV2Valid(institutionsUrlHTTT, this.client,
-            validatorKeyStoreSet.getPrimaryKeyStores().get(0),
-            validatorKeyStoreSet.getPrimaryKeyStores().get(1)) {
+        new InstitutionServiceV2Valid(institutionsUrlHTTT, this.client, heiId) {
           @Override
           protected void checkHeis(RequestData requestData) throws ErrorResponseException {
             if (requestData.heiIds.size() > max_hei_ids - 1) {
@@ -111,9 +105,7 @@ public class InstitutionValidatorTest extends AbstractApiTest<InstitutionsSuiteS
   @Test
   public void testNotReportingAnErrorWhenInvalidHttpMethodIsUsedIsDetected() {
     InstitutionServiceV2Valid service =
-        new InstitutionServiceV2Valid(institutionsUrlHTTT, this.client,
-            validatorKeyStoreSet.getPrimaryKeyStores().get(0),
-            validatorKeyStoreSet.getPrimaryKeyStores().get(1)) {
+        new InstitutionServiceV2Valid(institutionsUrlHTTT, this.client, heiId) {
           @Override
           protected void checkRequestMethod(Request request) throws ErrorResponseException {
           }
@@ -127,9 +119,7 @@ public class InstitutionValidatorTest extends AbstractApiTest<InstitutionsSuiteS
   @Test
   public void testNotReportingAnErrorWhenNotPassingAnyParameterIsDetected() {
     InstitutionServiceV2Valid service =
-        new InstitutionServiceV2Valid(institutionsUrlHTTT, this.client,
-            validatorKeyStoreSet.getPrimaryKeyStores().get(0),
-            validatorKeyStoreSet.getPrimaryKeyStores().get(1)) {
+        new InstitutionServiceV2Valid(institutionsUrlHTTT, this.client, heiId) {
           @Override
           protected void handleNoParams(
               RequestData requestData)
@@ -143,9 +133,7 @@ public class InstitutionValidatorTest extends AbstractApiTest<InstitutionsSuiteS
   @Test
   public void testReturningEmptyResponseWhenParametersOtherThanHeiIdArePassedIsDetected() {
     InstitutionServiceV2Valid service =
-        new InstitutionServiceV2Valid(institutionsUrlHTTT, this.client,
-            validatorKeyStoreSet.getPrimaryKeyStores().get(0),
-            validatorKeyStoreSet.getPrimaryKeyStores().get(1)) {
+        new InstitutionServiceV2Valid(institutionsUrlHTTT, this.client, heiId) {
           @Override
           protected void handleNoHeiIdsParams(
               RequestData requestData)
@@ -159,9 +147,7 @@ public class InstitutionValidatorTest extends AbstractApiTest<InstitutionsSuiteS
   @Test
   public void testReturningNonEmptyResponseForUnknownHeiIdIsDetected() {
     InstitutionServiceV2Valid service =
-        new InstitutionServiceV2Valid(institutionsUrlHTTT, this.client,
-            validatorKeyStoreSet.getPrimaryKeyStores().get(0),
-            validatorKeyStoreSet.getPrimaryKeyStores().get(1)) {
+        new InstitutionServiceV2Valid(institutionsUrlHTTT, this.client, heiId) {
           @Override
           protected InstitutionsResponse.Hei processNotCoveredHei(RequestData request, String hei)
               throws ErrorResponseException {
@@ -176,9 +162,7 @@ public class InstitutionValidatorTest extends AbstractApiTest<InstitutionsSuiteS
   @Test
   public void testReportingAnErrorWhenUnknownHeiIdIsPassedIsDetected() {
     InstitutionServiceV2Valid service =
-        new InstitutionServiceV2Valid(institutionsUrlHTTT, this.client,
-            validatorKeyStoreSet.getPrimaryKeyStores().get(0),
-            validatorKeyStoreSet.getPrimaryKeyStores().get(1)) {
+        new InstitutionServiceV2Valid(institutionsUrlHTTT, this.client, heiId) {
           @Override
           protected InstitutionsResponse.Hei processNotCoveredHei(RequestData request, String hei)
               throws ErrorResponseException {
@@ -195,9 +179,7 @@ public class InstitutionValidatorTest extends AbstractApiTest<InstitutionsSuiteS
   @Test
   public void testReturningResponseWhereRootOunitIdInNotOnOunitIdListIsDetected() {
     InstitutionServiceV2Valid service =
-        new InstitutionServiceV2Valid(institutionsUrlHTTT, this.client,
-            validatorKeyStoreSet.getPrimaryKeyStores().get(0),
-            validatorKeyStoreSet.getPrimaryKeyStores().get(1)) {
+        new InstitutionServiceV2Valid(institutionsUrlHTTT, this.client, heiId) {
           @Override
           protected List<String> getCoveredOUnits() {
             return Arrays.asList("1", "2", "3");
@@ -215,9 +197,7 @@ public class InstitutionValidatorTest extends AbstractApiTest<InstitutionsSuiteS
   @Test
   public void testReturningDeduplicatedListIsNotAnError() {
     InstitutionServiceV2Valid service =
-        new InstitutionServiceV2Valid(institutionsUrlHTTT, this.client,
-            validatorKeyStoreSet.getPrimaryKeyStores().get(0),
-            validatorKeyStoreSet.getPrimaryKeyStores().get(1)) {
+        new InstitutionServiceV2Valid(institutionsUrlHTTT, this.client, heiId) {
           @Override
           protected List<InstitutionsResponse.Hei> processHeis(RequestData requestData)
               throws ErrorResponseException {

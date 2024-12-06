@@ -23,6 +23,8 @@ public class OUnitsValidatorTest extends AbstractApiTest<OUnitsSuiteState> {
   private static final String institutionsUrlHTTT =
       "https://university.example.com/institutions/HTTT/";
   private static final String ounitsUrlHTTT = "https://university.example.com/ounits/HTTT/";
+  private static String heiId = "test.hei01.uw.edu.pl";
+
   @Autowired
   private OUnitsValidator validator;
 
@@ -38,8 +40,7 @@ public class OUnitsValidatorTest extends AbstractApiTest<OUnitsSuiteState> {
 
   private InstitutionServiceV2Valid GetInstitutions() {
     return new InstitutionServiceV2Valid(
-        institutionsUrlHTTT, client, validatorKeyStoreSet.getPrimaryKeyStores().get(0),
-        validatorKeyStoreSet.getPrimaryKeyStores().get(1)) {
+        institutionsUrlHTTT, client, heiId) {
       @Override
       protected List<String> getCoveredOUnits() {
         return Arrays.asList("ounit-1", "ounit-2", "ounit-3");
