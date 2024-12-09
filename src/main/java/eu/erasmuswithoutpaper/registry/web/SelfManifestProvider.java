@@ -248,7 +248,8 @@ public class SelfManifestProvider {
         .addApi("iias", "7.0.0",
             registryRepoBaseUrl + "/ewp-specs-api-iias/blob/stable-v7/manifest-entry.xsd", true,
             List.of(Map.entry("get-url", Application.getRootUrl() + "/iias-empty.xml"),
-                Map.entry("max-iia-ids", "1"), Map.entry("index-url", "https://mock-url")))
+                Map.entry("max-iia-ids", "1"), Map.entry("index-url", "https://mock-url"),
+                Map.entry("stats-url", Application.getRootUrl() + "/iias-stats-empty.xml")))
         .addApi("factsheet", "1.2.0",
             registryRepoBaseUrl + "/ewp-specs-api-factsheet/blob/stable-v1/manifest-entry.xsd",
             true,
@@ -258,6 +259,8 @@ public class SelfManifestProvider {
             registryRepoBaseUrl + "/ewp-specs-api-omobility-las/blob/stable-v1/manifest-entry.xsd",
             true,
             List.of(Map.entry("get-url", Application.getRootUrl() + "/omobility-las-empty.xml"),
-                Map.entry("index-url", "https://mock-url"), Map.entry("max-omobility-ids", "1")));
+                Map.entry("index-url", "https://mock-url"),
+                Map.entry("stats-url", Application.getRootUrl() + "/omobility-las-stats-empty.xml"),
+                Map.entry("max-omobility-ids", "1")));
   }
 }
