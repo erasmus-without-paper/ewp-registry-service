@@ -113,12 +113,18 @@ public class SelfManifestBuilder {
    *     self, to allow for method chaining.
    */
   public SelfManifestBuilder addApi(String name, String version, String xmlns,
-      List<Map.Entry<String, String>> additionalTags) {
+      boolean addHttpSecurity, List<Map.Entry<String, String>> additionalTags) {
 
     Element api = this.document.createElementNS(xmlns, name);
 
     if (version != null) {
       api.setAttribute("version", version);
+    }
+
+    if (addHttpSecurity) {
+      Element httpSecurity = this.document.createElementNS(xmlns, "http-security");
+      api.appendChild(httpSecurity);
+      addBasicAuthMethods(httpSecurity);
     }
 
     for (Map.Entry<String, String> entry : additionalTags) {
@@ -132,6 +138,25 @@ public class SelfManifestBuilder {
 
     this.apis.getAny().add(api);
     return this;
+  }
+
+  private void addBasicAuthMethods(Element httpSecurity) {
+    Element clientAuthMethods = this.document.createElementNS(
+        "https://github.com/erasmus-without-paper/ewp-specs-sec-intro/tree/stable-v2",
+        "client-auth-methods");
+    httpSecurity.appendChild(clientAuthMethods);
+    Element httpSig = this.document.createElementNS(
+        "https://github.com/erasmus-without-paper/ewp-specs-sec-cliauth-httpsig/tree/stable-v1",
+        "httpsig");
+    clientAuthMethods.appendChild(httpSig);
+    Element serverAuthMethods = this.document.createElementNS(
+        "https://github.com/erasmus-without-paper/ewp-specs-sec-intro/tree/stable-v2",
+        "server-auth-methods");
+    httpSecurity.appendChild(serverAuthMethods);
+    Element tlsCert = this.document.createElementNS(
+        "https://github.com/erasmus-without-paper/ewp-specs-sec-srvauth-tlscert/tree/stable-v1",
+        "tlscert");
+    serverAuthMethods.appendChild(tlsCert);
   }
 
   /**
