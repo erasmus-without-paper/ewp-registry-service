@@ -239,7 +239,7 @@ public class SelfManifestProvider {
             registryRepoBaseUrl + "/ewp-specs-api-institutions/blob/stable-v2/manifest-entry.xsd",
             List.of(Map.entry("url", Application.getRootUrl() + "/institutions-empty.xml"),
                 Map.entry("max-hei-ids", "1")))
-        .addApi("ounits", "2.1.1",
+        .addApi("organizational-units", "2.1.1",
             registryRepoBaseUrl + "/ewp-specs-api-ounits/blob/stable-v2/manifest-entry.xsd",
             List.of(Map.entry("url", Application.getRootUrl() + "/ounits-empty.xml"),
                 Map.entry("max-ounit-ids", "1"), Map.entry("max-ounit-codes", "1")))
