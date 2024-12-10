@@ -260,6 +260,7 @@ public class SelfManifestProvider {
             true,
             List.of(Map.entry("get-url", Application.getRootUrl() + "/omobility-las-empty.xml"),
                 Map.entry("index-url", "https://mock-url"),
+                Map.entry("update-url", "https://mock-url"),
                 Map.entry("stats-url", Application.getRootUrl() + "/omobility-las-stats-empty.xml"),
                 Map.entry("max-omobility-ids", "1")));
   }
