@@ -272,7 +272,8 @@ public class UiController {
    * @return empty API endpoint response.
    */
   @ResponseBody
-  @RequestMapping(value = "/{api}-empty.xml", method = RequestMethod.GET, produces = "text/xml")
+  @RequestMapping(value = "/{api}-empty.xml", method = { RequestMethod.GET, RequestMethod.POST },
+      produces = "text/xml")
   public byte[] getApiGetEmptyResponse(@PathVariable String api) {
     try {
       return IOUtils.toByteArray(this.resLoader
