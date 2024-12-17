@@ -1,5 +1,6 @@
 <factsheet-response
     xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-factsheet/tree/stable-v1"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="
        https://github.com/erasmus-without-paper/ewp-specs-api-factsheet/tree/stable-v1
        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-factsheet/master/response.xsd
