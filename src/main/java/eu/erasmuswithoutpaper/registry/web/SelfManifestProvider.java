@@ -247,8 +247,9 @@ public class SelfManifestProvider {
                 Map.entry("max-ounit-ids", "1"), Map.entry("max-ounit-codes", "1")))
         .addApi("iias", "7.0.0",
             registryRepoBaseUrl + "/ewp-specs-api-iias/blob/stable-v7/manifest-entry.xsd", true,
-            List.of(Map.entry("get-url", Application.getRootUrl() + "/iias-empty.xml"),
-                Map.entry("max-iia-ids", "1"), Map.entry("index-url", "https://mock-url"),
+            List.of(Map.entry("get-url", Application.getRootUrl() + "/iias-get-empty.xml"),
+                Map.entry("max-iia-ids", "1"),
+                Map.entry("index-url", Application.getRootUrl() + "/iias-index-empty.xml"),
                 Map.entry("stats-url", Application.getRootUrl() + "/iias-stats-empty.xml")))
         .addApi("factsheet", "1.2.0",
             registryRepoBaseUrl + "/ewp-specs-api-factsheet/blob/stable-v1/manifest-entry.xsd",
