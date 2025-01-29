@@ -27,6 +27,7 @@ Our client credentials are quite fresh. This means that many APIs will (correctl
 ### SUCCESS: Trying Combination[GHTTT] with unsigned date header. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
 ### SUCCESS: Trying Combination[GHTTT] with unsigned digest header. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
 ### SUCCESS: Trying Combination[GHTTT] with unsigned x-request-id header. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
+### SUCCESS: Trying Combination[GHTTT] with headers in different order. Expecting to receive a valid HTTP 200 response.
 ### SUCCESS: Trying Combination[GHTTT] with some extra unknown, but properly signed headers. Expecting to receive a valid HTTP 200 response.
 ### SUCCESS: Trying Combination[GHTTT] signed with a server key, instead of a client key. Expecting to receive a valid HTTP 403 error response.
 ### SUCCESS: Trying Combination[GHTTT] with an unsynchronized clock (Original-Date 20 minutes in the past). Expecting to receive a valid HTTP 400 error response.
@@ -50,6 +51,7 @@ The client explicitly accepted gzip, but the server didn't compress its response
 ### SUCCESS: Trying Combination[PHTTT] with unsigned date header. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
 ### SUCCESS: Trying Combination[PHTTT] with unsigned digest header. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
 ### SUCCESS: Trying Combination[PHTTT] with unsigned x-request-id header. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
+### SUCCESS: Trying Combination[PHTTT] with headers in different order. Expecting to receive a valid HTTP 200 response.
 ### SUCCESS: Trying Combination[PHTTT] with some extra unknown, but properly signed headers. Expecting to receive a valid HTTP 200 response.
 ### SUCCESS: Trying Combination[PHTTT] signed with a server key, instead of a client key. Expecting to receive a valid HTTP 403 error response.
 ### SUCCESS: Trying Combination[PHTTT] with an unsynchronized clock (Original-Date 20 minutes in the past). Expecting to receive a valid HTTP 400 error response.
@@ -68,6 +70,7 @@ The client explicitly accepted gzip, but the server didn't compress its response
 ### SUCCESS: Trying Combination[GHHTT] with unsigned date header. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
 ### SUCCESS: Trying Combination[GHHTT] with unsigned digest header. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
 ### SUCCESS: Trying Combination[GHHTT] with unsigned x-request-id header. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
+### SUCCESS: Trying Combination[GHHTT] with headers in different order. Expecting to receive a valid HTTP 200 response.
 ### SUCCESS: Trying Combination[GHHTT] with some extra unknown, but properly signed headers. Expecting to receive a valid HTTP 200 response.
 ### SUCCESS: Trying Combination[GHHTT] signed with a server key, instead of a client key. Expecting to receive a valid HTTP 403 error response.
 ### SUCCESS: Trying Combination[GHHTT] with an unsynchronized clock (Original-Date 20 minutes in the past). Expecting to receive a valid HTTP 400 error response.
@@ -93,6 +96,7 @@ The client explicitly accepted gzip, but the server didn't compress its response
 ### SUCCESS: Trying Combination[PHHTT] with unsigned date header. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
 ### SUCCESS: Trying Combination[PHHTT] with unsigned digest header. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
 ### SUCCESS: Trying Combination[PHHTT] with unsigned x-request-id header. Expecting to receive a valid HTTP 400 or HTTP 401 error response.
+### SUCCESS: Trying Combination[PHHTT] with headers in different order. Expecting to receive a valid HTTP 200 response.
 ### SUCCESS: Trying Combination[PHHTT] with some extra unknown, but properly signed headers. Expecting to receive a valid HTTP 200 response.
 ### SUCCESS: Trying Combination[PHHTT] signed with a server key, instead of a client key. Expecting to receive a valid HTTP 403 error response.
 ### SUCCESS: Trying Combination[PHHTT] with an unsynchronized clock (Original-Date 20 minutes in the past). Expecting to receive a valid HTTP 400 error response.

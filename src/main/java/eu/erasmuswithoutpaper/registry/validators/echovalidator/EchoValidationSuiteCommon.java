@@ -219,6 +219,32 @@ public class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSuite
 
       @Override
       public String getName() {
+        return "Trying " + combination + " with headers in different order. "
+                + "Expecting to receive a valid HTTP 200 response.";
+      }
+
+      @Override
+      protected Optional<Response> innerRun() throws Failure {
+        Request request = createValidRequestForCombination(this, combination);
+        RequestSigner mySigner = new EwpHttpSigRequestSigner(reqSignerHttpSig.getKeyPair()) {
+          @Override
+          protected List<String> getHeadersToSign(Request request) {
+            Set<String> headers = request.getHeaders().keySet();
+            List<String> result = new ArrayList<>(headers);
+            result.add("(request-target)");
+            return result;
+          }
+        };
+        mySigner.sign(request);
+        return Optional.of(makeRequestAndExpectHttp200(this, combination, request,
+                validatorKeyStore.getCoveredHeiIDs(), Lists.newArrayList()));
+      }
+    });
+
+    this.addAndRun(false, new InlineValidationStep() {
+
+      @Override
+      public String getName() {
         return "Trying " + combination + " with some extra unknown, but properly signed headers. "
             + "Expecting to receive a valid HTTP 200 response.";
       }
