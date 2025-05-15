@@ -8,7 +8,7 @@
     xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-iias-approval/tree/stable-v1"
 >
     <xs:import
-        schemaLocation="../ewp-specs-architecture-v1.13.0/common-types.xsd"
+        schemaLocation="../ewp-specs-architecture-v1.16.0/common-types.xsd"
         namespace="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd" />
 
     <xs:annotation>

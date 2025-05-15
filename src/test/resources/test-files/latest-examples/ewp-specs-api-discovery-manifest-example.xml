@@ -6,8 +6,7 @@
     xmlns:r="https://github.com/erasmus-without-paper/ewp-specs-api-registry/tree/stable-v1"
     xmlns:xml="http://www.w3.org/XML/1998/namespace"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="
-        https://github.com/erasmus-without-paper/ewp-specs-api-discovery/tree/stable-v6
+    xsi:schemaLocation="https://github.com/erasmus-without-paper/ewp-specs-api-discovery/tree/stable-v6
         https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-discovery/stable-v6/manifest.xsd
 
         https://github.com/erasmus-without-paper/ewp-specs-api-registry/tree/stable-v1
@@ -22,9 +21,6 @@
         https://github.com/erasmus-without-paper/ewp-specs-sec-intro/tree/stable-v2
         https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-sec-intro/stable-v2/schema.xsd
 
-        https://github.com/erasmus-without-paper/ewp-specs-sec-cliauth-none/tree/stable-v1
-        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-sec-cliauth-none/stable-v1/security-entries.xsd
-
         https://github.com/erasmus-without-paper/ewp-specs-sec-cliauth-httpsig/tree/stable-v1
         https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-sec-cliauth-httpsig/stable-v1/security-entries.xsd
 
@@ -35,19 +31,12 @@
         https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-sec-srvauth-tlscert/stable-v1/security-entries.xsd
 
         https://github.com/erasmus-without-paper/ewp-specs-sec-srvauth-httpsig/tree/stable-v1
-        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-sec-srvauth-httpsig/stable-v1/security-entries.xsd
-
-        https://github.com/erasmus-without-paper/ewp-specs-sec-reqencr-tls/tree/stable-v1
-        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-sec-reqencr-tls/stable-v1/security-entries.xsd
-
-        https://github.com/erasmus-without-paper/ewp-specs-sec-resencr-tls/tree/stable-v1
-        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-sec-resencr-tls/stable-v1/security-entries.xsd
-    "
+        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-sec-srvauth-httpsig/stable-v1/security-entries.xsd"
 >
     <!-- This example doesn't contain many comments, but its XML Schema does! -->
     <host>
         <ewp:admin-email>admin-or-developer@example.com</ewp:admin-email>
-        <ewp:admin-provider>Example</ewp:admin-provider>
+        <ewp:admin-provider>MUCI (USOS)</ewp:admin-provider>
         <ewp:admin-notes>It's not a real manifest. Just an example.</ewp:admin-notes>
 
         <r:apis-implemented>

@@ -9,7 +9,7 @@
     xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-iias/blob/stable-v4/manifest-entry.xsd"
 >
     <xs:import
-        schemaLocation="../ewp-specs-architecture-v1.13.0/common-types.xsd"
+        schemaLocation="../ewp-specs-architecture-v1.16.0/common-types.xsd"
         namespace="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
     />
 

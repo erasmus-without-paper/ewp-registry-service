@@ -90,7 +90,7 @@
     </host>
     <host>
         <ewp:admin-email>admin-or-developer@example.com</ewp:admin-email>
-        <ewp:admin-provider>Example</ewp:admin-provider>
+        <ewp:admin-provider>MUCI (USOS)</ewp:admin-provider>
         <ewp:admin-notes>It's not a real manifest. Just an example.</ewp:admin-notes>
         <apis-implemented>
             <d6:discovery version="6.0.0">

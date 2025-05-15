@@ -1,10 +1,10 @@
 <iias-get-response
-    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-iias/blob/stable-v6/endpoints/get-response.xsd"
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-iias/blob/stable-v7/endpoints/get-response.xsd"
     xmlns:c="https://github.com/erasmus-without-paper/ewp-specs-types-contact/tree/stable-v1"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="
-        https://github.com/erasmus-without-paper/ewp-specs-api-iias/blob/stable-v6/endpoints/get-response.xsd
-        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-iias/stable-v6/endpoints/get-response.xsd
+        https://github.com/erasmus-without-paper/ewp-specs-api-iias/blob/stable-v7/endpoints/get-response.xsd
+        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-iias/stable-v7/endpoints/get-response.xsd
     "
 >
     <!--
@@ -54,13 +54,8 @@
                 <receiving-hei-id>hibo.no</receiving-hei-id>
                 <!-- Optional receiving-contact elements go here (if supported by the
                 server at this level). -->
-                <receiving-academic-year-id>2014/2015</receiving-academic-year-id>
-                <receiving-academic-year-id>2015/2016</receiving-academic-year-id>
-                <receiving-academic-year-id>2016/2017</receiving-academic-year-id>
-                <receiving-academic-year-id>2017/2018</receiving-academic-year-id>
-                <receiving-academic-year-id>2018/2019</receiving-academic-year-id>
-                <receiving-academic-year-id>2019/2020</receiving-academic-year-id>
-                <receiving-academic-year-id>2020/2021</receiving-academic-year-id>
+                <receiving-first-academic-year-id>2014/2015</receiving-first-academic-year-id>
+                <receiving-last-academic-year-id>2020/2021</receiving-last-academic-year-id>
                 <mobilities-per-year>2</mobilities-per-year>
                 <recommended-language-skill>
                     <language>en</language>
@@ -84,13 +79,8 @@
                 <sending-hei-id>uw.edu.pl</sending-hei-id>
                 <sending-ounit-id>140</sending-ounit-id>
                 <receiving-hei-id>hibo.no</receiving-hei-id>
-                <receiving-academic-year-id>2014/2015</receiving-academic-year-id>
-                <receiving-academic-year-id>2015/2016</receiving-academic-year-id>
-                <receiving-academic-year-id>2016/2017</receiving-academic-year-id>
-                <receiving-academic-year-id>2017/2018</receiving-academic-year-id>
-                <receiving-academic-year-id>2018/2019</receiving-academic-year-id>
-                <receiving-academic-year-id>2019/2020</receiving-academic-year-id>
-                <receiving-academic-year-id>2020/2021</receiving-academic-year-id>
+                <receiving-first-academic-year-id>2014/2015</receiving-first-academic-year-id>
+                <receiving-last-academic-year-id>2020/2021</receiving-last-academic-year-id>
                 <mobilities-per-year>10</mobilities-per-year>
                 <recommended-language-skill>
                     <language>no</language>
@@ -109,8 +99,8 @@
                 <sending-hei-id>uw.edu.pl</sending-hei-id>
                 <sending-ounit-id>140</sending-ounit-id>
                 <receiving-hei-id>hibo.no</receiving-hei-id>
-                <receiving-academic-year-id>2016/2017</receiving-academic-year-id>
-                <receiving-academic-year-id>2017/2018</receiving-academic-year-id>
+                <receiving-first-academic-year-id>2016/2017</receiving-first-academic-year-id>
+                <receiving-last-academic-year-id>2017/2018</receiving-last-academic-year-id>
                 <mobilities-per-year>2</mobilities-per-year>
                 <recommended-language-skill>
                     <language>en</language>
@@ -129,8 +119,8 @@
                 <sending-hei-id>hibo.no</sending-hei-id>
                 <receiving-hei-id>uw.edu.pl</receiving-hei-id>
                 <receiving-ounit-id>140</receiving-ounit-id>
-                <receiving-academic-year-id>2016/2017</receiving-academic-year-id>
-                <receiving-academic-year-id>2017/2018</receiving-academic-year-id>
+                <receiving-first-academic-year-id>2016/2017</receiving-first-academic-year-id>
+                <receiving-last-academic-year-id>2017/2018</receiving-last-academic-year-id>
                 <mobilities-per-year>2</mobilities-per-year>
                 <recommended-language-skill>
                     <language>en</language>
@@ -147,8 +137,8 @@
                 <sending-hei-id>hibo.no</sending-hei-id>
                 <receiving-hei-id>uw.edu.pl</receiving-hei-id>
                 <receiving-ounit-id>140</receiving-ounit-id>
-                <receiving-academic-year-id>2016/2017</receiving-academic-year-id>
-                <receiving-academic-year-id>2017/2018</receiving-academic-year-id>
+                <receiving-first-academic-year-id>2016/2017</receiving-first-academic-year-id>
+                <receiving-last-academic-year-id>2017/2018</receiving-last-academic-year-id>
                 <mobilities-per-year>2</mobilities-per-year>
                 <recommended-language-skill>
                     <language>en</language>
@@ -160,11 +150,8 @@
                 <total-days-per-year>14</total-days-per-year>
             </staff-training-mobility-spec>
         </cooperation-conditions>
-        <conditions-hash>7c045bc4ca23b3b9953adb27374aa27dcd41cfdda74fff9d2240a813a80443ae</conditions-hash>
-        <!-- For clarity, we do not paste a real PDF binary here. This should be a signed PDF. The hei can choose to generate -->
-        <!-- and sign its own PDF or use (sign and serve here) a document served by the partner. -->
-        <pdf>MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmxt1dWM7wF18z9ZKd9IdolvVXPKYWsQo
-            BE2fJXIXnwT2f39kKzCrNwRgia3XMdiS2jYHG0GAfqQfYNCafjIwhqI4d2pgjNNt11IUxViG</pdf>
+        <iia-hash>e950faa83a799cf45839e7915db88ed51575babe7845c1219dfde54ce30a61e4</iia-hash>
+        <pdf-file>4a483112-d306-4e77-87ff-05b823fb0e0f</pdf-file>
     </iia>
 
     <!-- More than one IIA can be returned in one response. We have only one here,

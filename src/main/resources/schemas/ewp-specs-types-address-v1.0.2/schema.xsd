@@ -9,7 +9,7 @@
     xmlns="https://github.com/erasmus-without-paper/ewp-specs-types-address/tree/stable-v1"
 >
     <xs:import
-        schemaLocation="../ewp-specs-architecture-v1.13.0/common-types.xsd"
+        schemaLocation="../ewp-specs-architecture-v1.16.0/common-types.xsd"
         namespace="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
     />
 
@@ -156,7 +156,7 @@
                             </xs:documentation>
                         </xs:annotation>
                     </xs:element>
-                    <xs:element name="deliveryPointCode" minOccurs="0" maxOccurs="unbounded">
+                    <xs:element name="deliveryPointCode" minOccurs="0" maxOccurs="unbounded" type="xs:string">
                         <xs:annotation>
                             <xs:documentation>
                                 Identifies the Dock or the Mail Stop or Lane or any other specific Delivery

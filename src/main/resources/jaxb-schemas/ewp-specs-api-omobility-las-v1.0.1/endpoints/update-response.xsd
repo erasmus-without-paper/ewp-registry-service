@@ -10,7 +10,7 @@
     xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-omobility-las/blob/stable-v1/endpoints/update-response.xsd"
 >
     <xs:import
-        schemaLocation="../../../schemas/ewp-specs-architecture-v1.13.0/common-types.xsd"
+        schemaLocation="../../../schemas/ewp-specs-architecture-v1.16.0/common-types.xsd"
         namespace="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
     />
 
