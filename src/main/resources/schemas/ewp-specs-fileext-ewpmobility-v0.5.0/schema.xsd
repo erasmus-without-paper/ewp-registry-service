@@ -1,32 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
-    xmlns:omobility="https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/blob/stable-v1/endpoints/get-response.xsd"
-    xmlns:imobility="https://github.com/erasmus-without-paper/ewp-specs-api-imobilities/blob/stable-v1/endpoints/get-response.xsd"
+    xmlns:omobility="https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/blob/stable-v3/endpoints/get-response.xsd"
+    xmlns:imobility="https://github.com/erasmus-without-paper/ewp-specs-api-imobilities/blob/stable-v2/endpoints/get-response.xsd"
     elementFormDefault="qualified"
 
     targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-fileext-ewpmobility/tree/stable-v1"
-    xmlns="https://github.com/erasmus-without-paper/ewp-specs-fileext-ewpmobility/tree/stable-v1"
->
-    <!-- WRTODO: Do not release until dependants are released: Outgoing Mobilities API, Incoming Mobilities API. -->
-    <!-- WRTODO: Once released, fix all schemaLocations pointing to its master branch. -->
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-fileext-ewpmobility/tree/stable-v1">
 
     <xs:import
-        schemaLocation="../ewp-specs-api-omobilities-v1.0.1/endpoints/get-response.xsd"
-        namespace="https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/blob/stable-v1/endpoints/get-response.xsd"
-    />
+        schemaLocation="../ewp-specs-api-omobilities-v3.0.0/endpoints/get-response.xsd"
+        namespace="https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/blob/stable-v3/endpoints/get-response.xsd"/>
 
     <xs:import
-        schemaLocation="../ewp-specs-api-imobilities-v1.0.0/endpoints/get-response.xsd"
-        namespace="https://github.com/erasmus-without-paper/ewp-specs-api-imobilities/blob/stable-v1/endpoints/get-response.xsd"
-    />
+        schemaLocation="../ewp-specs-api-imobilities-v2.0.0/endpoints/get-response.xsd"
+        namespace="https://github.com/erasmus-without-paper/ewp-specs-api-imobilities/blob/stable-v2/endpoints/get-response.xsd"/>
 
     <xs:annotation>
         <xs:documentation>
             This schema is a part of the Erasmus Without Paper project. Before you start
             using it, make sure you have read the general rules described here:
 
-            http://developers.erasmuswithoutpaper.eu/
+            https://developers.erasmuswithoutpaper.eu/
         </xs:documentation>
     </xs:annotation>
 

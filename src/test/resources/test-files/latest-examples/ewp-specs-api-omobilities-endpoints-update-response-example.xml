@@ -1,0 +1,16 @@
+<omobility-update-response
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-omobility/blob/stable-v3/endpoints/update-response.xsd"
+    xmlns:ewp="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        https://github.com/erasmus-without-paper/ewp-specs-api-omobility/blob/stable-v3/endpoints/update-response.xsd
+        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-omobility/stable-v3/endpoints/update-response.xsd
+    "
+>
+    <!--
+    As noted in XSD, this message is optional. It's perfectly okay for the server
+    to not supply it. However, if the server supplies it, then the client SHOULD
+    display it to its user (if possible).
+    -->
+    <ewp:success-user-message>Thank you. University of Warsaw's servers had successfully received your approval.</ewp:success-user-message>
+</omobility-update-response>

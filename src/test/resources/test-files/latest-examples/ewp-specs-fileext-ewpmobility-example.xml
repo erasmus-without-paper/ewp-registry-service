@@ -1,35 +1,41 @@
 <root:ewp-mobility-file
-    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/blob/stable-v1/endpoints/get-response.xsd"
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/blob/stable-v3/endpoints/get-response.xsd"
     xmlns:root="https://github.com/erasmus-without-paper/ewp-specs-fileext-ewpmobility/tree/stable-v1"
-    xmlns:a="https://github.com/erasmus-without-paper/ewp-specs-types-address/tree/stable-v1"
-    xmlns:xml="http://www.w3.org/XML/1998/namespace"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="
         https://github.com/erasmus-without-paper/ewp-specs-fileext-ewpmobility/tree/stable-v1
-        schema.xsd
-    "
->
-    <student-mobility-for-studies>
-        <!--
-        This is a very simplified mobility. For a better example, see Outgoing
-        Mobilities API.
-        -->
+        schema.xsd">
+    <student-mobility>
         <omobility-id>c442c289-5541-4cae-9edb-8ad83e133613</omobility-id>
-        <sending-hei>
-            <hei-id>uio.no</hei-id>
-        </sending-hei>
-        <receiving-hei>
-            <hei-id>uw.edu.pl</hei-id>
-        </receiving-hei>
-        <sending-academic-term-ewp-id>2009/2010-2/2</sending-academic-term-ewp-id>
-        <receiving-academic-year-id>2009/2010</receiving-academic-year-id>
         <student>
-            <given-names>Mister</given-names>
-            <family-name>Personson</family-name>
+            <given-names>Ivan Petrovich</given-names>
+            <given-names xml:lang="ru-Cyrl">Иван Петрович</given-names>
+            <family-name>Sidorov</family-name>
+            <family-name xml:lang="ru-Cyrl">Сидоров</family-name>
+            <global-id>urn:schac:personalUniqueCode:int:esi:uio.no:1234567890</global-id>
+            <birth-date>1985-05-05</birth-date>
+            <nationality>NO</nationality>
+            <gender>1</gender>
+            <email>ivan@example.com</email>
         </student>
-        <status>live</status>
-        <planned-arrival-date>2010-02-01</planned-arrival-date>
-        <planned-departure-date>2010-06-20</planned-departure-date>
-        <eqf-level-studied-at-departure>7</eqf-level-studied-at-departure>
-    </student-mobility-for-studies>
+        <nomination proposal-id="AE61266750D019063512516C7EE01968012C81F25A89">
+            <sending-hei>
+                <hei-id>uio.no</hei-id>
+                <ounit-id>140</ounit-id>
+                <iia-id>dd87538e-49e3-44ae-844e-55ad1b819ce9</iia-id>
+            </sending-hei>
+            <receiving-hei>
+                <hei-id>uw.edu.pl</hei-id>
+                <iia-id>549117543</iia-id> <!-- We recommend UUIDs though. -->
+            </receiving-hei>
+            <sending-academic-term-ewp-id>2022/2023-2/2</sending-academic-term-ewp-id>
+            <receiving-academic-year-id>2022/2023</receiving-academic-year-id>
+            <activity-type>student-studies</activity-type>
+            <activity-attributes>long-term</activity-attributes>
+            <agreement-isced-f-code>1234</agreement-isced-f-code>
+            <eqf-level-studied-at-departure>8</eqf-level-studied-at-departure>
+            <nominee-isced-f-code>1234</nominee-isced-f-code>
+        </nomination>
+        <status>pending</status>
+    </student-mobility>
 </root:ewp-mobility-file>

@@ -1,36 +1,14 @@
 <imobilities-get-response
-    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-imobilities/blob/stable-v1/endpoints/get-response.xsd"
-    xmlns:xml="http://www.w3.org/XML/1998/namespace"
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-imobilities/blob/stable-v2/endpoints/get-response.xsd"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="
-        https://github.com/erasmus-without-paper/ewp-specs-api-imobilities/blob/stable-v1/endpoints/get-response.xsd
-        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-imobilities/stable-v1/endpoints/get-response.xsd
+        https://github.com/erasmus-without-paper/ewp-specs-api-imobilities/blob/stable-v2/endpoints/get-response.xsd
+        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-imobilities/stable-v2/endpoints/get-response.xsd
     "
 >
-    <student-mobility-for-studies>
+    <student-mobility>
         <omobility-id>c442c289-5541-4cae-9edb-8ad83e133613</omobility-id>
-        <status>verified</status>
         <actual-arrival-date>2018-02-05</actual-arrival-date>
         <actual-departure-date>2018-06-19</actual-departure-date>
-    </student-mobility-for-studies>
-
-    <student-mobility-for-studies>
-        <omobility-id>d331d178-4430-3dbf-8fec-7be72f022502</omobility-id>
-        <status>rejected</status>
-        <comment>The agreement applies to Master's studies. This is a PhD student.</comment>
-    </student-mobility-for-studies>
-
-    <student-mobility-for-studies>
-        <omobility-id>e220e067-3329-2ecg-7gfd-6cf61g911491</omobility-id>
-        <status>verified</status>
-        <comment>Student leaved after one week.</comment>
-        <actual-arrival-date>2018-06-03</actual-arrival-date>
-        <actual-departure-date>2018-06-10</actual-departure-date>
-    </student-mobility-for-studies>
-
-    <student-mobility-for-studies>
-        <omobility-id>f119f956-2218-1fdh-6hge-5dg50h800380</omobility-id>
-        <status>verified</status>
-        <comment>Student did not appeared at the university.</comment>
-    </student-mobility-for-studies>
+    </student-mobility>
 </imobilities-get-response>

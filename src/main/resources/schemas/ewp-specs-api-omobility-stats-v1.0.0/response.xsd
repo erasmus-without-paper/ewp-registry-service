@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:trm="https://github.com/erasmus-without-paper/ewp-specs-types-academic-term/tree/stable-v2"
+    elementFormDefault="qualified"
+
+    targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-api-omobility-stats/tree/stable-v1"
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-omobility-stats/tree/stable-v1">
+
+    <xs:import
+        schemaLocation="../ewp-specs-architecture-v1.16.0/common-types.xsd"
+        namespace="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"/>
+
+    <xs:import
+        schemaLocation="https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-types-academic-term/stable-v2/schema.xsd"
+        namespace="https://github.com/erasmus-without-paper/ewp-specs-types-academic-term/tree/stable-v2"/>
+
+    <xs:annotation>
+        <xs:documentation>
+            This schema is a part of the Erasmus Without Paper project. Before you start
+            using it, make sure you have read the general rules described here:
+
+            https://developers.erasmuswithoutpaper.eu/
+        </xs:documentation>
+    </xs:annotation>
+
+    <xs:element name="omobility-stats-response">
+        <xs:annotation>
+            <xs:documentation>
+                This describes the format of the response returned by the EWP Outgoing
+                Mobility Stats API.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="academic-year-stats" minOccurs="0" maxOccurs="unbounded">
+                    <xs:annotation>
+                        <xs:documentation>
+                            This element represents a single academic year by which mobilities are grouped.
+                            It contains a list of statistics for the specified year.
+                        </xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="receiving-academic-year-id" type="trm:AcademicYearId">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        The year for which statistics are specified.
+
+                                        Note that sending and receiving HEIs MAY use different academic year
+                                        identifiers (e.g. "2010/2011" vs. "2010/2010" or "2011/2011"). This
+                                        particular identifier is the year identifier at the *receiving* HEI, not the
+                                        sending HEI.
+
+                                        This means that the sending HEI MUST know how the receiving HEI identifies its
+                                        academic years (i.e., whether it lies on the northern or southern hemisphere),
+                                        and be able to match its mobilities with these identifiers.
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                            <xs:element name="omobility-pending" type="xs:integer">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        Number of outgoing mobilities in the "pending" status.
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                            <xs:element name="omobility-approved" type="xs:integer">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        Number of outgoing mobilities in the "approved" status.
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

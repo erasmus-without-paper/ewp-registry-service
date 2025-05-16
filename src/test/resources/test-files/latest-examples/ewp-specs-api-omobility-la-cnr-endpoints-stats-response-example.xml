@@ -1,0 +1,28 @@
+<las-incoming-stats-response
+        xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-omobility-la-cnr/tree/stable-v1/endpoints/stats-response.xsd"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+        https://github.com/erasmus-without-paper/ewp-specs-api-omobility-la-cnr/tree/stable-v1/endpoints/stats-response.xsd
+        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-omobility-la-cnr/tree/stable-v1/endpoints/stats-response.xsd
+    "
+>
+
+    <academic-year-la-stats>
+        <receiving-academic-year-id>2021/2022</receiving-academic-year-id>
+        <la-incoming-total>109</la-incoming-total>
+        <la-incoming-some-version-approved>70</la-incoming-some-version-approved>
+        <la-incoming-latest-version-approved>67</la-incoming-latest-version-approved>
+        <la-incoming-latest-version-rejected>0</la-incoming-latest-version-rejected>
+        <la-incoming-latest-version-awaiting>39</la-incoming-latest-version-awaiting>
+    </academic-year-la-stats>
+
+    <academic-year-la-stats>
+        <receiving-academic-year-id>2022/2023</receiving-academic-year-id>
+        <la-incoming-total>77</la-incoming-total>
+        <la-incoming-some-version-approved>9</la-incoming-some-version-approved>
+        <la-incoming-latest-version-approved>9</la-incoming-latest-version-approved>
+        <la-incoming-latest-version-rejected>1</la-incoming-latest-version-rejected>
+        <la-incoming-latest-version-awaiting>66</la-incoming-latest-version-awaiting>
+    </academic-year-la-stats>
+
+</las-incoming-stats-response>

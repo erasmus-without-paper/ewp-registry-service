@@ -168,11 +168,23 @@
     name="https://github.com/erasmus-without-paper/ewp-specs-api-imobilities/blob/stable-v1/manifest-entry.xsd"
     uri="ewp-specs-api-imobilities-v1.0.0/manifest-entry.xsd" />
 <uri
+    name="https://github.com/erasmus-without-paper/ewp-specs-api-imobilities/blob/stable-v2/endpoints/get-response.xsd"
+    uri="ewp-specs-api-imobilities-v2.0.0/endpoints/get-response.xsd" />
+<uri
+    name="https://github.com/erasmus-without-paper/ewp-specs-api-imobilities/blob/stable-v2/manifest-entry.xsd"
+    uri="ewp-specs-api-imobilities-v2.0.0/manifest-entry.xsd" />
+<uri
     name="https://github.com/erasmus-without-paper/ewp-specs-api-imobility-cnr/tree/stable-v1"
     uri="ewp-specs-api-imobility-cnr-v1.0.0/response.xsd" />
 <uri
     name="https://github.com/erasmus-without-paper/ewp-specs-api-imobility-cnr/blob/stable-v1/manifest-entry.xsd"
     uri="ewp-specs-api-imobility-cnr-v1.0.0/manifest-entry.xsd" />
+<uri
+    name="https://github.com/erasmus-without-paper/ewp-specs-api-imobility-cnr/tree/stable-v2"
+    uri="ewp-specs-api-imobility-cnr-v2.0.0/response.xsd" />
+<uri
+    name="https://github.com/erasmus-without-paper/ewp-specs-api-imobility-cnr/blob/stable-v2/manifest-entry.xsd"
+    uri="ewp-specs-api-imobility-cnr-v2.0.0/manifest-entry.xsd" />
 <uri
     name="https://github.com/erasmus-without-paper/ewp-specs-api-imobility-tor-cnr/tree/stable-v1"
     uri="ewp-specs-api-imobility-tor-cnr-v1.0.0/response.xsd" />
@@ -264,11 +276,32 @@
     name="https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/blob/stable-v2/manifest-entry.xsd"
     uri="ewp-specs-api-omobilities-v2.0.0/manifest-entry.xsd" />
 <uri
+    name="https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/blob/stable-v3/endpoints/get-response.xsd"
+    uri="ewp-specs-api-omobilities-v3.0.0/endpoints/get-response.xsd" />
+<uri
+    name="https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/blob/stable-v3/endpoints/index-response.xsd"
+    uri="ewp-specs-api-omobilities-v3.0.0/endpoints/index-response.xsd" />
+<uri
+    name="https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/blob/stable-v3/endpoints/update-request.xsd"
+    uri="ewp-specs-api-omobilities-v3.0.0/endpoints/update-request.xsd" />
+<uri
+    name="https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/blob/stable-v3/endpoints/update-response.xsd"
+    uri="ewp-specs-api-omobilities-v3.0.0/endpoints/update-response.xsd" />
+<uri
+    name="https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/blob/stable-v3/manifest-entry.xsd"
+    uri="ewp-specs-api-omobilities-v3.0.0/manifest-entry.xsd" />
+<uri
     name="https://github.com/erasmus-without-paper/ewp-specs-api-omobility-cnr/tree/stable-v1"
     uri="ewp-specs-api-omobility-cnr-v1.0.0/response.xsd" />
 <uri
     name="https://github.com/erasmus-without-paper/ewp-specs-api-omobility-cnr/blob/stable-v1/manifest-entry.xsd"
     uri="ewp-specs-api-omobility-cnr-v1.0.0/manifest-entry.xsd" />
+<uri
+    name="https://github.com/erasmus-without-paper/ewp-specs-api-omobility-cnr/tree/stable-v2"
+    uri="ewp-specs-api-omobility-cnr-v2.0.0/response.xsd" />
+<uri
+    name="https://github.com/erasmus-without-paper/ewp-specs-api-omobility-cnr/blob/stable-v2/manifest-entry.xsd"
+    uri="ewp-specs-api-omobility-cnr-v2.0.0/manifest-entry.xsd" />
 <uri
     name="https://github.com/erasmus-without-paper/ewp-specs-api-omobility-la-cnr/tree/stable-v1"
     uri="ewp-specs-api-omobility-la-cnr-v1.1.0/response.xsd" />
@@ -297,6 +330,12 @@
     name="https://github.com/erasmus-without-paper/ewp-specs-api-omobility-las/blob/stable-v1/manifest-entry.xsd"
     uri="ewp-specs-api-omobility-las-v1.2.0/manifest-entry.xsd" />
 <uri
+    name="https://github.com/erasmus-without-paper/ewp-specs-api-omobility-stats/tree/stable-v1"
+    uri="ewp-specs-api-omobility-stats-v1.0.0/response.xsd" />
+<uri
+    name="https://github.com/erasmus-without-paper/ewp-specs-api-omobility-stats/blob/stable-v1/manifest-entry.xsd"
+    uri="ewp-specs-api-omobility-stats-v1.0.0/manifest-entry.xsd" />
+<uri
     name="https://github.com/erasmus-without-paper/ewp-specs-api-ounits/tree/stable-v1"
     uri="ewp-specs-api-ounits-v1.1.1/response.xsd" />
 <uri
@@ -319,7 +358,7 @@
     uri="ewp-specs-architecture-v1.16.0/common-types.xsd" />
 <uri
     name="https://github.com/erasmus-without-paper/ewp-specs-fileext-ewpmobility/tree/stable-v1"
-    uri="ewp-specs-fileext-ewpmobility-v0.4.3/schema.xsd" />
+    uri="ewp-specs-fileext-ewpmobility-v0.5.0/schema.xsd" />
 <uri
     name="https://github.com/erasmus-without-paper/ewp-specs-sec-cliauth-httpsig/tree/stable-v1"
     uri="ewp-specs-sec-cliauth-httpsig-v1.0.2/security-entries.xsd" />

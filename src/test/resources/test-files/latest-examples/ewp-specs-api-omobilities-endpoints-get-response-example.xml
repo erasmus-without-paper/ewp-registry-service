@@ -1,27 +1,14 @@
 <omobilities-get-response
-    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/blob/stable-v2/endpoints/get-response.xsd"
-    xmlns:a="https://github.com/erasmus-without-paper/ewp-specs-types-address/tree/stable-v1"
-    xmlns:p="https://github.com/erasmus-without-paper/ewp-specs-types-phonenumber/tree/stable-v1"
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/blob/stable-v3/endpoints/get-response.xsd"
     xmlns:xml="http://www.w3.org/XML/1998/namespace"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="
-        https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/blob/stable-v2/endpoints/get-response.xsd
-        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-omobilities/stable-v1/endpoints/get-response.xsd
+        https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/blob/stable-v3/endpoints/get-response.xsd
+        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-omobilities/stable-v3/endpoints/get-response.xsd
     "
 >
     <student-mobility>
         <omobility-id>c442c289-5541-4cae-9edb-8ad83e133613</omobility-id>
-        <sending-hei>
-            <hei-id>uio.no</hei-id>
-            <ounit-id>140</ounit-id>
-            <iia-id>dd87538e-49e3-44ae-844e-55ad1b819ce9</iia-id>
-        </sending-hei>
-        <receiving-hei>
-            <hei-id>uw.edu.pl</hei-id>
-            <iia-id>549117543</iia-id> <!-- We recommend UUIDs though. -->
-        </receiving-hei>
-        <sending-academic-term-ewp-id>2009/2010-2/2</sending-academic-term-ewp-id>
-        <receiving-academic-year-id>2009/2010</receiving-academic-year-id>
         <student>
             <given-names>Ivan Petrovich</given-names>
             <given-names xml:lang="ru-Cyrl">Иван Петрович</given-names>
@@ -29,66 +16,28 @@
             <family-name xml:lang="ru-Cyrl">Сидоров</family-name>
             <global-id>urn:schac:personalUniqueCode:int:esi:uio.no:1234567890</global-id>
             <birth-date>1985-05-05</birth-date>
-            <citizenship>NO</citizenship>
+            <nationality>NO</nationality>
             <gender>1</gender>
             <email>ivan@example.com</email>
-            <photo-url size-px="350x450" date="2009-11-13">https://uio.no/student-photos/12345-small.jpg?token=878f2703-1752-4dc8-a1d9-1957a7732f0a</photo-url>
-            <photo-url size-px="3500x4500" date="2009-11-13">https://uio.no/student-photos/12345-big.jpg?token=878f2703-1752-4dc8-a1d9-1957a7732f0a</photo-url>
-            <photo-url>https://uio.no/student-photos/some-other-photo.jpg</photo-url>
-            <a:mailing-address>
-                <!-- See https://github.com/erasmus-without-paper/ewp-specs-types-address -->
-            </a:mailing-address>
-            <p:phone-number>
-                <p:e164>+4788888888</p:e164>
-            </p:phone-number>
         </student>
-        <status>live</status>
-        <activity-type>student-studies</activity-type>
-        <activity-attributes>long-term</activity-attributes>
-        <planned-arrival-date>2010-02-01</planned-arrival-date>
-        <planned-departure-date>2010-06-20</planned-departure-date>
-        <eqf-level-studied-at-nomination>7</eqf-level-studied-at-nomination>
-        <eqf-level-studied-at-departure>8</eqf-level-studied-at-departure>
-        <nominee-isced-f-code>1234</nominee-isced-f-code>
-        <nominee-language-skill>
-            <language>no</language>
-            <cefr-level>C2</cefr-level>
-        </nominee-language-skill>
-        <nominee-language-skill>
-            <language>en</language>
-            <cefr-level>B2</cefr-level>
-        </nominee-language-skill>
-        <nominee-language-skill>
-            <language>pl</language>
-            <cefr-level>A1</cefr-level>
-        </nominee-language-skill>
-        <additional-requirement>
-            <name>Motivation letter</name>
-            <file>f0f4934c-d384-41c3-a455-9bb9a689a5a3</file>
-        </additional-requirement>
-        <additional-requirement>
-            <name>Transcript of Records</name>
-            <file>2f521e8a-d9fd-4f49-9941-df9318bf190f</file>
-        </additional-requirement>
-        <additional-requirement>
-            <name>Language certificate</name>
-            <file>793ca3b8-02db-4573-9164-e84bc9a58f23</file>
-        </additional-requirement>
-        <additional-requirement>
-            <name>Portfolio</name>
-            <file>85ba5392-fd35-4baa-9afa-220537d2ebbe</file>
-        </additional-requirement>
-        <additional-requirement>
-            <name>Portfolio</name>
-            <url>https://www.youtube.com/watch?v=gdg34IFo</url>
-        </additional-requirement>
-        <additional-requirement>
-            <name>CV</name>
-            <file>6f09ac08-454a-4278-a290-16f55663237d</file>
-        </additional-requirement>
-        <additional-requirement>
-            <name>Other document</name>
-            <file>4a483112-d306-4e77-87ff-05b823fb0e0f</file>
-        </additional-requirement>
+        <nomination proposal-id="AE61266750D019063512516C7EE01968012C81F25A89">
+            <sending-hei>
+                <hei-id>uio.no</hei-id>
+                <ounit-id>140</ounit-id>
+                <iia-id>dd87538e-49e3-44ae-844e-55ad1b819ce9</iia-id>
+            </sending-hei>
+            <receiving-hei>
+                <hei-id>uw.edu.pl</hei-id>
+                <iia-id>549117543</iia-id> <!-- We recommend UUIDs though. -->
+            </receiving-hei>
+            <sending-academic-term-ewp-id>2022/2023-2/2</sending-academic-term-ewp-id>
+            <receiving-academic-year-id>2022/2023</receiving-academic-year-id>
+            <activity-type>student-studies</activity-type>
+            <activity-attributes>long-term</activity-attributes>
+            <agreement-isced-f-code>1234</agreement-isced-f-code>
+            <eqf-level-studied-at-departure>8</eqf-level-studied-at-departure>
+            <nominee-isced-f-code>1234</nominee-isced-f-code>
+        </nomination>
+        <status>approved</status>
     </student-mobility>
 </omobilities-get-response>
