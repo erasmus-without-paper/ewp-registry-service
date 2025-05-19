@@ -35,7 +35,7 @@ public class OMobilitiesGetValidatorTest extends OMobilitiesValidatorTestBase {
   }
 
   @Test
-  public void testNotValidatingIMobilityTorsIdListIsDetected() {
+  public void testNotValidatingOMobilityIdsExceededIsDetected() {
     OMobilitiesServiceV2Valid service = new OMobilitiesServiceV2Valid(omobilitiesIndexUrl,
         omobilitiesGetUrl, this.client, this.serviceKeyStore.getCoveredHeiIDs().get(0)) {
       @Override
@@ -142,7 +142,7 @@ public class OMobilitiesGetValidatorTest extends OMobilitiesValidatorTestBase {
   }
 
   @Test
-  public void testReturningWrongIMobilityTorIsDetected() {
+  public void testReturningWrongOMobilityIsDetected() {
     OMobilitiesServiceV2Valid service = new OMobilitiesServiceV2Valid(omobilitiesIndexUrl,
         omobilitiesGetUrl, this.client, this.serviceKeyStore.getCoveredHeiIDs().get(0)) {
       @Override
@@ -172,7 +172,7 @@ public class OMobilitiesGetValidatorTest extends OMobilitiesValidatorTestBase {
   }
 
   @Test
-  public void testTooLargeMaxIMobilityTorsIdsInManifestIsDetected() {
+  public void testTooLargeMaxOMobilityIdsInManifestIsDetected() {
     OMobilitiesServiceV2Valid service = new OMobilitiesServiceV2Valid(omobilitiesIndexUrl,
         omobilitiesGetUrl, this.client, this.serviceKeyStore.getCoveredHeiIDs().get(0)) {
       @Override
