@@ -110,7 +110,7 @@ public class CoursesValidatorTest extends AbstractApiTest<CoursesSuiteState> {
           }
         };
     TestValidationReport report = this.getRawReport(service);
-    assertThat(report).containsFailure("Request without hei_id and los_ids, expect 400.");
+    assertThat(report).containsFailure("Request without parameters, expect 400.");
   }
 
   @Test

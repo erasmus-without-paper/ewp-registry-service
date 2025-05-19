@@ -26,6 +26,10 @@ import jakarta.xml.bind.Marshaller;
 import jakarta.xml.bind.Unmarshaller;
 import org.w3c.dom.Element;
 
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
+
 public abstract class AbstractApiService implements FakeInternetService {
   protected final RegistryClient registryClient;
   private EwpHttpSigRequestAuthorizer myAuthorizer;
@@ -79,6 +83,21 @@ public abstract class AbstractApiService implements FakeInternetService {
     multilineString.setValue(Utils.escapeXml(developerMessage));
     response.setDeveloperMessage(multilineString);
     return marshallResponse(status, response);
+  }
+
+  protected XMLGregorianCalendar xmlDate(int year, int month) {
+    return xmlDate(year, month, 1);
+  }
+
+  protected XMLGregorianCalendar xmlDate(int year, int month, int day) {
+    DatatypeFactory datatypeFactory;
+    try {
+      datatypeFactory = DatatypeFactory.newInstance();
+    } catch (DatatypeConfigurationException e) {
+      return null;
+    }
+
+    return datatypeFactory.newXMLGregorianCalendarDate(year, month, day, 0);
   }
 
   /**

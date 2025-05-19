@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:ewp="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
+    elementFormDefault="qualified"
+
+    targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-api-omobility/blob/stable-v3/endpoints/update-request.xsd"
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-omobility/blob/stable-v3/endpoints/update-request.xsd"
+>
+    <xs:import
+        schemaLocation="../../../schemas/ewp-specs-architecture-v1.16.0/common-types.xsd"
+        namespace="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
+    />
+
+    <xs:annotation>
+        <xs:documentation>
+            This schema is a part of the Erasmus Without Paper project. Before you start
+            using it, make sure you have read the general rules described here:
+
+            https://developers.erasmuswithoutpaper.eu/
+        </xs:documentation>
+    </xs:annotation>
+
+    <xs:element name="omobility-update-request">
+        <xs:annotation>
+            <xs:documentation>
+                This describes the format of the REQUEST to be submitted to the `update`
+                endpoint of EWP Outgoing Mobility API.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:choice minOccurs="1" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>
+                            One request contains exactly one update element. But there are many possible
+                            types of this update element.
+                        </xs:documentation>
+                    </xs:annotation>
+                    <xs:element ref="approve-proposal-v1"/>
+                    <xs:element ref="reject-proposal-v1"/>
+                </xs:choice>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="approve-proposal-v1">
+        <xs:annotation>
+            <xs:documentation>
+                This request is sent by the receiving HEI when it wants to approve the mobility `proposal`.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="omobility-id" type="ewp:AsciiPrintableIdentifier" minOccurs="1" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>
+                            ID of the mobility which this update request is about.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="proposal-id" type="xs:string" minOccurs="1" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>
+                            Identifier of the current state of the `proposal`, which is also the state that
+                            is being approved. This element is required here to prevent edit conflicts:
+
+                            https://en.wikipedia.org/wiki/Edit_conflict
+
+                            The client - the receiving HEI - extracts this identifier from the response of the
+                            Outgoing Mobility API's `get` endpoint served at the sending HEI.
+
+                            If the content of `proposal-id` does not match the current
+                            values as kept in the server's database, then the server MUST respond with
+                            HTTP 409 error response.
+                            https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.10
+
+                            Error response SHOULD include the `user-message` element with a brief
+                            explanation (e.g. "Your copy of the mobility is not up to date.
+                            Please refresh your copy from our servers and repeat your request.").
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="reject-proposal-v1">
+        <xs:annotation>
+            <xs:documentation>
+                This request is sent by the receiving HEI when it wants to reject a `proposal`.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="omobility-id" type="ewp:AsciiPrintableIdentifier" minOccurs="1" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>
+                            ID of the mobility which this update request is about.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="proposal-id" type="xs:string" minOccurs="1" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>
+                            Identifier of the current state of the `proposal`, which is being rejected.
+                            This element is required here to prevent edit conflicts as in `approve-proposal-v1`.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="comment" type="xs:string" minOccurs="1" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>
+                            Field to describe why mobility has not been approved and what are the suggested changes.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>

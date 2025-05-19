@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
+import eu.erasmuswithoutpaper.registry.validators.SemanticVersion;
 import eu.erasmuswithoutpaper.registry.validators.TestValidationReport;
 import eu.erasmuswithoutpaper.registry.validators.omobilitiesvalidator.OMobilitiesSuiteState;
 import eu.erasmuswithoutpaper.registry.validators.omobilitiesvalidator.index.OMobilitiesIndexValidator;
@@ -13,7 +14,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import static eu.erasmuswithoutpaper.registry.validators.TestValidationReportAsset.assertThat;
 import org.junit.jupiter.api.Test;
 
-public class OMobilitiesIndexValidatorTest extends OMobilitiesValidatorTestBase {
+public class OMobilitiesIndexValidatorV2Test extends OMobilitiesValidatorTestBase {
+  @Override
+  protected String getManifestFilename() {
+    return "omobilities/manifest-v2.xml";
+  }
+
+  @Override
+  protected SemanticVersion getVersion() {
+    return new SemanticVersion(2, 0, 0);
+  }
+
   @Autowired
   protected OMobilitiesIndexValidator validator;
 
@@ -228,7 +239,7 @@ public class OMobilitiesIndexValidatorTest extends OMobilitiesValidatorTestBase 
     };
     TestValidationReport report = this.getRawReport(service);
     assertThat(report).containsWarning(
-        "Request with known sending_hei_id and modified_since in the future, expect 200 OK "
+        "Request with modified_since in the future, expect 200 OK "
             + "and empty response");
   }
 
@@ -248,7 +259,7 @@ public class OMobilitiesIndexValidatorTest extends OMobilitiesValidatorTestBase 
     };
     TestValidationReport report = this.getRawReport(service);
     assertThat(report).containsFailure(
-        "Request with known sending_hei_id and modified_since far in the past, expect 200 OK "
+        "Request with modified_since far in the past, expect 200 OK "
             + "and non-empty response.");
   }
 
@@ -324,7 +335,7 @@ public class OMobilitiesIndexValidatorTest extends OMobilitiesValidatorTestBase 
     };
     TestValidationReport report = this.getRawReport(service);
     assertThat(report).containsFailure(
-        "Request with known sending_hei_id and known receiving_academic_year_id parameter, expect"
+        "Request with known receiving_academic_year_id parameter, expect"
             + " 200 OK and non-empty response."
     );
   }
@@ -345,7 +356,7 @@ public class OMobilitiesIndexValidatorTest extends OMobilitiesValidatorTestBase 
     };
     TestValidationReport report = this.getRawReport(service);
     assertThat(report).containsFailure(
-        "Request with known sending_hei_id and modified_since far in the past, "
+        "Request with modified_since far in the past, "
             + "expect 200 OK and non-empty response."
         );
   }

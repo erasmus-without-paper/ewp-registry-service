@@ -310,6 +310,15 @@ public class KnownNamespace {
 
   /**
    * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/tree/stable-v3/manifest-entry.xsd'>
+   * here</a>.
+   */
+  public static final KnownNamespace RESPONSE_OMOBILITIES_INDEX_V3 =
+      new KnownNamespace("omri3", "api-omobilities/blob/stable-v3/endpoints/index-response.xsd",
+          "api-omobilities/stable-v3/endpoints/index-response.xsd", false);
+
+  /**
+   * As described <a href=
    * 'https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/tree/stable-v2/manifest-entry.xsd'>
    * here</a>.
    */
@@ -317,6 +326,15 @@ public class KnownNamespace {
       "api-omobilities/blob/stable-v2/endpoints/get-response.xsd",
       "api-omobilities/stable-v2/endpoints/get-response.xsd", false);
   // TODO false -> true
+
+  /**
+   * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/tree/stable-v3/manifest-entry.xsd'>
+   * here</a>.
+   */
+  public static final KnownNamespace RESPONSE_OMOBILITIES_GET_V3  = new KnownNamespace("omrg3",
+          "api-omobilities/blob/stable-v3/endpoints/get-response.xsd",
+          "api-omobilities/stable-v3/endpoints/get-response.xsd", false);
 
   /**
    * As described <a href=
@@ -582,6 +600,15 @@ public class KnownNamespace {
   public static final KnownNamespace APIENTRY_OMOBILITIES_V2 =
       new KnownNamespace("om2", "api-omobilities/blob/stable-v2/manifest-entry.xsd",
           "api-omobilities/stable-v2/manifest-entry.xsd", false);
+
+  /**
+   * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/blob/stable-v3/manifest-entry.xsd'>
+   * here</a>.
+   */
+  public static final KnownNamespace APIENTRY_OMOBILITIES_V3 =
+      new KnownNamespace("om3", "api-omobilities/blob/stable-v3/manifest-entry.xsd",
+          "api-omobilities/stable-v3/manifest-entry.xsd", false);
 
   /**
    * As described <a href=

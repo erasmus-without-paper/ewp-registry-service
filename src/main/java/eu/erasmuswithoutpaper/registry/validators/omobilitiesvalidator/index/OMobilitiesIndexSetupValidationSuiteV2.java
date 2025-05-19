@@ -17,12 +17,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-class OMobilitiesIndexSetupValidationSuite
+class OMobilitiesIndexSetupValidationSuiteV2
     extends AbstractSetupValidationSuite<OMobilitiesSuiteState> {
 
   private static final Logger logger =
       LoggerFactory.getLogger(
-          OMobilitiesIndexSetupValidationSuite.class);
+          OMobilitiesIndexSetupValidationSuiteV2.class);
 
   private final ValidatedApiInfo apiInfo;
 
@@ -38,7 +38,8 @@ class OMobilitiesIndexSetupValidationSuite
 
   private static final String RECEIVING_HEI_ID_PARAMETER = "receiving_hei_id";
   private static final String SENDING_HEI_ID_PARAMETER = "sending_hei_id";
-  private static final String NOT_PERMITTED_HEI_ID_PARAMETER = "not_permitted_hei_id";
+  protected static final String NOT_PERMITTED_HEI_ID_PARAMETER = "not_permitted_hei_id";
+
   private static final String NOT_PERMITTED_HEI_ID_DESCRIPTION =
       "Will be used as sending_hei_id parameter to test if it is not possible "
       + "for real hei id to access restricted data. Defaults to uw.edu.pl (but if sending_hei_id "
@@ -55,7 +56,7 @@ class OMobilitiesIndexSetupValidationSuite
     );
   }
 
-  OMobilitiesIndexSetupValidationSuite(ApiValidator<OMobilitiesSuiteState> validator,
+  OMobilitiesIndexSetupValidationSuiteV2(ApiValidator<OMobilitiesSuiteState> validator,
       OMobilitiesSuiteState state, ValidationSuiteConfig config, int version) {
     super(validator, state, config, false);
 
@@ -82,7 +83,7 @@ class OMobilitiesIndexSetupValidationSuite
   }
 
   @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
-  private String getOtherRealHeiId(String knownRealHeiId) throws SuiteBroken {
+  protected String getOtherRealHeiId(String knownRealHeiId) throws SuiteBroken {
     String realHeiId1 = "uw.edu.pl";
     String realHeiId2 = "uma.es";
     if (knownRealHeiId.equals(realHeiId1)) {

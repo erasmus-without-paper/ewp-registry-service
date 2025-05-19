@@ -66,7 +66,7 @@ public class OMobilityLAsGetValidatorTest extends OMobilityLAsValidatorTestBase 
     };
     TestValidationReport report = this.getRawReport(service);
     assertThat(report)
-        .containsFailure("Request without sending_hei_id and omobility_ids, expect 400.");
+        .containsFailure("Request without parameters, expect 400.");
   }
 
   @Test

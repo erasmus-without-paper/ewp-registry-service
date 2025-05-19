@@ -1,6 +1,7 @@
 package eu.erasmuswithoutpaper.registry.validators.omobilitiesvalidator.index;
 
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import eu.erasmuswithoutpaper.registry.validators.AbstractValidationSuite;
 import eu.erasmuswithoutpaper.registry.validators.ApiEndpoint;
@@ -19,12 +20,12 @@ import org.slf4j.LoggerFactory;
  * Describes the set of test/steps to be run on an OMobilities API index endpoint implementation
  * in order to properly validate it.
  */
-public class OMobilitiesIndexComplexValidationSuite
+public class OMobilitiesIndexComplexValidationSuiteV2
     extends AbstractValidationSuite<OMobilitiesSuiteState> {
 
   private static final Logger logger =
       LoggerFactory.getLogger(
-          OMobilitiesIndexComplexValidationSuite.class);
+          OMobilitiesIndexComplexValidationSuiteV2.class);
 
   private final ValidatedApiInfo apiInfo;
 
@@ -38,7 +39,7 @@ public class OMobilitiesIndexComplexValidationSuite
     return apiInfo;
   }
 
-  OMobilitiesIndexComplexValidationSuite(ApiValidator<OMobilitiesSuiteState> validator,
+  OMobilitiesIndexComplexValidationSuiteV2(ApiValidator<OMobilitiesSuiteState> validator,
       OMobilitiesSuiteState state, ValidationSuiteConfig config, int version) {
     super(validator, state, config);
 
@@ -58,7 +59,7 @@ public class OMobilitiesIndexComplexValidationSuite
         new ParameterList(
             new Parameter("sending_hei_id", this.currentState.sendingHeiId)
         ),
-        omobilityIdVerifierFactory.expectResponseToContain(Arrays.asList(
+        omobilityIdVerifierFactory.expectResponseToContain(Collections.singletonList(
             this.currentState.omobilityId
         ))
     );
@@ -82,6 +83,6 @@ public class OMobilitiesIndexComplexValidationSuite
     );
   }
 
-  private VerifierFactory omobilityIdVerifierFactory = new VerifierFactory(
-      Arrays.asList("omobility-id"));
+  protected VerifierFactory omobilityIdVerifierFactory = new VerifierFactory(
+      List.of("omobility-id"));
 }

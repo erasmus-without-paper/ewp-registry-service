@@ -230,7 +230,7 @@ public class OMobilityLAsIndexValidatorTest extends OMobilityLAsValidatorTestBas
     };
     TestValidationReport report = this.getRawReport(service);
     assertThat(report).containsWarning(
-        "Request with known sending_hei_id and modified_since in the future, expect 200 OK "
+        "Request with modified_since in the future, expect 200 OK "
             + "and empty response");
   }
 
@@ -250,7 +250,7 @@ public class OMobilityLAsIndexValidatorTest extends OMobilityLAsValidatorTestBas
     };
     TestValidationReport report = this.getRawReport(service);
     assertThat(report).containsFailure(
-        "Request with known sending_hei_id and modified_since far in the past, expect 200 OK "
+        "Request with modified_since far in the past, expect 200 OK "
             + "and non-empty response.");
   }
 
@@ -326,7 +326,7 @@ public class OMobilityLAsIndexValidatorTest extends OMobilityLAsValidatorTestBas
     };
     TestValidationReport report = this.getRawReport(service);
     assertThat(report).containsFailure(
-        "Request with known sending_hei_id and known receiving_academic_year_id parameter, expect"
+        "Request with known receiving_academic_year_id parameter, expect"
             + " 200 OK and non-empty response."
     );
   }
@@ -347,7 +347,7 @@ public class OMobilityLAsIndexValidatorTest extends OMobilityLAsValidatorTestBas
     };
     TestValidationReport report = this.getRawReport(service);
     assertThat(report).containsFailure(
-        "Request with known sending_hei_id and modified_since far in the past, "
+        "Request with modified_since far in the past, "
             + "expect 200 OK and non-empty response."
         );
   }

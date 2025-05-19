@@ -1121,8 +1121,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
       testParameters200(
           combination,
           "Request for one of known " + secondParameterNamePrefix + "_codes, expect 200 OK.",
-          new ParameterList(
-              new Parameter(heiParameterName, heiId),
+          getParameterList(heiParameterName, heiId,
               new Parameter(secondParameterNamePrefix + "_code", code)
           ),
           verifierFactory.expectResponseToContainExactly(Collections.singletonList(id)),
@@ -1134,8 +1133,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
     testParameters200(
         combination,
         "Request one unknown " + secondParameterNamePrefix + "_id, expect 200 and empty response.",
-        new ParameterList(
-            new Parameter(heiParameterName, heiId),
+        getParameterList(heiParameterName, heiId,
             new Parameter(secondParameterNamePrefix + "_id", FAKE_ID)
         ),
         verifierFactory.expectResponseToBeEmpty()
@@ -1145,8 +1143,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
         combination,
         "Request one known and one unknown " + secondParameterNamePrefix
             + "_id, expect 200 and only one " + secondParameterNamePrefix + " in response.",
-        new ParameterList(
-            new Parameter(heiParameterName, heiId),
+        getParameterList(heiParameterName, heiId,
             new Parameter(secondParameterNamePrefix + "_id", id),
             new Parameter(secondParameterNamePrefix + "_id", FAKE_ID)
         ),
@@ -1161,8 +1158,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
           combination,
           "Request one known and one unknown " + secondParameterNamePrefix
               + "_code, expect 200 and only one " + secondParameterNamePrefix + " in response.",
-          new ParameterList(
-              new Parameter(heiParameterName, heiId),
+          getParameterList(heiParameterName, heiId,
               new Parameter(secondParameterNamePrefix + "_code", code),
               new Parameter(secondParameterNamePrefix + "_code", FAKE_ID)
           ),
@@ -1174,80 +1170,74 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
 
     testParametersError(
         combination,
-        "Request without " + heiParameterName + " and "
-            + secondParameterNamePrefix + "_ids, expect 400.",
+        "Request without parameters, expect 400.",
         new ParameterList(),
         400
     );
 
-    testParametersError(
-        combination,
-        "Request without " + heiParameterName + ", expect 400.",
-        new ParameterList(new Parameter(secondParameterNamePrefix + "_id", id)),
-        400
-    );
+    if (heiParameterName != null) {
+      testParametersError(
+              combination,
+              "Request without " + heiParameterName + ", expect 400.",
+              new ParameterList(new Parameter(secondParameterNamePrefix + "_id", id)),
+              400
+      );
 
-    testParametersError(
-        combination,
-        String.format("Request without %s%s, expect 400.",
-            secondParameterNamePrefix + "_ids",
-            skipCodeTests ? "" : (" and " + secondParameterNamePrefix + "_codes")
-        ),
-        new ParameterList(new Parameter(heiParameterName, heiId)),
-        400
-    );
-
-    if (shouldUnknownHeiIdsFail) {
       testParametersError(
           combination,
-          "Request for one of known " + secondParameterNamePrefix + "_ids with unknown "
-              + heiParameterName + ", expect 400.",
-          new ParameterList(
-              new Parameter(heiParameterName, FAKE_ID),
-              new Parameter(secondParameterNamePrefix + "_id", id)
+          String.format("Request without %s%s, expect 400.",
+                  secondParameterNamePrefix + "_ids",
+                  skipCodeTests ? "" : (" and " + secondParameterNamePrefix + "_codes")
           ),
+          new ParameterList(new Parameter(heiParameterName, heiId)),
           400
       );
-    } else {
-      testParameters200(
-          combination,
-          "Request for one of known " + secondParameterNamePrefix + "_ids with unknown "
-              + heiParameterName + ", expect 200 and empty response.",
-          new ParameterList(
-              new Parameter(heiParameterName, FAKE_ID),
-              new Parameter(secondParameterNamePrefix + "_id", id)
-          ),
-          verifierFactory.expectResponseToBeEmpty()
-      );
-    }
 
-    if (!skipCodeTests) {
-      testParametersError(
-          combination,
-          "Request for one of known " + secondParameterNamePrefix + "_codes with unknown "
-              + heiParameterName + ", expect 400.",
-          new ParameterList(
-              new Parameter(heiParameterName, FAKE_ID),
-              new Parameter(secondParameterNamePrefix + "_code", code)
-          ),
-          400,
-          code == null,
-          secondParameterNamePrefix + "_code not found."
-      );
+      if (shouldUnknownHeiIdsFail) {
+        testParametersError(
+            combination,
+            "Request for one of known " + secondParameterNamePrefix + "_ids with unknown "
+                    + heiParameterName + ", expect 400.",
+            new ParameterList(
+                    new Parameter(heiParameterName, FAKE_ID),
+                    new Parameter(secondParameterNamePrefix + "_id", id)
+            ),
+            400
+        );
+      } else {
+        testParameters200(
+            combination,
+            "Request for one of known " + secondParameterNamePrefix + "_ids with unknown "
+                    + heiParameterName + ", expect 200 and empty response.",
+            new ParameterList(
+                    new Parameter(heiParameterName, FAKE_ID),
+                    new Parameter(secondParameterNamePrefix + "_id", id)
+            ),
+            verifierFactory.expectResponseToBeEmpty()
+        );
+      }
+
+      if (!skipCodeTests) {
+        testParametersError(
+            combination,
+            "Request for one of known " + secondParameterNamePrefix + "_codes with unknown "
+                    + heiParameterName + ", expect 400.",
+            new ParameterList(
+                    new Parameter(heiParameterName, FAKE_ID),
+                    new Parameter(secondParameterNamePrefix + "_code", code)
+            ),
+            400,
+            code == null,
+            secondParameterNamePrefix + "_code not found."
+        );
+      }
     }
 
     testParametersError(
         combination,
         "Request more than <max-" + secondParameterNamePrefix + "-ids> known "
             + secondParameterNamePrefix + "_ids, expect 400.",
-        new ParameterList(
-            concatArrays(
-              Arrays.asList(new Parameter(heiParameterName, heiId)),
-              Collections.nCopies(
-                  maxIds + 1, new Parameter(secondParameterNamePrefix + "_id", id)
-              )
-            )
-        ),
+        getParameters(heiParameterName, heiId, secondParameterNamePrefix, "id", id, maxIds + 1),
         400
     );
 
@@ -1256,15 +1246,8 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
           combination,
           "Request more than <max-" + secondParameterNamePrefix + "-codes> known "
               + secondParameterNamePrefix + "_codes, expect 400.",
-          new ParameterList(
-            concatArrays(
-                Arrays.asList(new Parameter(heiParameterName, heiId)),
-                Collections.nCopies(
-                    maxCodes + 1,
-                    new Parameter(secondParameterNamePrefix + "_code", code)
-                )
-            )
-          ),
+          getParameters(heiParameterName, heiId, secondParameterNamePrefix, "code", id,
+              maxCodes + 1),
           400,
           code == null,
           secondParameterNamePrefix + "_code not found."
@@ -1275,14 +1258,8 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
         combination,
         "Request more than <max-" + secondParameterNamePrefix + "-ids> unknown "
             + secondParameterNamePrefix + "_ids, expect 400.",
-        new ParameterList(
-            concatArrays(
-              Arrays.asList(new Parameter(heiParameterName, heiId)),
-              Collections.nCopies(
-                  maxIds + 1, new Parameter(secondParameterNamePrefix + "_id", FAKE_ID)
-              )
-            )
-        ),
+        getParameters(heiParameterName, heiId, secondParameterNamePrefix, "id", FAKE_ID,
+            maxIds + 1),
         400
     );
 
@@ -1291,14 +1268,8 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
           combination,
           "Request more than <max-" + secondParameterNamePrefix + "-codes> unknown "
               + secondParameterNamePrefix + "_codes, expect 400.",
-          new ParameterList(
-              concatArrays(
-                  Arrays.asList(new Parameter(heiParameterName, heiId)),
-                  Collections.nCopies(
-                      maxCodes + 1, new Parameter(secondParameterNamePrefix + "_code", FAKE_ID)
-                  )
-              )
-          ),
+          getParameters(heiParameterName, heiId, secondParameterNamePrefix, "code",
+              FAKE_ID, maxCodes + 1),
           400
       );
     }
@@ -1309,13 +1280,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
             + "<max-" + secondParameterNamePrefix + "-ids> "
             + "known " + secondParameterNamePrefix + "_ids, "
             + "expect 200 and non-empty response.",
-
-        new ParameterList(
-            concatArrays(
-                Arrays.asList(new Parameter(heiParameterName, heiId)),
-                Collections.nCopies(maxIds, new Parameter(secondParameterNamePrefix + "_id", id))
-            )
-        ),
+        getParameters(heiParameterName, heiId, secondParameterNamePrefix, "id", id, maxIds),
         verifierFactory.expectResponseToContain(Collections.singletonList(id))
     );
 
@@ -1326,14 +1291,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
               + "<max-" + secondParameterNamePrefix + "-codes> "
               + "known " + secondParameterNamePrefix + "_codes, "
               + "expect 200 and non-empty response.",
-          new ParameterList(
-            concatArrays(
-                Arrays.asList(new Parameter(heiParameterName, heiId)),
-                Collections.nCopies(
-                    maxCodes, new Parameter(secondParameterNamePrefix + "_code", code)
-                )
-            )
-          ),
+          getParameters(heiParameterName, heiId, secondParameterNamePrefix, "code", code, maxCodes),
           verifierFactory.expectResponseToContain(Collections.singletonList(id)),
           code == null,
           secondParameterNamePrefix + "_code not found."
@@ -1352,8 +1310,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
           combination,
           "Request with correct " + secondParameterNamePrefix + "_id and correct "
               + secondParameterNamePrefix + "_code, expect 400.",
-          new ParameterList(
-              new Parameter(heiParameterName, heiId),
+          getParameterList(heiParameterName, heiId,
               new Parameter(secondParameterNamePrefix + "_id", id),
               new Parameter(secondParameterNamePrefix + "_code", code)
           ),
@@ -1363,30 +1320,43 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
       );
     }
 
-    testParametersError(
-        combination,
-        "Request with correct " + heiParameterName + " twice, expect 400.",
-        new ParameterList(
-            new Parameter(heiParameterName, heiId),
-            new Parameter(heiParameterName, heiId),
-            new Parameter(secondParameterNamePrefix + "_id", id)
-        ),
-        400
-    );
+    if (heiParameterName != null) {
+      testParametersError(
+          combination,
+          "Request with correct " + heiParameterName + " twice, expect 400.",
+          new ParameterList(
+                  new Parameter(heiParameterName, heiId),
+                  new Parameter(heiParameterName, heiId),
+                  new Parameter(secondParameterNamePrefix + "_id", id)
+          ),
+          400
+      );
 
-    testParametersError(
-        combination,
-        String.format(
-            "Request with correct %s and incorrect %s, expect 400.",
-            heiParameterName, heiParameterName
-        ),
-        new ParameterList(
-            new Parameter(heiParameterName, heiId),
-            new Parameter(heiParameterName, FAKE_ID),
-            new Parameter(secondParameterNamePrefix + "_id", id)
-        ),
-        400
-    );
+      testParametersError(
+          combination,
+          String.format(
+                  "Request with correct %s and incorrect %s, expect 400.",
+                  heiParameterName, heiParameterName
+          ),
+          new ParameterList(
+                  new Parameter(heiParameterName, heiId),
+                  new Parameter(heiParameterName, FAKE_ID),
+                  new Parameter(secondParameterNamePrefix + "_id", id)
+          ),
+          400
+      );
+    }
+  }
+
+  private static ParameterList getParameters(String heiParameterName, String heiId,
+      String secondParameterNamePrefix, String parameterNameSuffix, String paramValue,
+      int parameterCount) {
+    List<Parameter> parameters = new ArrayList<>(Collections.nCopies(parameterCount,
+        new Parameter(secondParameterNamePrefix + "_" + parameterNameSuffix, paramValue)));
+    if (heiParameterName != null) {
+      parameters.add(new Parameter(heiParameterName, heiId));
+    }
+    return new ParameterList(parameters);
   }
 
   private static class ModifiedSinceTestsSkipInfo {
@@ -1431,8 +1401,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
     testParametersError(
         combination,
         "Request with multiple modified_since parameters, expect 400.",
-        new ParameterList(
-            new Parameter(heiIdParameterName, knownHeiId),
+        getParameterList(heiIdParameterName, knownHeiId,
             new Parameter("modified_since", "2019-02-12T15:19:21+01:00"),
             new Parameter("modified_since", "2019-02-12T15:19:21+01:00")
         ),
@@ -1445,13 +1414,8 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
 
     testParameters200(
         combination,
-        String.format(
-            "Request with known %s and modified_since in the future, expect 200 OK and empty "
-                + "response",
-            heiIdParameterName
-        ),
-        new ParameterList(
-            new Parameter(heiIdParameterName, knownHeiId),
+        "Request with modified_since in the future, expect 200 OK and empty response",
+        getParameterList(heiIdParameterName, knownHeiId,
             new Parameter("modified_since", yearInFuture + "-02-12T15:19:21+01:00")
         ),
         verifierFactory.expectResponseToBeEmpty(),
@@ -1462,13 +1426,8 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
 
     testParameters200(
         combination,
-        String.format(
-            "Request with known %s and modified_since far in the past, expect 200 OK and "
-                + "non-empty response.",
-            heiIdParameterName
-        ),
-        new ParameterList(
-            new Parameter(heiIdParameterName, knownHeiId),
+        "Request with modified_since far in the past, expect 200 OK and non-empty response.",
+        getParameterList(heiIdParameterName, knownHeiId,
             new Parameter("modified_since", "2000-02-12T15:19:21+01:00")
         ),
         verifierFactory.expectResponseToBeNotEmpty(),
@@ -1478,12 +1437,8 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
 
     testParameters200(
         combination,
-        String.format(
-            "Request with known %s and correct date, expect 200.",
-            heiIdParameterName
-        ),
-        new ParameterList(
-            new Parameter(heiIdParameterName, knownHeiId),
+        "Request with correct date, expect 200.",
+        getParameterList(heiIdParameterName, knownHeiId,
             new Parameter("modified_since", "2004-02-12T15:19:21+01:00")
         ),
         verifierFactory.expectCorrectResponse()
@@ -1492,18 +1447,14 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
     testParametersError(
         combination,
         "Request with invalid value of modified_since, expect 400.",
-        new ParameterList(
-            new Parameter(heiIdParameterName, knownHeiId),
-            new Parameter("modified_since", FAKE_ID)
-        ),
+        getParameterList(heiIdParameterName, knownHeiId, new Parameter("modified_since", FAKE_ID)),
         400
     );
 
     testParametersError(
         combination,
         "Request with modified_since being only a date, expect 400.",
-        new ParameterList(
-            new Parameter(heiIdParameterName, knownHeiId),
+        getParameterList(heiIdParameterName, knownHeiId,
             new Parameter("modified_since", "2004-02-12")
         ),
         400
@@ -1512,8 +1463,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
     testParametersError(
         combination,
         "Request with modified_since being a dateTime in wrong format, expect 400.",
-        new ParameterList(
-            new Parameter(heiIdParameterName, knownHeiId),
+        getParameterList(heiIdParameterName, knownHeiId,
             new Parameter("modified_since", "05/29/2015 05:50")
         ),
         400
@@ -1535,16 +1485,11 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
 
     testParameters200(
         combination,
-        String.format(
-            "Request with known %s and modified_since far in the past, "
-                + "expect 200 OK and non-empty response.",
-            heiIdParameterName
-        ),
-        new ParameterList(
-            new Parameter(heiIdParameterName, knownHeiId),
+        "Request with modified_since far in the past, expect 200 OK and non-empty response.",
+        getParameterList(heiIdParameterName, knownHeiId,
             new Parameter("modified_since", "2000-02-12T15:19:21+01:00")
         ),
-        verifierFactory.expectResponseToContain(Arrays.asList(expectedId)),
+        verifierFactory.expectResponseToContain(Collections.singletonList(expectedId)),
         skipInfo.skipNoErrorTests,
         skipInfo.skipNoErrorTestsReason
     );
@@ -1571,25 +1516,17 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
 
     testParameters200(
         combination,
-        String.format(
-            "Request with known %s and receiving_academic_year_id in northern hemisphere "
-                + "format, expect 200 OK.",
-            heiIdParameterName
-        ),
-        new ParameterList(
-            new Parameter(heiIdParameterName, knownHeiId),
-            new Parameter("receiving_academic_year_id", "2010/2011")
-        ),
+        "Request with receiving_academic_year_id in northern hemisphere format, expect 200 OK.",
+        getParameterList(heiIdParameterName, knownHeiId,
+            new Parameter("receiving_academic_year_id", "2010/2011")),
         verifierFactory.expectCorrectResponse()
     );
 
     testParametersError(
         combination,
         "Request with receiving_academic_year_id in incorrect format, expect 400.",
-        new ParameterList(
-            new Parameter(heiIdParameterName, knownHeiId),
-            new Parameter("receiving_academic_year_id", "test/test")
-        ),
+        getParameterList(heiIdParameterName, knownHeiId,
+            new Parameter("receiving_academic_year_id", "test/test")),
         400
     );
 
@@ -1599,17 +1536,23 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
         String.format("%04d/%04d", unknownAcademicYear, unknownAcademicYear + 1);
     testParameters200(
         combination,
-        String.format(
-            "Request with known %s and unknown receiving_academic_year_id parameter, "
-                + "expect 200 OK and empty response.",
-            heiIdParameterName
-        ),
-        new ParameterList(
-            new Parameter(heiIdParameterName, knownHeiId),
-            new Parameter("receiving_academic_year_id", unknownAcademicYearString)
-        ),
+        "Request with unknown receiving_academic_year_id parameter, "
+            + "expect 200 OK and empty response.",
+        getParameterList(heiIdParameterName, knownHeiId,
+            new Parameter("receiving_academic_year_id", unknownAcademicYearString)),
         verifierFactory.expectResponseToBeEmpty()
     );
+  }
+
+  private static ParameterList getParameterList(String heiIdParameterName, String knownHeiId,
+      Parameter... parameters) {
+    List<Parameter> parameterList = new ArrayList<>();
+    if (heiIdParameterName != null) {
+      parameterList.add(new Parameter(heiIdParameterName, knownHeiId));
+    }
+    parameterList.addAll(List.of(parameters));
+
+    return new ParameterList(parameterList);
   }
 
   // TODO use it in IIAs complex test
@@ -1621,16 +1564,12 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
       String expectedId) throws SuiteBroken {
     testParameters200(
         combination,
-        String.format(
-            "Request with known %s and known receiving_academic_year_id parameter, "
-                + "expect 200 OK and non-empty response.",
-            heiIdParameterName
-        ),
-        new ParameterList(
-            new Parameter(heiIdParameterName, knownHeiId),
+        "Request with known receiving_academic_year_id parameter, "
+            + "expect 200 OK and non-empty response.",
+        getParameterList(heiIdParameterName, knownHeiId,
             new Parameter("receiving_academic_year_id", knownAcademicYear)
         ),
-        verifierFactory.expectResponseToContain(Arrays.asList(expectedId)),
+        verifierFactory.expectResponseToContain(Collections.singletonList(expectedId)),
         knownAcademicYear == null,
         "No known receiving_academic_year_id, try to pass additional parameters."
     );

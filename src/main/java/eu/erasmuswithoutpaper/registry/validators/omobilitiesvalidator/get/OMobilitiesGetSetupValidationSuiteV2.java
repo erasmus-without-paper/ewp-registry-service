@@ -18,12 +18,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-class OMobilitiesGetSetupValidationSuite
+class OMobilitiesGetSetupValidationSuiteV2
     extends AbstractSetupValidationSuite<OMobilitiesSuiteState> {
 
   private static final Logger logger =
       LoggerFactory.getLogger(
-          OMobilitiesGetSetupValidationSuite.class);
+          OMobilitiesGetSetupValidationSuiteV2.class);
 
   private final ValidatedApiInfo apiInfo;
 
@@ -38,7 +38,7 @@ class OMobilitiesGetSetupValidationSuite
   }
 
   private static final String SENDING_HEI_ID_PARAMETER = "sending_hei_id";
-  private static final String OMOBILITY_ID_PARAMETER = "omobility_id";
+  protected static final String OMOBILITY_ID_PARAMETER = "omobility_id";
 
   public static List<ValidationParameter> getParameters() {
     return Arrays.asList(
@@ -48,11 +48,11 @@ class OMobilitiesGetSetupValidationSuite
     );
   }
 
-  private int getMaxOmobilityIds() {
+  protected int getMaxOmobilityIds() {
     return getMaxIds("omobility-ids");
   }
 
-  OMobilitiesGetSetupValidationSuite(ApiValidator<OMobilitiesSuiteState> validator,
+  OMobilitiesGetSetupValidationSuiteV2(ApiValidator<OMobilitiesSuiteState> validator,
       OMobilitiesSuiteState state, ValidationSuiteConfig config, int version) {
     super(validator, state, config, false);
 
@@ -83,7 +83,7 @@ class OMobilitiesGetSetupValidationSuite
   }
 
   @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
-  private String getOmobilityId(
+  protected String getOmobilityId(
       HttpSecurityDescription securityDescription) throws SuiteBroken {
 
     String indexUrl = getApiUrlForHei(

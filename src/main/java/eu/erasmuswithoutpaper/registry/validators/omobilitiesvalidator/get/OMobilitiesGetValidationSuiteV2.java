@@ -20,12 +20,12 @@ import org.slf4j.LoggerFactory;
  * Describes the set of test/steps to be run on an OMobilities API get endpoint implementation
  * in order to properly validate it.
  */
-class OMobilitiesGetValidationSuite
+class OMobilitiesGetValidationSuiteV2
     extends AbstractValidationSuite<OMobilitiesSuiteState> {
 
   private static final Logger logger = LoggerFactory
       .getLogger(
-          OMobilitiesGetValidationSuite.class);
+          OMobilitiesGetValidationSuiteV2.class);
 
   private final ValidatedApiInfo apiInfo;
 
@@ -39,7 +39,7 @@ class OMobilitiesGetValidationSuite
     return apiInfo;
   }
 
-  OMobilitiesGetValidationSuite(ApiValidator<OMobilitiesSuiteState> validator,
+  OMobilitiesGetValidationSuiteV2(ApiValidator<OMobilitiesSuiteState> validator,
       OMobilitiesSuiteState state, ValidationSuiteConfig config, int version) {
     super(validator, state, config);
 
@@ -54,12 +54,7 @@ class OMobilitiesGetValidationSuite
       throws SuiteBroken {
 
     testParameters200(
-        combination,
-        "Request for one of known omobility_ids, expect 200 OK.",
-        new ParameterList(
-            new Parameter("sending_hei_id", currentState.sendingHeiId),
-            new Parameter("omobility_id", currentState.omobilityId)
-        ),
+        combination, "Request for one of known omobility_ids, expect 200 OK.", getParameterList(),
         new CorrectResponseVerifier()
     );
 
@@ -72,6 +67,14 @@ class OMobilitiesGetValidationSuite
     );
   }
 
-  private VerifierFactory omobilityIdVerifierFactory =
+  @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
+  protected ParameterList getParameterList() {
+    return new ParameterList(
+        new Parameter("sending_hei_id", currentState.sendingHeiId),
+        new Parameter("omobility_id", currentState.omobilityId)
+    );
+  }
+
+  protected final VerifierFactory omobilityIdVerifierFactory =
       new VerifierFactory(Arrays.asList("student-mobility", "omobility-id"));
 }

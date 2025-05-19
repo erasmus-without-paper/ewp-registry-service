@@ -3,7 +3,6 @@ package eu.erasmuswithoutpaper.registry.validators.omobilitiesvalidator.index;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -30,12 +29,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 
-public class OMobilitiesIndexComplexSetupValidationSuite
+public class OMobilitiesIndexComplexSetupValidationSuiteV2
     extends AbstractSetupValidationSuite<OMobilitiesSuiteState> {
 
   private static final Logger logger =
       LoggerFactory.getLogger(
-          OMobilitiesIndexComplexSetupValidationSuite.class);
+          OMobilitiesIndexComplexSetupValidationSuiteV2.class);
 
   private final ValidatedApiInfo apiInfo;
 
@@ -45,8 +44,8 @@ public class OMobilitiesIndexComplexSetupValidationSuite
   }
 
   private static final String SENDING_HEI_ID_PARAMETER = "sending_hei_id";
-  private static final String OMOBILITY_ID_PARAMETER = "omobility_id";
-  private static final String OMOBILITY_ID_PARAMETER_DESCRIPTION =
+  protected static final String OMOBILITY_ID_PARAMETER = "omobility_id";
+  protected static final String OMOBILITY_ID_PARAMETER_DESCRIPTION =
       "This parameter is used to fetch receiving_academic_year_id using GET endpoint.";
 
   /**
@@ -55,14 +54,14 @@ public class OMobilitiesIndexComplexSetupValidationSuite
    * @return list of supported parameters with dependeies.
    */
   public static List<ValidationParameter> getParameters() {
-    return Arrays.asList(
+    return Collections.singletonList(
         new ValidationParameter(OMOBILITY_ID_PARAMETER)
             .dependsOn(SENDING_HEI_ID_PARAMETER)
             .withDescription(OMOBILITY_ID_PARAMETER_DESCRIPTION)
     );
   }
 
-  OMobilitiesIndexComplexSetupValidationSuite(
+  OMobilitiesIndexComplexSetupValidationSuiteV2(
       ApiValidator<OMobilitiesSuiteState> validator,
       OMobilitiesSuiteState state,
       ValidationSuiteConfig config,

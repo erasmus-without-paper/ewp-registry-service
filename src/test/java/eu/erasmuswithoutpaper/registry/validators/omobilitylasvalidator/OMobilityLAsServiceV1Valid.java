@@ -14,10 +14,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
-
 import eu.erasmuswithoutpaper.registry.internet.InternetTestHelpers;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
@@ -181,21 +177,6 @@ public class OMobilityLAsServiceV1Valid extends AbstractOMobilityLAsService {
     signature.setTimestamp(new GregorianCalendar(2000, 0, 1));
     signature.setSignerApp("USOS");
     return signature;
-  }
-
-  private XMLGregorianCalendar xmlDate(int year, int month) {
-    return xmlDate(year, month, 1);
-  }
-
-  private XMLGregorianCalendar xmlDate(int year, int month, int day) {
-    DatatypeFactory datatypeFactory = null;
-    try {
-      datatypeFactory = DatatypeFactory.newInstance();
-    } catch (DatatypeConfigurationException e) {
-      return null;
-    }
-
-    return datatypeFactory.newXMLGregorianCalendarDate(year, month, day, 0);
   }
 
   protected int getMaxOmobilityIds() {

@@ -90,7 +90,7 @@ public class IMobilitiesGetValidatorV1Test extends AbstractApiTest<IMobilitiesSu
     assertThat(report)
         .containsFailure("Request without receiving_hei_id, expect 400.");
     assertThat(report)
-        .containsFailure("Request without receiving_hei_id and omobility_ids, expect 400.");
+        .containsFailure("Request without parameters, expect 400.");
   }
 
   @Test
@@ -255,7 +255,7 @@ public class IMobilitiesGetValidatorV1Test extends AbstractApiTest<IMobilitiesSu
         };
     TestValidationReport report = this.getRawReport(service, getValidationParameters());
     assertThat(report).containsWarning(
-        "Request one known receiving_hei_id and omobility_id as other EWP participant, "
+        "Request omobility_id as other EWP participant, "
             + "expect 200 OK and empty response.");
   }
 }

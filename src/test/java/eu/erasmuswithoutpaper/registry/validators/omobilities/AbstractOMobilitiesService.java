@@ -1,16 +1,11 @@
 package eu.erasmuswithoutpaper.registry.validators.omobilities;
 
 import java.io.IOException;
-import java.util.List;
 
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registry.validators.AbstractApiService;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
-
-import https.github_com.erasmus_without_paper.ewp_specs_api_omobilities.blob.stable_v2.endpoints.get_response.OmobilitiesGetResponse;
-import https.github_com.erasmus_without_paper.ewp_specs_api_omobilities.blob.stable_v2.endpoints.get_response.StudentMobility;
-import https.github_com.erasmus_without_paper.ewp_specs_api_omobilities.blob.stable_v2.endpoints.index_response.OmobilitiesIndexResponse;
 
 public abstract class AbstractOMobilitiesService extends AbstractApiService {
   protected final RegistryClient registryClient;
@@ -44,19 +39,6 @@ public abstract class AbstractOMobilitiesService extends AbstractApiService {
     } catch (ErrorResponseException e) {
       return e.response;
     }
-  }
-
-  protected Response createOMobilitiesGetResponse(
-      List<StudentMobility> data) {
-    OmobilitiesGetResponse response = new OmobilitiesGetResponse();
-    response.getSingleMobilityObject().addAll(data);
-    return marshallResponse(200, response);
-  }
-
-  protected Response createOMobilitiesIndexResponse(List<String> data) {
-    OmobilitiesIndexResponse response = new OmobilitiesIndexResponse();
-    response.getOmobilityId().addAll(data);
-    return marshallResponse(200, response);
   }
 
   protected abstract Response handleOMobilitiesIndexRequest(Request request)

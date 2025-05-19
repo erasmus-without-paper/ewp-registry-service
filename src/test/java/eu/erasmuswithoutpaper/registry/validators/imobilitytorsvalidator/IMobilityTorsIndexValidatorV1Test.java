@@ -217,7 +217,7 @@ public class IMobilityTorsIndexValidatorV1Test extends IMobilityTorsValidatorTes
     };
     TestValidationReport report = this.getRawReport(service);
     assertThat(report).containsWarning(
-        "Request with known receiving_hei_id and modified_since in the future, expect 200 OK "
+        "Request with modified_since in the future, expect 200 OK "
             + "and empty response");
   }
 
@@ -236,7 +236,7 @@ public class IMobilityTorsIndexValidatorV1Test extends IMobilityTorsValidatorTes
     };
     TestValidationReport report = this.getRawReport(service);
     assertThat(report).containsFailure(
-        "Request with known receiving_hei_id and modified_since far in the past, expect 200 OK "
+        "Request with modified_since far in the past, expect 200 OK "
             + "and non-empty response.");
   }
 

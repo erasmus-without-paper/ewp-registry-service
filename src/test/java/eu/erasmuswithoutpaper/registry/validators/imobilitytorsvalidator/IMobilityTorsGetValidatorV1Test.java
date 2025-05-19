@@ -61,7 +61,7 @@ public class IMobilityTorsGetValidatorV1Test extends IMobilityTorsValidatorTestB
     };
     TestValidationReport report = this.getRawReport(service);
     assertThat(report)
-        .containsFailure("Request without receiving_hei_id and omobility_ids, expect 400.");
+        .containsFailure("Request without parameters, expect 400.");
   }
 
   @Test

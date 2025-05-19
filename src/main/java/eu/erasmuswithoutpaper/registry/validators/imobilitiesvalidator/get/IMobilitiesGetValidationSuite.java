@@ -76,7 +76,7 @@ class IMobilitiesGetValidationSuite
     // Are others able to see imobilities visible to me?
     testParameters200AsOtherEwpParticipant(
         combination,
-        "Request one known receiving_hei_id and omobility_id as other EWP participant, expect 200"
+        "Request omobility_id as other EWP participant, expect 200"
             + " OK and empty response.",
         new ParameterList(
             new Parameter("receiving_hei_id", this.currentState.receivingHeiId),

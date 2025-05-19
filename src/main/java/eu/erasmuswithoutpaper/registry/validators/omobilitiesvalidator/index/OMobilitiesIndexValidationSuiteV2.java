@@ -1,6 +1,6 @@
 package eu.erasmuswithoutpaper.registry.validators.omobilitiesvalidator.index;
 
-import java.util.Arrays;
+import java.util.List;
 
 import eu.erasmuswithoutpaper.registry.validators.AbstractValidationSuite;
 import eu.erasmuswithoutpaper.registry.validators.ApiEndpoint;
@@ -21,11 +21,11 @@ import org.slf4j.LoggerFactory;
  * Describes the set of test/steps to be run on an OMobilities API index endpoint implementation
  * in order to properly validate it.
  */
-class OMobilitiesIndexValidationSuite
+class OMobilitiesIndexValidationSuiteV2
     extends AbstractValidationSuite<OMobilitiesSuiteState> {
   private static final Logger logger =
       LoggerFactory.getLogger(
-          OMobilitiesIndexValidationSuite.class);
+          OMobilitiesIndexValidationSuiteV2.class);
   private final ValidatedApiInfo apiInfo;
 
   @Override
@@ -38,7 +38,7 @@ class OMobilitiesIndexValidationSuite
     return apiInfo;
   }
 
-  OMobilitiesIndexValidationSuite(ApiValidator<OMobilitiesSuiteState> validator,
+  OMobilitiesIndexValidationSuiteV2(ApiValidator<OMobilitiesSuiteState> validator,
       OMobilitiesSuiteState state, ValidationSuiteConfig config, int version) {
     super(validator, state, config);
 
@@ -126,6 +126,6 @@ class OMobilitiesIndexValidationSuite
     );
   }
 
-  private VerifierFactory omobilityIdVerifierFactory = new VerifierFactory(
-      Arrays.asList("omobility-id"));
+  protected VerifierFactory omobilityIdVerifierFactory = new VerifierFactory(
+      List.of("omobility-id"));
 }

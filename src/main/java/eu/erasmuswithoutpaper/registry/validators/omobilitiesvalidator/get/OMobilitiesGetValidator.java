@@ -27,11 +27,17 @@ public class OMobilitiesGetValidator extends ApiValidator<OMobilitiesSuiteState>
         ApiEndpoint.GET);
   }
 
-  @ValidatorTestStep(minMajorVersion = "2")
-  public ValidationSuiteInfo<OMobilitiesSuiteState> apiTests = new ValidationSuiteInfo<>(
-      OMobilitiesGetSetupValidationSuite::new,
-      OMobilitiesGetSetupValidationSuite.getParameters(),
-      OMobilitiesGetValidationSuite::new);
+  @ValidatorTestStep(minMajorVersion = "2", maxMajorVersion = "2")
+  public ValidationSuiteInfo<OMobilitiesSuiteState> apiTestsV2 = new ValidationSuiteInfo<>(
+      OMobilitiesGetSetupValidationSuiteV2::new,
+      OMobilitiesGetSetupValidationSuiteV2.getParameters(),
+      OMobilitiesGetValidationSuiteV2::new);
+
+  @ValidatorTestStep(minMajorVersion = "3")
+  public ValidationSuiteInfo<OMobilitiesSuiteState> apiTestsV3 = new ValidationSuiteInfo<>(
+      OMobilitiesGetSetupValidationSuiteV3::new,
+      OMobilitiesGetSetupValidationSuiteV3.getParameters(),
+      OMobilitiesGetValidationSuiteV3::new);
 
   @Override
   public Logger getLogger() {

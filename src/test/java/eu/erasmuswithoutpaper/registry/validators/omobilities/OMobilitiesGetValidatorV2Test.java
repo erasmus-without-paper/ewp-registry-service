@@ -4,6 +4,7 @@ package eu.erasmuswithoutpaper.registry.validators.omobilities;
 import java.util.ArrayList;
 
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
+import eu.erasmuswithoutpaper.registry.validators.SemanticVersion;
 import eu.erasmuswithoutpaper.registry.validators.TestValidationReport;
 import eu.erasmuswithoutpaper.registry.validators.omobilitiesvalidator.OMobilitiesSuiteState;
 import eu.erasmuswithoutpaper.registry.validators.omobilitiesvalidator.get.OMobilitiesGetValidator;
@@ -12,7 +13,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import static eu.erasmuswithoutpaper.registry.validators.TestValidationReportAsset.assertThat;
 import org.junit.jupiter.api.Test;
 
-public class OMobilitiesGetValidatorTest extends OMobilitiesValidatorTestBase {
+public class OMobilitiesGetValidatorV2Test extends OMobilitiesValidatorTestBase {
+  @Override
+  protected String getManifestFilename() {
+    return "omobilities/manifest-v2.xml";
+  }
+
+  @Override
+  protected SemanticVersion getVersion() {
+    return new SemanticVersion(2, 0, 0);
+  }
+
   @Autowired
   protected OMobilitiesGetValidator validator;
 
@@ -61,7 +72,7 @@ public class OMobilitiesGetValidatorTest extends OMobilitiesValidatorTestBase {
     };
     TestValidationReport report = this.getRawReport(service);
     assertThat(report)
-        .containsFailure("Request without sending_hei_id and omobility_ids, expect 400.");
+        .containsFailure("Request without parameters, expect 400.");
   }
 
   @Test

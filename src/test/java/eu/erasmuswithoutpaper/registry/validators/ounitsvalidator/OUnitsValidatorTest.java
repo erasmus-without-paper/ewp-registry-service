@@ -105,7 +105,7 @@ public class OUnitsValidatorTest extends AbstractApiTest<OUnitsSuiteState> {
           }
         };
     TestValidationReport report = this.getRawReport(service);
-    assertThat(report).containsFailure("Request without hei_id and ounit_ids, expect 400.");
+    assertThat(report).containsFailure("Request without parameters, expect 400.");
   }
 
   @Test
