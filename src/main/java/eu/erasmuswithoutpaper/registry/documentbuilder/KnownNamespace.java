@@ -622,13 +622,30 @@ public class KnownNamespace {
 
   /**
    * As described <a href=
-   * 'https://github.com/erasmus-without-paper/ewp-specs-api-omobility-cnr/blob/master/manifest-entry.xsd'>
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-omobility-cnr/blob/stable-v1/manifest-entry.xsd'>
    * here</a>.
-   */ // TODO: master->stable!
+   */
   public static final KnownNamespace APIENTRY_OMOBILITY_CNR_V1 =
       new KnownNamespace("omc1", "api-omobility-cnr/blob/stable-v1/manifest-entry.xsd",
           "api-omobility-cnr/master/manifest-entry.xsd", false);
-  // TODO: 1. false->true 2. master->stable
+
+  /**
+   * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-omobility-cnr/blob/stable-v2/manifest-entry.xsd'>
+   * here</a>.
+   */
+  public static final KnownNamespace APIENTRY_OMOBILITY_CNR_V2 =
+      new KnownNamespace("omc2", "api-omobility-cnr/blob/stable-v2/manifest-entry.xsd",
+          "api-omobility-cnr/master/manifest-entry.xsd", false);
+
+  /**
+   * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-omobility-stats/blob/stable-v1/manifest-entry.xsd'>
+   * here</a>.
+   */
+  public static final KnownNamespace APIENTRY_OMOBILITY_STATS_V1 =
+      new KnownNamespace("oms1", "api-omobility-stats/blob/stable-v1/manifest-entry.xsd",
+          "api-omobility-stats/master/manifest-entry.xsd", false);
 
   /**
    * As described <a href=
@@ -648,7 +665,15 @@ public class KnownNamespace {
   public static final KnownNamespace APIENTRY_IMOBILITIES_V1 =
       new KnownNamespace("im1", "api-imobilities/blob/stable-v1/manifest-entry.xsd",
           "api-imobilities/stable-v1/manifest-entry.xsd", false);
-  // TODO: 1. false->true
+
+  /**
+   * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-imobilities/blob/stable-v2/manifest-entry.xsd'>
+   * here</a>.
+   */
+  public static final KnownNamespace APIENTRY_IMOBILITIES_V2 =
+      new KnownNamespace("im2", "api-imobilities/blob/stable-v2/manifest-entry.xsd",
+          "api-imobilities/stable-v2/manifest-entry.xsd", false);
 
   /**
    * As described <a href=
@@ -658,7 +683,15 @@ public class KnownNamespace {
   public static final KnownNamespace APIENTRY_IMOBILITY_CNR_V1 =
       new KnownNamespace("imc1", "api-imobility-cnr/blob/stable-v1/manifest-entry.xsd",
           "api-imobility-cnr/stable-v1/manifest-entry.xsd", false);
-  // TODO: 1. false->true
+
+  /**
+   * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-imobility-cnr/blob/stable-v2/manifest-entry.xsd'>
+   * here</a>.
+   */
+  public static final KnownNamespace APIENTRY_IMOBILITY_CNR_V2 =
+      new KnownNamespace("imc2", "api-imobility-cnr/blob/stable-v2/manifest-entry.xsd",
+          "api-imobility-cnr/stable-v2/manifest-entry.xsd", false);
 
   /**
    * As described <a href=

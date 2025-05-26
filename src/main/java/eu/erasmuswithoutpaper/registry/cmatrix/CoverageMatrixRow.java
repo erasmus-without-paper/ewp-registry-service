@@ -99,9 +99,10 @@ class CoverageMatrixRow {
     /* OMobilities */
     colorClass = getNextColorClass(colorClass);
 
-    row1.append(genRow("OMobilities", colorClass, 1, 2));
+    row1.append(genRow("OMobilities", colorClass, 1, 3));
     row2.append(genRow("ver.", colorClass));
     row2.append(genRow("CNR", colorClass));
+    row2.append(genRow("Stats", colorClass));
 
     /* OMobility LAs */
 
@@ -268,13 +269,20 @@ class CoverageMatrixRow {
 
     // ver.
     cell = new ApiVersionsCell(colorClass, client, hei, false, KnownElement.APIENTRY_OMOBILITIES_V1,
-        KnownElement.APIENTRY_OMOBILITIES_V2);
+        KnownElement.APIENTRY_OMOBILITIES_V2, KnownElement.APIENTRY_OMOBILITIES_V3);
     this.cells.add(cell);
 
     // CNR recv.
     cell =
-        new ApiVersionsCell(colorClass, client, hei, false, KnownElement.APIENTRY_OMOBILITY_CNR_V1);
+        new ApiVersionsCell(colorClass, client, hei, false, KnownElement.APIENTRY_OMOBILITY_CNR_V1,
+            KnownElement.APIENTRY_OMOBILITY_CNR_V2);
     this.cells.add(cell);
+
+    // Stats
+    cell = new ApiVersionsCell(colorClass, client, hei, false,
+        KnownElement.APIENTRY_OMOBILITY_STATS_V1);
+    this.cells.add(cell);
+
 
     /* OMobility LAs */
 
@@ -296,12 +304,14 @@ class CoverageMatrixRow {
 
     // ver.
     cell =
-        new ApiVersionsCell(colorClass, client, hei, false, KnownElement.APIENTRY_IMOBILITIES_V1);
+        new ApiVersionsCell(colorClass, client, hei, false, KnownElement.APIENTRY_IMOBILITIES_V1,
+            KnownElement.APIENTRY_IMOBILITIES_V2);
     this.cells.add(cell);
 
     // CNR recv.
     cell =
-        new ApiVersionsCell(colorClass, client, hei, false, KnownElement.APIENTRY_IMOBILITY_CNR_V1);
+        new ApiVersionsCell(colorClass, client, hei, false, KnownElement.APIENTRY_IMOBILITY_CNR_V1,
+            KnownElement.APIENTRY_IMOBILITY_CNR_V2);
     this.cells.add(cell);
 
     /* IMobility ToRs */

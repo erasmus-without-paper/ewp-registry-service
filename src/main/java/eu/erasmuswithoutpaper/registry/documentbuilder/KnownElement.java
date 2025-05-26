@@ -187,6 +187,13 @@ public class KnownElement {
           "API entry: Outgoing Mobilities API v2");
 
   /**
+   * API entry for Outgoing Mobilities API v3.
+   */
+  public static final KnownElement APIENTRY_OMOBILITIES_V3 =
+      new KnownElement(KnownNamespace.APIENTRY_OMOBILITIES_V3, "omobilities",
+          "API entry: Outgoing Mobilities API v3");
+
+  /**
    * API entry for Outgoing Mobility LAs API v1.
    */
   public static final KnownElement APIENTRY_OMOBILITY_LAS_V1 =
@@ -199,6 +206,20 @@ public class KnownElement {
   public static final KnownElement APIENTRY_OMOBILITY_CNR_V1 =
       new KnownElement(KnownNamespace.APIENTRY_OMOBILITY_CNR_V1, "omobility-cnr",
           "API entry: Outgoing Mobility CNR API v1");
+
+  /**
+   * API entry for Outgoing Mobility CNR API v2.
+   */
+  public static final KnownElement APIENTRY_OMOBILITY_CNR_V2 =
+      new KnownElement(KnownNamespace.APIENTRY_OMOBILITY_CNR_V2, "omobility-cnr",
+          "API entry: Outgoing Mobility CNR API v2");
+
+  /**
+   * API entry for Outgoing Mobility Stats API v1.
+   */
+  public static final KnownElement APIENTRY_OMOBILITY_STATS_V1 =
+      new KnownElement(KnownNamespace.APIENTRY_OMOBILITY_STATS_V1, "omobility-stats",
+          "API entry: Outgoing Mobility Stats API v1");
 
   /**
    * API entry for Outgoing Mobility CNR API v1.
@@ -215,11 +236,25 @@ public class KnownElement {
           "API entry: Incoming Mobilities API v1");
 
   /**
+   * API entry for Incoming Mobilities API v2.
+   */
+  public static final KnownElement APIENTRY_IMOBILITIES_V2 =
+      new KnownElement(KnownNamespace.APIENTRY_IMOBILITIES_V2, "imobilities",
+          "API entry: Incoming Mobilities API v2");
+
+  /**
    * API entry for Incoming Mobility CNR API v1.
    */
   public static final KnownElement APIENTRY_IMOBILITY_CNR_V1 =
       new KnownElement(KnownNamespace.APIENTRY_IMOBILITY_CNR_V1, "imobility-cnr",
           "API entry: Incoming Mobility CNR API v1");
+
+  /**
+   * API entry for Incoming Mobility CNR API v2.
+   */
+  public static final KnownElement APIENTRY_IMOBILITY_CNR_V2 =
+      new KnownElement(KnownNamespace.APIENTRY_IMOBILITY_CNR_V2, "imobility-cnr",
+          "API entry: Incoming Mobility CNR API v2");
 
   /**
    * API entry for Incoming Mobility ToRs API v1.
