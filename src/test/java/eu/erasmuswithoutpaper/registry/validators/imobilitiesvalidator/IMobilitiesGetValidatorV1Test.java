@@ -27,7 +27,7 @@ public class IMobilitiesGetValidatorV1Test extends AbstractApiTest<IMobilitiesSu
 
   @Override
   protected String getManifestFilename() {
-    return "imobilities/manifest.xml";
+    return "imobilities/manifest-v1.xml";
   }
 
   @Override

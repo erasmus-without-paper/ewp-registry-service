@@ -20,18 +20,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-class IMobilitiesGetSetupValidationSuite
+class IMobilitiesGetSetupValidationSuiteV1
     extends AbstractSetupValidationSuite<IMobilitiesSuiteState> {
 
   private static final Logger logger =
       LoggerFactory.getLogger(
-          IMobilitiesGetSetupValidationSuite.class);
+          IMobilitiesGetSetupValidationSuiteV1.class);
 
   private final ValidatedApiInfo apiInfo;
   private static final String RECEIVING_HEI_ID_PARAMETER = "receiving_hei_id";
-  private static final String OMOBILITY_ID_PARAMETER = "omobility_id";
+  protected static final String OMOBILITY_ID_PARAMETER = "omobility_id";
 
-  IMobilitiesGetSetupValidationSuite(ApiValidator<IMobilitiesSuiteState> validator,
+  IMobilitiesGetSetupValidationSuiteV1(ApiValidator<IMobilitiesSuiteState> validator,
       IMobilitiesSuiteState state, ValidationSuiteConfig config, int version) {
     super(validator, state, config, false);
 

@@ -20,18 +20,18 @@ import org.slf4j.LoggerFactory;
  * Describes the set of test/steps to be run on an IMobilities API get endpoint implementation
  * in order to properly validate it.
  */
-class IMobilitiesGetValidationSuite
+class IMobilitiesGetValidationSuiteV1
     extends AbstractValidationSuite<IMobilitiesSuiteState> {
 
   private static final Logger logger = LoggerFactory
       .getLogger(
-          IMobilitiesGetValidationSuite.class);
+          IMobilitiesGetValidationSuiteV1.class);
 
   private final ValidatedApiInfo apiInfo;
   private VerifierFactory omobilityIdVerifierFactory =
       new VerifierFactory(Arrays.asList("student-mobility-for-studies", "omobility-id"));
 
-  IMobilitiesGetValidationSuite(ApiValidator<IMobilitiesSuiteState> validator,
+  IMobilitiesGetValidationSuiteV1(ApiValidator<IMobilitiesSuiteState> validator,
       IMobilitiesSuiteState state, ValidationSuiteConfig config, int version) {
     super(validator, state, config);
 

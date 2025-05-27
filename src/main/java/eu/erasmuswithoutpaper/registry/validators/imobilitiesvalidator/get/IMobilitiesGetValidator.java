@@ -28,11 +28,17 @@ public class IMobilitiesGetValidator extends ApiValidator<IMobilitiesSuiteState>
         ApiEndpoint.GET);
   }
 
-  @ValidatorTestStep
-  public ValidationSuiteInfo<IMobilitiesSuiteState> apiTests = new ValidationSuiteInfo<>(
-      IMobilitiesGetSetupValidationSuite::new,
-      IMobilitiesGetSetupValidationSuite.getParameters(),
-      IMobilitiesGetValidationSuite::new);
+  @ValidatorTestStep(minMajorVersion = "1", maxMajorVersion = "1")
+  public ValidationSuiteInfo<IMobilitiesSuiteState> apiTestsV1 = new ValidationSuiteInfo<>(
+      IMobilitiesGetSetupValidationSuiteV1::new,
+      IMobilitiesGetSetupValidationSuiteV1.getParameters(),
+      IMobilitiesGetValidationSuiteV1::new);
+
+  @ValidatorTestStep(minMajorVersion = "2", maxMajorVersion = "2")
+  public ValidationSuiteInfo<IMobilitiesSuiteState> apiTestsV2 = new ValidationSuiteInfo<>(
+      IMobilitiesGetSetupValidationSuiteV2::new,
+      IMobilitiesGetSetupValidationSuiteV2.getParameters(),
+      IMobilitiesGetValidationSuiteV2::new);
 
   @Override
   public Logger getLogger() {
