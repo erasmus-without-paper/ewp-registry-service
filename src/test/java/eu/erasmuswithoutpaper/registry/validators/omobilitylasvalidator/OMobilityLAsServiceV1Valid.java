@@ -32,13 +32,13 @@ public class OMobilityLAsServiceV1Valid extends AbstractOMobilityLAsService {
   protected List<LearningAgreement> learningAgreements = new ArrayList<>();
 
   /**
-   * @param indexUrl       The endpoint at which to listen for requests.
-   * @param getUrl         The endpoint at which to listen for requests.
-   * @param updateUrl      The endpoint at which to listen for requests.
+   * @param indexUrl The endpoint at which to listen for requests.
+   * @param getUrl The endpoint at which to listen for requests.
+   * @param updateUrl The endpoint at which to listen for requests.
    * @param registryClient Initialized and refreshed {@link RegistryClient} instance.
    */
   public OMobilityLAsServiceV1Valid(String indexUrl, String getUrl, String updateUrl,
-                                    RegistryClient registryClient, String heiIdToCover) {
+      RegistryClient registryClient, String heiIdToCover) {
     super(indexUrl, getUrl, updateUrl, registryClient);
     fillDataBase(heiIdToCover);
   }
@@ -90,8 +90,7 @@ public class OMobilityLAsServiceV1Valid extends AbstractOMobilityLAsService {
     languageSkill1.setCefrLevel("A2");
     la1.setStudentLanguageSkill(languageSkill1);
 
-    LearningAgreement.ChangesProposal changesProposal1 =
-        new LearningAgreement.ChangesProposal();
+    LearningAgreement.ChangesProposal changesProposal1 = new LearningAgreement.ChangesProposal();
     changesProposal1.setId("test1");
     changesProposal1.setStudentSignature(getSignature());
     changesProposal1.setSendingHeiSignature(getSignature());
@@ -137,8 +136,7 @@ public class OMobilityLAsServiceV1Valid extends AbstractOMobilityLAsService {
     languageSkill2.setCefrLevel("A2");
     la2.setStudentLanguageSkill(languageSkill2);
 
-    LearningAgreement.ChangesProposal changesProposal2 =
-        new LearningAgreement.ChangesProposal();
+    LearningAgreement.ChangesProposal changesProposal2 = new LearningAgreement.ChangesProposal();
     changesProposal2.setId("test1");
     changesProposal2.setStudentSignature(getSignature());
     changesProposal2.setSendingHeiSignature(getSignature());
@@ -182,8 +180,7 @@ public class OMobilityLAsServiceV1Valid extends AbstractOMobilityLAsService {
   }
 
   @Override
-  protected Response handleOMobilitiesIndexRequest(
-      Request request) throws ErrorResponseException {
+  protected Response handleOMobilitiesIndexRequest(Request request) throws ErrorResponseException {
     try {
       EwpClientWithRsaKey connectedClient = verifyCertificate(request);
       checkRequestMethod(request);
@@ -192,7 +189,8 @@ public class OMobilityLAsServiceV1Valid extends AbstractOMobilityLAsService {
       extractIndexParams(requestData);
       checkSendingHeiId(requestData);
       checkReceivingHeiId(requestData);
-      List<LearningAgreement> selectedLAs = filterLearningAgreementsForIndex(learningAgreements, requestData);
+      List<LearningAgreement> selectedLAs =
+          filterLearningAgreementsForIndex(learningAgreements, requestData);
       selectedLAs = filterNotPermittedLAs(selectedLAs, requestData);
       selectedLAs = filterLAsByModifiedSince(selectedLAs, requestData);
       selectedLAs = filterLAsByReceivingAcademicYearId(selectedLAs, requestData);
@@ -207,8 +205,7 @@ public class OMobilityLAsServiceV1Valid extends AbstractOMobilityLAsService {
     if (value == null) {
       return data;
     }
-    return data.stream()
-        .filter(oMobilityEntry -> value.equals(valueGetter.apply(oMobilityEntry)))
+    return data.stream().filter(oMobilityEntry -> value.equals(valueGetter.apply(oMobilityEntry)))
         .collect(Collectors.toList());
   }
 
@@ -216,9 +213,7 @@ public class OMobilityLAsServiceV1Valid extends AbstractOMobilityLAsService {
     if (modifiedSince == null) {
       return data;
     }
-    Instant modifiedAt = Instant.from(
-        ZonedDateTime.of(2019, 6, 10, 18, 52, 32, 0, ZoneId.of("Z"))
-    );
+    Instant modifiedAt = Instant.from(ZonedDateTime.of(2019, 6, 10, 18, 52, 32, 0, ZoneId.of("Z")));
     if (modifiedSince.toInstant().isAfter(modifiedAt)) {
       return new ArrayList<>();
     } else {
@@ -233,10 +228,8 @@ public class OMobilityLAsServiceV1Valid extends AbstractOMobilityLAsService {
 
   protected List<LearningAgreement> filterLAsByReceivingAcademicYearId(
       List<LearningAgreement> learningAgreements, RequestData requestData) {
-    return filterEqual(learningAgreements,
-        LearningAgreement::getReceivingAcademicYearId,
-        requestData.receivingAcademicYearId
-    );
+    return filterEqual(learningAgreements, LearningAgreement::getReceivingAcademicYearId,
+        requestData.receivingAcademicYearId);
   }
 
   private List<LearningAgreement> filterNotPermittedLAs(List<LearningAgreement> learningAgreements,
@@ -278,8 +271,7 @@ public class OMobilityLAsServiceV1Valid extends AbstractOMobilityLAsService {
         handleCommentProposalV1Request(requestData);
       } else {
         throw new ErrorResponseException(
-            createErrorResponse(requestData.request, 400, "Unknown update type.")
-        );
+            createErrorResponse(requestData.request, 400, "Unknown update type."));
       }
       return createOMobilityLAsUpdateResponse("OK");
     } catch (ErrorResponseException e) {
@@ -289,38 +281,30 @@ public class OMobilityLAsServiceV1Valid extends AbstractOMobilityLAsService {
 
   private void handleApproveProposalV1Request(RequestData requestData)
       throws ErrorResponseException {
-    ApproveProposalV1 approveProposalV1 =
-        requestData.updateRequest.getApproveProposalV1();
+    ApproveProposalV1 approveProposalV1 = requestData.updateRequest.getApproveProposalV1();
     String omobilityId = approveProposalV1.getOmobilityId();
     String requestChangesProposalId = approveProposalV1.getChangesProposalId();
-    verifyLearningAgreementForUpdate(
-        requestData, omobilityId, requestChangesProposalId
-    );
+    verifyLearningAgreementForUpdate(requestData, omobilityId, requestChangesProposalId);
 
     handleApproveProposalV1(requestData);
   }
 
-  protected void handleApproveProposalV1(RequestData requestData)
-      throws ErrorResponseException {
-    ApproveProposalV1 approveProposalV1 =
-        requestData.updateRequest.getApproveProposalV1();
+  protected void handleApproveProposalV1(RequestData requestData) throws ErrorResponseException {
+    ApproveProposalV1 approveProposalV1 = requestData.updateRequest.getApproveProposalV1();
 
     if (approveProposalV1.getSignature() == null) {
       errorNoSignature(requestData);
     }
   }
 
-  protected void errorNoSignature(RequestData requestData)
-      throws ErrorResponseException {
+  protected void errorNoSignature(RequestData requestData) throws ErrorResponseException {
     throw new ErrorResponseException(
-        createErrorResponse(requestData.request, 400, "Missing signature.")
-    );
+        createErrorResponse(requestData.request, 400, "Missing signature."));
   }
 
   private void handleCommentProposalV1Request(RequestData requestData)
       throws ErrorResponseException {
-    CommentProposalV1 commentProposalV1 =
-        requestData.updateRequest.getCommentProposalV1();
+    CommentProposalV1 commentProposalV1 = requestData.updateRequest.getCommentProposalV1();
     String omobilityId = commentProposalV1.getOmobilityId();
     String requestChangesProposalId = commentProposalV1.getChangesProposalId();
     verifyLearningAgreementForUpdate(requestData, omobilityId, requestChangesProposalId);
@@ -352,9 +336,8 @@ public class OMobilityLAsServiceV1Valid extends AbstractOMobilityLAsService {
       errorNoChangesProposalId(requestData.request);
     }
 
-    List<LearningAgreement> updatedAgreement = filter(learningAgreements,
-        la -> la.getOmobilityId().equals(omobilityId)
-    );
+    List<LearningAgreement> updatedAgreement =
+        filter(learningAgreements, la -> la.getOmobilityId().equals(omobilityId));
 
     if (updatedAgreement.isEmpty()) {
       errorUnknownOmobilityIdUpdated(requestData.request);
@@ -376,7 +359,8 @@ public class OMobilityLAsServiceV1Valid extends AbstractOMobilityLAsService {
   private void extractUpdateParams(RequestData requestData) throws ErrorResponseException {
     checkParamsEncoding(requestData.request, "text/xml");
     try {
-      requestData.updateRequest = unmarshallObject(requestData.request.getBody().get(), OmobilityLasUpdateRequest.class);
+      requestData.updateRequest =
+          unmarshallObject(requestData.request.getBody().get(), OmobilityLasUpdateRequest.class);
       requestData.sendingHeiId = requestData.updateRequest.getSendingHeiId();
     } catch (JAXBException e) {
       errorInvalidUpdateRequestFormat(requestData);
@@ -386,9 +370,7 @@ public class OMobilityLAsServiceV1Valid extends AbstractOMobilityLAsService {
   private void errorInvalidUpdateRequestFormat(RequestData requestData)
       throws ErrorResponseException {
     throw new ErrorResponseException(
-        createErrorResponse(requestData.request, 400,
-            "Invalid request format")
-    );
+        createErrorResponse(requestData.request, 400, "Invalid request format"));
   }
 
   private void extractIndexParams(RequestData requestData) throws ErrorResponseException {
@@ -451,7 +433,7 @@ public class OMobilityLAsServiceV1Valid extends AbstractOMobilityLAsService {
     }
 
     if (requestData.sendingHeiId == null || requestData.receivingHeiIds == null) {
-      //We expect all of above members to have any value even in invalid scenarios.
+      // We expect all of above members to have any value even in invalid scenarios.
       throw new NullPointerException();
     }
   }
@@ -487,23 +469,22 @@ public class OMobilityLAsServiceV1Valid extends AbstractOMobilityLAsService {
     }
 
     if (requestData.sendingHeiId == null || requestData.omobilityIds.isEmpty()) {
-      //We expect all of above members to have any value even in invalid scenarios.
+      // We expect all of above members to have any value even in invalid scenarios.
       throw new NullPointerException();
     }
   }
 
   protected void checkReceivingHeiId(RequestData requestData) throws ErrorResponseException {
-    List<String> knownReceivingHeiIds = map(learningAgreements,
-        la -> la.getReceivingHei().getHeiId());
+    List<String> knownReceivingHeiIds =
+        map(learningAgreements, la -> la.getReceivingHei().getHeiId());
     if (!knownReceivingHeiIds.containsAll(requestData.receivingHeiIds)) {
       handleUnknownReceivingHeiId(requestData);
     }
   }
 
   protected void checkSendingHeiId(RequestData requestData) throws ErrorResponseException {
-    if (learningAgreements.stream().noneMatch(
-        la -> la.getSendingHei().getHeiId().equals(requestData.sendingHeiId)
-    )) {
+    if (learningAgreements.stream()
+        .noneMatch(la -> la.getSendingHei().getHeiId().equals(requestData.sendingHeiId))) {
       handleUnknownSendingHeiId(requestData);
     }
   }
@@ -549,8 +530,8 @@ public class OMobilityLAsServiceV1Valid extends AbstractOMobilityLAsService {
         && requestData.omobilityIds.contains(la.getOmobilityId());
   }
 
-  protected List<LearningAgreement> filterLAsForGet(
-      List<LearningAgreement> learningAgreements, RequestData requestData) {
+  protected List<LearningAgreement> filterLAsForGet(List<LearningAgreement> learningAgreements,
+      RequestData requestData) {
     return filter(learningAgreements, la -> filterLAsForGet(la, requestData));
   }
 
@@ -558,46 +539,40 @@ public class OMobilityLAsServiceV1Valid extends AbstractOMobilityLAsService {
     return map(learningAgreements, LearningAgreement::getOmobilityId);
   }
 
-  protected void errorMaxOMobilityIdsExceeded(
-      RequestData requestData) throws ErrorResponseException {
+  protected void errorMaxOMobilityIdsExceeded(RequestData requestData)
+      throws ErrorResponseException {
     throw new ErrorResponseException(
-        createErrorResponse(requestData.request, 400, "max-omobility-ids exceeded")
-    );
+        createErrorResponse(requestData.request, 400, "max-omobility-ids exceeded"));
   }
 
   protected void errorNoOMobilityIds(RequestData requestData) throws ErrorResponseException {
     throw new ErrorResponseException(
-        createErrorResponse(requestData.request, 400, "No omobility_id provided")
-    );
+        createErrorResponse(requestData.request, 400, "No omobility_id provided"));
   }
 
   protected void errorNoParams(RequestData requestData) throws ErrorResponseException {
     throw new ErrorResponseException(
-        createErrorResponse(requestData.request, 400, "No parameters provided")
-    );
+        createErrorResponse(requestData.request, 400, "No parameters provided"));
   }
 
   protected void errorNoSendingHeiId(RequestData requestData) throws ErrorResponseException {
     throw new ErrorResponseException(
-        createErrorResponse(requestData.request, 400, "No sending_hei_id parameter")
-    );
+        createErrorResponse(requestData.request, 400, "No sending_hei_id parameter"));
   }
 
-  protected void errorMultipleSendingHeiIds(
-      RequestData requestData) throws ErrorResponseException {
+  protected void errorMultipleSendingHeiIds(RequestData requestData) throws ErrorResponseException {
     throw new ErrorResponseException(
-        createErrorResponse(requestData.request, 400, "More that one sending_hei_id provided.")
-    );
+        createErrorResponse(requestData.request, 400, "More that one sending_hei_id provided."));
   }
 
-  protected void handleMultipleReceivingHeiId(RequestData requestData) throws ErrorResponseException {
+  protected void handleMultipleReceivingHeiId(RequestData requestData)
+      throws ErrorResponseException {
     // ignore
   }
 
   protected void errorMultipleModifiedSince(RequestData requestData) throws ErrorResponseException {
     throw new ErrorResponseException(
-        createErrorResponse(requestData.request, 400, "More than one modified_since provided.")
-    );
+        createErrorResponse(requestData.request, 400, "More than one modified_since provided."));
   }
 
   protected void errorInvalidModifiedSince(RequestData requestData) throws ErrorResponseException {
@@ -607,34 +582,32 @@ public class OMobilityLAsServiceV1Valid extends AbstractOMobilityLAsService {
 
   protected void errorMultipleReceivingAcademicYearIds(RequestData requestData)
       throws ErrorResponseException {
-    throw new ErrorResponseException(
-        createErrorResponse(requestData.request, 400, "More than one receiving_academic_year_id provided.")
-    );
+    throw new ErrorResponseException(createErrorResponse(requestData.request, 400,
+        "More than one receiving_academic_year_id provided."));
   }
 
   protected void errorInvalidReceivingAcademicYearId(RequestData requestData)
       throws ErrorResponseException {
-    throw new ErrorResponseException(
-        createErrorResponse(requestData.request, 400, "Invalid receiving_academic_year_id format."));
+    throw new ErrorResponseException(createErrorResponse(requestData.request, 400,
+        "Invalid receiving_academic_year_id format."));
   }
 
   protected void handleUnexpectedParams(RequestData requestData) throws ErrorResponseException {
-    //Ignore
+    // Ignore
   }
 
   protected void handleUnknownOMobilityId(RequestData requestData) throws ErrorResponseException {
-    //Ignore
+    // Ignore
   }
 
-  protected void handleUnknownSendingHeiId(
-      RequestData requestData) throws ErrorResponseException {
+  protected void handleUnknownSendingHeiId(RequestData requestData) throws ErrorResponseException {
     throw new ErrorResponseException(
-        createErrorResponse(requestData.request, 400, "Unknown sending_hei_id")
-    );
+        createErrorResponse(requestData.request, 400, "Unknown sending_hei_id"));
   }
 
-  protected void handleUnknownReceivingHeiId(RequestData requestData) throws ErrorResponseException {
-    //Ignore
+  protected void handleUnknownReceivingHeiId(RequestData requestData)
+      throws ErrorResponseException {
+    // Ignore
   }
 
   protected void handleNoReceivingHeiId(RequestData requestData) throws ErrorResponseException {
