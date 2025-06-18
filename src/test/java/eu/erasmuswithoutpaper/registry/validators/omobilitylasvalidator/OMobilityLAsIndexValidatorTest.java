@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import eu.erasmuswithoutpaper.registry.internet.sec.EwpClientWithRsaKey;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.TestValidationReport;
 import eu.erasmuswithoutpaper.registry.validators.omobilitylasvalidator.index.OMobilityLAsIndexValidator;
@@ -281,7 +282,7 @@ public class OMobilityLAsIndexValidatorTest extends OMobilityLAsValidatorTestBas
         this.serviceKeyStore.getCoveredHeiIDs().get(0)) {
       @Override
       protected boolean isCalledPermittedToSeeReceivingHeiIdsData(
-          RequestData requestData, String receivingHeiId) {
+          EwpClientWithRsaKey client, String receivingHeiId) {
         return true;
       }
     };
@@ -299,7 +300,7 @@ public class OMobilityLAsIndexValidatorTest extends OMobilityLAsValidatorTestBas
         this.serviceKeyStore.getCoveredHeiIDs().get(0)) {
       @Override
       protected boolean isCalledPermittedToSeeReceivingHeiIdsData(
-          RequestData requestData, String receivingHeiId) {
+          EwpClientWithRsaKey client, String receivingHeiId) {
         return true;
       }
     };

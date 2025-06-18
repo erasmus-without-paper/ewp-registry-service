@@ -1,7 +1,6 @@
 package eu.erasmuswithoutpaper.registry.validators.omobilitylasvalidator;
 
 import java.math.BigInteger;
-import java.security.interfaces.RSAPublicKey;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -11,7 +10,6 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import eu.erasmuswithoutpaper.registry.internet.InternetTestHelpers;
@@ -214,12 +212,6 @@ public class OMobilityLAsServiceV1Valid extends AbstractOMobilityLAsService {
         .collect(Collectors.toList());
   }
 
-  protected static <T> List<T> filter(List<T> data, Predicate<T> predicate) {
-    return data.stream()
-        .filter(predicate)
-        .collect(Collectors.toList());
-  }
-
   protected static <T> List<T> filterModifiedSince(List<T> data, ZonedDateTime modifiedSince) {
     if (modifiedSince == null) {
       return data;
@@ -239,10 +231,6 @@ public class OMobilityLAsServiceV1Valid extends AbstractOMobilityLAsService {
   }
 
 
-  protected boolean isHeiIdCoveredByClient(RSAPublicKey rsaPublicKey, String receivingHeiId) {
-    return this.registryClient.getHeisCoveredByClientKey(rsaPublicKey).contains(receivingHeiId);
-  }
-
   protected List<LearningAgreement> filterLAsByReceivingAcademicYearId(
       List<LearningAgreement> learningAgreements, RequestData requestData) {
     return filterEqual(learningAgreements,
@@ -251,18 +239,10 @@ public class OMobilityLAsServiceV1Valid extends AbstractOMobilityLAsService {
     );
   }
 
-  protected boolean isCalledPermittedToSeeReceivingHeiIdsData(
-      RequestData requestData, String receivingHeiId) {
-    return isHeiIdCoveredByClient(requestData.client.getRsaPublicKey(), receivingHeiId);
-  }
-
-  private List<LearningAgreement> filterNotPermittedLAs(
-      List<LearningAgreement> learningAgreements, RequestData requestData) {
-    return filter(learningAgreements,
-        la -> isCalledPermittedToSeeReceivingHeiIdsData(
-            requestData, la.getReceivingHei().getHeiId()
-        )
-    );
+  private List<LearningAgreement> filterNotPermittedLAs(List<LearningAgreement> learningAgreements,
+      RequestData requestData) {
+    return filter(learningAgreements, la -> isCalledPermittedToSeeReceivingHeiIdsData(
+        requestData.client, la.getReceivingHei().getHeiId()));
   }
 
   @Override
@@ -369,7 +349,7 @@ public class OMobilityLAsServiceV1Valid extends AbstractOMobilityLAsService {
     }
 
     if (requestChangesProposalId == null) {
-      errorNoChangesProposalId(requestData);
+      errorNoChangesProposalId(requestData.request);
     }
 
     List<LearningAgreement> updatedAgreement = filter(learningAgreements,
@@ -377,50 +357,21 @@ public class OMobilityLAsServiceV1Valid extends AbstractOMobilityLAsService {
     );
 
     if (updatedAgreement.isEmpty()) {
-      errorUnknownOmobilityIdUpdated(requestData);
+      errorUnknownOmobilityIdUpdated(requestData.request);
     }
 
     LearningAgreement la = updatedAgreement.get(0);
 
-    if (!isCalledPermittedToSeeReceivingHeiIdsData(requestData, la.getReceivingHei().getHeiId())) {
-      errorUpdateCallerNotPermitted(requestData);
+    if (!isCalledPermittedToSeeReceivingHeiIdsData(requestData.client, la.getReceivingHei().getHeiId())) {
+      errorUpdateCallerNotPermitted(requestData.request);
     }
 
     String lasChangesProposalId = la.getChangesProposal().getId();
 
     if (!lasChangesProposalId.equals(requestChangesProposalId)) {
-      errorChangesProposalIdDoNotMatch(requestData);
+      errorChangesProposalIdDoNotMatch(requestData.request);
     }
   }
-
-  private void errorUpdateCallerNotPermitted(RequestData requestData)
-      throws ErrorResponseException {
-      throw new ErrorResponseException(
-          createErrorResponse(requestData.request, 400, "Not permitted.")
-      );
-
-  }
-
-  private void errorUnknownOmobilityIdUpdated(RequestData requestData)
-      throws ErrorResponseException {
-    throw new ErrorResponseException(
-        createErrorResponse(requestData.request, 400, "OMobility id not found")
-    );
-  }
-
-  private void errorChangesProposalIdDoNotMatch(RequestData requestData)
-      throws ErrorResponseException {
-    throw new ErrorResponseException(
-        createErrorResponse(requestData.request, 409, "Latest proposal id do not match.")
-    );
-  }
-
-  private void errorNoChangesProposalId(RequestData requestData) throws ErrorResponseException {
-    throw new ErrorResponseException(
-        createErrorResponse(requestData.request, 400, "Missing latest proposal id.")
-    );
-  }
-
 
   private void extractUpdateParams(RequestData requestData) throws ErrorResponseException {
     checkParamsEncoding(requestData.request, "text/xml");

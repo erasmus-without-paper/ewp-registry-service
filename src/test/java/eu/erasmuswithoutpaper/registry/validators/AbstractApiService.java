@@ -2,11 +2,14 @@ package eu.erasmuswithoutpaper.registry.validators;
 
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
+import java.security.interfaces.RSAPublicKey;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import eu.erasmuswithoutpaper.registry.common.Utils;
 import eu.erasmuswithoutpaper.registry.internet.FakeInternetService;
@@ -33,6 +36,10 @@ import javax.xml.datatype.XMLGregorianCalendar;
 public abstract class AbstractApiService implements FakeInternetService {
   protected final RegistryClient registryClient;
   private EwpHttpSigRequestAuthorizer myAuthorizer;
+
+  protected static <T> List<T> filter(List<T> data, Predicate<T> predicate) {
+    return data.stream().filter(predicate).collect(Collectors.toList());
+  }
 
   protected EwpHttpSigRequestAuthorizer createMyAuthorizer(RegistryClient registryClient) {
     return new EwpHttpSigRequestAuthorizer(registryClient);
@@ -98,6 +105,37 @@ public abstract class AbstractApiService implements FakeInternetService {
     }
 
     return datatypeFactory.newXMLGregorianCalendarDate(year, month, day, 0);
+  }
+
+  protected boolean isCalledPermittedToSeeReceivingHeiIdsData(EwpClientWithRsaKey client, String receivingHeiId) {
+    return isHeiIdCoveredByClient(client.getRsaPublicKey(), receivingHeiId);
+  }
+
+  protected void errorUpdateCallerNotPermitted(Request request)
+      throws ErrorResponseException {
+    throw new ErrorResponseException(
+        createErrorResponse(request, 400, "Not permitted."));
+  }
+
+  protected void errorUnknownOmobilityIdUpdated(Request request)
+      throws ErrorResponseException {
+    throw new ErrorResponseException(
+        createErrorResponse(request, 400, "OMobility id not found"));
+  }
+
+  protected void errorChangesProposalIdDoNotMatch(Request request)
+      throws ErrorResponseException {
+    throw new ErrorResponseException(
+        createErrorResponse(request, 409, "Latest proposal id do not match."));
+  }
+
+  protected void errorNoChangesProposalId(Request request) throws ErrorResponseException {
+    throw new ErrorResponseException(
+        createErrorResponse(request, 400, "Missing latest proposal id."));
+  }
+
+  protected boolean isHeiIdCoveredByClient(RSAPublicKey rsaPublicKey, String receivingHeiId) {
+    return this.registryClient.getHeisCoveredByClientKey(rsaPublicKey).contains(receivingHeiId);
   }
 
   /**
