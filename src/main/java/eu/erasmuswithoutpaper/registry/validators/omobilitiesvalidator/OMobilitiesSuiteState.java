@@ -14,6 +14,8 @@ public class OMobilitiesSuiteState extends SuiteState {
   public String notPermittedHeiId;
   public String receivingAcademicYearId;
 
+  public String proposalId;
+
   public OMobilitiesSuiteState(String url, SemanticVersion version) {
     super(url, version);
   }

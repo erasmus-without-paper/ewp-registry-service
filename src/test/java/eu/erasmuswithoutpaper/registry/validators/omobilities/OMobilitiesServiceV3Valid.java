@@ -23,7 +23,13 @@ import https.github_com.erasmus_without_paper.ewp_specs_api_omobilities.blob.sta
 import https.github_com.erasmus_without_paper.ewp_specs_api_omobilities.blob.stable_v3.endpoints.get_response.OmobilitiesGetResponse;
 import https.github_com.erasmus_without_paper.ewp_specs_api_omobilities.blob.stable_v3.endpoints.get_response.StudentMobility;
 import https.github_com.erasmus_without_paper.ewp_specs_api_omobilities.blob.stable_v3.endpoints.index_response.OmobilitiesIndexResponse;
+import https.github_com.erasmus_without_paper.ewp_specs_api_omobilities.blob.stable_v3.endpoints.update_request.ApproveProposalV1;
+import https.github_com.erasmus_without_paper.ewp_specs_api_omobilities.blob.stable_v3.endpoints.update_request.OmobilitiesUpdateRequest;
+import https.github_com.erasmus_without_paper.ewp_specs_api_omobilities.blob.stable_v3.endpoints.update_request.RejectProposalV1;
+import https.github_com.erasmus_without_paper.ewp_specs_api_omobilities.blob.stable_v3.endpoints.update_response.OmobilitiesUpdateResponse;
+import https.github_com.erasmus_without_paper.ewp_specs_architecture.blob.stable_v1.common_types.MultilineStringWithOptionalLang;
 import https.github_com.erasmus_without_paper.ewp_specs_architecture.blob.stable_v1.common_types.StringWithOptionalLang;
+import jakarta.xml.bind.JAXBException;
 
 
 public class OMobilitiesServiceV3Valid extends AbstractOMobilitiesService {
@@ -322,6 +328,107 @@ public class OMobilitiesServiceV3Valid extends AbstractOMobilitiesService {
     return marshallResponse(200, response);
   }
 
+  @Override
+  protected Response handleOMobilitiesUpdateRequest(Request request) throws ErrorResponseException {
+    try {
+      EwpClientWithRsaKey connectedClient = verifyCertificate(request);
+      checkRequestMethod(request, List.of("POST"));
+
+      RequestData requestData = new RequestData(request, connectedClient);
+      extractUpdateParams(requestData);
+      if (requestData.updateRequest.getApproveProposalV1() != null) {
+        handleApproveProposalV1Request(requestData);
+      } else if (requestData.updateRequest.getRejectProposalV1() != null) {
+        handleRejectProposalV1Request(requestData);
+      } else {
+        throw new ErrorResponseException(
+            createErrorResponse(requestData.request, 400, "Unknown update type."));
+      }
+      return createOmobilitiesUpdateResponse("OK");
+    } catch (ErrorResponseException e) {
+      return e.response;
+    }
+  }
+
+  private void handleApproveProposalV1Request(RequestData requestData)
+      throws ErrorResponseException {
+    ApproveProposalV1 approveProposalV1 = requestData.updateRequest.getApproveProposalV1();
+    String omobilityId = approveProposalV1.getOmobilityId();
+    String requestProposalId = approveProposalV1.getProposalId();
+    verifyMobilityForUpdate(requestData, omobilityId, requestProposalId);
+  }
+
+  private void verifyMobilityForUpdate(RequestData requestData, String omobilityId,
+      String requestChangesProposalId) throws ErrorResponseException {
+    if (omobilityId == null) {
+      errorNoOMobilityIds(requestData);
+    } else {
+      requestData.omobilityIds = List.of(omobilityId);
+    }
+
+    if (requestChangesProposalId == null) {
+      errorNoChangesProposalId(requestData.request);
+    }
+
+    List<OMobilityEntry> updatedOmobilityEntry = filter(mobilities,
+        oMobilityEntry -> oMobilityEntry.mobility.getOmobilityId().equals(omobilityId));
+
+    if (updatedOmobilityEntry.isEmpty()) {
+      errorUnknownOmobilityIdUpdated(requestData.request);
+    }
+
+    StudentMobility mobility = updatedOmobilityEntry.get(0).mobility;
+
+    if (!isCalledPermittedToSeeReceivingHeiIdsData(requestData.client,
+        mobility.getNomination().getReceivingHei().getHeiId())) {
+      errorUpdateCallerNotPermitted(requestData.request);
+    }
+
+    String lasProposalId = mobility.getNomination().getProposalId();
+
+    if (!lasProposalId.equals(requestChangesProposalId)) {
+      errorChangesProposalIdDoNotMatch(requestData.request);
+    }
+  }
+
+  private void handleRejectProposalV1Request(RequestData requestData)
+      throws ErrorResponseException {
+    RejectProposalV1 rejectProposalV1 = requestData.updateRequest.getRejectProposalV1();
+    String omobilityId = rejectProposalV1.getOmobilityId();
+    String requestProposalId = rejectProposalV1.getProposalId();
+    verifyMobilityForUpdate(requestData, omobilityId, requestProposalId);
+
+    if (rejectProposalV1.getComment() == null) {
+      throw new ErrorResponseException(
+          createErrorResponse(requestData.request, 400, "Comment missing."));
+    }
+  }
+
+  private void extractUpdateParams(RequestData requestData) throws ErrorResponseException {
+    checkParamsEncoding(requestData.request, "text/xml");
+    try {
+      requestData.updateRequest =
+          unmarshallObject(requestData.request.getBody().get(), OmobilitiesUpdateRequest.class);
+    } catch (JAXBException e) {
+      errorInvalidUpdateRequestFormat(requestData);
+    }
+  }
+
+  private void errorInvalidUpdateRequestFormat(RequestData requestData)
+      throws ErrorResponseException {
+    throw new ErrorResponseException(
+        createErrorResponse(requestData.request, 400, "Invalid request format"));
+  }
+
+  protected Response createOmobilitiesUpdateResponse(String message) {
+    OmobilitiesUpdateResponse response = new OmobilitiesUpdateResponse();
+    MultilineStringWithOptionalLang multilineString = new MultilineStringWithOptionalLang();
+    multilineString.setLang("en");
+    multilineString.setValue(message);
+    response.getSuccessUserMessage().add(multilineString);
+    return marshallResponse(200, response);
+  }
+
   protected static class OMobilityEntry {
     public StudentMobility mobility;
     public String sending_hei_id;
@@ -340,6 +447,7 @@ public class OMobilitiesServiceV3Valid extends AbstractOMobilitiesService {
     public String modifiedSinceString;
     public List<String> omobilityIds;
     public String receivingAcademicYearId;
+    public OmobilitiesUpdateRequest updateRequest;
     Request request;
     EwpClientWithRsaKey client;
 
