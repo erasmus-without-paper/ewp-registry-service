@@ -4,8 +4,8 @@
     xmlns:ewp="https://github.com/erasmus-without-paper/ewp-specs-architecture/blob/stable-v1/common-types.xsd"
     elementFormDefault="qualified"
 
-    targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-api-omobility/blob/stable-v3/endpoints/update-request.xsd"
-    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-omobility/blob/stable-v3/endpoints/update-request.xsd"
+    targetNamespace="https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/blob/stable-v3/endpoints/update-request.xsd"
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/blob/stable-v3/endpoints/update-request.xsd"
 >
     <xs:import
         schemaLocation="../../ewp-specs-architecture-v1.16.0/common-types.xsd"
@@ -21,7 +21,7 @@
         </xs:documentation>
     </xs:annotation>
 
-    <xs:element name="omobility-update-request">
+    <xs:element name="omobilities-update-request">
         <xs:annotation>
             <xs:documentation>
                 This describes the format of the REQUEST to be submitted to the `update`
