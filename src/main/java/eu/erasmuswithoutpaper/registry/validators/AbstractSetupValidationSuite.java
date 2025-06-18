@@ -467,6 +467,11 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
     return heiIdAndUrls;
   }
 
+  @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
+  protected String getSelectedHeiId() throws SuiteBroken {
+    return getCoveredHeiIds(this.currentState.url).get(0);
+  }
+
   protected Request makeApiRequestWithPreferredSecurity(
       InlineValidationStep step, String url, ApiEndpoint endpoint,
       HttpSecurityDescription preferredSecurityDescription,

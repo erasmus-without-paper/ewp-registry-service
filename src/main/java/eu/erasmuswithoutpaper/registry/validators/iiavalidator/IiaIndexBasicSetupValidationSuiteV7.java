@@ -52,9 +52,4 @@ public class IiaIndexBasicSetupValidationSuiteV7
       throws SuiteBroken {
     this.currentState.selectedHeiId = getSelectedHeiId();
   }
-
-  @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
-  protected String getSelectedHeiId() throws SuiteBroken {
-    return getCoveredHeiIds(this.currentState.url).get(0);
-  }
 }

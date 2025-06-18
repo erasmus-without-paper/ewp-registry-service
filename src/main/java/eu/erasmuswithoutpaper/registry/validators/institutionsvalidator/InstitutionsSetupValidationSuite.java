@@ -61,10 +61,4 @@ class InstitutionsSetupValidationSuite
     this.currentState.maxHeiIds = getMaxHeiIds();
     this.currentState.selectedHeiId = getParameterValue(HEI_ID_PARAMETER, this::getSelectedHeiId);
   }
-
-  @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
-  private String getSelectedHeiId() throws SuiteBroken {
-    return getCoveredHeiIds(this.currentState.url).get(0);
-  }
-
 }

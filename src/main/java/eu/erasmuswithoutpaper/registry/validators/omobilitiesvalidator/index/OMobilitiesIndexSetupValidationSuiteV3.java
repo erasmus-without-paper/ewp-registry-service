@@ -30,9 +30,4 @@ public class OMobilitiesIndexSetupValidationSuiteV3 extends OMobilitiesIndexSetu
     this.currentState.notPermittedHeiId = getParameterValue(NOT_PERMITTED_HEI_ID_PARAMETER,
             () -> getOtherRealHeiId(this.currentState.sendingHeiId));
   }
-
-  @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
-  protected String getSelectedHeiId() throws SuiteBroken {
-    return getCoveredHeiIds(this.currentState.url).get(0);
-  }
 }

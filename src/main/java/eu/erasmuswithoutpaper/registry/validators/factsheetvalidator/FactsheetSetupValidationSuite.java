@@ -51,11 +51,6 @@ class FactsheetSetupValidationSuite
     return getMaxIds("hei-ids");
   }
 
-  @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
-  private String getSelectedHeiId() throws SuiteBroken {
-    return getCoveredHeiIds(this.currentState.url).get(0);
-  }
-
   //FindBugs is not smart enough to infer that actual type of this.currentState
   //is CoursesSuiteState not just SuiteState
   @Override

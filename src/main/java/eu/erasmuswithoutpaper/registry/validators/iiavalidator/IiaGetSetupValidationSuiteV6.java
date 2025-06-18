@@ -79,11 +79,6 @@ public class IiaGetSetupValidationSuiteV6
   }
 
   @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
-  protected String getSelectedHeiId() throws SuiteBroken {
-    return getCoveredHeiIds(this.currentState.url).get(0);
-  }
-
-  @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
   protected String getIiaId(HttpSecurityDescription securityDescription) throws SuiteBroken {
     String indexUrl = getApiUrlForHei(
         this.currentState.selectedHeiId, this.getApiInfo().getApiName(), ApiEndpoint.INDEX,

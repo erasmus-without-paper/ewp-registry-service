@@ -33,11 +33,6 @@ public class OMobilitiesGetSetupValidationSuiteV3 extends OMobilitiesGetSetupVal
         getParameterValue(OMOBILITY_ID_PARAMETER, () -> getOmobilityId(securityDescription));
   }
 
-  @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
-  protected String getSelectedHeiId() throws SuiteBroken {
-    return getCoveredHeiIds(this.currentState.url).get(0);
-  }
-
   @Override
   protected Request makeApiRequestWithPreferredSecurity(InlineValidationStep step,
       HeiIdAndUrl heiIdAndUrl, HttpSecurityDescription preferredSecurityDescription) {
