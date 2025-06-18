@@ -8,6 +8,8 @@ public abstract class OMobilitiesValidatorTestBase extends AbstractApiTest<OMobi
       "https://university.example.com/omobilities/HTTT/index";
   protected static final String omobilitiesGetUrl =
       "https://university.example.com/omobilities/HTTT/get";
+  protected static final String omobilitiesUpdateUrl =
+      "https://university.example.com/omobilities/HTTT/update";
 
 }
 

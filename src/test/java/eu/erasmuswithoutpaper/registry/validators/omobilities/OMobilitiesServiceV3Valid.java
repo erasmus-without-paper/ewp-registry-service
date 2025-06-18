@@ -32,11 +32,12 @@ public class OMobilitiesServiceV3Valid extends AbstractOMobilitiesService {
   /**
    * @param indexUrl The endpoint at which to listen for requests.
    * @param getUrl The endpoint at which to listen for requests.
+   * @param updateUrl The endpoint at which to listen for requests.
    * @param registryClient Initialized and refreshed {@link RegistryClient} instance.
    */
-  public OMobilitiesServiceV3Valid(String indexUrl, String getUrl, RegistryClient registryClient,
-      String heiIdToCover) {
-    super(indexUrl, getUrl, registryClient);
+  public OMobilitiesServiceV3Valid(String indexUrl, String getUrl, String updateUrl,
+      RegistryClient registryClient, String heiIdToCover) {
+    super(indexUrl, getUrl, updateUrl, registryClient);
     fillDataBase(heiIdToCover);
   }
 

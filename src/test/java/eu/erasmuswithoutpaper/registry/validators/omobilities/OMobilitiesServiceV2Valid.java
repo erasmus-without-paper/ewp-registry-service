@@ -34,7 +34,7 @@ public class OMobilitiesServiceV2Valid extends AbstractOMobilitiesService {
    */
   public OMobilitiesServiceV2Valid(String indexUrl, String getUrl,
       RegistryClient registryClient, String heiIdToCover) {
-    super(indexUrl, getUrl, registryClient);
+    super(indexUrl, getUrl, null, registryClient);
     fillDataBase(heiIdToCover);
   }
 

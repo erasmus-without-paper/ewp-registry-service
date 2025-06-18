@@ -11,19 +11,20 @@ public abstract class AbstractOMobilitiesService extends AbstractApiService {
   protected final RegistryClient registryClient;
   private final String myIndexUrl;
   private final String myGetUrl;
+  private final String myUpdateUrl;
 
   /**
-   * @param indexUrl
-   *     The endpoint at which to listen for INDEX requests.
-   * @param getUrl
-   *     The endpoint at which to listen for GET requests.
-   * @param registryClient
-   *     Initialized and refreshed {@link RegistryClient} instance.
+   * @param indexUrl The endpoint at which to listen for INDEX requests.
+   * @param getUrl The endpoint at which to listen for GET requests.
+   * @param updateUrl The endpoint at which to listen for UPDATE requests.
+   * @param registryClient Initialized and refreshed {@link RegistryClient} instance.
    */
-  public AbstractOMobilitiesService(String indexUrl, String getUrl, RegistryClient registryClient) {
+  public AbstractOMobilitiesService(String indexUrl, String getUrl, String updateUrl,
+      RegistryClient registryClient) {
     super(registryClient);
     this.myIndexUrl = indexUrl;
     this.myGetUrl = getUrl;
+    this.myUpdateUrl = updateUrl;
     this.registryClient = registryClient;
   }
 
@@ -34,6 +35,8 @@ public abstract class AbstractOMobilitiesService extends AbstractApiService {
         return handleOMobilitiesGetRequest(request);
       } else if (request.getUrl().startsWith(this.myIndexUrl)) {
         return handleOMobilitiesIndexRequest(request);
+      } else if (request.getUrl().startsWith(this.myUpdateUrl)) {
+        return handleOMobilitiesUpdateRequest(request);
       }
       return null;
     } catch (ErrorResponseException e) {
@@ -46,4 +49,8 @@ public abstract class AbstractOMobilitiesService extends AbstractApiService {
 
   protected abstract Response handleOMobilitiesGetRequest(Request request)
       throws IOException, ErrorResponseException;
+
+  protected Response handleOMobilitiesUpdateRequest(Request request) throws ErrorResponseException {
+    throw new RuntimeException("Not implemented yet.");
+  }
 }

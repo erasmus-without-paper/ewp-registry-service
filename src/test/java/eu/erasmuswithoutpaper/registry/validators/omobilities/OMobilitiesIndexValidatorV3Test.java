@@ -42,7 +42,7 @@ public class OMobilitiesIndexValidatorV3Test extends OMobilitiesValidatorTestBas
   @Test
   public void testValidationOnValidServiceIsSuccessful() {
     OMobilitiesServiceV3Valid service = new OMobilitiesServiceV3Valid(omobilitiesIndexUrl,
-        omobilitiesGetUrl, this.client, this.serviceKeyStore.getCoveredHeiIDs().get(0));
+        omobilitiesGetUrl, omobilitiesUpdateUrl, this.client, this.serviceKeyStore.getCoveredHeiIDs().get(0));
     TestValidationReport report = this.getRawReport(service);
     assertThat(report).isCorrect();
   }
@@ -50,7 +50,7 @@ public class OMobilitiesIndexValidatorV3Test extends OMobilitiesValidatorTestBas
   @Test
   public void testIgnoringMultipleModifiedSinceIsDetected() {
     OMobilitiesServiceV3Valid service = new OMobilitiesServiceV3Valid(omobilitiesIndexUrl,
-        omobilitiesGetUrl, this.client, this.serviceKeyStore.getCoveredHeiIDs().get(0)) {
+        omobilitiesGetUrl, omobilitiesUpdateUrl, this.client, this.serviceKeyStore.getCoveredHeiIDs().get(0)) {
       @Override
       protected void errorMultipleModifiedSince(RequestData requestData)
           throws ErrorResponseException {
@@ -65,7 +65,7 @@ public class OMobilitiesIndexValidatorV3Test extends OMobilitiesValidatorTestBas
   @Test
   public void testNotUsingModifiedSinceIsDetected() {
     OMobilitiesServiceV3Valid service = new OMobilitiesServiceV3Valid(omobilitiesIndexUrl,
-        omobilitiesGetUrl, this.client, this.serviceKeyStore.getCoveredHeiIDs().get(0)) {
+        omobilitiesGetUrl, omobilitiesUpdateUrl, this.client, this.serviceKeyStore.getCoveredHeiIDs().get(0)) {
       @Override
       protected List<OMobilityEntry> filterOMobilitiesByModifiedSince(
           List<OMobilityEntry> selectedOMobilities, RequestData requestData) {
@@ -80,7 +80,7 @@ public class OMobilitiesIndexValidatorV3Test extends OMobilitiesValidatorTestBas
   @Test
   public void testReturnsEmptyResponseWhenModifiedSinceIsUsed() {
     OMobilitiesServiceV3Valid service = new OMobilitiesServiceV3Valid(omobilitiesIndexUrl,
-        omobilitiesGetUrl, this.client, this.serviceKeyStore.getCoveredHeiIDs().get(0)) {
+        omobilitiesGetUrl, omobilitiesUpdateUrl, this.client, this.serviceKeyStore.getCoveredHeiIDs().get(0)) {
       @Override
       protected List<OMobilityEntry> filterOMobilitiesByModifiedSince(
           List<OMobilityEntry> selectedOMobilities, RequestData requestData) {
@@ -98,7 +98,7 @@ public class OMobilitiesIndexValidatorV3Test extends OMobilitiesValidatorTestBas
   @Test
   public void testIncorrectFilteringWithReceivingAcademicYearIdIsDetected() {
     OMobilitiesServiceV3Valid service = new OMobilitiesServiceV3Valid(omobilitiesIndexUrl,
-        omobilitiesGetUrl, this.client, this.serviceKeyStore.getCoveredHeiIDs().get(0)) {
+        omobilitiesGetUrl, omobilitiesUpdateUrl, this.client, this.serviceKeyStore.getCoveredHeiIDs().get(0)) {
       @Override
       protected List<OMobilityEntry> filterOMobilitiesByReceivingAcademicYearId(
           List<OMobilityEntry> selectedOMobilities, RequestData requestData) {
@@ -117,7 +117,7 @@ public class OMobilitiesIndexValidatorV3Test extends OMobilitiesValidatorTestBas
   @Test
   public void testIncorrectFilteringWithModifiedSinceIsDetected() {
     OMobilitiesServiceV3Valid service = new OMobilitiesServiceV3Valid(omobilitiesIndexUrl,
-        omobilitiesGetUrl, this.client, this.serviceKeyStore.getCoveredHeiIDs().get(0)) {
+        omobilitiesGetUrl, omobilitiesUpdateUrl, this.client, this.serviceKeyStore.getCoveredHeiIDs().get(0)) {
       @Override
       protected List<OMobilityEntry> filterOMobilitiesByModifiedSince(
           List<OMobilityEntry> selectedOMobilities, RequestData requestData) {
