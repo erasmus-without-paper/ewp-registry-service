@@ -110,7 +110,8 @@ public class OMobilitiesServiceV3Valid extends AbstractOMobilitiesService {
 
       RequestData requestData = new RequestData(request, connectedClient);
       extractIndexParams(requestData);
-      List<OMobilityEntry> selectedOMobilities = filterNotPermittedOMobilities(mobilities, requestData);
+      List<OMobilityEntry> selectedOMobilities =
+          filterNotPermittedOMobilities(mobilities, requestData);
       selectedOMobilities = filterOMobilitiesByModifiedSince(selectedOMobilities, requestData);
       selectedOMobilities =
           filterOMobilitiesByReceivingAcademicYearId(selectedOMobilities, requestData);
@@ -228,8 +229,8 @@ public class OMobilitiesServiceV3Valid extends AbstractOMobilitiesService {
       errorMaxOMobilityIdsExceeded(requestData);
     }
 
-    List<String> knownOMobilityIds = mobilities.stream()
-        .map(mobility -> mobility.mobility.getOmobilityId()).toList();
+    List<String> knownOMobilityIds =
+        mobilities.stream().map(mobility -> mobility.mobility.getOmobilityId()).toList();
     if (!knownOMobilityIds.containsAll(requestData.omobilityIds)) {
       handleUnknownOMobilityId(requestData);
     }
