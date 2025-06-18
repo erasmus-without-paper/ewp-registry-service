@@ -346,6 +346,15 @@ public class KnownNamespace {
 
   /**
    * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-omobilities/tree/stable-v1/manifest-entry.xsd'>
+   * here</a>.
+   */
+  public static final KnownNamespace RESPONSE_OMOBILITIES_STATS_V1 = new KnownNamespace("omsr1",
+      "api-omobility-stats/tree/stable-v1",
+      "api-omobility-stats/stable-v1/endpoints/response.xsd", false);
+
+  /**
+   * As described <a href=
    * 'https://github.com/erasmus-without-paper/ewp-specs-api-omobility-las/blob/master/manifest-entry.xsd'>
    * here</a>.
    */ // TODO: master->stable!
