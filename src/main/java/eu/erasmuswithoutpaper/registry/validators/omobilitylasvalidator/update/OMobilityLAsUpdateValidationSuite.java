@@ -2,14 +2,9 @@ package eu.erasmuswithoutpaper.registry.validators.omobilitylasvalidator.update;
 
 import java.util.Arrays;
 import java.util.GregorianCalendar;
-import java.util.stream.Collectors;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 
 import eu.erasmuswithoutpaper.registry.validators.AbstractValidationSuite;
 import eu.erasmuswithoutpaper.registry.validators.ApiEndpoint;
@@ -32,7 +27,6 @@ import jakarta.xml.bind.Marshaller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 
 /**
  * Describes the set of test/steps to be run on an OMobilities API index endpoint implementation
@@ -149,50 +143,6 @@ class OMobilityLAsUpdateValidationSuite
     commentProposalV1.setSignature(getSignature());
     commentProposalV1.setComment("test");
     return commentProposalV1;
-  }
-
-  private Document cloneDocument(Document document) {
-    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-    DocumentBuilder db;
-    try {
-      db = dbf.newDocumentBuilder();
-    } catch (ParserConfigurationException e) {
-      throw new RuntimeException(e);
-    }
-
-    Document copiedDocument = db.newDocument();
-    Node copiedRoot = copiedDocument.importNode(document.getDocumentElement(), true);
-    copiedDocument.appendChild(copiedRoot);
-    return copiedDocument;
-  }
-
-  private Node selectNode(Document document, String[] xpathSelectorParts) {
-    String selector = "/" + Arrays.stream(xpathSelectorParts)
-        .map(s -> String.format("*[local-name() = '%s']", s))
-        .collect(Collectors.joining("/"));
-    XPathFactory xpathFactory = XPathFactory.newInstance();
-    XPath xpath = xpathFactory.newXPath();
-    try {
-      return (Node) xpath.evaluate(selector, document, XPathConstants.NODE);
-    } catch (XPathExpressionException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  @SuppressFBWarnings("UPM_UNCALLED_PRIVATE_METHOD")
-  private XmlParameters addEmptyNode(XmlParameters parameters, String name,
-      String... xpathSelector) {
-    Document copiedDocument = cloneDocument(parameters.getXmlBody());
-    Node selectedNode = selectNode(copiedDocument, xpathSelector);
-    selectedNode.appendChild(copiedDocument.createElement(name));
-    return new XmlParameters(copiedDocument);
-  }
-
-  private XmlParameters removeNode(XmlParameters parameters, String... xpathSelector) {
-    Document copiedDocument = cloneDocument(parameters.getXmlBody());
-    Node selectedNode = selectNode(copiedDocument, xpathSelector);
-    selectedNode.getParentNode().removeChild(selectedNode);
-    return new XmlParameters(copiedDocument);
   }
 
   //FindBugs is not smart enough to infer that actual type of this.currentState

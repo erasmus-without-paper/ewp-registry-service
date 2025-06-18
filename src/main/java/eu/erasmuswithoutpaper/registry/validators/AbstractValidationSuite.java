@@ -66,6 +66,7 @@ import eu.erasmuswithoutpaper.registry.validators.verifiers.VerifierFactory;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
 import com.google.common.collect.Lists;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import net.adamcin.httpsig.api.Algorithm;
 import net.adamcin.httpsig.api.Challenge;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -74,6 +75,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
@@ -1052,6 +1054,50 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
   }
 
   public abstract ValidatedApiInfo getApiInfo();
+
+  protected Document cloneDocument(Document document) {
+    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+    DocumentBuilder db;
+    try {
+      db = dbf.newDocumentBuilder();
+    } catch (ParserConfigurationException e) {
+      throw new RuntimeException(e);
+    }
+
+    Document copiedDocument = db.newDocument();
+    Node copiedRoot = copiedDocument.importNode(document.getDocumentElement(), true);
+    copiedDocument.appendChild(copiedRoot);
+    return copiedDocument;
+  }
+
+  protected Node selectNode(Document document, String[] xpathSelectorParts) {
+    String selector = "/" + Arrays.stream(xpathSelectorParts)
+        .map(s -> String.format("*[local-name() = '%s']", s))
+        .collect(Collectors.joining("/"));
+    XPathFactory xpathFactory = XPathFactory.newInstance();
+    XPath xpath = xpathFactory.newXPath();
+    try {
+      return (Node) xpath.evaluate(selector, document, XPathConstants.NODE);
+    } catch (XPathExpressionException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @SuppressFBWarnings("UPM_UNCALLED_PRIVATE_METHOD")
+  protected XmlParameters addEmptyNode(XmlParameters parameters, String name,
+      String... xpathSelector) {
+    Document copiedDocument = cloneDocument(parameters.getXmlBody());
+    Node selectedNode = selectNode(copiedDocument, xpathSelector);
+    selectedNode.appendChild(copiedDocument.createElement(name));
+    return new XmlParameters(copiedDocument);
+  }
+
+  protected XmlParameters removeNode(XmlParameters parameters, String... xpathSelector) {
+    Document copiedDocument = cloneDocument(parameters.getXmlBody());
+    Node selectedNode = selectNode(copiedDocument, xpathSelector);
+    selectedNode.getParentNode().removeChild(selectedNode);
+    return new XmlParameters(copiedDocument);
+  }
 
   protected void validateCombinationPost(Combination combination)
       throws SuiteBroken {
