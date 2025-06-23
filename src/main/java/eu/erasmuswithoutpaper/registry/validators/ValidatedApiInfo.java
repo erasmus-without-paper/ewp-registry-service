@@ -9,8 +9,9 @@ public abstract class ValidatedApiInfo {
    *     a name that should be used in creation of a KnownElement.
    */
   public String getElementName() {
-    if (getEndpoint() != ApiEndpoint.NO_ENDPOINT) {
-      return getApiName() + "-" + getEndpoint().getName() + "-response";
+    ApiEndpoint endpoint = getEndpoint();
+    if (endpoint != ApiEndpoint.NO_ENDPOINT) {
+      return getApiName() + "-" + endpoint.getName() + "-response";
     } else {
       return getApiName() + "-response";
     }
@@ -39,21 +40,26 @@ public abstract class ValidatedApiInfo {
   public KnownElement getResponseKnownElement() {
     String endpoint = "";
     String responseXsd = "response.xsd";
-    String uriEnding = getNamespaceApiName() + "/tree/stable-v" + getVersion();
+    int version = getVersion();
+    String namespaceApiName = getNamespaceApiName();
+
+    String uriEnding = namespaceApiName + "/tree/stable-v" + version;
 
     // If endpoint is defined, the strings follow different patterns.
-    if (getEndpoint() != ApiEndpoint.NO_ENDPOINT) {
-      endpoint = getEndpoint().getName().substring(0, 1);
-      responseXsd = getEndpoint().getName() + "-response.xsd";
+    ApiEndpoint apiEndpoint = getEndpoint();
+    if (apiEndpoint != ApiEndpoint.NO_ENDPOINT) {
+      String name = apiEndpoint.getName();
+      endpoint = name.substring(0, 1);
+      responseXsd = name + "-response.xsd";
       uriEnding =
-          getNamespaceApiName() + "/blob/stable-v" + getVersion() + "/endpoints/" + responseXsd;
+          namespaceApiName + "/blob/stable-v" + version + "/endpoints/" + responseXsd;
     }
 
 
     KnownNamespace namespace = new KnownNamespace(
-        preferredPrefix() + "r" + endpoint + getVersion(),
+        preferredPrefix() + "r" + endpoint + version,
         uriEnding,
-        getNamespaceApiName() + "/stable-v" + getVersion() + "/endpoints/" + responseXsd,
+        namespaceApiName + "/stable-v" + version + "/endpoints/" + responseXsd,
         responseIncludeInCatalogueXmlns()
     );
 
@@ -69,10 +75,12 @@ public abstract class ValidatedApiInfo {
    *     a KnownNamespace created using the information provided by the other functions.
    */
   public KnownNamespace getApiEntryKnownNamespace() {
+    var namespaceApiName = getNamespaceApiName();
+    var version = getVersion();
     return new KnownNamespace(
         preferredPrefix() + getVersion(),
-        getNamespaceApiName() + "/blob/stable-v" + getVersion() + "/manifest-entry.xsd",
-        getNamespaceApiName() + "/stable-v" + getVersion() + "/manifest-entry.xsd",
+        namespaceApiName + "/blob/stable-v" + version + "/manifest-entry.xsd",
+        namespaceApiName + "/stable-v" + version + "/manifest-entry.xsd",
         apiEntryIncludeInCatalogueXmlns()
     );
   }
