@@ -16,16 +16,10 @@ import eu.erasmuswithoutpaper.registry.validators.ValidationParameter;
 import eu.erasmuswithoutpaper.registry.validators.imobilitiesvalidator.IMobilitiesSuiteState;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 class IMobilitiesGetSetupValidationSuiteV1
     extends AbstractSetupValidationSuite<IMobilitiesSuiteState> {
-
-  private static final Logger logger =
-      LoggerFactory.getLogger(
-          IMobilitiesGetSetupValidationSuiteV1.class);
 
   private final ValidatedApiInfo apiInfo;
   private static final String RECEIVING_HEI_ID_PARAMETER = "receiving_hei_id";
@@ -44,11 +38,6 @@ class IMobilitiesGetSetupValidationSuiteV1
         new ValidationParameter(OMOBILITY_ID_PARAMETER,
             Collections.singletonList(RECEIVING_HEI_ID_PARAMETER))
     );
-  }
-
-  @Override
-  protected Logger getLogger() {
-    return logger;
   }
 
   @Override

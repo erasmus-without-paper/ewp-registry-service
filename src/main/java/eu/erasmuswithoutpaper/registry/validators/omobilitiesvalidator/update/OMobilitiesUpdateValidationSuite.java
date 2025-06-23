@@ -21,13 +21,9 @@ import https.github_com.erasmus_without_paper.ewp_specs_api_omobilities.blob.sta
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
 class OMobilitiesUpdateValidationSuite extends AbstractValidationSuite<OMobilitiesSuiteState> {
-  private static final Logger logger =
-      LoggerFactory.getLogger(OMobilitiesUpdateValidationSuite.class);
   private final ValidatedApiInfo apiInfo;
   private final VerifierFactory updateResponseVerifierFactory = new VerifierFactory(List.of());
 
@@ -36,11 +32,6 @@ class OMobilitiesUpdateValidationSuite extends AbstractValidationSuite<OMobiliti
     super(validator, state, config);
 
     this.apiInfo = new OMobilitiesValidatedApiInfo(version, ApiEndpoint.UPDATE);
-  }
-
-  @Override
-  protected Logger getLogger() {
-    return logger;
   }
 
   @Override

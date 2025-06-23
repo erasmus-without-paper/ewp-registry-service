@@ -20,8 +20,6 @@ import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
 import eu.erasmuswithoutpaper.registry.validators.verifiers.VerifierFactory;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 
 /**
@@ -31,17 +29,10 @@ import org.xml.sax.InputSource;
 public class IiaGetValidationSuiteV6
     extends AbstractValidationSuite<IiaSuiteState> {
 
-  private static final Logger logger = LoggerFactory.getLogger(IiaGetValidationSuiteV6.class);
-
   private final ValidatedApiInfo apiInfo;
   protected final IiaHashService iiaHashService;
   protected final VerifierFactory partnerIiaIdVerifierFactory = new VerifierFactory(
       Arrays.asList("iia", "partner[1]", "iia-id"));
-
-  @Override
-  protected Logger getLogger() {
-    return logger;
-  }
 
   @Override
   public ValidatedApiInfo getApiInfo() {

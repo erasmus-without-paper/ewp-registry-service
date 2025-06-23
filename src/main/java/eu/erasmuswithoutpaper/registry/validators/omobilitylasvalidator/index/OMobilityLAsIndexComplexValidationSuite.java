@@ -12,8 +12,6 @@ import eu.erasmuswithoutpaper.registry.validators.omobilitylasvalidator.OMobilit
 import eu.erasmuswithoutpaper.registry.validators.verifiers.VerifierFactory;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Describes the set of test/steps to be run on an OMobilities API index endpoint implementation
@@ -21,15 +19,6 @@ import org.slf4j.LoggerFactory;
  */
 public class OMobilityLAsIndexComplexValidationSuite
     extends AbstractValidationSuite<OMobilityLAsSuiteState> {
-
-  private static final Logger logger =
-      LoggerFactory.getLogger(
-          OMobilityLAsIndexComplexValidationSuite.class);
-
-  @Override
-  protected Logger getLogger() {
-    return logger;
-  }
 
   private final ValidatedApiInfo apiInfo;
 

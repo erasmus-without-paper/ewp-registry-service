@@ -13,23 +13,12 @@ import eu.erasmuswithoutpaper.registry.validators.omobilitiesvalidator.OMobiliti
 import eu.erasmuswithoutpaper.registry.validators.omobilitiesvalidator.OMobilitiesValidatedApiInfo;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 class OMobilitiesIndexSetupValidationSuiteV2
     extends AbstractSetupValidationSuite<OMobilitiesSuiteState> {
 
-  private static final Logger logger =
-      LoggerFactory.getLogger(
-          OMobilitiesIndexSetupValidationSuiteV2.class);
-
   private final ValidatedApiInfo apiInfo;
-
-  @Override
-  protected Logger getLogger() {
-    return logger;
-  }
 
   @Override
   public ValidatedApiInfo getApiInfo() {

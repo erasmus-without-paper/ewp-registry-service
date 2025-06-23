@@ -10,8 +10,6 @@ import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
 import eu.erasmuswithoutpaper.registry.validators.verifiers.VerifierFactory;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Describes the set of test/steps to be run on an IIAs API index endpoint implementation in order
@@ -19,14 +17,7 @@ import org.slf4j.LoggerFactory;
  */
 public class IiaIndexBasicValidationSuiteV7 extends AbstractValidationSuite<IiaSuiteState> {
 
-  private static final Logger logger =
-      LoggerFactory.getLogger(IiaIndexBasicValidationSuiteV7.class);
   private final ValidatedApiInfo apiInfo;
-
-  @Override
-  protected Logger getLogger() {
-    return logger;
-  }
 
   @Override
   public ValidatedApiInfo getApiInfo() {

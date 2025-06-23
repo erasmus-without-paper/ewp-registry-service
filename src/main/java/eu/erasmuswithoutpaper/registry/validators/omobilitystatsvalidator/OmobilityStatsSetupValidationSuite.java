@@ -10,21 +10,10 @@ import eu.erasmuswithoutpaper.registry.validators.SuiteState;
 import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
 import eu.erasmuswithoutpaper.registry.validators.ValidationParameter;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 class OmobilityStatsSetupValidationSuite
     extends AbstractSetupValidationSuite<SuiteState> {
 
-  private static final Logger logger =
-      LoggerFactory.getLogger(OmobilityStatsSetupValidationSuite.class);
-
   private final ValidatedApiInfo apiInfo;
-
-  @Override
-  protected Logger getLogger() {
-    return logger;
-  }
 
   @Override
   public ValidatedApiInfo getApiInfo() {

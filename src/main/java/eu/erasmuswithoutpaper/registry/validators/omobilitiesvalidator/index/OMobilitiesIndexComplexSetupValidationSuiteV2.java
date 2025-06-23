@@ -25,23 +25,12 @@ import https.github_com.erasmus_without_paper.ewp_specs_api_omobilities.blob.sta
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 
 public class OMobilitiesIndexComplexSetupValidationSuiteV2
     extends AbstractSetupValidationSuite<OMobilitiesSuiteState> {
 
-  private static final Logger logger =
-      LoggerFactory.getLogger(
-          OMobilitiesIndexComplexSetupValidationSuiteV2.class);
-
   private final ValidatedApiInfo apiInfo;
-
-  @Override
-  protected Logger getLogger() {
-    return logger;
-  }
 
   private static final String SENDING_HEI_ID_PARAMETER = "sending_hei_id";
   protected static final String OMOBILITY_ID_PARAMETER = "omobility_id";

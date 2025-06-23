@@ -24,8 +24,6 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
 /**
@@ -34,9 +32,6 @@ import org.w3c.dom.Document;
  */
 class OMobilityLAsUpdateValidationSuite
     extends AbstractValidationSuite<OMobilityLAsSuiteState> {
-  private static final Logger logger =
-      LoggerFactory.getLogger(
-          OMobilityLAsUpdateValidationSuite.class);
   private final ValidatedApiInfo apiInfo;
   private VerifierFactory updateResponseVerifierFactory = new VerifierFactory(Arrays.asList());
 
@@ -46,11 +41,6 @@ class OMobilityLAsUpdateValidationSuite
     super(validator, state, config);
 
     this.apiInfo = new OMobilityLAsGetValidatedApiInfo(version, ApiEndpoint.UPDATE);
-  }
-
-  @Override
-  protected Logger getLogger() {
-    return logger;
   }
 
   @Override

@@ -42,8 +42,6 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import net.adamcin.httpsig.api.Authorization;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.joox.Match;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Describes the set of test/steps to be run on an Echo API implementation in order to properly
@@ -51,7 +49,6 @@ import org.slf4j.LoggerFactory;
  */
 public class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSuiteState> {
   private Set<CombEntry> allCombEntriesCache = null;
-  private static final Logger logger = LoggerFactory.getLogger(EchoValidationSuiteCommon.class);
   private final ValidatedApiInfo apiInfo;
 
 
@@ -60,11 +57,6 @@ public class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSuite
     super(echoValidator, state, config);
 
     this.apiInfo = new EchoValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
-  }
-
-  @Override
-  protected Logger getLogger() {
-    return logger;
   }
 
   @Override

@@ -12,25 +12,15 @@ import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
 import eu.erasmuswithoutpaper.registry.validators.ValidationParameter;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 class OUnitsSetupValidationSuite
     extends AbstractSetupValidationSuite<OUnitsSuiteState> {
-
-  private static final Logger logger =
-      LoggerFactory.getLogger(OUnitsSetupValidationSuite.class);
 
   private final ValidatedApiInfo apiInfo;
 
   @Override
   public ValidatedApiInfo getApiInfo() {
     return apiInfo;
-  }
-
-  @Override
-  protected Logger getLogger() {
-    return logger;
   }
 
   private static final String HEI_ID_PARAMETER = "hei_id";

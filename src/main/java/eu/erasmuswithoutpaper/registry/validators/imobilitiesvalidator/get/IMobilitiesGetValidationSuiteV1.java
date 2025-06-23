@@ -13,8 +13,6 @@ import eu.erasmuswithoutpaper.registry.validators.verifiers.CorrectResponseVerif
 import eu.erasmuswithoutpaper.registry.validators.verifiers.VerifierFactory;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Describes the set of test/steps to be run on an IMobilities API get endpoint implementation
@@ -22,10 +20,6 @@ import org.slf4j.LoggerFactory;
  */
 class IMobilitiesGetValidationSuiteV1
     extends AbstractValidationSuite<IMobilitiesSuiteState> {
-
-  private static final Logger logger = LoggerFactory
-      .getLogger(
-          IMobilitiesGetValidationSuiteV1.class);
 
   private final ValidatedApiInfo apiInfo;
   private VerifierFactory omobilityIdVerifierFactory =
@@ -36,11 +30,6 @@ class IMobilitiesGetValidationSuiteV1
     super(validator, state, config);
 
     this.apiInfo = new IMobilitiesGetValidatedApiInfo(version, ApiEndpoint.GET);
-  }
-
-  @Override
-  protected Logger getLogger() {
-    return logger;
   }
 
   @Override

@@ -10,13 +10,9 @@ import eu.erasmuswithoutpaper.registry.validators.CombEntry;
 import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
 import eu.erasmuswithoutpaper.registry.validators.ValidationParameter;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class EchoSetupValidationSuite
     extends AbstractSetupValidationSuite<EchoSuiteState> {
 
-  private static final Logger logger = LoggerFactory.getLogger(EchoSetupValidationSuite.class);
   private final ValidatedApiInfo apiInfo;
 
   protected EchoSetupValidationSuite(
@@ -27,11 +23,6 @@ public class EchoSetupValidationSuite
     super(echoValidator, state, config, false);
 
     this.apiInfo = new EchoValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
-  }
-
-  @Override
-  protected Logger getLogger() {
-    return logger;
   }
 
   @Override

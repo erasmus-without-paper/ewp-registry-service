@@ -18,14 +18,9 @@ import eu.erasmuswithoutpaper.registry.validators.omobilitiesvalidator.OMobiliti
 import eu.erasmuswithoutpaper.registry.validators.omobilitiesvalidator.OMobilitiesValidatedApiInfo;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 class OMobilitiesUpdateSetupValidationSuite
     extends AbstractSetupValidationSuite<OMobilitiesSuiteState> {
-
-  private static final Logger logger =
-      LoggerFactory.getLogger(OMobilitiesUpdateSetupValidationSuite.class);
 
   private final ValidatedApiInfo apiInfo;
   private static final String OMOBILITY_ID_PARAMETER = "omobility_id";
@@ -44,11 +39,6 @@ class OMobilitiesUpdateSetupValidationSuite
         new ValidationParameter(LATEST_PROPOSAL_ID_PARAMETER)
             .dependsOn(OMOBILITY_ID_PARAMETER)
     );
-  }
-
-  @Override
-  protected Logger getLogger() {
-    return logger;
   }
 
   @Override

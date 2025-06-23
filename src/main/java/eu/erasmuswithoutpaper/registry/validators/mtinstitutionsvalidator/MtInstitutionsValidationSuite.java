@@ -11,8 +11,6 @@ import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
 import eu.erasmuswithoutpaper.registry.validators.verifiers.VerifierFactory;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Describes the set of test/steps to be run on an MT Institutions API implementation in order to
@@ -20,15 +18,7 @@ import org.slf4j.LoggerFactory;
  */
 class MtInstitutionsValidationSuite extends AbstractValidationSuite<MtInstitutionsSuiteState> {
 
-  private static final Logger logger =
-      LoggerFactory.getLogger(MtInstitutionsValidationSuite.class);
-
   private final ValidatedApiInfo apiInfo;
-
-  @Override
-  protected Logger getLogger() {
-    return logger;
-  }
 
   @Override
   public ValidatedApiInfo getApiInfo() {

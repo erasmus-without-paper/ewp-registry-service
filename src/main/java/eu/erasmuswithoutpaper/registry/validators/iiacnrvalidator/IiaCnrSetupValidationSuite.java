@@ -10,21 +10,11 @@ import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
 import eu.erasmuswithoutpaper.registry.validators.ValidationParameter;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 class IiaCnrSetupValidationSuite
     extends AbstractSetupValidationSuite<IiaCnrSuiteState> {
 
-  private static final Logger logger =
-      LoggerFactory.getLogger(IiaCnrSetupValidationSuite.class);
-
   private final ValidatedApiInfo apiInfo;
-
-  @Override
-  protected Logger getLogger() {
-    return logger;
-  }
 
   @Override
   public ValidatedApiInfo getApiInfo() {

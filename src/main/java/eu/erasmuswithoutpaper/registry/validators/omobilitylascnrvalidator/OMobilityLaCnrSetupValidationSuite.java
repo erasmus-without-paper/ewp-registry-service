@@ -10,25 +10,16 @@ import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
 import eu.erasmuswithoutpaper.registry.validators.ValidationParameter;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 class OMobilityLaCnrSetupValidationSuite
     extends AbstractSetupValidationSuite<OMobilityLaCnrSuiteState> {
 
-  private static final Logger logger =
-      LoggerFactory.getLogger(OMobilityLaCnrSetupValidationSuite.class);
   private static final String SENDING_HEI_ID_PARAMETER = "sending_hei_id";
   private static final String SENDING_HEI_ID = "validator-hei01.developers.erasmuswithoutpaper.eu";
   private static final String OMOBILITY_ID_PARAMETER = "omobility_id";
   private static final String OMOBILITY_ID = "1";
 
   private final ValidatedApiInfo apiInfo;
-
-  @Override
-  protected Logger getLogger() {
-    return logger;
-  }
 
   @Override
   public ValidatedApiInfo getApiInfo() {

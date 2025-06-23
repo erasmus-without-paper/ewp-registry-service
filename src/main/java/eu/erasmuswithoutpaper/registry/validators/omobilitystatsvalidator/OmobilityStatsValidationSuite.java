@@ -11,12 +11,8 @@ import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
 import eu.erasmuswithoutpaper.registry.validators.verifiers.VerifierFactory;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 class OmobilityStatsValidationSuite extends AbstractValidationSuite<SuiteState> {
-
-  private static final Logger logger = LoggerFactory.getLogger(OmobilityStatsValidationSuite.class);
 
   private final ValidatedApiInfo apiInfo;
   private final VerifierFactory statsVerifierFactory =
@@ -27,11 +23,6 @@ class OmobilityStatsValidationSuite extends AbstractValidationSuite<SuiteState> 
     super(validator, state, config);
 
     this.apiInfo = new OmobilityStatsValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
-  }
-
-  @Override
-  protected Logger getLogger() {
-    return logger;
   }
 
   @Override

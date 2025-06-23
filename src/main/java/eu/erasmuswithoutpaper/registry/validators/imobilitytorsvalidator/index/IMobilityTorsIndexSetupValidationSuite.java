@@ -13,22 +13,12 @@ import eu.erasmuswithoutpaper.registry.validators.imobilitytorsvalidator.IMobili
 import eu.erasmuswithoutpaper.registry.validators.imobilitytorsvalidator.IMobilityTorsValidatedApiInfo;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 class IMobilityTorsIndexSetupValidationSuite
     extends AbstractSetupValidationSuite<IMobilityTorsSuiteState> {
 
-  private static final Logger logger =
-      LoggerFactory.getLogger(IMobilityTorsIndexSetupValidationSuite.class);
-
   private final ValidatedApiInfo apiInfo;
-
-  @Override
-  protected Logger getLogger() {
-    return logger;
-  }
 
   @Override
   public ValidatedApiInfo getApiInfo() {

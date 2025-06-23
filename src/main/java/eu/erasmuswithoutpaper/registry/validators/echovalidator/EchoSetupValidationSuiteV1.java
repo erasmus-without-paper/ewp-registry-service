@@ -5,16 +5,8 @@ import eu.erasmuswithoutpaper.registry.validators.CombEntry;
 import eu.erasmuswithoutpaper.registry.validators.Combination;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class EchoSetupValidationSuiteV1 extends EchoSetupValidationSuite {
-  private static final Logger logger = LoggerFactory.getLogger(EchoSetupValidationSuiteV1.class);
-
-  @Override
-  protected Logger getLogger() {
-    return logger;
-  }
 
   protected EchoSetupValidationSuiteV1(
       ApiValidator<EchoSuiteState> echoValidator,

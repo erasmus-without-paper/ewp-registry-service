@@ -80,6 +80,9 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 public abstract class AbstractValidationSuite<S extends SuiteState> {
+
+  private static final Logger logger = LoggerFactory.getLogger(AbstractValidationSuite.class);
+
   protected static final String FAKE_ID = "this-is-some-unknown-and-unexpected-id";
   private static final Random RANDOM = new Random();
 
@@ -525,22 +528,15 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
       step.addResponseSnapshot(response);
       return response;
     } catch (SocketTimeoutException e) {
-      getLogger().debug(
-          "Timeout when retrieving response from server: {}", ExceptionUtils.getStackTrace(e));
-      throw new Failure(
-          String.format("Timeout when retrieving %s response from url %s.",
-              request.getMethod(), request.getUrl()),
-          Status.ERROR,
-          true
-      );
+      logger.debug("({}) Timeout when retrieving response from server: {}",
+          getClass().getSimpleName(), ExceptionUtils.getStackTrace(e));
+      throw new Failure(String.format("Timeout when retrieving %s response from url %s.",
+          request.getMethod(), request.getUrl()), Status.ERROR, true);
     } catch (IOException e) {
-      getLogger().debug(
-          "Problems retrieving response from server: {}", ExceptionUtils.getStackTrace(e));
-      throw new Failure(
-          "Problems retrieving response from server: " + e.getMessage(),
-          Status.ERROR,
-          null
-      );
+      logger.debug("({}) Problems retrieving response from server: {}", getClass().getSimpleName(),
+          ExceptionUtils.getStackTrace(e));
+      throw new Failure("Problems retrieving response from server: " + e.getMessage(), Status.ERROR,
+          null);
     }
   }
 
@@ -1118,8 +1114,6 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
   }
 
   protected abstract void validateCombinationAny(Combination combination) throws SuiteBroken;
-
-  protected abstract Logger getLogger();
 
   public List<ValidationStepWithStatus> getResults() {
     return this.steps;

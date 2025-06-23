@@ -21,8 +21,6 @@ import eu.erasmuswithoutpaper.registry.validators.verifiers.NotInListVerifier;
 import eu.erasmuswithoutpaper.registry.validators.verifiers.VerifierFactory;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 
 /**
@@ -32,15 +30,7 @@ import org.w3c.dom.Element;
 class CoursesValidationSuite
     extends AbstractValidationSuite<CoursesSuiteState> {
 
-  private static final Logger logger =
-      LoggerFactory.getLogger(CoursesSetupValidationSuite.class);
-
   private final ValidatedApiInfo apiInfo;
-
-  @Override
-  protected Logger getLogger() {
-    return logger;
-  }
 
   @Override
   public ValidatedApiInfo getApiInfo() {

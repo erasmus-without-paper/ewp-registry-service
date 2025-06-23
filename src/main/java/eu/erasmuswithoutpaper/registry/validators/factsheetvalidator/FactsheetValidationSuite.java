@@ -11,8 +11,6 @@ import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
 import eu.erasmuswithoutpaper.registry.validators.verifiers.VerifierFactory;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Describes the set of test/steps to be run on an Institutions API implementation in order to
@@ -21,9 +19,6 @@ import org.slf4j.LoggerFactory;
 class FactsheetValidationSuite
     extends AbstractValidationSuite<FactsheetSuiteState> {
 
-  private static final Logger logger =
-      LoggerFactory.getLogger(FactsheetValidationSuite.class);
-
   private final ValidatedApiInfo apiInfo;
 
   FactsheetValidationSuite(ApiValidator<FactsheetSuiteState> validator,
@@ -31,11 +26,6 @@ class FactsheetValidationSuite
     super(validator, state, config);
 
     this.apiInfo = new FactsheetValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
-  }
-
-  @Override
-  protected Logger getLogger() {
-    return logger;
   }
 
   @Override

@@ -13,8 +13,6 @@ import eu.erasmuswithoutpaper.registry.validators.verifiers.CorrectResponseVerif
 import eu.erasmuswithoutpaper.registry.validators.verifiers.VerifierFactory;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Describes the set of test/steps to be run on an OMobilityLAs API get endpoint implementation
@@ -23,16 +21,7 @@ import org.slf4j.LoggerFactory;
 class OMobilityLAsGetValidationSuite
     extends AbstractValidationSuite<OMobilityLAsSuiteState> {
 
-  private static final Logger logger = LoggerFactory
-      .getLogger(
-          OMobilityLAsGetValidationSuite.class);
-
   private final ValidatedApiInfo apiInfo;
-
-  @Override
-  protected Logger getLogger() {
-    return logger;
-  }
 
   @Override
   public ValidatedApiInfo getApiInfo() {

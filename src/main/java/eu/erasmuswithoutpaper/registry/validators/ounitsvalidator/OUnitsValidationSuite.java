@@ -17,8 +17,6 @@ import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
 import eu.erasmuswithoutpaper.registry.validators.verifiers.VerifierFactory;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Describes the set of test/steps to be run on an Institutions API implementation in order to
@@ -27,21 +25,12 @@ import org.slf4j.LoggerFactory;
 class OUnitsValidationSuite
     extends AbstractValidationSuite<OUnitsSuiteState> {
 
-  private static final Logger logger =
-      LoggerFactory.getLogger(OUnitsValidationSuite.class);
-
   private final ValidatedApiInfo apiInfo;
 
   @Override
   public ValidatedApiInfo getApiInfo() {
     return apiInfo;
   }
-
-  @Override
-  protected Logger getLogger() {
-    return logger;
-  }
-
 
   OUnitsValidationSuite(ApiValidator<OUnitsSuiteState> validator,
       OUnitsSuiteState state, ValidationSuiteConfig config, int version) {

@@ -28,15 +28,10 @@ import https.github_com.erasmus_without_paper.ewp_specs_api_iias.blob.stable_v6.
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 
 public class IiaIndexComplexSetupValidationSuiteV6
     extends AbstractSetupValidationSuite<IiaSuiteState> {
-
-  private static final Logger logger =
-      LoggerFactory.getLogger(IiaIndexComplexSetupValidationSuiteV6.class);
 
   private final ValidatedApiInfo apiInfo;
 
@@ -47,11 +42,6 @@ public class IiaIndexComplexSetupValidationSuiteV6
     Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
     Element xml = makeXmlFromBytes(response.getBody(), true);
     return (T) unmarshaller.unmarshal(xml);
-  }
-
-  @Override
-  protected Logger getLogger() {
-    return logger;
   }
 
   private static final String HEI_ID_PARAMETER = "hei_id";

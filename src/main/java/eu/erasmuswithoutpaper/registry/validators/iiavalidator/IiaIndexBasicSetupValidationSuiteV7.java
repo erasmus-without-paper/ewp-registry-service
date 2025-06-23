@@ -7,22 +7,12 @@ import eu.erasmuswithoutpaper.registry.validators.HttpSecurityDescription;
 import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 public class IiaIndexBasicSetupValidationSuiteV7
     extends AbstractSetupValidationSuite<IiaSuiteState> {
 
-  private static final Logger logger =
-      LoggerFactory.getLogger(IiaIndexBasicSetupValidationSuiteV7.class);
-
   private final ValidatedApiInfo apiInfo;
-
-  @Override
-  protected Logger getLogger() {
-    return logger;
-  }
 
   @Override
   public ValidatedApiInfo getApiInfo() {

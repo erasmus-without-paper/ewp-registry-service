@@ -13,21 +13,10 @@ import eu.erasmuswithoutpaper.registry.validators.omobilitylasvalidator.OMobilit
 import eu.erasmuswithoutpaper.registry.validators.omobilitylasvalidator.OMobilityLAsSuiteState;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 class OMobilityLAsIndexSetupValidationSuite
     extends AbstractSetupValidationSuite<OMobilityLAsSuiteState> {
-
-  private static final Logger logger =
-      LoggerFactory.getLogger(
-          OMobilityLAsIndexSetupValidationSuite.class);
-
-  @Override
-  protected Logger getLogger() {
-    return logger;
-  }
 
   private final ValidatedApiInfo apiInfo;
 

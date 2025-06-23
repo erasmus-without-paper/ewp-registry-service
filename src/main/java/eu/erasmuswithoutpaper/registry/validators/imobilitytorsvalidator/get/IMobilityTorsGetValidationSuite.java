@@ -12,8 +12,6 @@ import eu.erasmuswithoutpaper.registry.validators.imobilitytorsvalidator.IMobili
 import eu.erasmuswithoutpaper.registry.validators.verifiers.VerifierFactory;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Describes the set of test/steps to be run on an IMobility ToRs API get endpoint implementation
@@ -22,15 +20,7 @@ import org.slf4j.LoggerFactory;
 class IMobilityTorsGetValidationSuite
     extends AbstractValidationSuite<IMobilityTorsSuiteState> {
 
-  private static final Logger logger = LoggerFactory
-      .getLogger(IMobilityTorsGetValidationSuite.class);
-
   private final ValidatedApiInfo apiInfo;
-
-  @Override
-  protected Logger getLogger() {
-    return logger;
-  }
 
   @Override
   public ValidatedApiInfo getApiInfo() {

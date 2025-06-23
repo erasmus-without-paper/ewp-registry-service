@@ -9,17 +9,8 @@ import eu.erasmuswithoutpaper.registry.validators.InlineValidationStep;
 import eu.erasmuswithoutpaper.registry.validators.ValidationParameter;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class IiaGetSetupValidationSuiteV7 extends IiaGetSetupValidationSuiteV6 {
-
-  private static final Logger logger = LoggerFactory.getLogger(IiaGetSetupValidationSuiteV7.class);
-
-  @Override
-  protected Logger getLogger() {
-    return logger;
-  }
 
   /**
    * Creates a validation suite for IIAs v7 Get endpoint.

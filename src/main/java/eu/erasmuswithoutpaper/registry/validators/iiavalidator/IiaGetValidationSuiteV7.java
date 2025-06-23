@@ -7,21 +7,12 @@ import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.Combination;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Describes the set of test/steps to be run on an IIAs API GET endpoint implementation in order to
  * properly validate it.
  */
 public class IiaGetValidationSuiteV7 extends IiaGetValidationSuiteV6 {
-
-  private static final Logger logger = LoggerFactory.getLogger(IiaGetValidationSuiteV7.class);
-
-  @Override
-  protected Logger getLogger() {
-    return logger;
-  }
 
   IiaGetValidationSuiteV7(ApiValidator<IiaSuiteState> validator, IiaSuiteState state,
       ValidationSuiteConfig config, int version, IiaHashService iiaHashService) {

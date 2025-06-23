@@ -26,21 +26,10 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 
 public class OMobilityLAsIndexComplexSetupValidationSuite
     extends AbstractSetupValidationSuite<OMobilityLAsSuiteState> {
-
-  private static final Logger logger =
-      LoggerFactory.getLogger(
-          OMobilityLAsIndexComplexSetupValidationSuite.class);
-
-  @Override
-  protected Logger getLogger() {
-    return logger;
-  }
 
   private final ValidatedApiInfo apiInfo;
 
