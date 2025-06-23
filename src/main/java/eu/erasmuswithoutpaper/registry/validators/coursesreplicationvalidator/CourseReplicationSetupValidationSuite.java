@@ -16,11 +16,9 @@ import org.joox.Match;
 class CourseReplicationSetupValidationSuite
     extends AbstractSetupValidationSuite<CourseReplicationSuiteState> {
 
-  private final ValidatedApiInfo apiInfo;
-
   @Override
-  public ValidatedApiInfo getApiInfo() {
-    return apiInfo;
+  public ValidatedApiInfo createApiInfo(int version) {
+    return new CourseReplicationValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
   }
 
   private static final String HEI_ID_PARAMETER = "hei_id";
@@ -33,9 +31,7 @@ class CourseReplicationSetupValidationSuite
 
   CourseReplicationSetupValidationSuite(ApiValidator<CourseReplicationSuiteState> validator,
       CourseReplicationSuiteState state, ValidationSuiteConfig config, int version) {
-    super(validator, state, config, false);
-
-    this.apiInfo = new CourseReplicationValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
+    super(validator, state, config, false, version);
   }
 
 

@@ -16,13 +16,10 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 public class IiaGetSetupValidationSuiteV6
     extends AbstractSetupValidationSuite<IiaSuiteState> {
 
-  private final ValidatedApiInfo apiInfo;
-
   @Override
-  public ValidatedApiInfo getApiInfo() {
-    return apiInfo;
+  protected ValidatedApiInfo createApiInfo(int version) {
+    return new IiaValidatedApiInfo(version, ApiEndpoint.GET);
   }
-
 
   /**
    * Creates a validation suite for IIAs v6 Get endpoint.
@@ -31,9 +28,7 @@ public class IiaGetSetupValidationSuiteV6
       IiaSuiteState state,
       ValidationSuiteConfig config,
       int version) {
-    super(validator, state, config, false);
-
-    this.apiInfo = new IiaValidatedApiInfo(version, ApiEndpoint.GET);
+    super(validator, state, config, false, version);
   }
 
   protected static final String HEI_ID_PARAMETER = "hei_id";

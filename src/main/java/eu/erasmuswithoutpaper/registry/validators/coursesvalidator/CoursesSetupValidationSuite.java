@@ -16,11 +16,10 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 class CoursesSetupValidationSuite
     extends AbstractSetupValidationSuite<CoursesSuiteState> {
 
-  private final ValidatedApiInfo apiInfo;
-
   @Override
-  public ValidatedApiInfo getApiInfo() {
-    return apiInfo;
+  protected ValidatedApiInfo createApiInfo(int version) {
+    // Version 0 uses namespaces of version 1
+    return new CoursesValidatedApiInfo(Math.max(1, version), ApiEndpoint.NO_ENDPOINT);
   }
 
   private static final String HEI_ID_PARAMETER = "hei_id";
@@ -35,10 +34,7 @@ class CoursesSetupValidationSuite
 
   CoursesSetupValidationSuite(ApiValidator<CoursesSuiteState> validator,
       CoursesSuiteState state, ValidationSuiteConfig config, int version) {
-    super(validator, state, config, false);
-
-    // Version 0 uses namespaces of version 1
-    this.apiInfo = new CoursesValidatedApiInfo(Math.max(1, version), ApiEndpoint.NO_ENDPOINT);
+    super(validator, state, config, false, version);
   }
 
   private int getMaxLosIds() {

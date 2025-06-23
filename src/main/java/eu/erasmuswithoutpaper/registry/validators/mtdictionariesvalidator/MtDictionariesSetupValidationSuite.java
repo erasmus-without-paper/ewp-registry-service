@@ -15,11 +15,9 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 class MtDictionariesSetupValidationSuite
     extends AbstractSetupValidationSuite<MtDictionariesSuiteState> {
 
-  private final ValidatedApiInfo apiInfo;
-
   @Override
-  public ValidatedApiInfo getApiInfo() {
-    return apiInfo;
+  protected ValidatedApiInfo createApiInfo(int version) {
+    return new MtDictionariesValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
   }
 
   private static final String DICTIONARY_PARAMETER = "dictionary";
@@ -34,9 +32,7 @@ class MtDictionariesSetupValidationSuite
 
   MtDictionariesSetupValidationSuite(ApiValidator<MtDictionariesSuiteState> validator,
       MtDictionariesSuiteState state, ValidationSuiteConfig config, int version) {
-    super(validator, state, config, false);
-
-    this.apiInfo = new MtDictionariesValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
+    super(validator, state, config, false, version);
   }
 
   //FindBugs is not smart enough to infer that actual type of this.currentState

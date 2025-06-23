@@ -14,20 +14,17 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 class OmobilityStatsValidationSuite extends AbstractValidationSuite<SuiteState> {
 
-  private final ValidatedApiInfo apiInfo;
   private final VerifierFactory statsVerifierFactory =
       new VerifierFactory(List.of("academic-year-stats"));
 
   OmobilityStatsValidationSuite(ApiValidator<SuiteState> validator,
       SuiteState state, ValidationSuiteConfig config, int version) {
-    super(validator, state, config);
-
-    this.apiInfo = new OmobilityStatsValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
+    super(validator, state, config, version);
   }
 
   @Override
-  public ValidatedApiInfo getApiInfo() {
-    return apiInfo;
+  protected ValidatedApiInfo createApiInfo(int version) {
+    return new OmobilityStatsValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
   }
 
   @Override

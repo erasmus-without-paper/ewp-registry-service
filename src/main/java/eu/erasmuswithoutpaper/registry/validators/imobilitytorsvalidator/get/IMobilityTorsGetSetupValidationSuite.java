@@ -19,11 +19,9 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 class IMobilityTorsGetSetupValidationSuite
     extends AbstractSetupValidationSuite<IMobilityTorsSuiteState> {
 
-  private final ValidatedApiInfo apiInfo;
-
   @Override
-  public ValidatedApiInfo getApiInfo() {
-    return apiInfo;
+  protected ValidatedApiInfo createApiInfo(int version) {
+    return new IMobilityTorsValidatedApiInfo(version, ApiEndpoint.GET);
   }
 
   private static final String RECEIVING_HEI_ID_PARAMETER = "receiving_hei_id";
@@ -43,9 +41,7 @@ class IMobilityTorsGetSetupValidationSuite
 
   IMobilityTorsGetSetupValidationSuite(ApiValidator<IMobilityTorsSuiteState> validator,
       IMobilityTorsSuiteState state, ValidationSuiteConfig config, int version) {
-    super(validator, state, config, false);
-
-    this.apiInfo = new IMobilityTorsValidatedApiInfo(version, ApiEndpoint.GET);
+    super(validator, state, config, false, version);
   }
 
   @Override

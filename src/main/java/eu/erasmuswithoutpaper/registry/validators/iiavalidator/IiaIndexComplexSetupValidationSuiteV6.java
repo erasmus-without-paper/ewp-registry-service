@@ -33,8 +33,6 @@ import org.w3c.dom.Element;
 public class IiaIndexComplexSetupValidationSuiteV6
     extends AbstractSetupValidationSuite<IiaSuiteState> {
 
-  private final ValidatedApiInfo apiInfo;
-
   @SuppressWarnings("unchecked")
   protected static <T> T getIiasGetResponse(Response response, Class<T> iiasGetResponseClass)
       throws JAXBException {
@@ -77,9 +75,7 @@ public class IiaIndexComplexSetupValidationSuiteV6
       IiaSuiteState state,
       ValidationSuiteConfig config,
       int version) {
-    super(validator, state, config, false);
-
-    this.apiInfo = new IiaValidatedApiInfo(version, ApiEndpoint.INDEX);
+    super(validator, state, config, false, version);
   }
 
   // Overriding runTests to skip checking url, api version etc.
@@ -89,8 +85,8 @@ public class IiaIndexComplexSetupValidationSuiteV6
   }
 
   @Override
-  public ValidatedApiInfo getApiInfo() {
-    return apiInfo;
+  protected ValidatedApiInfo createApiInfo(int version) {
+    return new IiaValidatedApiInfo(version, ApiEndpoint.INDEX);
   }
 
   //FindBugs is not smart enough to infer that actual type of this.currentState

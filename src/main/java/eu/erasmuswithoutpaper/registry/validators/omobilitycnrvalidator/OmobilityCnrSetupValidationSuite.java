@@ -14,11 +14,9 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 class OmobilityCnrSetupValidationSuite
     extends AbstractSetupValidationSuite<OmobilityCnrSuiteState> {
 
-  private final ValidatedApiInfo apiInfo;
-
   @Override
-  public ValidatedApiInfo getApiInfo() {
-    return apiInfo;
+  protected ValidatedApiInfo createApiInfo(int version) {
+    return new OmobilityCnrValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
   }
 
   private static final String OMOBILITY_ID_PARAMETER = "omobility_id";
@@ -30,9 +28,7 @@ class OmobilityCnrSetupValidationSuite
 
   OmobilityCnrSetupValidationSuite(ApiValidator<OmobilityCnrSuiteState> validator,
       OmobilityCnrSuiteState state, ValidationSuiteConfig config, int version) {
-    super(validator, state, config, true);
-
-    this.apiInfo = new OmobilityCnrValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
+    super(validator, state, config, true, version);
   }
 
   @Override

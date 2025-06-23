@@ -49,19 +49,15 @@ import org.joox.Match;
  */
 public class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSuiteState> {
   private Set<CombEntry> allCombEntriesCache = null;
-  private final ValidatedApiInfo apiInfo;
-
 
   EchoValidationSuiteCommon(ApiValidator<EchoSuiteState> echoValidator,
       EchoSuiteState state, ValidationSuiteConfig config, int version) {
-    super(echoValidator, state, config);
-
-    this.apiInfo = new EchoValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
+    super(echoValidator, state, config, version);
   }
 
   @Override
-  public ValidatedApiInfo getApiInfo() {
-    return apiInfo;
+  protected ValidatedApiInfo createApiInfo(int version) {
+    return new EchoValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
   }
 
   private void checkEdgeCasesForAxxx(Combination combination)

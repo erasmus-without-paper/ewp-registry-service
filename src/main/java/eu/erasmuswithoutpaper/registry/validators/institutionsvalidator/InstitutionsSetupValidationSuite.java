@@ -18,20 +18,16 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 class InstitutionsSetupValidationSuite
     extends AbstractSetupValidationSuite<InstitutionsSuiteState> {
 
-  private final ValidatedApiInfo apiInfo;
-
   @Override
-  public ValidatedApiInfo getApiInfo() {
-    return apiInfo;
+  protected ValidatedApiInfo createApiInfo(int version) {
+    return new InstitutionsValidatedApiInfo(version);
   }
 
   private static final String HEI_ID_PARAMETER = "hei_id";
 
   InstitutionsSetupValidationSuite(ApiValidator<InstitutionsSuiteState> validator,
       InstitutionsSuiteState state, ValidationSuiteConfig config, int version) {
-    super(validator, state, config, false);
-
-    this.apiInfo = new InstitutionsValidatedApiInfo(version);
+    super(validator, state, config, false, version);
   }
 
   public static List<ValidationParameter> getParameters() {

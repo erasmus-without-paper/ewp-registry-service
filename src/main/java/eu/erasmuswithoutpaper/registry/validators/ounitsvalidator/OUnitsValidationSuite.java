@@ -25,18 +25,14 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 class OUnitsValidationSuite
     extends AbstractValidationSuite<OUnitsSuiteState> {
 
-  private final ValidatedApiInfo apiInfo;
-
   @Override
-  public ValidatedApiInfo getApiInfo() {
-    return apiInfo;
+  protected ValidatedApiInfo createApiInfo(int version) {
+    return new OUnitsValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
   }
 
   OUnitsValidationSuite(ApiValidator<OUnitsSuiteState> validator,
       OUnitsSuiteState state, ValidationSuiteConfig config, int version) {
-    super(validator, state, config);
-
-    this.apiInfo = new OUnitsValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
+    super(validator, state, config, version);
   }
 
   @Override

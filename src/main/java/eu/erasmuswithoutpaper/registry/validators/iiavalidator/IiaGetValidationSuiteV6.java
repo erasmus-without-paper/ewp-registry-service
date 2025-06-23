@@ -29,21 +29,19 @@ import org.xml.sax.InputSource;
 public class IiaGetValidationSuiteV6
     extends AbstractValidationSuite<IiaSuiteState> {
 
-  private final ValidatedApiInfo apiInfo;
   protected final IiaHashService iiaHashService;
   protected final VerifierFactory partnerIiaIdVerifierFactory = new VerifierFactory(
       Arrays.asList("iia", "partner[1]", "iia-id"));
 
   @Override
-  public ValidatedApiInfo getApiInfo() {
-    return apiInfo;
+  protected ValidatedApiInfo createApiInfo(int version) {
+    return new IiaValidatedApiInfo(version, ApiEndpoint.GET);
   }
 
   IiaGetValidationSuiteV6(ApiValidator<IiaSuiteState> validator, IiaSuiteState state,
       ValidationSuiteConfig config, int version, IiaHashService iiaHashService) {
-    super(validator, state, config);
+    super(validator, state, config, version);
 
-    this.apiInfo = new IiaValidatedApiInfo(version, ApiEndpoint.GET);
     this.iiaHashService = iiaHashService;
   }
 

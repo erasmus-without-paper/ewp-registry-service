@@ -20,18 +20,14 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 class IMobilityTorsGetValidationSuite
     extends AbstractValidationSuite<IMobilityTorsSuiteState> {
 
-  private final ValidatedApiInfo apiInfo;
-
   @Override
-  public ValidatedApiInfo getApiInfo() {
-    return apiInfo;
+  protected ValidatedApiInfo createApiInfo(int version) {
+    return new IMobilityTorsValidatedApiInfo(version, ApiEndpoint.GET);
   }
 
   IMobilityTorsGetValidationSuite(ApiValidator<IMobilityTorsSuiteState> validator,
       IMobilityTorsSuiteState state, ValidationSuiteConfig config, int version) {
-    super(validator, state, config);
-
-    this.apiInfo = new IMobilityTorsValidatedApiInfo(version, ApiEndpoint.GET);
+    super(validator, state, config, version);
   }
 
   @Override

@@ -20,18 +20,14 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 class CourseReplicationValidationSuite
     extends AbstractValidationSuite<CourseReplicationSuiteState> {
 
-  private final ValidatedApiInfo apiInfo;
-
   @Override
-  public ValidatedApiInfo getApiInfo() {
-    return apiInfo;
+  public ValidatedApiInfo createApiInfo(int version) {
+    return new CourseReplicationValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
   }
 
   CourseReplicationValidationSuite(ApiValidator<CourseReplicationSuiteState> validator,
       CourseReplicationSuiteState state, ValidationSuiteConfig config, int version) {
-    super(validator, state, config);
-
-    this.apiInfo = new CourseReplicationValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
+    super(validator, state, config, version);
   }
 
   @Override

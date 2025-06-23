@@ -32,20 +32,17 @@ import org.w3c.dom.Document;
  */
 class OMobilityLAsUpdateValidationSuite
     extends AbstractValidationSuite<OMobilityLAsSuiteState> {
-  private final ValidatedApiInfo apiInfo;
   private VerifierFactory updateResponseVerifierFactory = new VerifierFactory(Arrays.asList());
 
   OMobilityLAsUpdateValidationSuite(ApiValidator<OMobilityLAsSuiteState> validator,
                                       OMobilityLAsSuiteState state, ValidationSuiteConfig config,
                                       int version) {
-    super(validator, state, config);
-
-    this.apiInfo = new OMobilityLAsGetValidatedApiInfo(version, ApiEndpoint.UPDATE);
+    super(validator, state, config, version);
   }
 
   @Override
-  public ValidatedApiInfo getApiInfo() {
-    return apiInfo;
+  protected ValidatedApiInfo createApiInfo(int version) {
+    return new OMobilityLAsGetValidatedApiInfo(version, ApiEndpoint.UPDATE);
   }
 
   @Override

@@ -13,11 +13,9 @@ import eu.erasmuswithoutpaper.registry.validators.ValidationParameter;
 class OmobilityStatsSetupValidationSuite
     extends AbstractSetupValidationSuite<SuiteState> {
 
-  private final ValidatedApiInfo apiInfo;
-
   @Override
-  public ValidatedApiInfo getApiInfo() {
-    return apiInfo;
+  protected ValidatedApiInfo createApiInfo(int version) {
+    return new OmobilityStatsValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
   }
 
 
@@ -27,9 +25,7 @@ class OmobilityStatsSetupValidationSuite
 
   OmobilityStatsSetupValidationSuite(ApiValidator<SuiteState> validator,
       SuiteState state, ValidationSuiteConfig config, int version) {
-    super(validator, state, config, true);
-
-    this.apiInfo = new OmobilityStatsValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
+    super(validator, state, config, true, version);
   }
 
   @Override

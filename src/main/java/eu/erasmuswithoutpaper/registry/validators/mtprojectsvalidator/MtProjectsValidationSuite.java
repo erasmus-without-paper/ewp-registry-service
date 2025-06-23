@@ -15,18 +15,14 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  */
 class MtProjectsValidationSuite extends AbstractValidationSuite<MtProjectsSuiteState> {
 
-  private final ValidatedApiInfo apiInfo;
-
   @Override
-  public ValidatedApiInfo getApiInfo() {
-    return apiInfo;
+  protected ValidatedApiInfo createApiInfo(int version) {
+    return new MtProjectsValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
   }
 
   MtProjectsValidationSuite(ApiValidator<MtProjectsSuiteState> validator,
       MtProjectsSuiteState state, ValidationSuiteConfig config, int version) {
-    super(validator, state, config);
-
-    this.apiInfo = new MtProjectsValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
+    super(validator, state, config, version);
   }
 
   @Override

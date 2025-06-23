@@ -15,18 +15,14 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  */
 class MtDictionariesValidationSuite extends AbstractValidationSuite<MtDictionariesSuiteState> {
 
-  private final ValidatedApiInfo apiInfo;
-
   @Override
-  public ValidatedApiInfo getApiInfo() {
-    return apiInfo;
+  protected ValidatedApiInfo createApiInfo(int version) {
+    return new MtDictionariesValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
   }
 
   MtDictionariesValidationSuite(ApiValidator<MtDictionariesSuiteState> validator,
       MtDictionariesSuiteState state, ValidationSuiteConfig config, int version) {
-    super(validator, state, config);
-
-    this.apiInfo = new MtDictionariesValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
+    super(validator, state, config, version);
   }
 
   @Override

@@ -25,18 +25,14 @@ import org.joox.Match;
 class InstitutionsValidationSuite
     extends AbstractValidationSuite<InstitutionsSuiteState> {
 
-  private final ValidatedApiInfo apiInfo;
-
   @Override
-  public ValidatedApiInfo getApiInfo() {
-    return apiInfo;
+  public ValidatedApiInfo createApiInfo(int version) {
+    return new InstitutionsValidatedApiInfo(version);
   }
 
   InstitutionsValidationSuite(ApiValidator<InstitutionsSuiteState> validator,
       InstitutionsSuiteState state, ValidationSuiteConfig config, int version) {
-    super(validator, state, config);
-
-    this.apiInfo = new InstitutionsValidatedApiInfo(version);
+    super(validator, state, config, version);
   }
 
   @Override

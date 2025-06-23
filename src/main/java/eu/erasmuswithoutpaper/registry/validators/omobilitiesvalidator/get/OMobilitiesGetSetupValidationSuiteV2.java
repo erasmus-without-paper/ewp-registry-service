@@ -19,11 +19,9 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 class OMobilitiesGetSetupValidationSuiteV2
     extends AbstractSetupValidationSuite<OMobilitiesSuiteState> {
 
-  private final ValidatedApiInfo apiInfo;
-
   @Override
-  public ValidatedApiInfo getApiInfo() {
-    return apiInfo;
+  protected ValidatedApiInfo createApiInfo(int version) {
+    return new OMobilitiesValidatedApiInfo(version, ApiEndpoint.GET);
   }
 
   private static final String SENDING_HEI_ID_PARAMETER = "sending_hei_id";
@@ -43,9 +41,7 @@ class OMobilitiesGetSetupValidationSuiteV2
 
   OMobilitiesGetSetupValidationSuiteV2(ApiValidator<OMobilitiesSuiteState> validator,
       OMobilitiesSuiteState state, ValidationSuiteConfig config, int version) {
-    super(validator, state, config, false);
-
-    this.apiInfo = new OMobilitiesValidatedApiInfo(version, ApiEndpoint.GET);
+    super(validator, state, config, false, version);
   }
 
   @Override

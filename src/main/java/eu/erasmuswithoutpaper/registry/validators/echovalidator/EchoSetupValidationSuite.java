@@ -13,21 +13,17 @@ import eu.erasmuswithoutpaper.registry.validators.ValidationParameter;
 public class EchoSetupValidationSuite
     extends AbstractSetupValidationSuite<EchoSuiteState> {
 
-  private final ValidatedApiInfo apiInfo;
-
   protected EchoSetupValidationSuite(
       ApiValidator<EchoSuiteState> echoValidator,
       EchoSuiteState state,
       ValidationSuiteConfig config,
       int version) {
-    super(echoValidator, state, config, false);
-
-    this.apiInfo = new EchoValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
+    super(echoValidator, state, config, false, version);
   }
 
   @Override
-  public ValidatedApiInfo getApiInfo() {
-    return apiInfo;
+  protected ValidatedApiInfo createApiInfo(int version) {
+    return new EchoValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
   }
 
   public static List<ValidationParameter> getParameters() {

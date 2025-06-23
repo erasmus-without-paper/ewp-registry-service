@@ -12,11 +12,9 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 public class IiaIndexBasicSetupValidationSuiteV7
     extends AbstractSetupValidationSuite<IiaSuiteState> {
 
-  private final ValidatedApiInfo apiInfo;
-
   @Override
-  public ValidatedApiInfo getApiInfo() {
-    return apiInfo;
+  protected ValidatedApiInfo createApiInfo(int version) {
+    return new IiaValidatedApiInfo(version, ApiEndpoint.INDEX);
   }
 
   /**
@@ -24,9 +22,7 @@ public class IiaIndexBasicSetupValidationSuiteV7
    */
   public IiaIndexBasicSetupValidationSuiteV7(ApiValidator<IiaSuiteState> validator,
       IiaSuiteState state, ValidationSuiteConfig config, int version) {
-    super(validator, state, config, false);
-
-    this.apiInfo = new IiaValidatedApiInfo(version, ApiEndpoint.INDEX);
+    super(validator, state, config, false, version);
   }
 
   @Override

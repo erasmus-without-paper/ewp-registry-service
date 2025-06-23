@@ -19,18 +19,14 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 class FactsheetValidationSuite
     extends AbstractValidationSuite<FactsheetSuiteState> {
 
-  private final ValidatedApiInfo apiInfo;
-
   FactsheetValidationSuite(ApiValidator<FactsheetSuiteState> validator,
       FactsheetSuiteState state, ValidationSuiteConfig config, int version) {
-    super(validator, state, config);
-
-    this.apiInfo = new FactsheetValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
+    super(validator, state, config, version);
   }
 
   @Override
-  public ValidatedApiInfo getApiInfo() {
-    return apiInfo;
+  protected ValidatedApiInfo createApiInfo(int version) {
+    return new FactsheetValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
   }
 
   @Override

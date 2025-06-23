@@ -14,11 +14,9 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 class IiaCnrSetupValidationSuite
     extends AbstractSetupValidationSuite<IiaCnrSuiteState> {
 
-  private final ValidatedApiInfo apiInfo;
-
   @Override
-  public ValidatedApiInfo getApiInfo() {
-    return apiInfo;
+  protected ValidatedApiInfo createApiInfo(int version) {
+    return new IiaCnrValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
   }
 
   private static final String IIA_ID_PARAMETER = "iia_id";
@@ -30,9 +28,7 @@ class IiaCnrSetupValidationSuite
 
   IiaCnrSetupValidationSuite(ApiValidator<IiaCnrSuiteState> validator, IiaCnrSuiteState state,
       ValidationSuiteConfig config, int version) {
-    super(validator, state, config, true);
-
-    this.apiInfo = new IiaCnrValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
+    super(validator, state, config, true, version);
   }
 
   @Override

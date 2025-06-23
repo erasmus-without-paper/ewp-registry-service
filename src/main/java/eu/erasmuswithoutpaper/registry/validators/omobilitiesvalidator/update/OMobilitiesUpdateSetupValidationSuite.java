@@ -22,15 +22,12 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 class OMobilitiesUpdateSetupValidationSuite
     extends AbstractSetupValidationSuite<OMobilitiesSuiteState> {
 
-  private final ValidatedApiInfo apiInfo;
   private static final String OMOBILITY_ID_PARAMETER = "omobility_id";
   private static final String LATEST_PROPOSAL_ID_PARAMETER = "latest_proposal_id";
 
   OMobilitiesUpdateSetupValidationSuite(ApiValidator<OMobilitiesSuiteState> validator,
       OMobilitiesSuiteState state, ValidationSuiteConfig config, int version) {
-    super(validator, state, config, false);
-
-    this.apiInfo = new OMobilitiesValidatedApiInfo(version, ApiEndpoint.UPDATE);
+    super(validator, state, config, false, version);
   }
 
   public static List<ValidationParameter> getParameters() {
@@ -42,8 +39,8 @@ class OMobilitiesUpdateSetupValidationSuite
   }
 
   @Override
-  public ValidatedApiInfo getApiInfo() {
-    return apiInfo;
+  protected ValidatedApiInfo createApiInfo(int version) {
+    return new OMobilitiesValidatedApiInfo(version, ApiEndpoint.UPDATE);
   }
 
   @Override

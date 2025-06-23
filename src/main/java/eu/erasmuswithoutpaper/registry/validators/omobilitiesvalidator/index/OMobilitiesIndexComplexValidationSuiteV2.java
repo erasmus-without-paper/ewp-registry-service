@@ -21,18 +21,14 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 public class OMobilitiesIndexComplexValidationSuiteV2
     extends AbstractValidationSuite<OMobilitiesSuiteState> {
 
-  private final ValidatedApiInfo apiInfo;
-
   @Override
-  public ValidatedApiInfo getApiInfo() {
-    return apiInfo;
+  protected ValidatedApiInfo createApiInfo(int version) {
+    return new OMobilitiesValidatedApiInfo(version, ApiEndpoint.INDEX);
   }
 
   OMobilitiesIndexComplexValidationSuiteV2(ApiValidator<OMobilitiesSuiteState> validator,
       OMobilitiesSuiteState state, ValidationSuiteConfig config, int version) {
-    super(validator, state, config);
-
-    this.apiInfo = new OMobilitiesValidatedApiInfo(version, ApiEndpoint.INDEX);
+    super(validator, state, config, version);
   }
 
   @Override

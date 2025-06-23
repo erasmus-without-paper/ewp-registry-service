@@ -19,11 +19,9 @@ class OMobilityLaCnrSetupValidationSuite
   private static final String OMOBILITY_ID_PARAMETER = "omobility_id";
   private static final String OMOBILITY_ID = "1";
 
-  private final ValidatedApiInfo apiInfo;
-
   @Override
-  public ValidatedApiInfo getApiInfo() {
-    return apiInfo;
+  protected ValidatedApiInfo createApiInfo(int version) {
+    return new OMobilityLaCnrValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
   }
 
   public static List<ValidationParameter> getParameters() {
@@ -32,9 +30,7 @@ class OMobilityLaCnrSetupValidationSuite
 
   OMobilityLaCnrSetupValidationSuite(ApiValidator<OMobilityLaCnrSuiteState> validator,
       OMobilityLaCnrSuiteState state, ValidationSuiteConfig config, int version) {
-    super(validator, state, config, true);
-
-    this.apiInfo = new OMobilityLaCnrValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
+    super(validator, state, config, true, version);
   }
 
   @Override

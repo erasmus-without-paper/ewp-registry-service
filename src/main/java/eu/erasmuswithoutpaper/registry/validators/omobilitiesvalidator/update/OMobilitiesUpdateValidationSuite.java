@@ -24,19 +24,16 @@ import jakarta.xml.bind.Marshaller;
 import org.w3c.dom.Document;
 
 class OMobilitiesUpdateValidationSuite extends AbstractValidationSuite<OMobilitiesSuiteState> {
-  private final ValidatedApiInfo apiInfo;
   private final VerifierFactory updateResponseVerifierFactory = new VerifierFactory(List.of());
 
   OMobilitiesUpdateValidationSuite(ApiValidator<OMobilitiesSuiteState> validator,
       OMobilitiesSuiteState state, ValidationSuiteConfig config, int version) {
-    super(validator, state, config);
-
-    this.apiInfo = new OMobilitiesValidatedApiInfo(version, ApiEndpoint.UPDATE);
+    super(validator, state, config, version);
   }
 
   @Override
-  public ValidatedApiInfo getApiInfo() {
-    return apiInfo;
+  protected ValidatedApiInfo createApiInfo(int version) {
+    return new OMobilitiesValidatedApiInfo(version, ApiEndpoint.UPDATE);
   }
 
   @Override

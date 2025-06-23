@@ -30,18 +30,14 @@ import org.w3c.dom.Element;
 class CoursesValidationSuite
     extends AbstractValidationSuite<CoursesSuiteState> {
 
-  private final ValidatedApiInfo apiInfo;
-
   @Override
-  public ValidatedApiInfo getApiInfo() {
-    return apiInfo;
+  protected ValidatedApiInfo createApiInfo(int version) {
+    return new CoursesValidatedApiInfo(Math.max(1, version), ApiEndpoint.NO_ENDPOINT);
   }
 
   CoursesValidationSuite(ApiValidator<CoursesSuiteState> validator,
       CoursesSuiteState state, ValidationSuiteConfig config, int version) {
-    super(validator, state, config);
-
-    this.apiInfo = new CoursesValidatedApiInfo(Math.max(1, version), ApiEndpoint.NO_ENDPOINT);
+    super(validator, state, config, version);
   }
 
   static class RequestFields {

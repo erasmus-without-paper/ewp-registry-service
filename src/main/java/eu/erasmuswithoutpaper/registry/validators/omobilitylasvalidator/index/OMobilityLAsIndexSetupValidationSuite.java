@@ -18,11 +18,9 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 class OMobilityLAsIndexSetupValidationSuite
     extends AbstractSetupValidationSuite<OMobilityLAsSuiteState> {
 
-  private final ValidatedApiInfo apiInfo;
-
   @Override
-  public ValidatedApiInfo getApiInfo() {
-    return apiInfo;
+  protected ValidatedApiInfo createApiInfo(int version) {
+    return new OMobilityLAsGetValidatedApiInfo(version, ApiEndpoint.INDEX);
   }
 
   private static final String RECEIVING_HEI_ID_PARAMETER = "receiving_hei_id";
@@ -46,9 +44,7 @@ class OMobilityLAsIndexSetupValidationSuite
 
   OMobilityLAsIndexSetupValidationSuite(ApiValidator<OMobilityLAsSuiteState> validator,
       OMobilityLAsSuiteState state, ValidationSuiteConfig config, int version) {
-    super(validator, state, config, false);
-
-    this.apiInfo = new OMobilityLAsGetValidatedApiInfo(version, ApiEndpoint.INDEX);
+    super(validator, state, config, false, version);
   }
 
   @Override

@@ -30,8 +30,8 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
       ApiValidator<S> validator,
       S state,
       ValidationSuiteConfig config,
-      boolean getRequestsForbidden) {
-    super(validator, state, config);
+      boolean getRequestsForbidden, int version) {
+    super(validator, state, config, version);
     this.gitHubTagsGetter = config.gitHubTagsGetter;
     this.getRequestsForbidden = getRequestsForbidden;
   }

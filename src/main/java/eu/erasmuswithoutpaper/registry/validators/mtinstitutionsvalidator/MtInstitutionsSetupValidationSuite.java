@@ -15,11 +15,9 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 class MtInstitutionsSetupValidationSuite
     extends AbstractSetupValidationSuite<MtInstitutionsSuiteState> {
 
-  private final ValidatedApiInfo apiInfo;
-
   @Override
-  public ValidatedApiInfo getApiInfo() {
-    return apiInfo;
+  protected ValidatedApiInfo createApiInfo(int version) {
+    return new MtInstitutionsValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
   }
 
   private static final String PIC_PARAMETER = "pic";
@@ -34,9 +32,7 @@ class MtInstitutionsSetupValidationSuite
 
   MtInstitutionsSetupValidationSuite(ApiValidator<MtInstitutionsSuiteState> validator,
       MtInstitutionsSuiteState state, ValidationSuiteConfig config, int version) {
-    super(validator, state, config, false);
-
-    this.apiInfo = new MtInstitutionsValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
+    super(validator, state, config, false, version);
   }
 
   private int getMaxPicIds() {

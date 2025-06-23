@@ -11,18 +11,14 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 class ImobilityCnrValidationSuite extends AbstractValidationSuite<ImobilityCnrSuiteState> {
 
-  private final ValidatedApiInfo apiInfo;
-
   ImobilityCnrValidationSuite(ApiValidator<ImobilityCnrSuiteState> validator,
       ImobilityCnrSuiteState state, ValidationSuiteConfig config, int version) {
-    super(validator, state, config);
-
-    this.apiInfo = new ImobilityCnrValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
+    super(validator, state, config, version);
   }
 
   @Override
-  public ValidatedApiInfo getApiInfo() {
-    return apiInfo;
+  protected ValidatedApiInfo createApiInfo(int version) {
+    return new ImobilityCnrValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
   }
 
   @Override

@@ -92,6 +92,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
   protected final RegistryClient regClient;
   protected final Integer timeoutMillis = 10_000;
   private final CatalogueMatcherProvider catalogueMatcherProvider;
+  private final ValidatedApiInfo apiInfo;
   protected ValidatorKeyStore validatorKeyStore;
   protected ValidatorKeyStoreSet validatorKeyStoreSet;
   protected AnonymousRequestSigner reqSignerAnon;
@@ -103,7 +104,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
   protected AbstractValidationSuite(
       ApiValidator<S> validator,
       S currentState,
-      ValidationSuiteConfig config) {
+      ValidationSuiteConfig config, int version) {
     this.catalogueMatcherProvider = config.catalogueMatcherProvider;
     this.steps = new ArrayList<>();
     this.docBuilder = config.docBuilder;
@@ -113,6 +114,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
     this.validatorKeyStoreSet = validator.getValidatorKeyStoreSet();
 
     this.setValidatorKeyStore(validator.getValidatorKeyStoreSet().getMainKeyStore());
+    this.apiInfo = createApiInfo(version);
   }
 
   public static class InvalidNumberOfApiEntries extends RuntimeException {
@@ -1049,7 +1051,11 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
     }
   }
 
-  public abstract ValidatedApiInfo getApiInfo();
+  protected abstract ValidatedApiInfo createApiInfo(int version);
+
+  public final ValidatedApiInfo getApiInfo() {
+    return apiInfo;
+  }
 
   protected Document cloneDocument(Document document) {
     DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();

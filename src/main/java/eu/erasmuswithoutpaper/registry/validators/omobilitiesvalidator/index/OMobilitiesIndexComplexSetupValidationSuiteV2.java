@@ -30,8 +30,6 @@ import org.w3c.dom.Element;
 public class OMobilitiesIndexComplexSetupValidationSuiteV2
     extends AbstractSetupValidationSuite<OMobilitiesSuiteState> {
 
-  private final ValidatedApiInfo apiInfo;
-
   private static final String SENDING_HEI_ID_PARAMETER = "sending_hei_id";
   protected static final String OMOBILITY_ID_PARAMETER = "omobility_id";
   protected static final String OMOBILITY_ID_PARAMETER_DESCRIPTION =
@@ -55,9 +53,7 @@ public class OMobilitiesIndexComplexSetupValidationSuiteV2
       OMobilitiesSuiteState state,
       ValidationSuiteConfig config,
       int version) {
-    super(validator, state, config, false);
-
-    this.apiInfo = new OMobilitiesValidatedApiInfo(version, ApiEndpoint.INDEX);
+    super(validator, state, config, false, version);
   }
 
   // Overriding runTests to skip checking url, api version etc.
@@ -67,8 +63,8 @@ public class OMobilitiesIndexComplexSetupValidationSuiteV2
   }
 
   @Override
-  public ValidatedApiInfo getApiInfo() {
-    return apiInfo;
+  protected ValidatedApiInfo createApiInfo(int version) {
+    return new OMobilitiesValidatedApiInfo(version, ApiEndpoint.INDEX);
   }
 
   //FindBugs is not smart enough to infer that actual type of this.currentState

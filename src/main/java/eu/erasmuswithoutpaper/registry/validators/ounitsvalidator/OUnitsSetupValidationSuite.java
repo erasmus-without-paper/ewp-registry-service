@@ -16,11 +16,9 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 class OUnitsSetupValidationSuite
     extends AbstractSetupValidationSuite<OUnitsSuiteState> {
 
-  private final ValidatedApiInfo apiInfo;
-
   @Override
-  public ValidatedApiInfo getApiInfo() {
-    return apiInfo;
+  protected ValidatedApiInfo createApiInfo(int version) {
+    return new OUnitsValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
   }
 
   private static final String HEI_ID_PARAMETER = "hei_id";
@@ -37,9 +35,7 @@ class OUnitsSetupValidationSuite
       OUnitsSuiteState state,
       ValidationSuiteConfig config,
       int version) {
-    super(validator, state, config, false);
-
-    this.apiInfo = new OUnitsValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
+    super(validator, state, config, false, version);
   }
 
   private int getMaxOunitIds() {

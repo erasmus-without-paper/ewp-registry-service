@@ -15,11 +15,9 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 class FactsheetSetupValidationSuite
     extends AbstractSetupValidationSuite<FactsheetSuiteState> {
 
-  private final ValidatedApiInfo apiInfo;
-
   @Override
-  public ValidatedApiInfo getApiInfo() {
-    return apiInfo;
+  protected ValidatedApiInfo createApiInfo(int version) {
+    return new FactsheetValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
   }
 
   private static final String HEI_ID_PARAMETER = "hei_id";
@@ -32,9 +30,7 @@ class FactsheetSetupValidationSuite
 
   FactsheetSetupValidationSuite(ApiValidator<FactsheetSuiteState> validator,
       FactsheetSuiteState state, ValidationSuiteConfig config, int version) {
-    super(validator, state, config, false);
-
-    this.apiInfo = new FactsheetValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
+    super(validator, state, config, false, version);
   }
 
   private int getMaxHeiIds() {

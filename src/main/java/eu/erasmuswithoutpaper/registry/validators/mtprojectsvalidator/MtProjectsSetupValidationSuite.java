@@ -15,11 +15,9 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 class MtProjectsSetupValidationSuite
     extends AbstractSetupValidationSuite<MtProjectsSuiteState> {
 
-  private final ValidatedApiInfo apiInfo;
-
   @Override
-  public ValidatedApiInfo getApiInfo() {
-    return apiInfo;
+  protected ValidatedApiInfo createApiInfo(int version) {
+    return new MtProjectsValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
   }
 
   private static final String PIC_PARAMETER = "pic";
@@ -34,9 +32,7 @@ class MtProjectsSetupValidationSuite
 
   MtProjectsSetupValidationSuite(ApiValidator<MtProjectsSuiteState> validator,
       MtProjectsSuiteState state, ValidationSuiteConfig config, int version) {
-    super(validator, state, config, false);
-
-    this.apiInfo = new MtProjectsValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
+    super(validator, state, config, false, version);
   }
 
   //FindBugs is not smart enough to infer that actual type of this.currentState

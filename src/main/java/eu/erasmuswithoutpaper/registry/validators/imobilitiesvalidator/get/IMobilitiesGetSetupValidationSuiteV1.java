@@ -21,15 +21,12 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 class IMobilitiesGetSetupValidationSuiteV1
     extends AbstractSetupValidationSuite<IMobilitiesSuiteState> {
 
-  private final ValidatedApiInfo apiInfo;
   private static final String RECEIVING_HEI_ID_PARAMETER = "receiving_hei_id";
   protected static final String OMOBILITY_ID_PARAMETER = "omobility_id";
 
   IMobilitiesGetSetupValidationSuiteV1(ApiValidator<IMobilitiesSuiteState> validator,
       IMobilitiesSuiteState state, ValidationSuiteConfig config, int version) {
-    super(validator, state, config, false);
-
-    this.apiInfo = new IMobilitiesGetValidatedApiInfo(version, ApiEndpoint.GET);
+    super(validator, state, config, false, version);
   }
 
   public static List<ValidationParameter> getParameters() {
@@ -41,8 +38,8 @@ class IMobilitiesGetSetupValidationSuiteV1
   }
 
   @Override
-  public ValidatedApiInfo getApiInfo() {
-    return apiInfo;
+  protected ValidatedApiInfo createApiInfo(int version) {
+    return new IMobilitiesGetValidatedApiInfo(version, ApiEndpoint.GET);
   }
 
   private int getMaxOmobilityIds() {
