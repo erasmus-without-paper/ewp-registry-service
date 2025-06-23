@@ -20,6 +20,10 @@ public abstract class ValidatedApiInfo {
     return "API entry: " + getApiName().replace("-", " ") + " v" + getVersion();
   }
 
+  public abstract String getApiName();
+
+  public abstract ApiEndpoint getEndpoint();
+
   public abstract int getVersion();
 
   public abstract String preferredPrefix();
@@ -77,13 +81,9 @@ public abstract class ValidatedApiInfo {
     return "api-" + getApiName();
   }
 
-  public abstract String getApiName();
-
   public String getGitHubRepositoryName() {
     return getApiName();
   }
-
-  public abstract ApiEndpoint getEndpoint();
 
   public String getApiNamespace() {
     return getApiEntryKnownNamespace().getNamespaceUri();
