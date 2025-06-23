@@ -13,14 +13,8 @@ import eu.erasmuswithoutpaper.registry.validators.ValidatorTestStep;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 import org.springframework.stereotype.Service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 @Service
 public class IiaIndexValidator extends ApiValidator<IiaSuiteState> {
-  private static final Logger logger = LoggerFactory.getLogger(
-      IiaIndexValidator.class);
-
   public IiaIndexValidator(EwpDocBuilder docBuilder, Internet internet, RegistryClient client,
       ValidatorKeyStoreSet validatorKeyStoreSet) {
     super(docBuilder, internet, client, validatorKeyStoreSet, "iias", ApiEndpoint.INDEX);
@@ -49,11 +43,6 @@ public class IiaIndexValidator extends ApiValidator<IiaSuiteState> {
       IiaIndexComplexSetupValidationSuiteV7::new,
       IiaIndexComplexSetupValidationSuiteV7.getParameters(),
       IiaIndexComplexValidationSuiteV7::new);
-
-  @Override
-  public Logger getLogger() {
-    return logger;
-  }
 
   @Override
   protected IiaSuiteState createState(String url, SemanticVersion version) {

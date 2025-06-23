@@ -11,13 +11,8 @@ import eu.erasmuswithoutpaper.registry.validators.ValidatorTestStep;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 import org.springframework.stereotype.Service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 @Service
 public class MtInstitutionsValidator extends ApiValidator<MtInstitutionsSuiteState> {
-  private static final Logger logger = LoggerFactory.getLogger(
-      MtInstitutionsValidator.class);
 
   public MtInstitutionsValidator(EwpDocBuilder docBuilder, Internet internet,
       RegistryClient client,
@@ -30,11 +25,6 @@ public class MtInstitutionsValidator extends ApiValidator<MtInstitutionsSuiteSta
       MtInstitutionsSetupValidationSuite::new,
       MtInstitutionsSetupValidationSuite.getParameters(),
       MtInstitutionsValidationSuite::new);
-
-  @Override
-  public Logger getLogger() {
-    return logger;
-  }
 
   @Override
   protected List<ValidationSuiteInfoWithVersions<MtInstitutionsSuiteState>>

@@ -13,14 +13,8 @@ import eu.erasmuswithoutpaper.registry.validators.imobilitytorsvalidator.IMobili
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 import org.springframework.stereotype.Service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-
 @Service
 public class IMobilityTorsGetValidator extends ApiValidator<IMobilityTorsSuiteState> {
-  private static final Logger logger = LoggerFactory.getLogger(
-      IMobilityTorsGetValidator.class);
 
   public IMobilityTorsGetValidator(EwpDocBuilder docBuilder, Internet internet,
       RegistryClient client, ValidatorKeyStoreSet validatorKeyStoreSet) {
@@ -33,11 +27,6 @@ public class IMobilityTorsGetValidator extends ApiValidator<IMobilityTorsSuiteSt
       IMobilityTorsGetSetupValidationSuite::new,
       IMobilityTorsGetSetupValidationSuite.getParameters(),
       IMobilityTorsGetValidationSuite::new);
-
-  @Override
-  public Logger getLogger() {
-    return logger;
-  }
 
   @Override
   protected List<ValidationSuiteInfoWithVersions<IMobilityTorsSuiteState>>

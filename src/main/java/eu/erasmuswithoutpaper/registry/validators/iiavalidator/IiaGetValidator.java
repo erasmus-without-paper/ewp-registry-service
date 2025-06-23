@@ -13,16 +13,10 @@ import eu.erasmuswithoutpaper.registry.validators.ValidatorTestStep;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 import org.springframework.stereotype.Service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 @Service
 public class IiaGetValidator extends ApiValidator<IiaSuiteState> {
 
   private IiaHashService iiaHashService;
-
-  private static final Logger logger = LoggerFactory.getLogger(
-      IiaGetValidator.class);
 
   public IiaGetValidator(EwpDocBuilder docBuilder, Internet internet, RegistryClient client,
       ValidatorKeyStoreSet validatorKeyStoreSet, IiaHashService iiaHashService) {
@@ -42,11 +36,6 @@ public class IiaGetValidator extends ApiValidator<IiaSuiteState> {
       IiaGetSetupValidationSuiteV7::new, IiaGetSetupValidationSuiteV7.getParameters(),
       (validator, state, config, version) -> new IiaGetValidationSuiteV7(validator, state, config,
           version, iiaHashService));
-
-  @Override
-  public Logger getLogger() {
-    return logger;
-  }
 
   @Override
   protected IiaSuiteState createState(String url, SemanticVersion version) {

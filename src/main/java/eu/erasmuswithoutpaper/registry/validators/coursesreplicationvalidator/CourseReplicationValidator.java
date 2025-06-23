@@ -11,14 +11,8 @@ import eu.erasmuswithoutpaper.registry.validators.ValidatorTestStep;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 import org.springframework.stereotype.Service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 @Service
 public class CourseReplicationValidator extends ApiValidator<CourseReplicationSuiteState> {
-  private static final Logger logger = LoggerFactory.getLogger(
-      CourseReplicationValidator.class);
-
   public CourseReplicationValidator(EwpDocBuilder docBuilder, Internet internet,
       RegistryClient client,
       ValidatorKeyStoreSet validatorKeyStoreSet) {
@@ -30,11 +24,6 @@ public class CourseReplicationValidator extends ApiValidator<CourseReplicationSu
       CourseReplicationSetupValidationSuite::new,
       CourseReplicationSetupValidationSuite.getParameters(),
       CourseReplicationValidationSuite::new);
-
-  @Override
-  public Logger getLogger() {
-    return logger;
-  }
 
   @Override
   protected List<ValidationSuiteInfoWithVersions<CourseReplicationSuiteState>>

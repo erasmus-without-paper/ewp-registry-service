@@ -15,7 +15,6 @@ import com.google.common.collect.ListMultimap;
 import com.google.common.collect.MultimapBuilder;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import jakarta.annotation.PostConstruct;
-import org.slf4j.Logger;
 
 
 /**
@@ -202,8 +201,6 @@ public abstract class ApiValidator<S extends SuiteState> {
     this.apiValidatorsManager.registerApiValidator(this.validatedApiName, this.endpoint, this);
   }
 
-  public abstract Logger getLogger();
-
   protected abstract List<ValidationSuiteInfoWithVersions<S>> getValidationSuites();
 
   @SuppressWarnings("unchecked")
@@ -220,7 +217,7 @@ public abstract class ApiValidator<S extends SuiteState> {
           ValidatorTestStep annotation = field.getAnnotation(ValidatorTestStep.class);
           ValidationSuiteInfo<S> validationSuite = (ValidationSuiteInfo<S>) field.get(validator);
 
-          validationSuites.add(new ValidationSuiteInfoWithVersions<S>(annotation.minMajorVersion(),
+          validationSuites.add(new ValidationSuiteInfoWithVersions<>(annotation.minMajorVersion(),
               annotation.maxMajorVersion(), validationSuite));
         } catch (IllegalAccessException e) {
           throw new RuntimeException(e);

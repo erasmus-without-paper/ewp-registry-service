@@ -11,12 +11,8 @@ import eu.erasmuswithoutpaper.registry.validators.ValidatorTestStep;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 import org.springframework.stereotype.Service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 @Service
 public class OmobilityCnrValidator extends ApiValidator<OmobilityCnrSuiteState> {
-  private static final Logger logger = LoggerFactory.getLogger(OmobilityCnrValidator.class);
 
   public OmobilityCnrValidator(EwpDocBuilder docBuilder, Internet internet, RegistryClient client,
       ValidatorKeyStoreSet validatorKeyStoreSet) {
@@ -27,11 +23,6 @@ public class OmobilityCnrValidator extends ApiValidator<OmobilityCnrSuiteState> 
   public ValidationSuiteInfo<OmobilityCnrSuiteState> apiTests =
       new ValidationSuiteInfo<>(OmobilityCnrSetupValidationSuite::new,
           OmobilityCnrSetupValidationSuite.getParameters(), OmobilityCnrValidationSuite::new);
-
-  @Override
-  public Logger getLogger() {
-    return logger;
-  }
 
   @Override
   protected List<ValidationSuiteInfoWithVersions<OmobilityCnrSuiteState>> getValidationSuites() {
