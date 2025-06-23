@@ -18,7 +18,7 @@ class MtProjectsValidatedApiInfo extends ValidatedApiInfo {
   }
 
   @Override
-  public String preferredPrefix() {
+  public String getPreferredPrefix() {
     return "mtp";
   }
 

@@ -27,7 +27,7 @@ public abstract class ValidatedApiInfo {
 
   public abstract int getVersion();
 
-  public abstract String preferredPrefix();
+  public abstract String getPreferredPrefix();
 
   public abstract boolean responseIncludeInCatalogueXmlns();
 
@@ -55,9 +55,8 @@ public abstract class ValidatedApiInfo {
           namespaceApiName + "/blob/stable-v" + version + "/endpoints/" + responseXsd;
     }
 
-
     KnownNamespace namespace = new KnownNamespace(
-        preferredPrefix() + "r" + endpoint + version,
+        getPreferredPrefix() + "r" + endpoint + version,
         uriEnding,
         namespaceApiName + "/stable-v" + version + "/endpoints/" + responseXsd,
         responseIncludeInCatalogueXmlns()
@@ -78,7 +77,7 @@ public abstract class ValidatedApiInfo {
     var namespaceApiName = getNamespaceApiName();
     var version = getVersion();
     return new KnownNamespace(
-        preferredPrefix() + getVersion(),
+        getPreferredPrefix() + getVersion(),
         namespaceApiName + "/blob/stable-v" + version + "/manifest-entry.xsd",
         namespaceApiName + "/stable-v" + version + "/manifest-entry.xsd",
         apiEntryIncludeInCatalogueXmlns()

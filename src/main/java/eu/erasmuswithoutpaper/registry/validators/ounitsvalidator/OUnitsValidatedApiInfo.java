@@ -18,7 +18,7 @@ class OUnitsValidatedApiInfo extends ValidatedApiInfo {
   }
 
   @Override
-  public String preferredPrefix() {
+  public String getPreferredPrefix() {
     return "ou";
   }
 

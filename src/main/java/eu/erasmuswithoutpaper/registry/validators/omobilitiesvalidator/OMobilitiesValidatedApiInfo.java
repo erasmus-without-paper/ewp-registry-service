@@ -18,7 +18,7 @@ public class OMobilitiesValidatedApiInfo extends ValidatedApiInfo {
   }
 
   @Override
-  public String preferredPrefix() {
+  public String getPreferredPrefix() {
     return "om";
   }
 

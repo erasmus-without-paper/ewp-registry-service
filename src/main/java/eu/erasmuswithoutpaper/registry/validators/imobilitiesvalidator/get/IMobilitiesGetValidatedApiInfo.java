@@ -23,7 +23,7 @@ class IMobilitiesGetValidatedApiInfo extends ValidatedApiInfo {
 
 
     KnownNamespace namespace = new KnownNamespace(
-        preferredPrefix()  + endpoint + getVersion(),
+        getPreferredPrefix()  + endpoint + getVersion(),
         uriEnding,
         getNamespaceApiName() + "/stable-v" + getVersion() + "/endpoints/" + responseXsd,
         responseIncludeInCatalogueXmlns()
@@ -42,7 +42,7 @@ class IMobilitiesGetValidatedApiInfo extends ValidatedApiInfo {
   }
 
   @Override
-  public String preferredPrefix() {
+  public String getPreferredPrefix() {
     return "im";
   }
 

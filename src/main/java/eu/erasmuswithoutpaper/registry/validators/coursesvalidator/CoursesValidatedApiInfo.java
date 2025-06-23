@@ -18,7 +18,7 @@ class CoursesValidatedApiInfo extends ValidatedApiInfo {
   }
 
   @Override
-  public String preferredPrefix() {
+  public String getPreferredPrefix() {
     return "co";
   }
 
