@@ -17,20 +17,16 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 @Profile({ "production", "development", "console" })
 public class GitHubTagsGetterProd implements GitHubTagsGetter {
 
-  /**
-   * Sends request to GitHub and parses the response to obtain list of tags available for API.
-   * @param apiName API name.
-   * @param internet Internet to connect to GitHub.
-   * @param logger Logger of class using this method.
-   * @return list of available versions.
-   */
+  private static final Logger logger = LoggerFactory.getLogger(GitHubTagsGetterProd.class);
+
   @Override
-  public List<SemanticVersion> getTags(String apiName, Internet internet, Logger logger) {
+  public List<SemanticVersion> getTags(String apiName, Internet internet) {
     String url = Constans.GITHUB_API_URL + "/ewp-specs-api-";
     url += apiName;
     url += "/tags";
