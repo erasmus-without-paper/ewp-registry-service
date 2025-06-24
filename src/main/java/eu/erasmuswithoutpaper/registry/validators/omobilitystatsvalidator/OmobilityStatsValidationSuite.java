@@ -3,7 +3,6 @@ package eu.erasmuswithoutpaper.registry.validators.omobilitystatsvalidator;
 import java.util.List;
 
 import eu.erasmuswithoutpaper.registry.validators.AbstractValidationSuite;
-import eu.erasmuswithoutpaper.registry.validators.ApiEndpoint;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.Combination;
 import eu.erasmuswithoutpaper.registry.validators.SuiteState;
@@ -24,7 +23,7 @@ class OmobilityStatsValidationSuite extends AbstractValidationSuite<SuiteState> 
 
   @Override
   protected ValidatedApiInfo createApiInfo(int version) {
-    return new OmobilityStatsValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
+    return new OmobilityStatsValidatedApiInfo(version);
   }
 
   @Override

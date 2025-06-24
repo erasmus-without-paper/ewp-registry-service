@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.List;
 
 import eu.erasmuswithoutpaper.registry.validators.AbstractSetupValidationSuite;
-import eu.erasmuswithoutpaper.registry.validators.ApiEndpoint;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.SuiteState;
 import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
@@ -15,7 +14,7 @@ class OmobilityStatsSetupValidationSuite
 
   @Override
   protected ValidatedApiInfo createApiInfo(int version) {
-    return new OmobilityStatsValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
+    return new OmobilityStatsValidatedApiInfo(version);
   }
 
 
