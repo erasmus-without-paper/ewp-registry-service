@@ -3,7 +3,7 @@ package eu.erasmuswithoutpaper.registry.validators.omobilitylascnrvalidator;
 import eu.erasmuswithoutpaper.registry.validators.ApiEndpoint;
 import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
 
-class OMobilityLaCnrValidatedApiInfo extends ValidatedApiInfo {
+class OMobilityLaCnrValidatedApiInfo implements ValidatedApiInfo {
   private final int version;
   private final ApiEndpoint endpoint;
 

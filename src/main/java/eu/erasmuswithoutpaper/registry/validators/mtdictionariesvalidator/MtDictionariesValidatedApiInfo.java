@@ -3,7 +3,7 @@ package eu.erasmuswithoutpaper.registry.validators.mtdictionariesvalidator;
 import eu.erasmuswithoutpaper.registry.validators.ApiEndpoint;
 import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
 
-class MtDictionariesValidatedApiInfo extends ValidatedApiInfo {
+class MtDictionariesValidatedApiInfo implements ValidatedApiInfo {
   private final int version;
   private final ApiEndpoint endpoint;
 

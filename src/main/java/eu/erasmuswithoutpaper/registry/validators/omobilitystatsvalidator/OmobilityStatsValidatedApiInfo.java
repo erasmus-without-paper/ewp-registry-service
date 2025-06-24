@@ -3,7 +3,7 @@ package eu.erasmuswithoutpaper.registry.validators.omobilitystatsvalidator;
 import eu.erasmuswithoutpaper.registry.validators.ApiEndpoint;
 import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
 
-class OmobilityStatsValidatedApiInfo extends ValidatedApiInfo {
+class OmobilityStatsValidatedApiInfo implements ValidatedApiInfo {
   public static final String NAME = "omobility-stats";
 
   private final int version;

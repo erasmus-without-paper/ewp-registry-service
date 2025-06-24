@@ -3,7 +3,7 @@ package eu.erasmuswithoutpaper.registry.validators.imobilitytorsvalidator;
 import eu.erasmuswithoutpaper.registry.validators.ApiEndpoint;
 import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
 
-public class IMobilityTorsValidatedApiInfo extends ValidatedApiInfo {
+public class IMobilityTorsValidatedApiInfo implements ValidatedApiInfo {
   private final int version;
   private final ApiEndpoint endpoint;
 

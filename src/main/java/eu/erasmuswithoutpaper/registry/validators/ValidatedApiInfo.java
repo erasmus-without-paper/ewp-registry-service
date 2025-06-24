@@ -3,12 +3,13 @@ package eu.erasmuswithoutpaper.registry.validators;
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownElement;
 import eu.erasmuswithoutpaper.registry.documentbuilder.KnownNamespace;
 
-public abstract class ValidatedApiInfo {
+public interface ValidatedApiInfo {
+
   /**
    * @return
    *     a name that should be used in creation of a KnownElement.
    */
-  public String getElementName() {
+  default String getElementName() {
     ApiEndpoint endpoint = getEndpoint();
     if (endpoint != ApiEndpoint.NO_ENDPOINT) {
       return getApiName() + "-" + endpoint.getName() + "-response";
@@ -17,27 +18,27 @@ public abstract class ValidatedApiInfo {
     }
   }
 
-  public String getHumanReadableName() {
+  default String getHumanReadableName() {
     return "API entry: " + getApiName().replace("-", " ") + " v" + getVersion();
   }
 
-  public abstract String getApiName();
+  String getApiName();
 
-  public abstract ApiEndpoint getEndpoint();
+  ApiEndpoint getEndpoint();
 
-  public abstract int getVersion();
+  int getVersion();
 
-  public abstract String getPreferredPrefix();
+  String getPreferredPrefix();
 
-  public abstract boolean responseIncludeInCatalogueXmlns();
+  boolean responseIncludeInCatalogueXmlns();
 
-  public abstract boolean apiEntryIncludeInCatalogueXmlns();
+  boolean apiEntryIncludeInCatalogueXmlns();
 
   /**
    * @return
    *     a KnownElement created using the information provided by the other functions.
    */
-  public KnownElement getResponseKnownElement() {
+  default KnownElement getResponseKnownElement() {
     String endpoint = "";
     String responseXsd = "response.xsd";
     int version = getVersion();
@@ -73,7 +74,7 @@ public abstract class ValidatedApiInfo {
    * @return
    *     a KnownNamespace created using the information provided by the other functions.
    */
-  public KnownNamespace getApiEntryKnownNamespace() {
+  default KnownNamespace getApiEntryKnownNamespace() {
     var namespaceApiName = getNamespaceApiName();
     var version = getVersion();
     return new KnownNamespace(
@@ -84,23 +85,23 @@ public abstract class ValidatedApiInfo {
     );
   }
 
-  public String getNamespaceApiName() {
+  default String getNamespaceApiName() {
     return "api-" + getApiName();
   }
 
-  public String getGitHubRepositoryName() {
+  default String getGitHubRepositoryName() {
     return getApiName();
   }
 
-  public String getApiNamespace() {
+  default String getApiNamespace() {
     return getApiEntryKnownNamespace().getNamespaceUri();
   }
 
-  public String getApiPrefix() {
+  default String getApiPrefix() {
     return getApiEntryKnownNamespace().getPreferredPrefix();
   }
 
-  public String getResponsePrefix() {
+  default String getResponsePrefix() {
     return getResponseKnownElement().getNamespacePreferredPrefix();
   }
 }

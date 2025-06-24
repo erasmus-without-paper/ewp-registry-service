@@ -3,7 +3,7 @@ package eu.erasmuswithoutpaper.registry.validators.echovalidator;
 import eu.erasmuswithoutpaper.registry.validators.ApiEndpoint;
 import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
 
-class EchoValidatedApiInfo extends ValidatedApiInfo {
+class EchoValidatedApiInfo implements ValidatedApiInfo {
   private final int version;
   private final ApiEndpoint endpoint;
 

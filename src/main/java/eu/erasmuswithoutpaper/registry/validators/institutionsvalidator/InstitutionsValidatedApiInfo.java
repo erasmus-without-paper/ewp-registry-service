@@ -3,7 +3,7 @@ package eu.erasmuswithoutpaper.registry.validators.institutionsvalidator;
 import eu.erasmuswithoutpaper.registry.validators.ApiEndpoint;
 import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
 
-class InstitutionsValidatedApiInfo extends ValidatedApiInfo {
+class InstitutionsValidatedApiInfo implements ValidatedApiInfo {
   private final int version;
 
   public InstitutionsValidatedApiInfo(int version) {

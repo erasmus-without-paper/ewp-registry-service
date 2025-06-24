@@ -3,7 +3,7 @@ package eu.erasmuswithoutpaper.registry.validators.imobilitycnrvalidator;
 import eu.erasmuswithoutpaper.registry.validators.ApiEndpoint;
 import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
 
-class ImobilityCnrValidatedApiInfo extends ValidatedApiInfo {
+class ImobilityCnrValidatedApiInfo implements ValidatedApiInfo {
   private final int version;
   private final ApiEndpoint endpoint;
 
