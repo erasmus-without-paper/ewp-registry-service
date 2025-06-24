@@ -4,7 +4,7 @@ public class ValidatedApiInfoImpl implements ValidatedApiInfo {
 
   private final String apiName;
   private final ApiEndpoint endpoint;
-  private final int version;
+  protected final int version;
   private final String preferredPrefix;
   private final boolean isResponseIncludeInCatalogueXmlns;
   private final boolean isApiEntryIncludeInCatalogueXmlns;

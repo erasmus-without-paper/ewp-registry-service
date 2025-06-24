@@ -26,7 +26,6 @@ import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigRequestSigner;
 import eu.erasmuswithoutpaper.registry.internet.sec.RequestSigner;
 import eu.erasmuswithoutpaper.registry.validators.AbstractValidationSuite;
-import eu.erasmuswithoutpaper.registry.validators.ApiEndpoint;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.CombEntry;
 import eu.erasmuswithoutpaper.registry.validators.Combination;
@@ -57,7 +56,7 @@ public class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSuite
 
   @Override
   protected ValidatedApiInfo createApiInfo(int version) {
-    return new EchoValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
+    return new EchoValidatedApiInfo(version);
   }
 
   private void checkEdgeCasesForAxxx(Combination combination)

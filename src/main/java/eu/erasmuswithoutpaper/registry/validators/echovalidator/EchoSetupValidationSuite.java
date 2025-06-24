@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import eu.erasmuswithoutpaper.registry.validators.AbstractSetupValidationSuite;
-import eu.erasmuswithoutpaper.registry.validators.ApiEndpoint;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.CombEntry;
 import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
@@ -23,7 +22,7 @@ public class EchoSetupValidationSuite
 
   @Override
   protected ValidatedApiInfo createApiInfo(int version) {
-    return new EchoValidatedApiInfo(version, ApiEndpoint.NO_ENDPOINT);
+    return new EchoValidatedApiInfo(version);
   }
 
   public static List<ValidationParameter> getParameters() {

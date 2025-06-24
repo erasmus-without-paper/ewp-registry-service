@@ -1,15 +1,12 @@
 package eu.erasmuswithoutpaper.registry.validators.echovalidator;
 
 import eu.erasmuswithoutpaper.registry.validators.ApiEndpoint;
-import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
+import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfoImpl;
 
-class EchoValidatedApiInfo implements ValidatedApiInfo {
-  private final int version;
-  private final ApiEndpoint endpoint;
+class EchoValidatedApiInfo extends ValidatedApiInfoImpl {
 
-  public EchoValidatedApiInfo(int version, ApiEndpoint endpoint) {
-    this.version = version;
-    this.endpoint = endpoint;
+  public EchoValidatedApiInfo(int version) {
+    super("echo", version, ApiEndpoint.NO_ENDPOINT, "e");
   }
 
   @Override
@@ -18,32 +15,8 @@ class EchoValidatedApiInfo implements ValidatedApiInfo {
   }
 
   @Override
-  public int getVersion() {
-    return this.version;
-  }
-
-  @Override
-  public String getPreferredPrefix() {
-    return "e";
-  }
-
-  @Override
-  public boolean responseIncludeInCatalogueXmlns() {
-    return false;
-  }
-
-  @Override
   public boolean apiEntryIncludeInCatalogueXmlns() {
-    return this.version == 2;
+    return version == 2;
   }
 
-  @Override
-  public String getApiName() {
-    return "echo";
-  }
-
-  @Override
-  public ApiEndpoint getEndpoint() {
-    return this.endpoint;
-  }
 }
