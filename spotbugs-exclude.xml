@@ -8,6 +8,7 @@
     </Match>
     <Match>
         <!-- TODO those bugs should be brought back! It were added for the sake of update Spotbugs -->
-        <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2,MS_EXPOSE_REP"/>
+        <!-- TODO Spotbugs ignores that fields are using annotations like @ValidatorTestStep (URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD) -->
+        <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2,MS_EXPOSE_REP,URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD"/>
     </Match>
 </FindBugsFilter>
