@@ -25,15 +25,29 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
     extends AbstractValidationSuite<S> {
   private final GitHubTagsGetter gitHubTagsGetter;
   private final boolean getRequestsForbidden;
+  private final boolean postRequestForbidden;
 
   protected AbstractSetupValidationSuite(
       ApiValidator<S> validator,
       S state,
       ValidationSuiteConfig config,
       boolean getRequestsForbidden, int version) {
+    this(validator, state, config, getRequestsForbidden, false, version);
+  }
+
+  protected AbstractSetupValidationSuite(
+      ApiValidator<S> validator,
+      S state,
+      ValidationSuiteConfig config,
+      boolean getRequestsForbidden, boolean postRequestForbidden, int version) {
     super(validator, state, config, version);
     this.gitHubTagsGetter = config.gitHubTagsGetter;
+    if (postRequestForbidden && getRequestsForbidden) {
+      throw new IllegalArgumentException(
+          "You cannot forbid both GET and POST requests at the same time.");
+    }
     this.getRequestsForbidden = getRequestsForbidden;
+    this.postRequestForbidden = postRequestForbidden;
   }
 
   protected static HttpSecurityDescription getDescriptionFromSecuritySettings(
@@ -261,10 +275,12 @@ public abstract class AbstractSetupValidationSuite<S extends SuiteState>
                       getMatchedApiEntry(), cliauth, srvauth, reqencr, resencr
                   ));
             }
-            this.currentState.combinations.add(
-                new Combination("POST", currentState.url,
-                    getMatchedApiEntry(), cliauth, srvauth, reqencr, resencr
-                ));
+            if (!postRequestForbidden) {
+              this.currentState.combinations.add(
+                  new Combination("POST", currentState.url,
+                      getMatchedApiEntry(), cliauth, srvauth, reqencr, resencr
+                  ));
+            }
           }
         }
       }

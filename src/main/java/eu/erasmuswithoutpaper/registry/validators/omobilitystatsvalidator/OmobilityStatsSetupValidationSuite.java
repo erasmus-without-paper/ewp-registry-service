@@ -24,7 +24,7 @@ class OmobilityStatsSetupValidationSuite
 
   OmobilityStatsSetupValidationSuite(ApiValidator<SuiteState> validator,
       SuiteState state, ValidationSuiteConfig config, int version) {
-    super(validator, state, config, true, version);
+    super(validator, state, config, false, true, version);
   }
 
   @Override
