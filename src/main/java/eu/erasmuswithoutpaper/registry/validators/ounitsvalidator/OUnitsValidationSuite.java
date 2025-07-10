@@ -61,9 +61,11 @@ class OUnitsValidationSuite
         );
         List<String> expectedIDs =
             Collections.singletonList(currentState.selectedOunitId);
-        Response response = makeRequestAndVerifyResponse(
-            this, combination, request, ounitIdVerifier.expectResponseToContainExactly(expectedIDs)
-        );
+        List<String> notices = new ArrayList<>();
+        Response response = makeRequest(this, combination, request, notices);
+        expect200(response, Status.FAILURE);
+        verifyContents(response, ounitIdVerifier.expectResponseToContainExactly(expectedIDs),
+            Status.FAILURE);
         List<String> codes = selectFromDocument(
             makeXmlFromBytes(response.getBody()),
             "/ounits-response/ounit/ounit-id[text()=\""
