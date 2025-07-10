@@ -43,10 +43,10 @@ public class IiaIndexComplexSetupValidationSuiteV6
   }
 
   private static final String HEI_ID_PARAMETER = "hei_id";
-  private static final String IIA_ID_PARAMETER = "iia_id";
+  protected static final String IIA_ID_PARAMETER = "iia_id";
   private static final String PARTNER_HEI_ID_PARAMETER = "partner_hei_id";
-  private static final String RECEIVING_ACADEMIC_YEAR_ID = "receiving_academic_year_id";
-  private static final String IIA_ID_PARAMETER_DESCRIPTION =
+  protected static final String RECEIVING_ACADEMIC_YEAR_ID = "receiving_academic_year_id";
+  protected static final String IIA_ID_PARAMETER_DESCRIPTION =
       "This parameter is used to fetch partner_hei_id and receiving_academic_year_id using"
           + " GET endpoint.";
 
@@ -55,7 +55,7 @@ public class IiaIndexComplexSetupValidationSuiteV6
    *
    * @return list of supported parameters with dependencies.
    */
-  public static List<ValidationParameter> getParameters() {
+  static List<ValidationParameter> getParameters() {
     return Arrays.asList(
         new ValidationParameter(IIA_ID_PARAMETER)
             .dependsOn(HEI_ID_PARAMETER)
@@ -103,7 +103,7 @@ public class IiaIndexComplexSetupValidationSuiteV6
   }
 
   @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
-  private void useGetEndpointToFetchParameters(
+  protected void useGetEndpointToFetchParameters(
       HttpSecurityDescription securityDescription) throws SuiteBroken {
     this.currentState.selectedIiaId = getParameterValue(IIA_ID_PARAMETER,
         () -> getIiaIdParameter(securityDescription));
