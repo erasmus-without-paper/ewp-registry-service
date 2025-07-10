@@ -321,6 +321,19 @@ public class RegistryUpdaterTest extends WRTest {
     assertThat(this.lastCatalogue.xpath("r:host/r:apis-implemented/in2:institutions")).hasSize(1);
   }
 
+  @Test
+  public void testEndpointUrlCorrectConstraint() {
+    this.assertManifestStatuses(null, null, null);
+    this.internet.putURL(url1, this.getFile("endpoint-url-correct/manifest.xml"));
+    ManifestSource ms1 = manifestFactory.newRegularSource(url1, List.of());
+    this.sourceProvider.addSource(ms1);
+    this.timePasses();
+    this.assertManifestStatuses("Error", null, null);
+    this.assertNoticesMatch(url1, "(?s).*URL \"https://example.com/institutions \""
+        + " is not correct. The API will not be imported.");
+    assertThat(this.lastCatalogue.xpath("r:host/r:apis-implemented/in2:institutions")).hasSize(0);
+  }
+
   /**
    * Run a complex scenario, involving multiple source and manifest changes. Verify if our
    * {@link RegistryUpdater} and {@link NotifierService} handle everything as expected.
