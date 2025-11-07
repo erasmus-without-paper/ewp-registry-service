@@ -3,6 +3,7 @@ package eu.erasmuswithoutpaper.registry.sourceprovider;
 import static org.joox.JOOX.$;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -112,9 +113,9 @@ public class ProductionManifestSourceProvider implements ManifestSourceProvider 
       }
       logger.info("Loading manifest sources from " + resource);
       Match sources;
-      try {
+      try (InputStream inputStream = resource.getInputStream()) {
         DocumentBuilder docBuilder = Utils.newSecureDocumentBuilder();
-        Document doc = docBuilder.parse(resource.getInputStream());
+        Document doc = docBuilder.parse(inputStream);
         sources = $(doc).find("source");
       } catch (SAXException | IOException e) {
         throw new RuntimeException(e);
