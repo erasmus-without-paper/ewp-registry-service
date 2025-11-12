@@ -28,6 +28,13 @@ public class ProductionConfiguration {
     allowSettingRestrictedHeaders();
     // Some of the partners require AIA extension to be used to verify theirs certificate chain.
     enableAuthorityInformationAccessCertificateExtension();
+    // ResourceLoader uses URLConnection for URL resources - by default, there is no timeout!
+    setUrlConnectionTimeouts();
+  }
+
+  private void setUrlConnectionTimeouts() {
+    System.setProperty("sun.net.client.defaultReadTimeout", "30000");
+    System.setProperty("sun.net.client.defaultConnectTimeout", "30000");
   }
 
   private void enableAuthorityInformationAccessCertificateExtension() {
