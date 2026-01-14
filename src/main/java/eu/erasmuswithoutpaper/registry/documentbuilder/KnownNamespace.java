@@ -245,7 +245,6 @@ public class KnownNamespace {
   public static final KnownNamespace RESPONSE_IMOBILITY_TORS_INDEX_V1 = new KnownNamespace("imtri1",
       "api-imobility-tors/blob/stable-v1/endpoints/index-response.xsd",
       "api-imobility-tors/stable-v1/endpoints/index-response.xsd", false);
-  // TODO false -> true
 
   /**
    * As described <a href=
@@ -255,7 +254,15 @@ public class KnownNamespace {
   public static final KnownNamespace RESPONSE_IMOBILITY_TORS_INDEX_V2 = new KnownNamespace("imtri2",
       "api-imobility-tors/blob/stable-v2/endpoints/index-response.xsd",
       "api-imobility-tors/stable-v2/endpoints/index-response.xsd", false);
-  // TODO false -> true
+
+  /**
+   * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-imobility-tors/tree/stable-v3/manifest-entry.xsd'>
+   * here</a>.
+   */
+  public static final KnownNamespace RESPONSE_IMOBILITY_TORS_INDEX_V3 = new KnownNamespace("imtri3",
+      "api-imobility-tors/blob/stable-v3/endpoints/index-response.xsd",
+      "api-imobility-tors/stable-v3/endpoints/index-response.xsd", false);
 
   /**
    * As described <a href=
@@ -265,7 +272,6 @@ public class KnownNamespace {
   public static final KnownNamespace RESPONSE_IMOBILITY_TORS_GET_V1 = new KnownNamespace("imtrg1",
       "api-imobility-tors/blob/stable-v1/endpoints/get-response.xsd",
       "api-imobility-tors/stable-v1/endpoints/get-response.xsd", false);
-  // TODO false -> true
 
   /**
    * As described <a href=
@@ -275,7 +281,24 @@ public class KnownNamespace {
   public static final KnownNamespace RESPONSE_IMOBILITY_TORS_GET_V2 = new KnownNamespace("imtrg2",
       "api-imobility-tors/blob/stable-v2/endpoints/get-response.xsd",
       "api-imobility-tors/stable-v2/endpoints/get-response.xsd", false);
-  // TODO false -> true
+
+  /**
+   * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-imobility-tors/tree/stable-v3/manifest-entry.xsd'>
+   * here</a>.
+   */
+  public static final KnownNamespace RESPONSE_IMOBILITY_TORS_GET_V3 = new KnownNamespace("imtrg3",
+      "api-imobility-tors/blob/stable-v3/endpoints/get-response.xsd",
+      "api-imobility-tors/stable-v3/endpoints/get-response.xsd", false);
+
+  /**
+   * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-imobility-tor-stats/tree/stable-v1/manifest-entry.xsd'>
+   * here</a>.
+   */
+  public static final KnownNamespace RESPONSE_IMOBILITY_TOR_STATS_V1 = new KnownNamespace("imtsr1",
+      "api-imobility-tor-stats/tree/stable-v1",
+      "api-imobility-tor-stats/stable-v1/endpoints/response.xsd", false);
 
   /**
    * As described <a href=
@@ -712,13 +735,12 @@ public class KnownNamespace {
 
   /**
    * As described <a href=
-   * 'https://github.com/erasmus-without-paper/ewp-specs-api-imobility-tors/blob/master/manifest-entry.xsd'>
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-imobility-tors/blob/stable-v1/manifest-entry.xsd'>
    * here</a>.
-   */ // TODO: master->stable!
+   */
   public static final KnownNamespace APIENTRY_IMOBILITY_TORS_V1 =
       new KnownNamespace("imt1", "api-imobility-tors/blob/stable-v1/manifest-entry.xsd",
           "api-imobility-tors/master/manifest-entry.xsd", false);
-  // TODO: 1. false->true
 
   /**
    * As described <a href=
@@ -731,13 +753,39 @@ public class KnownNamespace {
 
   /**
    * As described <a href=
-   * 'https://github.com/erasmus-without-paper/ewp-specs-api-imobility-tor-cnr/blob/master/manifest-entry.xsd'>
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-imobility-tors/blob/stable-v3/manifest-entry.xsd'>
    * here</a>.
-   */ // TODO: master->stable!
+   */
+  public static final KnownNamespace APIENTRY_IMOBILITY_TORS_V3 =
+      new KnownNamespace("imt3", "api-imobility-tors/blob/stable-v3/manifest-entry.xsd",
+          "api-imobility-tors/master/manifest-entry.xsd", false);
+
+  /**
+   * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-imobility-tor-cnr/blob/stable-v1/manifest-entry.xsd'>
+   * here</a>.
+   */
   public static final KnownNamespace APIENTRY_IMOBILITY_TOR_CNR_V1 =
       new KnownNamespace("imtc1", "api-imobility-tor-cnr/blob/stable-v1/manifest-entry.xsd",
           "api-imobility-tor-cnr/master/manifest-entry.xsd", false);
-  // TODO: 1. false->true 2. master->stable
+
+  /**
+   * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-imobility-tor-cnr/blob/stable-v2/manifest-entry.xsd'>
+   * here</a>.
+   */
+  public static final KnownNamespace APIENTRY_IMOBILITY_TOR_CNR_V2 =
+      new KnownNamespace("imtc2", "api-imobility-tor-cnr/blob/stable-v2/manifest-entry.xsd",
+          "api-imobility-tor-cnr/master/manifest-entry.xsd", false);
+
+  /**
+   * As described <a href=
+   * 'https://github.com/erasmus-without-paper/ewp-specs-api-imobility-tor-stats/blob/stable-v1/manifest-entry.xsd'>
+   * here</a>.
+   */
+  public static final KnownNamespace APIENTRY_IMOBILITY_TOR_STATS_V1 =
+      new KnownNamespace("imts1", "api-imobility-tor-stats/blob/stable-v1/manifest-entry.xsd",
+          "imobility-tor-stats/stable-v1/manifest-entry.xsd", false);
 
   /**
    * As described <a href=

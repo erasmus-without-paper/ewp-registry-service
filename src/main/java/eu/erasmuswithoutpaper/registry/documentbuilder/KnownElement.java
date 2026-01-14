@@ -271,11 +271,32 @@ public class KnownElement {
           "API entry: Incoming Mobility ToRs API v2");
 
   /**
+   * API entry for Incoming Mobility ToRs API v3.
+   */
+  public static final KnownElement APIENTRY_IMOBILITY_TORS_V3 =
+      new KnownElement(KnownNamespace.APIENTRY_IMOBILITY_TORS_V3, "imobility-tors",
+          "API entry: Incoming Mobility ToRs API v3");
+
+  /**
    * API entry for Incoming Mobility ToR CNR API v1.
    */
   public static final KnownElement APIENTRY_IMOBILITY_TOR_CNR_V1 =
       new KnownElement(KnownNamespace.APIENTRY_IMOBILITY_TOR_CNR_V1, "imobility-tor-cnr",
           "API entry: Incoming Mobility ToR CNR API v1");
+
+  /**
+   * API entry for Incoming Mobility ToR CNR API v2.
+   */
+  public static final KnownElement APIENTRY_IMOBILITY_TOR_CNR_V2 =
+      new KnownElement(KnownNamespace.APIENTRY_IMOBILITY_TOR_CNR_V2, "imobility-tor-cnr",
+          "API entry: Incoming Mobility ToR CNR API v2");
+
+  /**
+   * API entry for Incoming Mobility ToR Stats API v1.
+   */
+  public static final KnownElement APIENTRY_IMOBILITY_TOR_STATS_V1 =
+      new KnownElement(KnownNamespace.APIENTRY_IMOBILITY_TOR_STATS_V1, "imobility-tor-stats",
+          "API entry: Incoming Mobility ToR Stats API v1");
 
   /**
    * API entry for Incoming Mobility ToR CNR API v1.
@@ -486,6 +507,15 @@ public class KnownElement {
       );
 
   /**
+   * The root of the Incoming Mobility ToRs API v3 index response.
+   */
+  public static final KnownElement RESPONSE_IMOBILITY_TORS_INDEX_V3 =
+      new KnownElement(KnownNamespace.RESPONSE_IMOBILITY_TORS_INDEX_V3,
+          "imobility-tors-index-response",
+          "IMobility ToRs API v3 Index Response"
+      );
+
+  /**
    * The root of the Incoming Mobility ToRs API v1 get response.
    */
   public static final KnownElement RESPONSE_IMOBILITY_TORS_GET_V1 =
@@ -501,6 +531,15 @@ public class KnownElement {
       new KnownElement(KnownNamespace.RESPONSE_IMOBILITY_TORS_GET_V2,
           "imobility-tors-get-response",
           "IMobility ToRs API v2 Get Response"
+      );
+
+  /**
+   * The root of the Incoming Mobility ToRs API v3 get response.
+   */
+  public static final KnownElement RESPONSE_IMOBILITY_TORS_GET_V3 =
+      new KnownElement(KnownNamespace.RESPONSE_IMOBILITY_TORS_GET_V3,
+          "imobility-tors-get-response",
+          "IMobility ToRs API v3 Get Response"
       );
 
   /**
