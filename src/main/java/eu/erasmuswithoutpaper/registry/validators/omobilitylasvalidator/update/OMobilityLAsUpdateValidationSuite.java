@@ -1,7 +1,7 @@
 package eu.erasmuswithoutpaper.registry.validators.omobilitylasvalidator.update;
 
-import java.util.Arrays;
 import java.util.GregorianCalendar;
+import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -18,7 +18,6 @@ import eu.erasmuswithoutpaper.registry.validators.types.ApproveProposalV1;
 import eu.erasmuswithoutpaper.registry.validators.types.CommentProposalV1;
 import eu.erasmuswithoutpaper.registry.validators.types.OmobilityLasUpdateRequest;
 import eu.erasmuswithoutpaper.registry.validators.types.Signature;
-import eu.erasmuswithoutpaper.registry.validators.verifiers.VerifierFactory;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import jakarta.xml.bind.JAXBContext;
@@ -32,7 +31,6 @@ import org.w3c.dom.Document;
  */
 class OMobilityLAsUpdateValidationSuite
     extends AbstractValidationSuite<OMobilityLAsSuiteState> {
-  private VerifierFactory updateResponseVerifierFactory = new VerifierFactory(Arrays.asList());
 
   OMobilityLAsUpdateValidationSuite(ApiValidator<OMobilityLAsSuiteState> validator,
                                       OMobilityLAsSuiteState state, ValidationSuiteConfig config,
@@ -194,9 +192,9 @@ class OMobilityLAsUpdateValidationSuite
   private void commonRequestTypeTests(Combination combination, RequestFactory requestFactory,
       String updateTypeName) throws SuiteBroken {
 
-    testParameters200(combination,
+    testParametersError(combination,
         String.format(
-            "Send %s request with known omobility-id and changes-proposal id, expect 200.",
+            "Send %s request with known omobility-id and changes-proposal id, expect 200 or 409.",
             updateTypeName
         ),
         requestToXmlParameters(requestFactory.createRequest(
@@ -204,7 +202,7 @@ class OMobilityLAsUpdateValidationSuite
             this.currentState.omobilityId,
             this.currentState.changesProposalId
         )),
-        updateResponseVerifierFactory.expectCorrectResponse()
+        List.of(200, 409)
     );
 
     testParametersError(combination,

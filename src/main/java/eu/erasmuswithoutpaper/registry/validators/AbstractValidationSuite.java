@@ -605,17 +605,19 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
       message += " expected, but HTTP " + response.getStatus() + " received.";
       throw new Failure(message, status, response);
     }
-    BuildParams params = new BuildParams(response.getBody());
-    params.setExpectedKnownElement(KnownElement.COMMON_ERROR_RESPONSE);
-    BuildResult result = this.docBuilder.build(params);
-    if (!result.isValid()) {
-      throw new Failure(
-          "HTTP response status was okay, but the content has failed Schema validation. "
-              + "It is recommended to return a proper <error-response> in case of errors. " + this
-              .formatDocBuildErrors(result.getErrors()),
-          Status.WARNING,
-          response
-      );
+    if (response.getStatus() != 200) {
+      BuildParams params = new BuildParams(response.getBody());
+      params.setExpectedKnownElement(KnownElement.COMMON_ERROR_RESPONSE);
+      BuildResult result = this.docBuilder.build(params);
+      if (!result.isValid()) {
+        throw new Failure(
+            "HTTP response status was okay, but the content has failed Schema validation. "
+                + "It is recommended to return a proper <error-response> in case of errors. " + this
+                .formatDocBuildErrors(result.getErrors()),
+            Status.WARNING,
+            response
+        );
+      }
     }
     if (response.getStatus() == 401) {
       String wwwauth = response.getHeader("WWW-Authenticate");
