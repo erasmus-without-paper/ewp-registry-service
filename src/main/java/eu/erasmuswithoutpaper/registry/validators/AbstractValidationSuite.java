@@ -512,7 +512,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
   protected Response makeRequestAndExpectError(InlineValidationStep step, Combination combination,
       Request request, List<Integer> expectedErrorCodes) throws Failure {
     Response response = this.makeRequest(step, request);
-    this.expectError(step, combination, request, response, expectedErrorCodes, Status.FAILURE);
+    this.expectError(step, combination, request, response, expectedErrorCodes);
     return response;
   }
 
@@ -561,37 +561,13 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
    */
   protected void expectError(InlineValidationStep step, Combination combination, Request request,
       Response response, List<Integer> expectedErrorCodes) throws Failure {
-    expectError(step, combination, request, response, expectedErrorCodes, Status.FAILURE);
-  }
-
-  /**
-   * Check if the response contains a valid error of expected type.
-   *
-   * @param step
-   *     validation step associated with this response.
-   * @param combination
-   *     combination with which request was made.
-   * @param request
-   *     The request that triggered the response.
-   * @param response
-   *     Response to be tested.
-   * @param expectedErrorCodes
-   *     Expected HTTP response statuses (any of those).
-   * @param failureStatus
-   *     Type of error to report when statuses do not match.
-   * @throws Failure
-   *     If HTTP status differs from expected, or if the response body doesn't contain a proper
-   *     error response.
-   */
-  protected void expectError(InlineValidationStep step, Combination combination, Request request,
-      Response response, List<Integer> expectedErrorCodes, Status failureStatus) throws Failure {
     final List<String> notices =
         this.decodeAndValidateResponseCommons(step, combination, request, response);
     if (!expectedErrorCodes.contains(response.getStatus())) {
       int gotFirstDigit = response.getStatus() / 100;
       int expectedFirstDigit = expectedErrorCodes.get(0) / 100;
       Status status =
-          (gotFirstDigit == expectedFirstDigit) ? Status.WARNING : failureStatus;
+          (gotFirstDigit == expectedFirstDigit) ? Status.WARNING : Status.FAILURE;
       String message = "HTTP " + expectedErrorCodes.stream()
           .map(Object::toString)
           .collect(Collectors.joining(" or HTTP "));
