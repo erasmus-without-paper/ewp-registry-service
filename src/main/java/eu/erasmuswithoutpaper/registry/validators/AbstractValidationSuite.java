@@ -937,11 +937,6 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
   }
 
   protected void testParametersError(Combination combination, String name, Parameters params,
-      int error, Status failureStatus) throws SuiteBroken {
-    testParametersError(combination, name, params, Arrays.asList(error), failureStatus);
-  }
-
-  protected void testParametersError(Combination combination, String name, Parameters params,
       List<Integer> errors, boolean shouldSkip, String skipReason) throws SuiteBroken {
     testParametersError(combination, name, params, errors, Status.FAILURE, shouldSkip, skipReason);
   }
