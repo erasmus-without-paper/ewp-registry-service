@@ -13,7 +13,7 @@ public enum ApiEndpoint {
   private static Map<String, ApiEndpoint> namesToEndpoints = new HashMap<>();
 
   static {
-    for (ApiEndpoint endpoint : ApiEndpoint.values()) {
+    for (ApiEndpoint endpoint : values()) {
       namesToEndpoints.put(endpoint.name, endpoint);
     }
   }
