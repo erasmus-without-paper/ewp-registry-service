@@ -71,7 +71,7 @@ public class ApiController {
       headers.setContentType(MediaType.APPLICATION_XML);
       headers.setLastModified(catalogueLastModified);
       headers.setExpires(System.currentTimeMillis() + 300_000);
-      return new ResponseEntity<String>(this.repo.getCatalogue(), headers, HttpStatus.OK);
+      return new ResponseEntity<>(this.repo.getCatalogue(), headers, HttpStatus.OK);
     } catch (CatalogueNotFound e) {
       String xml;
       try {
@@ -83,7 +83,7 @@ public class ApiController {
       }
       HttpHeaders headers = new HttpHeaders();
       headers.setContentType(MediaType.APPLICATION_XML);
-      return new ResponseEntity<String>(xml, headers, HttpStatus.SERVICE_UNAVAILABLE);
+      return new ResponseEntity<>(xml, headers, HttpStatus.SERVICE_UNAVAILABLE);
     }
   }
 
@@ -104,6 +104,6 @@ public class ApiController {
     headers.setCacheControl("max-age=0, must-revalidate");
     headers.setContentType(MediaType.APPLICATION_XML);
     headers.setExpires(0);
-    return new ResponseEntity<String>(manifest, headers, HttpStatus.OK);
+    return new ResponseEntity<>(manifest, headers, HttpStatus.OK);
   }
 }

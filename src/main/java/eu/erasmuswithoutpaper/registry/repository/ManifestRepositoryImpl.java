@@ -156,7 +156,7 @@ public class ManifestRepositoryImpl implements ManifestRepository {
     this.lock.writeLock().lock();
     try {
       Path path = this.repoProperties.getFileSystem().getPath(this.repoProperties.getPath());
-      Files.walkFileTree(path, new FileVisitor<Path>() {
+      Files.walkFileTree(path, new FileVisitor<>() {
 
         @Override
         public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
@@ -252,7 +252,7 @@ public class ManifestRepositoryImpl implements ManifestRepository {
       Path root = this.repoProperties.getFileSystem().getPath(this.repoProperties.getPath());
 
       try {
-        Files.walkFileTree(root, new SimpleFileVisitor<Path>() {
+        Files.walkFileTree(root, new SimpleFileVisitor<>() {
 
           @Override
           @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
