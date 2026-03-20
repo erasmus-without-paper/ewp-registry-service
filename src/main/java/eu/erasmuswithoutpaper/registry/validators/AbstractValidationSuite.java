@@ -563,18 +563,19 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
       Response response, List<Integer> expectedErrorCodes) throws Failure {
     final List<String> notices =
         this.decodeAndValidateResponseCommons(step, combination, request, response);
-    if (!expectedErrorCodes.contains(response.getStatus())) {
-      int gotFirstDigit = response.getStatus() / 100;
+    int responseStatus = response.getStatus();
+    if (!expectedErrorCodes.contains(responseStatus)) {
+      int gotFirstDigit = responseStatus / 100;
       int expectedFirstDigit = expectedErrorCodes.get(0) / 100;
       Status status =
           (gotFirstDigit == expectedFirstDigit) ? Status.WARNING : Status.FAILURE;
       String message = "HTTP " + expectedErrorCodes.stream()
           .map(Object::toString)
           .collect(Collectors.joining(" or HTTP "));
-      message += " expected, but HTTP " + response.getStatus() + " received.";
+      message += " expected, but HTTP " + responseStatus + " received.";
       throw new Failure(message, status, response);
     }
-    if (response.getStatus() != 200) {
+    if (responseStatus != 200) {
       BuildParams params = new BuildParams(response.getBody());
       params.setExpectedKnownElement(KnownElement.COMMON_ERROR_RESPONSE);
       BuildResult result = this.docBuilder.build(params);
@@ -588,7 +589,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
         );
       }
     }
-    if (response.getStatus() == 401) {
+    if (responseStatus == 401) {
       String wwwauth = response.getHeader("WWW-Authenticate");
       if (wwwauth == null) {
         throw new Failure("Per HTTP specs, HTTP 401 responses MUST contain a "
