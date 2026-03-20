@@ -11,7 +11,6 @@ import eu.erasmuswithoutpaper.registry.validators.ApiEndpoint;
 import eu.erasmuswithoutpaper.registry.validators.ApiValidator;
 import eu.erasmuswithoutpaper.registry.validators.Combination;
 import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
-import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus;
 import eu.erasmuswithoutpaper.registry.validators.omobilitylasvalidator.OMobilityLAsGetValidatedApiInfo;
 import eu.erasmuswithoutpaper.registry.validators.omobilitylasvalidator.OMobilityLAsSuiteState;
 import eu.erasmuswithoutpaper.registry.validators.types.ApproveProposalV1;
@@ -259,8 +258,7 @@ class OMobilityLAsUpdateValidationSuite
             this.currentState.omobilityId,
             this.currentState.changesProposalId
         )),
-        400,
-        ValidationStepWithStatus.Status.FAILURE
+        400
     );
   }
 

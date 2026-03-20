@@ -933,18 +933,17 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
 
   protected void testParametersError(Combination combination, String name, Parameters params,
       int error, boolean shouldSkip, String skipReason) throws SuiteBroken {
-    testParametersError(combination, name, params, Arrays.asList(error), Status.FAILURE, shouldSkip,
+    testParametersError(combination, name, params, Arrays.asList(error), shouldSkip,
         skipReason);
   }
 
   protected void testParametersError(Combination combination, String name, Parameters params,
       List<Integer> errors) throws SuiteBroken {
-    testParametersError(combination, name, params, errors, Status.FAILURE, false, null);
+    testParametersError(combination, name, params, errors, false, null);
   }
 
   protected void testParametersError(Combination combination, String name, Parameters params,
-      List<Integer> errors, Status failureStatus,
-      boolean shouldSkip, String skipReason) throws SuiteBroken {
+      List<Integer> errors, boolean shouldSkip, String skipReason) throws SuiteBroken {
     this.addAndRun(false, new InlineValidationStep() {
       @Override
       public String getName() {
@@ -965,7 +964,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
       protected Optional<Response> innerRun() throws Failure {
         Request request = createRequestWithParameters(this, combination, params);
         return Optional.of(
-            makeRequestAndExpectError(this, combination, request, errors, failureStatus));
+            makeRequestAndExpectError(this, combination, request, errors, Status.FAILURE));
       }
     });
   }
@@ -1012,8 +1011,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
   }
 
   protected void testParametersErrorAsOtherEwpParticipant(Combination combination, String name,
-      Parameters parameters, int error,
-      ValidationStepWithStatus.Status failureStatus) throws SuiteBroken {
+      Parameters parameters, int error) throws SuiteBroken {
     final ValidatorKeyStore currentValidatorKeyStore = this.validatorKeyStore;
     final ValidatorKeyStore otherValidationKeyStore =
         this.validatorKeyStoreSet.getSecondaryKeyStore();
@@ -1030,7 +1028,6 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
           name,
           parameters,
           Collections.singletonList(error),
-          failureStatus,
           shouldSkip,
           skipReason
       );
