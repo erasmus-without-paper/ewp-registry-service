@@ -18,7 +18,6 @@ import org.springframework.core.task.SyncTaskExecutor;
 import org.springframework.core.task.TaskExecutor;
 
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.errors.GitAPIException;
 
 /**
  * As opposed to {@link ProductionConfiguration}, this class provides Spring beans to be autowired
@@ -42,7 +41,7 @@ public class TestConfiguration {
     this.repoPath = dir.toAbsolutePath().toString();
     try {
       Git.init().setDirectory(new File(this.repoPath)).call();
-    } catch (GitAPIException e) {
+    } catch (Exception e) {
       throw new RuntimeException(e);
     }
   }

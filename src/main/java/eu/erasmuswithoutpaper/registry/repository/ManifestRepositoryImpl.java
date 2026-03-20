@@ -39,7 +39,6 @@ import org.eclipse.jgit.api.RmCommand;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.TransportException;
-import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -539,7 +538,7 @@ public class ManifestRepositoryImpl implements ManifestRepository {
       }
       Iterable<RevCommit> commits = this.git.log().addRange(origin, head).call();
       return Iterables.size(commits) > 0;
-    } catch (RevisionSyntaxException | IOException e) {
+    } catch (IOException e) {
       throw new RuntimeException(e);
     } finally {
       this.lock.writeLock().unlock();
