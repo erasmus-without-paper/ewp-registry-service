@@ -31,7 +31,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.eclipse.jgit.api.Git;
@@ -248,7 +247,7 @@ public class ManifestRepositoryImpl implements ManifestRepository {
   public List<String> getAllFilePaths() {
     this.lock.readLock().lock();
     try {
-      List<String> out = Lists.newArrayList();
+      List<String> out = new ArrayList<>();
       Path root = this.repoProperties.getFileSystem().getPath(this.repoProperties.getPath());
 
       try {
@@ -283,7 +282,7 @@ public class ManifestRepositoryImpl implements ManifestRepository {
 
   @Override
   public List<String> getAllFilteredManifestUrls() {
-    return Lists.newArrayList(this.index);
+    return new ArrayList<>(this.index);
   }
 
   @Override
@@ -588,10 +587,11 @@ public class ManifestRepositoryImpl implements ManifestRepository {
     try {
       URL url = new URL(urlString);
       String host = url.getHost();
-      String tld = Iterables.getLast(Lists.newArrayList(host.split("\\.")));
+      String[] hostParts = host.split("\\.");
+      String tld = hostParts[hostParts.length - 1];
       pathParts.add(Utils.urlencode(tld));
       pathParts.add(Utils.urlencode(host));
-    } catch (MalformedURLException e) {
+    } catch (MalformedURLException | ArrayIndexOutOfBoundsException e) {
       pathParts.add("from-malformed-urls");
     }
 
