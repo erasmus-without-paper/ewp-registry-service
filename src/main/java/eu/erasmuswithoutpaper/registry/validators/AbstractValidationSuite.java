@@ -511,15 +511,8 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
 
   protected Response makeRequestAndExpectError(InlineValidationStep step, Combination combination,
       Request request, List<Integer> expectedErrorCodes) throws Failure {
-    return this.makeRequestAndExpectError(step, combination, request, expectedErrorCodes,
-        Status.FAILURE);
-  }
-
-  protected Response makeRequestAndExpectError(InlineValidationStep step, Combination combination,
-      Request request, List<Integer> expectedErrorCodes,
-      Status failureStatus) throws Failure {
     Response response = this.makeRequest(step, request);
-    this.expectError(step, combination, request, response, expectedErrorCodes, failureStatus);
+    this.expectError(step, combination, request, response, expectedErrorCodes, Status.FAILURE);
     return response;
   }
 
@@ -964,7 +957,7 @@ public abstract class AbstractValidationSuite<S extends SuiteState> {
       protected Optional<Response> innerRun() throws Failure {
         Request request = createRequestWithParameters(this, combination, params);
         return Optional.of(
-            makeRequestAndExpectError(this, combination, request, errors, Status.FAILURE));
+            makeRequestAndExpectError(this, combination, request, errors));
       }
     });
   }
