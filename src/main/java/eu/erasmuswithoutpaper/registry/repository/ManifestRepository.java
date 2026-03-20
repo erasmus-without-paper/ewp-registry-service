@@ -5,7 +5,6 @@ import java.util.List;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 import org.springframework.beans.factory.DisposableBean;
 
-import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.TransportException;
 
 /**
@@ -137,10 +136,10 @@ public interface ManifestRepository extends DisposableBean {
    * @return <b>true</b> if something was actually pushed, <b>false</b> if there was nothing to
    *         push, or pushing has been disabled.
    * @throws TransportException When network error occurs during the process.
-   * @throws GitAPIException When changes cannot be pushed for some other reason (serious).
    * @throws ConfigurationException When pushing is enabled, but not configured properly.
+   * @throws RuntimeException When changes cannot be pushed for some reason.
    */
-  boolean push() throws TransportException, GitAPIException, ConfigurationException;
+  boolean push() throws TransportException, ConfigurationException, RuntimeException;
 
   /**
    * Store the new version of the catalogue.

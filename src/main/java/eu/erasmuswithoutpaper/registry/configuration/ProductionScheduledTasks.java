@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.sentry.Sentry;
-import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.TransportException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,7 +104,7 @@ public class ProductionScheduledTasks {
     try {
       this.repo.push();
       this.logPushingStatus.setStatus(Severity.OK);
-    } catch (ConfigurationException | GitAPIException e) {
+    } catch (ConfigurationException | TransportException e) {
       Sentry.captureException(e);
       logger.error("Exception while pushing repository changes: " + e);
       this.logPushingStatus.setStatus(Severity.WARNING);

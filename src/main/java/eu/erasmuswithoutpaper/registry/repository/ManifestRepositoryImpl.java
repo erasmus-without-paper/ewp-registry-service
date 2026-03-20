@@ -362,14 +362,14 @@ public class ManifestRepositoryImpl implements ManifestRepository {
   }
 
   @Override
-  public boolean push() throws TransportException, GitAPIException, ConfigurationException {
+  public boolean push() throws TransportException, ConfigurationException, RuntimeException {
     this.lock.writeLock().lock();
     try {
       if (this.repoProperties.isPushingEnabled()) {
-        if (!this.unpushedCommitsExist()) {
-          return false;
-        }
         try {
+          if (!this.unpushedCommitsExist()) {
+            return false;
+          }
           this.git.push().call();
           logger.info("Successfully pushed to origin");
           return true;
