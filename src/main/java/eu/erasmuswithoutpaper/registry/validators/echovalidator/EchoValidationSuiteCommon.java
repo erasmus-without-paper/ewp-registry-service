@@ -36,7 +36,6 @@ import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus.Statu
 import eu.erasmuswithoutpaper.rsaaes.BadEwpRsaAesBody;
 import eu.erasmuswithoutpaper.rsaaes.EwpRsaAes128GcmDecoder;
 
-import com.google.common.collect.Lists;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import net.adamcin.httpsig.api.Authorization;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -75,7 +74,7 @@ public class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSuite
       protected Optional<Response> innerRun() throws Failure {
         Request request = createValidRequestForCombination(this, combination);
         return Optional.of(
-            makeRequestAndExpectError(this, combination, request, Lists.newArrayList(401, 403)));
+            makeRequestAndExpectError(this, combination, request, List.of(401, 403)));
       }
     });
   }
@@ -102,7 +101,7 @@ public class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSuite
         badSigner.sign(request);
         return Optional.of(
             makeRequestAndExpectError(this, combination.withChangedResEncr(CombEntry.RESENCR_TLS),
-                request, Lists.newArrayList(401, 403)));
+                request, List.of(401, 403)));
       }
     });
 
@@ -130,7 +129,7 @@ public class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSuite
         // Replace the previously set Authorization header with a different one.
         mySigner.sign(request);
         return Optional.of(
-            makeRequestAndExpectError(this, combination, request, Lists.newArrayList(400, 401)));
+            makeRequestAndExpectError(this, combination, request, List.of(400, 401)));
       }
     });
 
@@ -149,7 +148,7 @@ public class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSuite
         reqSignerHttpSig.sign(request);
         request.removeHeader("missing-header-that-should-exist");
         return Optional.of(
-            makeRequestAndExpectError(this, combination, request, Lists.newArrayList(400, 401)));
+            makeRequestAndExpectError(this, combination, request, List.of(400, 401)));
       }
     });
 
@@ -169,12 +168,12 @@ public class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSuite
         request.putHeader("Original-Date", value);
         reqSignerHttpSig.sign(request);
         return Optional.of(makeRequestAndExpectHttp200(this, combination, request,
-            validatorKeyStore.getCoveredHeiIDs(), Lists.newArrayList()));
+            validatorKeyStore.getCoveredHeiIDs(), List.of()));
       }
     });
 
     List<String> stdHeaders =
-        Lists.newArrayList("(request-target)", "host", "date", "digest", "x-request-id");
+        List.of("(request-target)", "host", "date", "digest", "x-request-id");
     for (String headerToSkip : stdHeaders) {
       this.addAndRun(false, new InlineValidationStep() {
 
@@ -197,7 +196,7 @@ public class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSuite
           };
           mySigner.sign(request);
           return Optional.of(
-              makeRequestAndExpectError(this, combination, request, Lists.newArrayList(400, 401)));
+              makeRequestAndExpectError(this, combination, request, List.of(400, 401)));
         }
       });
     }
@@ -224,7 +223,7 @@ public class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSuite
         };
         mySigner.sign(request);
         return Optional.of(makeRequestAndExpectHttp200(this, combination, request,
-                validatorKeyStore.getCoveredHeiIDs(), Lists.newArrayList()));
+            validatorKeyStore.getCoveredHeiIDs(), List.of()));
       }
     });
 
@@ -242,7 +241,7 @@ public class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSuite
         request.putHeader("Some-Custom-Header", "Value");
         reqSignerHttpSig.sign(request);
         return Optional.of(makeRequestAndExpectHttp200(this, combination, request,
-            validatorKeyStore.getCoveredHeiIDs(), Lists.newArrayList()));
+            validatorKeyStore.getCoveredHeiIDs(), List.of()));
       }
     });
 
@@ -391,7 +390,7 @@ public class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSuite
           };
           mySigner.sign(request);
           return Optional.of(makeRequestAndExpectHttp200(this, combination, request,
-              validatorKeyStore.getCoveredHeiIDs(), Lists.newArrayList("b", "b")));
+              validatorKeyStore.getCoveredHeiIDs(), List.of("b", "b")));
         }
       });
 
@@ -451,7 +450,7 @@ public class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSuite
           mySigner.sign(request);
           try {
             return Optional.of(makeRequestAndExpectHttp200(this, combination, request,
-                validatorKeyStore.getCoveredHeiIDs(), Lists.newArrayList("b", "b")));
+                validatorKeyStore.getCoveredHeiIDs(), List.of("b", "b")));
           } catch (Failure f) {
             if (f.getStatus().equals(Status.FAILURE)) {
               throw f.withChangedStatus(Status.WARNING);
@@ -484,10 +483,10 @@ public class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSuite
         Combination relaxedCombination = combination.withChangedSrvAuth(CombEntry.SRVAUTH_TLSCERT);
         if (combination.getCliAuth().equals(CombEntry.CLIAUTH_NONE)) {
           return Optional.of(makeRequestAndExpectError(this, relaxedCombination, request,
-              Lists.newArrayList(401, 403)));
+              List.of(401, 403)));
         } else {
           return Optional.of(makeRequestAndExpectHttp200(this, relaxedCombination, request,
-              validatorKeyStore.getCoveredHeiIDs(), Lists.newArrayList()));
+              validatorKeyStore.getCoveredHeiIDs(), List.of()));
         }
       }
     });
@@ -507,10 +506,10 @@ public class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSuite
         getRequestSignerForCombination(this, request, combination).sign(request);
         if (combination.getCliAuth().equals(CombEntry.CLIAUTH_NONE)) {
           return Optional.of(
-              makeRequestAndExpectError(this, combination, request, Lists.newArrayList(401, 403)));
+              makeRequestAndExpectError(this, combination, request, List.of(401, 403)));
         } else {
           return Optional.of(makeRequestAndExpectHttp200(this, combination, request,
-              validatorKeyStore.getCoveredHeiIDs(), Lists.newArrayList()));
+              validatorKeyStore.getCoveredHeiIDs(), List.of()));
         }
       }
     });
@@ -532,10 +531,10 @@ public class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSuite
           getRequestSignerForCombination(this, request, combination).sign(request);
           if (combination.getCliAuth().equals(CombEntry.CLIAUTH_NONE)) {
             return Optional.of(makeRequestAndExpectError(this, combination, request,
-                Lists.newArrayList(401, 403)));
+                List.of(401, 403)));
           } else {
             return Optional.of(makeRequestAndExpectHttp200(this, combination, request,
-                validatorKeyStore.getCoveredHeiIDs(), Lists.newArrayList()));
+                validatorKeyStore.getCoveredHeiIDs(), List.of()));
           }
         }
       });
@@ -569,7 +568,8 @@ public class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSuite
         // Transform it to a GET request, while leaving the body etc. intact.
         request.setMethod("GET");
         getRequestSignerForCombination(this, request, combination).sign(request);
-        List<Integer> acceptableResponses = Lists.newArrayList(405);
+        List<Integer> acceptableResponses = new ArrayList<>();
+        acceptableResponses.add(405);
         if (combination.getCliAuth().equals(CombEntry.CLIAUTH_NONE)) {
           acceptableResponses.add(403);
           acceptableResponses.add(401);
@@ -597,7 +597,8 @@ public class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSuite
         body = Arrays.copyOf(body, 32 + 2);
         request.setBodyAndContentLength(body);
         getRequestSignerForCombination(this, request, combination).sign(request);
-        List<Integer> acceptableResponses = Lists.newArrayList(400);
+        List<Integer> acceptableResponses = new ArrayList<>();
+        acceptableResponses.add(400);
         if (combination.getCliAuth().equals(CombEntry.CLIAUTH_NONE)) {
           acceptableResponses.add(403);
           acceptableResponses.add(401);
@@ -624,7 +625,8 @@ public class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSuite
         protected Optional<Response> innerRun() throws Failure {
           Request request = createValidRequestForCombination(this,
               combination.withChangedReqEncr(CombEntry.REQENCR_TLS));
-          List<Integer> acceptableResponses = Lists.newArrayList(415);
+          List<Integer> acceptableResponses = new ArrayList<>();
+          acceptableResponses.add(415);
           if (combination.getCliAuth().equals(CombEntry.CLIAUTH_NONE)) {
             acceptableResponses.add(403);
             acceptableResponses.add(401);
@@ -937,7 +939,7 @@ public class EchoValidationSuiteCommon extends AbstractValidationSuite<EchoSuite
           }
         }
         if (combination.getCliAuth().equals(CombEntry.CLIAUTH_NONE)) {
-          expectError(this, combination, request, response, Lists.newArrayList(401, 403));
+          expectError(this, combination, request, response, List.of(401, 403));
         } else {
           expectHttp200(this, combination, request, response, validatorKeyStore.getCoveredHeiIDs(),
               Collections.emptyList());
