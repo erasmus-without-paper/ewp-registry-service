@@ -369,7 +369,7 @@ public class ManifestRepositoryImpl implements ManifestRepository {
           if (!this.unpushedCommitsExist()) {
             return false;
           }
-          this.git.push().call();
+          this.git.push().setTimeout(30).call();
           logger.info("Successfully pushed to origin");
           return true;
         } catch (TransportException e) {
