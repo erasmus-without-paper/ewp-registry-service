@@ -149,6 +149,35 @@ public class RegistryUpdaterTest extends WRTest {
   }
 
   /**
+   * Test that institutions with an empty `id` attribute are not imported into the catalogue.
+   */
+  @Test
+  public void testEmptyHeiIds() {
+
+    /* A HEI with an empty ID should be skipped, and the manifest owner should be notified. */
+
+    this.assertManifestStatuses(null, null, null);
+    this.internet.putURL(url1, this.getFile("institutions-covered-tests/empty-hei-id.xml"));
+    this.sourceProvider.addSource(manifestFactory.newRegularSource(url1, Arrays.asList()));
+    this.timePasses();
+    this.assertManifestStatuses("Error", null, null);
+    this.assertNoticesMatch(url1, "(?s).*has an empty <code>id</code> attribute.*");
+    assertThat(this.lastCatalogue.xpath("/r:catalogue/r:host/r:institutions-covered/r:hei-id")
+        .size()).isEqualTo(0);
+    assertThat(this.lastCatalogue.xpath("/r:catalogue/r:institutions/r:hei").size()).isEqualTo(0);
+
+    /* A HEI with a proper ID should still be imported. */
+
+    this.internet.putURL(url1, this.getFile("institutions-covered-tests/valid-hei-id.xml"));
+    this.timePasses();
+    this.assertManifestStatuses("OK", null, null);
+    assertThat(this.lastCatalogue.xpath("/r:catalogue/r:host/r:institutions-covered/r:hei-id")
+        .size()).isEqualTo(1);
+    assertThat($(this.lastCatalogue.xpath("/r:catalogue/r:institutions/r:hei").get(0)).attr("id"))
+        .isEqualTo("uw.edu.pl");
+  }
+
+  /**
    * Test if the Registry is properly importing `rsa-public-key` elements, introduced in Discovery
    * API v4.1.0.
    */

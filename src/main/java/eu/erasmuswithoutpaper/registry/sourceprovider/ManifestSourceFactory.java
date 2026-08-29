@@ -8,6 +8,7 @@ import eu.erasmuswithoutpaper.registry.constraints.ConstraintFactory;
 import eu.erasmuswithoutpaper.registry.constraints.EndpointUrlCorrectConstraint;
 import eu.erasmuswithoutpaper.registry.constraints.ManifestConstraint;
 import eu.erasmuswithoutpaper.registry.constraints.RemoveEmbeddedCatalogues;
+import eu.erasmuswithoutpaper.registry.constraints.RemoveHeisWithEmptyIds;
 import eu.erasmuswithoutpaper.registry.constraints.ServerKeySecurityConstraint;
 import eu.erasmuswithoutpaper.registry.constraints.TlsClientCertificateSecurityConstraint;
 import eu.erasmuswithoutpaper.registry.constraints.VerifyDiscoveryApiEntry;
@@ -38,6 +39,7 @@ public class ManifestSourceFactory {
     all.add(new VerifyDiscoveryApiEntry(url));
     all.add(constraintFactory.getVerifyApiVersions());
     all.add(new RemoveEmbeddedCatalogues());
+    all.add(new RemoveHeisWithEmptyIds());
     all.addAll(extraConstraints);
     return new ManifestSource(url, all);
   }
