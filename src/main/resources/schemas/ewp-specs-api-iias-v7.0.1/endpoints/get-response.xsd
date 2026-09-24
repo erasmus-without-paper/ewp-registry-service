@@ -46,7 +46,7 @@
                     <xs:annotation>
                         <xs:documentation>
                             This represents a single IIA. Servers will produce one such element for
-                            each of the `iia_id` or `iia_code` values passed in the
+                            each of the `iia_id` value passed in the
                             Interinstitutional Agreements API call.
                         </xs:documentation>
                     </xs:annotation>
@@ -64,9 +64,9 @@
                                           by the host,
 
                                         * Both `iia-id` and `iia-code` elements MUST be present in the first `partner`
-                                          element (even though it's not required by the schema itself), and one of them
-                                          MUST match one of the values passed in the `iia_id` or `iia_code` request
-                                          parameter.
+                                          element (even though it's not required by the schema itself),
+
+                                        * `iia-id` MUST match the value passed in the `iia_id` request parameter,
 
                                         * The server will usually fill much more data for the first `partner`.
                                     </xs:documentation>
@@ -107,8 +107,8 @@
 
                                                     ID used by the partner MUST be provided as soon as it is mapped in the local system.
                                                     Otherwise, an agreement might be interpreted as not mapped, which may lead to duplicates.
-                                                    Also, it is REQUIRED to provide partner agreement ID to be able to approve it.
-                                                    Yet, this ID MUST NOT be present if the partner has deleted the IIA.
+                                                    Also, it is REQUIRED to provide a partner agreement ID so that the other partner can approve the agreement.
+                                                    Yet this ID MUST NOT be present if the partner has deleted the IIA.
 
                                                     Server implementers MUST use immutable surrogate keys for their work with EWP.
                                                     https://github.com/erasmus-without-paper/ewp-specs-architecture#ids
@@ -118,12 +118,12 @@
                                         <xs:element name="iia-code" type="xs:string" minOccurs="0" maxOccurs="1">
                                             <xs:annotation>
                                                 <xs:documentation>
-                                                    The partner's "human readable" ID of this IIA (aka an agreement number). If
+                                                    The partner's "human-readable" ID of this IIA (aka an agreement number). If
                                                     this server is aware of the agreement numbers used by the other partners, then
                                                     it SHOULD output it here.
 
                                                     Since `iia-id` values should contain surrogate identifiers (and, as such,
-                                                    should not be displayed to the user), we require additional "human readable"
+                                                    should not be displayed to the user), we require additional "human-readable"
                                                     agreement codes/numbers to be provided here. These codes SHOULD be displayed to
                                                     the user, and they MAY be used for searching, but they are *not used* to
                                                     directly identify entities in EWP network.
@@ -279,21 +279,21 @@
                 contexts.
 
                 Mobility specification may also be considered as a subclass of "cooperation
-                condition", but - since currently all nonabstract subclasses inherit from
+                condition", but - since currently all non-abstract subclasses inherit from
                 MobilitySpecification - no CooperationCondition class is introduced. See here:
                 https://github.com/erasmus-without-paper/ewp-wp3-data-model/issues/10
 
                 Each specification has a sending and receiving partner. Each specification
-                represents an agreement that, for each of the academic years listed within, the
+                represents an agreement that, for each of the academic years from start to end, the
                 sending partner will send a particular number of people to the receiving
-                partner, for a particular average duration each (e.g. for 8 weeks). This
-                describes an unidirectional flow - if people are sent in both directions, two
+                partner, for a particular average duration each (e.g., for 8 weeks). This
+                describes a unidirectional flow - if people are sent in both directions, two
                 separate mobility specifications need to be defined (one for each direction).
 
                 More requirements (e.g. *who* is being sent to do *what*) are defined in
                 specific `*-mobility-spec` subclasses.
 
-                This type, nor any of its subclasses, SHOULD NOT be referenced outside of the
+                This type, nor any of its subclasses, SHOULD NOT be referenced outside the
                 EWP IIAs API. It is likely to be modified, or to be removed, in the future.
             </xs:documentation>
         </xs:annotation>
@@ -321,13 +321,13 @@
 
                         This data might be relevant for some partners, while other partners might
                         ignore it completely. If the server is aware that particular students should
-                        come from a particular organizational unit, then it reports it here. Note, that
+                        come from a particular organizational unit, then it reports it here. Note that
                         this MAY be the "root" unit (the one representing the entire HEI).
 
                         This ID is defined by the HEI referred to in the `sending-hei-id` element.
                         If the server is not aware of this ID, then it won't provide it. Clients
                         can retrieve further information on this unit via Organizational Units API, but
-                        note, that it is not obvious *which* Organizational Units API the client should
+                        note that it is not obvious *which* Organizational Units API the client should
                         use. See similar notes on `iia/partner-hei/hei-id` element. Discuss here:
                         https://github.com/erasmus-without-paper/ewp-specs-api-iias/issues/6
                     </xs:documentation>
@@ -366,13 +366,13 @@
 
                         This data might be relevant for some partners, while other partners might
                         ignore it completely. If the server is aware that particular students should be
-                        received by a particular organizational unit, then it reports it here. Note,
+                        received by a particular organizational unit, then it reports it here. Note
                         that this MAY be the "root" unit (the one representing the entire HEI).
 
                         This ID is defined by the HEI referred to in the `receiving-hei-id` element.
                         If the server is not aware of this ID, then it won't provide it. Clients
                         can retrieve further information on this unit via Organizational Units API, but
-                        note, that it is not obvious *which* Organizational Units API the client should
+                        note that it is not obvious *which* Organizational Units API the client should
                         use. See similar notes on `iia/partner-hei/hei-id` element. Discuss here:
                         https://github.com/erasmus-without-paper/ewp-specs-api-iias/issues/6
                     </xs:documentation>
@@ -396,7 +396,7 @@
                         be in effect *during a given programme period* (each mobility specification
                         can be bound to a different set of academic years).
 
-                        If one of the partner is from the southern hemisphere (so that he uses
+                        If one of the partners is from the southern hemisphere (so that he uses
                         academic years in a form of "2010/2010" instead of "2010/2011"), then IDs
                         provided here SHOULD refer to the scheme used by the receiving partner (not the
                         sending one).
@@ -437,9 +437,9 @@
                 A list of recommended language skills the student (or staff member) should
                 have at the start of the mobility period.
 
-                This element can currently be attached to all subclasses of
+                This element is currently attached to all subclasses of
                 MobilitySpecification. Since it has almost the same meaning regardless of where
-                it is attached, we define it here (in the base class) for now. This MAY change
+                it is attached, we define it here for now. This MAY change
                 in future versions though.
             </xs:documentation>
         </xs:annotation>
@@ -450,6 +450,10 @@
                         <xs:documentation>
                             The code of the language which the student (or staff member) is recommended to be
                             familiar with.
+
+                            Note: EWP is following BCP 47 (https://www.rfc-editor.org/rfc/bcp/bcp47.txt)
+                            for specifying languages but disallows the use of special codes mentioned in
+                            chapter 4.1. Choice of Language Tag, guideline 5 of this document.
                         </xs:documentation>
                     </xs:annotation>
                 </xs:element>
@@ -459,6 +463,9 @@
                             Optional CEFR level code - the recommended minimum level of language skill the
                             student (or staff member) should have.
                             https://en.wikipedia.org/wiki/Common_European_Framework_of_Reference_for_Languages
+
+                            It is strongly RECOMMENDED to provide this element, and it will be
+                            mandatory in the future version of the API.
                         </xs:documentation>
                     </xs:annotation>
                     <xs:simpleType>
@@ -480,9 +487,9 @@
                     <xs:documentation>
                         Optional subject areas associated with this mobility.
 
-                        This element can currently be attached to all subclasses of
+                        This element is currently attached to all subclasses of
                         MobilitySpecification. Since it has almost the same meaning regardless of where
-                        it is attached, we define it here (in the base class) for now. This MAY change
+                        it is attached, we define it here for now. This MAY change
                         in future versions though.
                     </xs:documentation>
                 </xs:annotation>
@@ -512,8 +519,8 @@
                         to be compliant with the requirements of the Beneficiary module,
                         which only accepts four-digit codes for mobilities (see issue: #49).
 
-                        Agreements mutually approved before IIA version 7 that had ISCED code with less then four digits
-                        MUST have ISCED code replaced with a proper four digit ISCED code and
+                        Agreements mutually approved before IIA version 7 that had ISCED code with less than four digits
+                        MUST have ISCED code replaced with a proper four-digit ISCED code and
                         MUST have `v6-value` attribute set to the previous ISCED code approved in version 6.
                         After IIA version 7 is implemented and the agreement is modified the ISCED code
                         MUST be set by the end-user and the attribute MUST be removed.
@@ -529,8 +536,8 @@
 
                                         This attribute:
                                          * MAY be set only for mutually approved agreements that
-                                           have been approved in the IIA version 6 and have not been modified since,
-                                         * MUST be set for agreements that had ISCED code with less than 4 digits,
+                                           have been approved in IIA version 6 and have not been modified since,
+                                         * MUST be set for agreements that had ISCED code with less than four digits,
                                          * MUST NOT be set otherwise.
                                     </xs:documentation>
                                 </xs:annotation>
@@ -551,7 +558,7 @@
 
                         It MUST be an empty string if a more precise description is not needed.
                         You MUST NOT put the official name of the ISCED in this field.
-                        Nevertheless if the agreement has been mutually approved in IIA version 6
+                        Nevertheless, if the agreement has been mutually approved in IIA version 6
                         and has not been modified since, then this field MUST be unchanged.
                     </xs:documentation>
                 </xs:annotation>
@@ -605,10 +612,10 @@
             <xs:element name="eqf-level" type="ewp:EqfLevel" minOccurs="0" maxOccurs="unbounded">
                 <xs:annotation>
                     <xs:documentation>
-                        A list of allowed study levels of the students being sent.
+                        Allowed study levels of the students being sent.
 
                         Note: If at least one EQF level is provided here and student's level
-                        is not one of these levels, then such student SHOULD NOT be able to apply
+                        is not one of these levels, then such a student SHOULD NOT be able to apply
                         for mobility specified by these cooperation conditions.
                     </xs:documentation>
                 </xs:annotation>

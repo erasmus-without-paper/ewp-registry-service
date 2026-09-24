@@ -1,9 +1,9 @@
 <imobility-tors-index-response
-    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-imobility-tors/blob/stable-v2/endpoints/index-response.xsd"
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-imobility-tors/blob/stable-v3/endpoints/index-response.xsd"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="
-        https://github.com/erasmus-without-paper/ewp-specs-api-imobility-tors/blob/stable-v2/endpoints/index-response.xsd
-        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-imobility-tors/stable-v2/endpoints/index-response.xsd
+        https://github.com/erasmus-without-paper/ewp-specs-api-imobility-tors/blob/stable-v3/endpoints/index-response.xsd
+        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-imobility-tors/stable-v3/endpoints/index-response.xsd
     "
 >
     <omobility-id>2a83d860-b9c9-4baf-81f4-5110d217d273</omobility-id>

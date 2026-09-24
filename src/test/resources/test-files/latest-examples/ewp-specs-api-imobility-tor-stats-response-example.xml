@@ -1,0 +1,10 @@
+<imobility-tor-stats-response xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-imobility-tor-stats/tree/stable-v1">
+    <academic-year-stats>
+        <receiving-academic-year-id>2021/2022</receiving-academic-year-id>
+        <imobility-tor-total>109</imobility-tor-total>
+    </academic-year-stats>
+    <academic-year-stats>
+        <receiving-academic-year-id>2022/2023</receiving-academic-year-id>
+        <imobility-tor-total>77</imobility-tor-total>
+    </academic-year-stats>
+</imobility-tor-stats-response>

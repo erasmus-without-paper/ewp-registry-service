@@ -1,33 +1,35 @@
 <imobility-tors-get-response
-    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-imobility-tors/blob/stable-v2/endpoints/get-response.xsd"
+    xmlns="https://github.com/erasmus-without-paper/ewp-specs-api-imobility-tors/blob/stable-v3/endpoints/get-response.xsd"
     xmlns:xml="http://www.w3.org/XML/1998/namespace"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="
-        https://github.com/erasmus-without-paper/ewp-specs-api-imobility-tors/blob/stable-v2/endpoints/get-response.xsd
-        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-imobility-tors/stable-v2/endpoints/get-response.xsd
+        https://github.com/erasmus-without-paper/ewp-specs-api-imobility-tors/blob/stable-v3/endpoints/get-response.xsd
+        https://raw.githubusercontent.com/erasmus-without-paper/ewp-specs-api-imobility-tors/stable-v3/endpoints/get-response.xsd
     "
 >
     <tor>
         <omobility-id>b1ab0888-a5ce-45e8-8c51-e3c6f677b58f</omobility-id>
-        <elmo xmlns="https://github.com/emrex-eu/elmo-schemas/tree/v1">
+        <receiving-academic-year-id>2014/2015</receiving-academic-year-id>
+        <elmo xmlns="https://github.com/emrex-eu/elmo-schemas/tree/v2">
             <generatedDate>2015-10-31T12:00:00+02:00</generatedDate>
             <learner>
-                <citizenship>PL</citizenship>
+                <citizenship type="ISO">PL</citizenship>
                 <identifier type="nationalIdentifier">83041234567</identifier>
-                <identifier type="someOtherCustomIdentifierType">ABC000000</identifier>
+                <identifier type="esi">urn:schac:personalUniqueCode:int:esi:uio.no:1234567890</identifier>
                 <givenNames>Jan Łukasz</givenNames>
                 <familyName>Kowalski</familyName>
-                <bday>1983-01-01</bday>
+                <alternativeName>Jan Łukasz Kowalski</alternativeName>
+                <dateOfBirth>1983-01-01</dateOfBirth>
             </learner>
             <report>
                 <issuer>
-                    <country>PL</country>
+                    <country type="ISO">PL</country>
                     <identifier type="pic">999572294</identifier>
                     <identifier type="erasmus">PL WARSZAW01</identifier>
                     <identifier type="schac">uw.edu.pl</identifier>
                     <title xml:lang="pl">Uniwersytet Warszawski</title>
                     <title xml:lang="en">University of Warsaw</title>
-                    <url>http://www.uw.edu.pl</url>
+                    <url>https://www.uw.edu.pl</url>
                 </issuer>
                 <learningOpportunitySpecification>
                     <identifier type="ewp-los-id">CR/19560ed8-5183-4842-9bb0-2b7e23f56522</identifier>
@@ -35,10 +37,12 @@
                     <iscedCode>0612</iscedCode>
                     <specifies>
                         <learningOpportunityInstance>
-                            <!--
-                            Requested field. https://github.com/emrex-eu/elmo-schemas/issues/10
                             <identifier type="ewp-loi-id">CRI/4edc6717-c616-430a-96b6-b6cdefee8b0b</identifier>
-                            -->
+                            <academicTerm>
+                                <title xml:lang="en">2015 Spring</title>
+                                <start>2015-01-15</start>
+                                <end>2015-06-15</end>
+                            </academicTerm>
                             <resultLabel>C</resultLabel>
                             <resultDistribution>
                                 <category count="3" label="F"/>
@@ -48,6 +52,10 @@
                                 <category count="37" label="B"/>
                                 <category count="7" label="A"/>
                             </resultDistribution>
+                            <credit>
+                                <scheme>ects</scheme>
+                                <value>5</value>
+                            </credit>
                         </learningOpportunityInstance>
                     </specifies>
                 </learningOpportunitySpecification>
