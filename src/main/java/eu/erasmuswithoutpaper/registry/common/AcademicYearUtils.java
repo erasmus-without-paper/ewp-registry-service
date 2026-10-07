@@ -13,6 +13,22 @@ public abstract class AcademicYearUtils {
       Pattern.compile("^2[0-9]{3}" + ACADEMIC_YEAR_SEPARATOR + "2[0-9]{3}$");
 
   /**
+   * @param academicYearId academic year ID to check
+   * @return true if academicYearId is in YYYY/YYYY format with endYear = startYear + 1
+   */
+  public static boolean isValidAcademicYearId(String academicYearId) {
+    if (academicYearId == null) {
+      return false;
+    }
+    Matcher matcher = ACADEMIC_YEAR_ID_PATTERN.matcher(academicYearId);
+    if (!matcher.matches()) {
+      return false;
+    }
+    String[] years = academicYearId.split(ACADEMIC_YEAR_SEPARATOR);
+    return Integer.parseInt(years[1]) == Integer.parseInt(years[0]) + 1;
+  }
+
+  /**
    * @param firstAcademicYearId first academic year ID
    * @param lastAcademicYearId last academic year ID
    * @return list of academic year IDs between first and last

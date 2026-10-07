@@ -66,6 +66,14 @@ public class IiaIndexComplexValidationSuiteV6 extends AbstractValidationSuite<Ii
           iiaIdVerifierFactory
               .expectResponseToContain(selectedIiaIdList)
       );
+    } else if (this.currentState.invalidReceivingAcademicYearId != null) {
+      testSkipped(
+          "Request with known hei_id and known receiving_academic_year_id parameter, "
+              + "expect 200 OK and non-empty response.",
+          "Validation parameter receiving_academic_year_id='"
+              + this.currentState.invalidReceivingAcademicYearId
+              + "' is not in YYYY/YYYY format. Fix the validator parameter and re-run."
+      );
     }
 
     int unknownAcademicYear = 1653; //Arbitrary, but most probably unknown.

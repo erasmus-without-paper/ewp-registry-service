@@ -19,6 +19,12 @@ public class IiaSuiteState extends SuiteState {
   public String selectedIiaId;
   public IiaInfo selectedIiaInfo = new IiaInfo();
 
+  /**
+   * Value of the receiving_academic_year_id validation parameter, when it was provided but
+   * has invalid format. When set, tests relying on this parameter must be skipped.
+   */
+  public String invalidReceivingAcademicYearId;
+
   public IiaSuiteState(String url, SemanticVersion version) {
     super(url, version);
   }

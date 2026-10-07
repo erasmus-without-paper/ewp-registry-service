@@ -10,6 +10,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import eu.erasmuswithoutpaper.registry.common.AcademicYearUtils;
 import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registry.validators.AbstractSetupValidationSuite;
@@ -126,8 +127,48 @@ public class IiaIndexComplexSetupValidationSuiteV6
     this.currentState.selectedIiaInfo.partnerHeiId = getParameterValue(PARTNER_HEI_ID_PARAMETER);
 
     if (isParameterProvided(RECEIVING_ACADEMIC_YEAR_ID)) {
-      this.currentState.selectedIiaInfo.receivingAcademicYears
-          .add(getParameterValue(RECEIVING_ACADEMIC_YEAR_ID));
+      registerReceivingAcademicYearParameter(
+          getParameterValue(RECEIVING_ACADEMIC_YEAR_ID));
+    }
+  }
+
+  /**
+   * Registers the receiving_academic_year_id validation parameter, if it has valid format.
+   * If not, records the problem (so that tests relying on this parameter are skipped instead
+   * of failing against the tested implementation) and reports a FAILURE about the parameter
+   * itself.
+   */
+  @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
+  protected void registerReceivingAcademicYearParameter(String academicYearId)
+      throws SuiteBroken {
+    if (AcademicYearUtils.isValidAcademicYearId(academicYearId)) {
+      this.currentState.selectedIiaInfo.receivingAcademicYears.add(academicYearId);
+    } else {
+      this.currentState.invalidReceivingAcademicYearId = academicYearId;
+      addAndRun(false, new InvalidReceivingAcademicYearParameterStep(academicYearId));
+    }
+  }
+
+  private static class InvalidReceivingAcademicYearParameterStep extends InlineValidationStep {
+    private final String academicYearId;
+
+    InvalidReceivingAcademicYearParameterStep(String academicYearId) {
+      this.academicYearId = academicYearId;
+    }
+
+    @Override
+    public String getName() {
+      return "Checking validation parameter receiving_academic_year_id.";
+    }
+
+    @Override
+    protected Optional<Response> innerRun() throws Failure {
+      throw new Failure(
+          "Validation parameter receiving_academic_year_id='" + this.academicYearId
+              + "' is not in YYYY/YYYY format (e.g. 2025/2026). The parameter was ignored,"
+              + " and tests relying on it will be skipped."
+              + " Fix the validator parameter and re-run the validation.",
+          ValidationStepWithStatus.Status.FAILURE, false);
     }
   }
 

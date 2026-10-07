@@ -91,8 +91,7 @@ public class IiaIndexComplexSetupValidationSuiteV7 extends IiaIndexComplexSetupV
     if (isParameterProvided(IIA_ID_PARAMETER)) {
       useGetEndpointToFetchParameters(securityDescription);
     } else if (isParameterProvided(RECEIVING_ACADEMIC_YEAR_ID)) {
-      this.currentState.selectedIiaInfo.receivingAcademicYears
-          .add(getParameterValue(RECEIVING_ACADEMIC_YEAR_ID));
+      registerReceivingAcademicYearParameter(getParameterValue(RECEIVING_ACADEMIC_YEAR_ID));
     }
   }
 }
