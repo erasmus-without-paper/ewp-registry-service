@@ -158,7 +158,7 @@
         <dependency>
             <groupId>org.ocpsoft.prettytime</groupId>
             <artifactId>prettytime</artifactId>
-            <version>5.0.7.Final</version>
+            <version>5.0.9.Final</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
