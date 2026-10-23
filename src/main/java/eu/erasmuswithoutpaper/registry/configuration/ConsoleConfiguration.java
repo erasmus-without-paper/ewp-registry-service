@@ -5,7 +5,6 @@ import eu.erasmuswithoutpaper.registryclient.ClientImpl;
 import eu.erasmuswithoutpaper.registryclient.ClientImplOptions;
 import eu.erasmuswithoutpaper.registryclient.DefaultCatalogueFetcher;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,7 +24,6 @@ public class ConsoleConfiguration {
    * @throws RegistryClient.RefreshFailureException
    *      If RegistryClient cannot refresh its catalogue.
    */
-  @Autowired
   @Bean
   public RegistryClient getRemoteRegistryClient(
       RegistryDomainProvider registryDomainProvider)

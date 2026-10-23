@@ -3,7 +3,6 @@ package eu.erasmuswithoutpaper.registry.configuration;
 import java.nio.file.FileSystems;
 
 import eu.erasmuswithoutpaper.registry.repository.ManifestRepositoryImplProperties;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -63,7 +62,6 @@ public class ProductionConfiguration {
    *     whether to enable pushing Git changes to a remote repository or not.
    * @return {@link ManifestRepositoryImplProperties} instance.
    */
-  @Autowired
   @Bean
   public ManifestRepositoryImplProperties getRepoImplProperties(
       @Value("${app.repo.path}") String path, @Value("${app.instance-name}") String committerName,

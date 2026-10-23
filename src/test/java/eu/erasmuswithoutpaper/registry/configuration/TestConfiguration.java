@@ -9,7 +9,6 @@ import java.nio.file.Path;
 
 import eu.erasmuswithoutpaper.registry.repository.ManifestRepositoryImplProperties;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -46,7 +45,6 @@ public class TestConfiguration {
     }
   }
 
-  @Autowired
   @Bean
   ManifestRepositoryImplProperties getRepoImplProperties(
       @Value("${app.instance-name}") String committerName,

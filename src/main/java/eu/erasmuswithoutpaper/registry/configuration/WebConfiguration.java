@@ -11,7 +11,6 @@ import eu.erasmuswithoutpaper.registryclient.ClientImpl;
 import eu.erasmuswithoutpaper.registryclient.ClientImplOptions;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient.RefreshFailureException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,7 +36,6 @@ public class WebConfiguration {
    *     Needed to feed the client with the current copy of the catalogue.
    * @return {@link RegistryClient} connected to the local catalogue copy.
    */
-  @Autowired
   @Bean
   @SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
   public RegistryClient getLocalRegistryClient(ManifestRepository repo) {
