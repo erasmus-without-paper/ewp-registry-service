@@ -18,8 +18,8 @@ import eu.erasmuswithoutpaper.registry.sourceprovider.ManifestSourceFactory;
 import eu.erasmuswithoutpaper.registry.sourceprovider.TestManifestSourceProvider;
 import eu.erasmuswithoutpaper.registry.updater.RegistryUpdaterTest;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -34,9 +34,6 @@ import org.junit.jupiter.api.Test;
  * Check if the URLs served by our {@link ApiController} are actually served.
  */
 public class ApiControllerIntegrationTest extends WRIntegrationTest {
-
-  @Autowired
-  private TestRestTemplate template;
 
   @Autowired
   private EwpDocBuilder docBuilder;
