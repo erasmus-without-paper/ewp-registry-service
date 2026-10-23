@@ -270,6 +270,10 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <vueBuildProfile>prod</vueBuildProfile>
         <start-class>eu.erasmuswithoutpaper.registry.Application</start-class>
+
+        <!-- Check on any Spring Boot upgrade!!! -->
+        <jackson-bom.version>3.1.7</jackson-bom.version>
+        <tomcat.version>11.0.25</tomcat.version>
     </properties>
 
     <build>
