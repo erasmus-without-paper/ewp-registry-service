@@ -10,7 +10,7 @@
     "build-prod": "cross-env NODE_ENV=production webpack"
   },
   "dependencies": {
-    "vue": "3.3.4"
+    "vue": "3.3.13"
   },
   "devDependencies": {
     "@babel/core": "7.29.0",
