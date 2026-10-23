@@ -7,9 +7,6 @@ import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import io.pebbletemplates.pebble.error.PebbleException;
 import io.pebbletemplates.pebble.extension.AbstractExtension;
 import io.pebbletemplates.pebble.extension.Filter;
@@ -17,6 +14,9 @@ import io.pebbletemplates.pebble.template.EvaluationContext;
 import io.pebbletemplates.pebble.template.PebbleTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectWriter;
 
 /**
  * Custom filter to Pebble templating engine that converts passed object or array to its JSON
@@ -46,7 +46,7 @@ public class PebbleAsJsonFilter extends AbstractExtension {
         EvaluationContext context, int lineNumber) throws PebbleException {
       try {
         return WRITER.writeValueAsString(inputObject);
-      } catch (JsonProcessingException e) {
+      } catch (JacksonException e) {
         LOGGER.error("Exception raised while serializing object to JSON: " + inputObject, e);
         return null;
       }
