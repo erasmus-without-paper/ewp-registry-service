@@ -1,6 +1,29 @@
 Release notes
 =============
 
+1.13.0
+------
+
+*Released on 2026-10-27*
+
+* Update schemas and fix #95
+* Skip covered institutions with an empty id (fixes #6)
+* Add timeout to Git push
+* Handle If-Modified-Since header (#13)
+* Anonymous access is forbidden for IIA and Omobility LA CNRs
+* Multiple changes in Validator: new APIs, new validations, remove deprecations,
+  fixed multiple bugs, added empty response for better error handling etc.
+* Multiple updates in Coverage Matrix (new APIs etc.)
+
+* Updated all dependencies (more important ones):
+    * Spring Boot 4.1
+    * Docker image uses Java 21 and newer OS
+    * JGit (6.8.0 -> 7.8.0)
+    * Pebble (3.2.2 -> 4.1.2)
+    * Saxon HE (12.4 -> 12.10)
+    * Upgrade Vue and other dev JS dependencies
+    * All Maven plugins except for static analysis
+
 1.12.0
 ------
 
