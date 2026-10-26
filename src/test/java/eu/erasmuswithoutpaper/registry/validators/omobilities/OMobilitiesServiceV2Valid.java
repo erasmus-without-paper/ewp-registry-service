@@ -15,13 +15,13 @@ import eu.erasmuswithoutpaper.registry.internet.sec.EwpClientWithRsaKey;
 import eu.erasmuswithoutpaper.registry.validators.ParameterInfo;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
-import https.github_com.erasmus_without_paper.ewp_specs_api_omobilities.blob.stable_v2.endpoints.get_response.MobilityActivityAttributes;
-import https.github_com.erasmus_without_paper.ewp_specs_api_omobilities.blob.stable_v2.endpoints.get_response.MobilityActivityType;
-import https.github_com.erasmus_without_paper.ewp_specs_api_omobilities.blob.stable_v2.endpoints.get_response.MobilityStatus;
-import https.github_com.erasmus_without_paper.ewp_specs_api_omobilities.blob.stable_v2.endpoints.get_response.OmobilitiesGetResponse;
-import https.github_com.erasmus_without_paper.ewp_specs_api_omobilities.blob.stable_v2.endpoints.get_response.StudentMobility;
-import https.github_com.erasmus_without_paper.ewp_specs_api_omobilities.blob.stable_v2.endpoints.index_response.OmobilitiesIndexResponse;
-import https.github_com.erasmus_without_paper.ewp_specs_architecture.blob.stable_v1.common_types.StringWithOptionalLang;
+import com.github.erasmus_without_paper.ewp_specs_api_omobilities.blob.stable_v2.endpoints.get_response.MobilityActivityAttributes;
+import com.github.erasmus_without_paper.ewp_specs_api_omobilities.blob.stable_v2.endpoints.get_response.MobilityActivityType;
+import com.github.erasmus_without_paper.ewp_specs_api_omobilities.blob.stable_v2.endpoints.get_response.MobilityStatus;
+import com.github.erasmus_without_paper.ewp_specs_api_omobilities.blob.stable_v2.endpoints.get_response.OmobilitiesGetResponse;
+import com.github.erasmus_without_paper.ewp_specs_api_omobilities.blob.stable_v2.endpoints.get_response.StudentMobility;
+import com.github.erasmus_without_paper.ewp_specs_api_omobilities.blob.stable_v2.endpoints.index_response.OmobilitiesIndexResponse;
+import com.github.erasmus_without_paper.ewp_specs_architecture.blob.stable_v1.common_types.StringWithOptionalLang;
 
 
 public class OMobilitiesServiceV2Valid extends AbstractOMobilitiesService {

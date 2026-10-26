@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <FindBugsFilter>
     <Match>
-        <Package name="~https.github_com.*" />
+        <Package name="~com.github.*" />
     </Match>
     <Match>
         <Package name="~org.w3.*" />

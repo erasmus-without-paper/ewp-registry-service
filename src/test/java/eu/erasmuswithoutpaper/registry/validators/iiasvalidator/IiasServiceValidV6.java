@@ -16,13 +16,13 @@ import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registry.validators.ParameterInfo;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
-import https.github_com.erasmus_without_paper.ewp_specs_api_iias.blob.stable_v6.endpoints.get_response.IiasGetResponse;
-import https.github_com.erasmus_without_paper.ewp_specs_api_iias.blob.stable_v6.endpoints.get_response.IiasGetResponse.Iia;
-import https.github_com.erasmus_without_paper.ewp_specs_api_iias.blob.stable_v6.endpoints.get_response.MobilitySpecification;
-import https.github_com.erasmus_without_paper.ewp_specs_api_iias.blob.stable_v6.endpoints.get_response.StudentTraineeshipMobilitySpec;
-import https.github_com.erasmus_without_paper.ewp_specs_api_iias.blob.stable_v6.endpoints.index_response.IiasIndexResponse;
-import https.github_com.erasmus_without_paper.ewp_specs_architecture.blob.stable_v1.common_types.StringWithOptionalLang;
-import https.github_com.erasmus_without_paper.ewp_specs_types_contact.tree.stable_v1.Contact;
+import com.github.erasmus_without_paper.ewp_specs_api_iias.blob.stable_v6.endpoints.get_response.IiasGetResponse;
+import com.github.erasmus_without_paper.ewp_specs_api_iias.blob.stable_v6.endpoints.get_response.IiasGetResponse.Iia;
+import com.github.erasmus_without_paper.ewp_specs_api_iias.blob.stable_v6.endpoints.get_response.MobilitySpecification;
+import com.github.erasmus_without_paper.ewp_specs_api_iias.blob.stable_v6.endpoints.get_response.StudentTraineeshipMobilitySpec;
+import com.github.erasmus_without_paper.ewp_specs_api_iias.blob.stable_v6.endpoints.index_response.IiasIndexResponse;
+import com.github.erasmus_without_paper.ewp_specs_architecture.blob.stable_v1.common_types.StringWithOptionalLang;
+import com.github.erasmus_without_paper.ewp_specs_types_contact.tree.stable_v1.Contact;
 
 public class IiasServiceValidV6 extends AbstractIiasService {
   private List<Iia> iias = new ArrayList<>();

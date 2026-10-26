@@ -15,11 +15,11 @@ import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
-import https.github_com.erasmus_without_paper.ewp_specs_api_factsheet.tree.stable_v1.CalendarEntry;
-import https.github_com.erasmus_without_paper.ewp_specs_api_factsheet.tree.stable_v1.FactsheetResponse;
-import https.github_com.erasmus_without_paper.ewp_specs_api_factsheet.tree.stable_v1.InformationEntry;
-import https.github_com.erasmus_without_paper.ewp_specs_architecture.blob.stable_v1.common_types.HTTPWithOptionalLang;
-import https.github_com.erasmus_without_paper.ewp_specs_types_phonenumber.tree.stable_v1.PhoneNumber;
+import com.github.erasmus_without_paper.ewp_specs_api_factsheet.tree.stable_v1.CalendarEntry;
+import com.github.erasmus_without_paper.ewp_specs_api_factsheet.tree.stable_v1.FactsheetResponse;
+import com.github.erasmus_without_paper.ewp_specs_api_factsheet.tree.stable_v1.InformationEntry;
+import com.github.erasmus_without_paper.ewp_specs_architecture.blob.stable_v1.common_types.HTTPWithOptionalLang;
+import com.github.erasmus_without_paper.ewp_specs_types_phonenumber.tree.stable_v1.PhoneNumber;
 
 
 public class FactsheetServiceV1Valid extends AbstractFactsheetService {

@@ -8,7 +8,7 @@ import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registry.validators.AbstractApiService;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
-import https.github_com.erasmus_without_paper.ewp_specs_api_course_replication.tree.stable_v1.CourseReplicationResponse;
+import com.github.erasmus_without_paper.ewp_specs_api_course_replication.tree.stable_v1.CourseReplicationResponse;
 
 public abstract class AbstractCourseReplicationService extends AbstractApiService {
   protected final String myEndpoint;

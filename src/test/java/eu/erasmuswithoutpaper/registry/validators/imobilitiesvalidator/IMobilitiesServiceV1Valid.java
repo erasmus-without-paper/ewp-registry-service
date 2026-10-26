@@ -16,9 +16,9 @@ import eu.erasmuswithoutpaper.registry.validators.ParameterInfo;
 import eu.erasmuswithoutpaper.registry.validators.ValidatorKeyStore;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
-import https.github_com.erasmus_without_paper.ewp_specs_api_imobilities.blob.stable_v1.endpoints.get_response.ImobilitiesGetResponse;
-import https.github_com.erasmus_without_paper.ewp_specs_api_imobilities.blob.stable_v1.endpoints.get_response.NominationStatus;
-import https.github_com.erasmus_without_paper.ewp_specs_api_imobilities.blob.stable_v1.endpoints.get_response.StudentMobilityForStudies;
+import com.github.erasmus_without_paper.ewp_specs_api_imobilities.blob.stable_v1.endpoints.get_response.ImobilitiesGetResponse;
+import com.github.erasmus_without_paper.ewp_specs_api_imobilities.blob.stable_v1.endpoints.get_response.NominationStatus;
+import com.github.erasmus_without_paper.ewp_specs_api_imobilities.blob.stable_v1.endpoints.get_response.StudentMobilityForStudies;
 
 
 public class IMobilitiesServiceV1Valid extends AbstractIMobilitiesService {

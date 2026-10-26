@@ -16,7 +16,7 @@ import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
-import https.github_com.erasmus_without_paper.ewp_specs_api_mt_projects.tree.stable_v1.MtProjectsResponse;
+import com.github.erasmus_without_paper.ewp_specs_api_mt_projects.tree.stable_v1.MtProjectsResponse;
 
 public class MtProjectsV010Valid extends AbstractMtProjectsService {
 

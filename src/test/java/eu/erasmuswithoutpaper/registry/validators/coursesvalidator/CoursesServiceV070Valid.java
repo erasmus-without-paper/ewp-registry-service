@@ -19,8 +19,8 @@ import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registry.validators.coursereplicationvalidator.CourseReplicationServiceV1Valid;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
-import https.github_com.erasmus_without_paper.ewp_specs_api_courses.tree.stable_v1.CoursesResponse;
-import https.github_com.erasmus_without_paper.ewp_specs_architecture.blob.stable_v1.common_types.StringWithOptionalLang;
+import com.github.erasmus_without_paper.ewp_specs_api_courses.tree.stable_v1.CoursesResponse;
+import com.github.erasmus_without_paper.ewp_specs_architecture.blob.stable_v1.common_types.StringWithOptionalLang;
 
 public class CoursesServiceV070Valid extends AbstractCoursesService {
   protected final CourseReplicationServiceV1Valid CourseReplicationServiceV2;

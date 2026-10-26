@@ -17,7 +17,7 @@ import eu.erasmuswithoutpaper.registry.validators.imobilitiesvalidator.get.IMobi
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import https.github_com.erasmus_without_paper.ewp_specs_api_imobilities.blob.stable_v2.endpoints.get_response.StudentMobility;
+import com.github.erasmus_without_paper.ewp_specs_api_imobilities.blob.stable_v2.endpoints.get_response.StudentMobility;
 import org.junit.jupiter.api.Test;
 
 public class IMobilitiesGetValidatorV2Test extends AbstractApiTest<IMobilitiesSuiteState> {

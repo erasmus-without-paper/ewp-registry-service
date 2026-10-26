@@ -23,9 +23,9 @@ import eu.erasmuswithoutpaper.registry.validators.ValidatedApiInfo;
 import eu.erasmuswithoutpaper.registry.validators.ValidationParameter;
 import eu.erasmuswithoutpaper.registry.validators.ValidationStepWithStatus;
 
+import com.github.erasmus_without_paper.ewp_specs_api_iias.blob.stable_v6.endpoints.get_response.IiasGetResponse;
+import com.github.erasmus_without_paper.ewp_specs_api_iias.blob.stable_v6.endpoints.get_response.MobilitySpecification;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import https.github_com.erasmus_without_paper.ewp_specs_api_iias.blob.stable_v6.endpoints.get_response.IiasGetResponse;
-import https.github_com.erasmus_without_paper.ewp_specs_api_iias.blob.stable_v6.endpoints.get_response.MobilitySpecification;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;

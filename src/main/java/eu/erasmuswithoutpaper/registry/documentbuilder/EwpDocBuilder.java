@@ -34,8 +34,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
+import com.github.erasmus_without_paper.ewp_specs_api_discovery.tree.stable_v6.Manifest;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import https.github_com.erasmus_without_paper.ewp_specs_api_discovery.tree.stable_v6.Manifest;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;

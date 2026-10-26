@@ -5,8 +5,8 @@ import java.util.List;
 import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
-import https.github_com.erasmus_without_paper.ewp_specs_api_imobility_tors.blob.stable_v1.endpoints.get_response.ImobilityTorsGetResponse;
-import https.github_com.erasmus_without_paper.ewp_specs_api_imobility_tors.blob.stable_v1.endpoints.index_response.ImobilityTorsIndexResponse;
+import com.github.erasmus_without_paper.ewp_specs_api_imobility_tors.blob.stable_v1.endpoints.get_response.ImobilityTorsGetResponse;
+import com.github.erasmus_without_paper.ewp_specs_api_imobility_tors.blob.stable_v1.endpoints.index_response.ImobilityTorsIndexResponse;
 
 public abstract class AbstractIMobilityTorsServiceV1 extends AbstractIMobilityTorsServiceCommon {
   /**

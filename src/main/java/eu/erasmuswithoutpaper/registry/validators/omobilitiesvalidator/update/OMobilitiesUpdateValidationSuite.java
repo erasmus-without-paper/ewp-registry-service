@@ -14,10 +14,10 @@ import eu.erasmuswithoutpaper.registry.validators.omobilitiesvalidator.OMobiliti
 import eu.erasmuswithoutpaper.registry.validators.omobilitiesvalidator.OMobilitiesValidatedApiInfo;
 import eu.erasmuswithoutpaper.registry.validators.verifiers.VerifierFactory;
 
+import com.github.erasmus_without_paper.ewp_specs_api_omobilities.blob.stable_v3.endpoints.update_request.ApproveProposalV1;
+import com.github.erasmus_without_paper.ewp_specs_api_omobilities.blob.stable_v3.endpoints.update_request.OmobilitiesUpdateRequest;
+import com.github.erasmus_without_paper.ewp_specs_api_omobilities.blob.stable_v3.endpoints.update_request.RejectProposalV1;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import https.github_com.erasmus_without_paper.ewp_specs_api_omobilities.blob.stable_v3.endpoints.update_request.ApproveProposalV1;
-import https.github_com.erasmus_without_paper.ewp_specs_api_omobilities.blob.stable_v3.endpoints.update_request.OmobilitiesUpdateRequest;
-import https.github_com.erasmus_without_paper.ewp_specs_api_omobilities.blob.stable_v3.endpoints.update_request.RejectProposalV1;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;

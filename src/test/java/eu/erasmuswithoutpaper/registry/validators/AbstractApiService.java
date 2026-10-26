@@ -20,8 +20,8 @@ import eu.erasmuswithoutpaper.registry.internet.sec.EwpHttpSigRequestAuthorizer;
 import eu.erasmuswithoutpaper.registry.internet.sec.Http4xx;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
-import https.github_com.erasmus_without_paper.ewp_specs_architecture.blob.stable_v1.common_types.ErrorResponse;
-import https.github_com.erasmus_without_paper.ewp_specs_architecture.blob.stable_v1.common_types.MultilineString;
+import com.github.erasmus_without_paper.ewp_specs_architecture.blob.stable_v1.common_types.ErrorResponse;
+import com.github.erasmus_without_paper.ewp_specs_architecture.blob.stable_v1.common_types.MultilineString;
 import jakarta.xml.bind.DatatypeConverter;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;

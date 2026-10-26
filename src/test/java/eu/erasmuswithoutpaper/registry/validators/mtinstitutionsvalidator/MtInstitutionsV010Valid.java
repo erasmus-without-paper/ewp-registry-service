@@ -19,8 +19,8 @@ import eu.erasmuswithoutpaper.registry.internet.Request;
 import eu.erasmuswithoutpaper.registry.internet.Response;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
-import https.github_com.erasmus_without_paper.ewp_specs_api_mt_institutions.tree.stable_v1.MtInstitutionsResponse;
-import https.github_com.erasmus_without_paper.ewp_specs_architecture.blob.stable_v1.common_types.StringWithOptionalLang;
+import com.github.erasmus_without_paper.ewp_specs_api_mt_institutions.tree.stable_v1.MtInstitutionsResponse;
+import com.github.erasmus_without_paper.ewp_specs_architecture.blob.stable_v1.common_types.StringWithOptionalLang;
 
 public class MtInstitutionsV010Valid extends AbstractMtInstitutionsService {
   protected static final int maxIds = 2;

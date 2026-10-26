@@ -9,7 +9,7 @@ import eu.erasmuswithoutpaper.registry.validators.AbstractApiService;
 import eu.erasmuswithoutpaper.registry.validators.institutionsvalidator.AbstractInstitutionService;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
-import https.github_com.erasmus_without_paper.ewp_specs_api_ounits.tree.stable_v2.OunitsResponse;
+import com.github.erasmus_without_paper.ewp_specs_api_ounits.tree.stable_v2.OunitsResponse;
 
 public abstract class AbstractOUnitsService extends AbstractApiService {
   protected final String myEndpoint;

@@ -12,7 +12,7 @@ import eu.erasmuswithoutpaper.registry.validators.types.OmobilityLasIndexRespons
 import eu.erasmuswithoutpaper.registry.validators.types.OmobilityLasUpdateResponse;
 import eu.erasmuswithoutpaper.registryclient.RegistryClient;
 
-import https.github_com.erasmus_without_paper.ewp_specs_architecture.blob.stable_v1.common_types.MultilineStringWithOptionalLang;
+import com.github.erasmus_without_paper.ewp_specs_architecture.blob.stable_v1.common_types.MultilineStringWithOptionalLang;
 
 public abstract class AbstractOMobilityLAsService extends AbstractApiService {
   protected final RegistryClient registryClient;

@@ -9,12 +9,12 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import eu.erasmuswithoutpaper.registry.common.EncodedCertificateAndKeys;
 
-import https.github_com.erasmus_without_paper.ewp_specs_api_discovery.tree.stable_v6.Host;
-import https.github_com.erasmus_without_paper.ewp_specs_api_discovery.tree.stable_v6.Manifest;
-import https.github_com.erasmus_without_paper.ewp_specs_api_registry.tree.stable_v1.ApisImplemented;
-import https.github_com.erasmus_without_paper.ewp_specs_api_registry.tree.stable_v1.Hei;
-import https.github_com.erasmus_without_paper.ewp_specs_architecture.blob.stable_v1.common_types.MultilineString;
-import https.github_com.erasmus_without_paper.ewp_specs_architecture.blob.stable_v1.common_types.StringWithOptionalLang;
+import com.github.erasmus_without_paper.ewp_specs_api_discovery.tree.stable_v6.Host;
+import com.github.erasmus_without_paper.ewp_specs_api_discovery.tree.stable_v6.Manifest;
+import com.github.erasmus_without_paper.ewp_specs_api_registry.tree.stable_v1.ApisImplemented;
+import com.github.erasmus_without_paper.ewp_specs_api_registry.tree.stable_v1.Hei;
+import com.github.erasmus_without_paper.ewp_specs_architecture.blob.stable_v1.common_types.MultilineString;
+import com.github.erasmus_without_paper.ewp_specs_architecture.blob.stable_v1.common_types.StringWithOptionalLang;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;

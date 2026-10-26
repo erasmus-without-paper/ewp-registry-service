@@ -23,7 +23,7 @@ import eu.erasmuswithoutpaper.registry.validators.SemanticVersion;
 import eu.erasmuswithoutpaper.registry.validators.TestValidationReport;
 import eu.erasmuswithoutpaper.registry.validators.coursereplicationvalidator.CourseReplicationServiceV1Valid;
 
-import https.github_com.erasmus_without_paper.ewp_specs_api_courses.tree.stable_v1.CoursesResponse;
+import com.github.erasmus_without_paper.ewp_specs_api_courses.tree.stable_v1.CoursesResponse;
 
 public class CoursesValidatorTest extends AbstractApiTest<CoursesSuiteState> {
   private static final String replicationUrlHTTT = "https://university.example.com/creplication/HTTT/";
